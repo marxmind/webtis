@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Department Check Request Graph Generation Report</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.css"/>
+            <h:outputStylesheet name="intro/bootstrap-responsive.mini.css"/>
+            <h:outputStylesheet name="intro/themes/introjs.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputScript name="bootstrap/js/bootstrap.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Department Check Request Graph Generation Report</title>
+ 
+ <style>
+<!-- 
+
+.inputs {
+	color: #ed7f00;
+    background: #f5f5f5;
+    font-size: 0.8rem;
+    font-weight: bold;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    border: none;
+    padding: 1px 1px;
+    width: 200px;
+    margin-bottom: 5px;
+    box-shadow: inset 0 2px 3px rgba( 0, 0, 0, 0.1 );
+    clear: both;
+}
+ -->
+ </style>
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Department Check Request Graph Generation Report</title>
+
+</h:head>
+<h:body>
+
+<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId" >
+	
+	
+	
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="50">
+				
+			</p:layoutUnit>
+			<p:layoutUnit position="south" size="100">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="east" size="0" visible="false">
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="west" size="0" visible="false">
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="center">
+	
+		
+		<p:sticky target="tbsearch" />
+		
+		<p:toolbar id="tbsearch" style="#{skin.toolbar}">
+			<f:facet name="left">
+				<p:outputLabel value="Department "/>&nbsp;
+				<p:selectOneMenu id="departmentId" value="#{depExpBean.departmentId}" style="width: 10em;color: black">
+	            		<f:selectItem itemLabel="Select..."/>
+	            		<f:selectItems value="#{depExpBean.department}"/>
+	            </p:selectOneMenu>&nbsp;
+	            <p:outputLabel value="Filter by "/>&nbsp;
+	            
+		        <p:selectOneMenu id="rangeId" value="#{depExpBean.rangeId}" style="width: 10em;color: black">
+	            		<f:selectItem itemLabel="Select..."/>
+	            		<f:selectItems value="#{depExpBean.range}"/>
+	            </p:selectOneMenu>&nbsp;
+	            
+	            <p:outputLabel value=" for the Month of "/>&nbsp;
+	            <p:selectOneMenu id="monthId" value="#{depExpBean.monthId}" style="width: 10em;color: black">
+	            		<f:selectItem itemLabel="Select..."/>
+	            		<f:selectItems value="#{depExpBean.months}"/>
+	            </p:selectOneMenu>&nbsp;
+	            
+	             <p:outputLabel value=" from year "/>&nbsp;
+	            <p:selectOneMenu id="yearIdFrom" value="#{depExpBean.yearFromId}" style="width: 10em;color: black">
+	            		<f:selectItem itemLabel="Select..."/>
+	            		<f:selectItems value="#{depExpBean.yearFrom}"/>
+	            </p:selectOneMenu>&nbsp;
+	            
+	            <p:outputLabel value=" to year "/>&nbsp;
+	            <p:selectOneMenu id="yearIdTo" value="#{depExpBean.yearToId}" style="width: 10em;color: black">
+	            		<f:selectItem itemLabel="Select..."/>
+	            		<f:selectItems value="#{depExpBean.yearTo}"/>
+	            </p:selectOneMenu>&nbsp;
+	           
+	            
+			</f:facet>
+			<f:facet name="right">
+				 <p:commandButton update="idModel" icon="ui-icon-search" action="#{depExpBean.init}"/>&nbsp;
+				 <p:commandButton type="button" value="Reset" icon="ui-icon-cancel" onclick="PF('chart').resetZoom()"/>&nbsp;
+				<p:commandButton type="button" value="Export" icon="ui-icon-extlink" onclick="exportChart()"/>
+			</f:facet>
+		</p:toolbar>	
+		
+		<p:chart id="idModel" type="bar" model="#{depExpBean.barModel}" style="width:1500px;height:350px;#{skin.chart}" widgetVar="chart" />
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		
+		</p:layoutUnit>
+	</p:layout>	
+		
+		<p:dialog widgetVar="dlg" showEffect="fade" modal="true" header="Chart as an Image" resizable="false">
+    		<p:outputPanel id="outputId" layout="block" style="width:1500px;height:550px"/>
+		</p:dialog>
+		
+<h:outputScript>
+
+function exportChart() {
+    //export image
+    $('#outputId').empty().append(PF('chart').exportAsImage());
+ 
+    //show the dialog
+    PF('dlg').show();
+}
+
+
+
+</h:outputScript>		
+
+<ui:include src="loader.xhtml" />		
+<h:outputScript name="intro/intro.js" target="head"/>
+<ui:include src="menu.xhtml" />				
+</h:form>
+</h:body>
+</html>

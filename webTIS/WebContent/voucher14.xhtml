@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+
+	<f:facet name="first">
+		    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+		    <meta name="description" content=""/>
+		    <meta name="author" content=""/>
+            <title>Voucher</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputStylesheet name="maxdesign/css/sb-admin-2.min.css"/>
+            <h:outputStylesheet name="maxdesign/vendor/fontawesome-free/css/all.min.css"/>
+            <h:outputStylesheet name="maxdesign/css/max-component.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputScript name="jquery/jquery.min.js" target="head"/>
+ 		<h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+        <h:outputScript name="jquery-easing/jquery.easing.min.js" target="head"/>
+        <h:outputScript name="maxdesign/js/sb-admin-2.min.js"/>
+    </f:facet>
+
+</h:head>
+
+<h:body id="page-top">
+<h:form prependId="false" id="formId">
+<p:growl id="alertId" life="2000" />
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+
+
+<!-- Page Wrapper -->
+  <div id="wrapper">
+  	
+  	<!-- Sidebar -->
+  	<ui:include src="sidebar.xhtml" />
+  	<!-- End of Sidebar -->
+  	
+	<!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+    
+       <!-- Main Content -->
+      <div id="content">
+      		
+      	<!-- Topbar -->
+        <ui:include src="topbar.xhtml" />
+        <!-- End of Topbar -->
+      	
+      	
+      	<!-- Begin Page Content Fluid -->
+        <div class="container-fluid">
+        	
+        	  <!-- Page Heading -->
+	          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+	            <h1 class="h3 mb-0 text-gray-800">Voucher</h1>
+	          </div>
+	          
+	           <!-- Start Main -->
+           <div class="row">
+           
+           <div class="col-xl-12 col-lg-7">
+           		<div class="card shadow mb-4">
+           			<div class="card-body">
+		                  
+		                  <p:toolbar id="tb" style="#{skin.toolbar}">
+				    		<f:facet name="left">
+				    			<p:selectOneMenu value="#{voucherBean.accountNameId}"  style="width:150px;" filter="true" filterMatchMode="contains">
+										<f:selectItem itemLabel="All Accounts"/>
+										<f:selectItems value="#{voucherBean.accountNameList}"/>
+										<f:ajax event="change" listener="#{voucherBean.init}" render="formDataId" />
+								</p:selectOneMenu>	
+				    		</f:facet>
+				    		<f:facet name="right">
+				    							<p:inputText a:placeholder="Search..." value="#{voucherBean.searchParticulars}" style="width: 20em" a:data-step="2" a:data-intro="This is a search field. You can search Payee"/>
+						        				
+						        				<p:calendar value="#{voucherBean.dateFrom}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" a:data-step="3" a:data-intro="Date From - you can use this field to retrieve previous data."/>
+						    					<p:calendar value="#{voucherBean.dateTo}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" a:data-step="4" a:data-intro="Date To - you can use this field to retrieve data up to the present"/>
+						        				&nbsp;
+						        				<p:commandButton id="findId" update="formDataId"  icon="fa fa-search" actionListener="#{voucherBean.init}" a:data-step="5" a:data-intro="Search button - this button use to retrieve data."/>
+						        				&nbsp;&nbsp;
+						        <p:commandButton update="formDataId" value="Refresh" icon="fa fa-refresh" actionListener="#{voucherBean.init}" a:data-step="6" a:data-intro="Refresh Button - use to refresh data."/>
+				    		</f:facet>
+						</p:toolbar>
+						
+						<p:dataTable id="formDataId" var="rpt" value="#{voucherBean.trans}" editable="true" 
+				       editMode="cell" widgetVar="cellTrans" rowKey="#{rpt.cnt}" scrollable="true" selection="#{voucherBean.selectedData}" selectionMode="single" 
+				       rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				                         rowsPerPageTemplate="5,10,15,20,55,110" style="#{skin.table}" paginatorPosition="top"
+				       >
+				       
+				       						<f:facet name="{Exporters}">
+				            						<h:commandLink title="Export in excel format" a:data-step="10" a:data-intro="This function use to export this table to excel file.">
+				                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+				                							<p:dataExporter type="xls" target="formDataId" fileName="Voucher" />
+				            						</h:commandLink>
+				            						<h:commandLink title="Print issued Check" actionListener="#{voucherBean.print}" target="_blank" a:data-step="11" a:data-intro="This function will print check issued and export the table to pdf file.">
+				                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+				            						</h:commandLink>
+				            				</f:facet>
+				       
+				       <p:ajax event="cellEdit"  listener="#{voucherBean.onCellEdit}" update=":formId:formDataId" />
+				       
+				       <p:column headerText="#" width="10">
+				       		<h:outputText value="#{rpt.cnt}"/>
+				       </p:column>
+				       
+				       <p:column headerText="Date" width="80">
+				             <h:outputText value="#{rpt.dateTrans}"/>
+				       </p:column>
+				       
+				       <p:column headerText="Check No" width="70">
+				        	<h:outputText value="#{rpt.checkNo}"/>
+				       </p:column>
+				       
+				       <p:column headerText="Account" width="130">
+				        	<h:outputText value="#{rpt.accounts.bankAccntName} #{rpt.accounts.bankAccntBranch}"/>
+				       </p:column>
+				       
+				       <p:column headerText="Center" width="80">
+				              <p:cellEditor>
+				              	  <f:facet name="output"><h:outputText value="#{rpt.departmentCode} - #{rpt.departmentName}"/></f:facet>
+				                  <f:facet name="input">
+				                  <h:selectOneMenu  value="#{voucherBean.departmentId}" style="width:100%;color:black">
+				                       <f:selectItem itemLabel="Select..."/>
+				                       <f:selectItems value="#{voucherBean.departments}" var="man" itemLabel="#{man}" itemValue="#{man}" />
+				                   </h:selectOneMenu>
+				                  </f:facet>
+				              </p:cellEditor>
+				       </p:column>
+				       
+				       <p:column headerText="Payee" width="150">
+				              <p:cellEditor>
+				              	  <f:facet name="output"><h:outputText value="#{rpt.payee}"/></f:facet>
+				                  <f:facet name="input">
+				                  <p:inputText id="modelInput" a:placeholder="particulars" value="#{rpt.payee}" style="width:96%;color:black"/>
+				                  </f:facet>
+				              </p:cellEditor>
+				       </p:column>
+				       
+				       <p:column headerText="Nature of Payment" width="150">
+				              <p:cellEditor>
+				              	  <f:facet name="output"><h:outputText value="#{rpt.naturePayment}"/></f:facet>
+				                  <f:facet name="input">
+				                  <p:inputText a:placeholder="particulars" value="#{rpt.naturePayment}" style="width:96%;color:black"/>
+				                  </f:facet>
+				              </p:cellEditor>
+				       </p:column>
+				       
+				       <p:column headerText="Transaction Type" width="100">
+				            <h:outputText value="#{rpt.transactionName}"/>
+				       </p:column>
+				       
+				       <p:column width="90">
+				       		  <f:facet name="header">Amount</f:facet>	
+				       			<h:outputText value="Php #{rpt.dAmount}"/>
+				              <f:facet name="footer"><p:outputLabel id="balId" value="Php #{voucherBean.total}"/></f:facet>
+				       </p:column>
+				       
+				       </p:dataTable>
+                	
+                	</div>
+           		</div>
+           </div>
+           
+           </div>
+        	
+        </div>
+        <!-- End Page Content Fluid-->
+      		
+      </div>
+      <!-- End Main Content -->
+    	
+      <!-- Start Footer -->	
+      <ui:include src="copyright.xhtml" />
+      <!-- End Footer -->		
+    	
+    </div>
+	<!-- End Content Wrapper -->
+	  	
+  </div>
+<!-- End Page Wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+<!-- Start Footer -->	
+   <ui:include src="logoutmodal.xhtml" />
+<!-- End Footer -->
+<ui:include src="loader.xhtml" />
+
+</h:form>
+</h:body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	

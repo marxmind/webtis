@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Voucher Recording</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="css/growl.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Voucher Recording</title>
+
+<style>
+<!-- 
+
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Voucher Recording</title>
+
+</h:head>
+
+<h:body>
+	
+<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId" style="background-color: #8fdbf5">
+	<p:growl id="msg" life="2500" showDetail="true"/>
+	
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+    
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="50" visible="false"/>
+			<p:layoutUnit position="south" size="100" visible="false">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			<p:layoutUnit position="east" size="0" visible="false"/>
+			<p:layoutUnit position="west" size="550">
+			
+			<p:toolbar id="tbDetails" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				<p:commandButton value="Add Responsibilty" oncomplete="PF('resDlg').show();" />
+    				<p:commandButton value="Add Department" oncomplete="PF('depDlg').show();" />
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="vId" value="New" icon="fa fa-file-o" actionListener="#{vrBean.clear}" />
+    			<p:commandButton update="vId" value="Clear" icon="fa fa-trash" action="#{vrBean.clear}" />
+    			<p:commandButton update="vId dataVr searchParId monthSearchId depSearchId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{vrBean.saveData}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    		</f:facet>
+			</p:toolbar> 
+			
+			<p:panelGrid id="vId" layout="grid" columns="3" >
+				
+				<p:outputLabel value="Responsibility" style="#{skin.textInput}">
+					<p:selectOneMenu value="#{vrBean.resId}" style="width:12em;color: black;" filter="true" filterMatchMode="contains">
+								<f:selectItems value="#{vrBean.responsibility}"/>
+								<p:ajax event="change" listener="#{vrBean.loadCenterFromResponsibility}" update="departmentId payId"/>
+					</p:selectOneMenu>
+				</p:outputLabel>
+				
+				<p:outputLabel/>
+				<p:outputLabel/>
+				
+				<p:outputLabel value="Date" style="#{skin.textInput}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            		<p:calendar value="#{vrBean.dateCreated}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="color: black;width:12em;"/>
+            	</p:outputLabel>
+				
+				<p:outputLabel value="Series Month" style="#{skin.textInput}">
+					<p:selectOneMenu value="#{vrBean.seriesMonthId}" style="width:12em;color: black;" filter="true" filterMatchMode="contains">
+								<f:selectItems value="#{vrBean.seriesMonths}"/>
+					</p:selectOneMenu>
+				</p:outputLabel>
+				
+				<p:outputLabel value="Code   :" style="#{skin.textInput}">
+					<p:autoComplete placeholder="0-00-00-000" value="#{vrBean.voucherNo}" completeMethod="#{vrBean.autoCode}" effect="fade" maxResults="10" inputStyle="width: 12em"/>
+				</p:outputLabel>
+				
+				<p:outputLabel value="Account No" style="#{skin.textInput}">
+        		<p:selectOneMenu value="#{vrBean.accountNo}"  style="width:12em;" filter="true" filterMatchMode="contains">
+					<f:selectItems value="#{vrBean.accountList}"/>
+					<p:ajax event="change" listener="#{vrBean.loadNewCheckNo}" update="chkId"/>
+				</p:selectOneMenu>
+				</p:outputLabel>
+				
+				<p:outputLabel value="Check No" style="#{skin.textInput}">
+					<p:inputText id="chkId" value="#{vrBean.checkNo}" a:placeholder="Bank Check No" style="color: black;width:12em;"/>
+				</p:outputLabel>
+				
+				<p:outputLabel id="payId" value="Payee" style="#{skin.textInput}">
+					<p:autoComplete placeholder="Payee" value="#{vrBean.payee}" completeMethod="#{vrBean.autoPayToName}" effect="fade" maxResults="10" inputStyle="width: 12em"/>
+				</p:outputLabel>
+				
+				<p:outputLabel value="Nature of Payment" style="#{skin.textInput}">
+					<p:autoComplete placeholder="Nature of Payment" value="#{vrBean.natureOfPayment}" completeMethod="#{vrBean.autoNature}" effect="fade" maxResults="10" inputStyle="width: 12em">
+						<p:ajax event="change" listener="#{vrBean.loadSuggestedAmount}" update="grossId netId"/>
+					</p:autoComplete>
+				</p:outputLabel>
+				
+				<p:outputLabel value="Gross Amount" style="#{skin.textInput}">
+				<p:inputNumber id="grossId" value="#{vrBean.grossAmount}" inputStyle="color: black;width:12em;">
+					<p:ajax event="keyup" listener="#{vrBean.loadNetAmount}" update="netId"/>
+				</p:inputNumber>
+				</p:outputLabel>
+				
+				<p:outputLabel value="Net Amount" style="#{skin.textInput}">
+				<p:inputNumber id="netId" value="#{vrBean.netAmount}" inputStyle="color: black;width:12em;"/>
+				</p:outputLabel>
+				
+				<p:outputLabel value="Center" style="#{skin.textInput}">
+				<p:selectOneMenu id="departmentId" value="#{vrBean.departmentId}" style="color: black;width: 12em" filter="true" filterMatchMode="contains">
+	            		<f:selectItem itemLabel="Select..."/>
+	            		<f:selectItems value="#{vrBean.department}"/>
+	            </p:selectOneMenu>
+	            </p:outputLabel>
+				
+				<p:outputLabel value="Sign by Treasurer's Office" style="#{skin.textInput}">
+	            	<p:selectOneMenu value="#{vrBean.sig1}" style="width:12em;color: black;">
+								<f:selectItems value="#{vrBean.sigs1}"/>
+					</p:selectOneMenu>
+				</p:outputLabel>
+				
+				<p:outputLabel value="Sign by Government Official" style="#{skin.textInput}">
+					<p:selectOneMenu value="#{vrBean.sig2}" style="width:12em;color: black;">
+								<f:selectItems value="#{vrBean.sigs2}"/>
+					</p:selectOneMenu>
+				</p:outputLabel>
+					
+			</p:panelGrid>
+			
+			</p:layoutUnit>
+			
+			
+			
+			<p:layoutUnit position="center">
+			<p:toolbar id="tbVr" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    			<p:commandButton value="Printable" onclick="PF('dlgPrintable').show();"/>
+    			<p:inputText id="searchParId" value="#{vrBean.searchParam}" placeholder="Search...">
+    				<p:ajax event="keyup" listener="#{vrBean.load}" update="dataVr vId" delay="800"/>
+    			</p:inputText>
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    		<p:selectOneMenu id="mntId" value="#{vrBean.mondId}" style="color: black;width: 9em" filter="true" filterMatchMode="contains">
+	            		<f:selectItems value="#{vrBean.months}"/>
+	        </p:selectOneMenu>
+	        <p:selectOneMenu id="yrId" value="#{vrBean.yearId}" style="color: black;width: 6em" filter="true" filterMatchMode="contains">
+	            		<f:selectItems value="#{vrBean.years}"/>
+	        </p:selectOneMenu>
+			<p:selectOneMenu id="monthSearchId" value="#{vrBean.seriesMonthIdSearch}" style="width:10em;color: black;" filter="true" filterMatchMode="contains">
+    				<f:selectItem itemLabel="All"/>
+					<f:selectItems value="#{vrBean.seriesMonthsSearch}"/>
+				</p:selectOneMenu>
+				<p:selectOneMenu id="depSearchId" value="#{vrBean.departmentIdSearch}" style="color: black;width: 10em" filter="true" filterMatchMode="contains">
+	            		<f:selectItem itemLabel="All"/>
+	            		<f:selectItems value="#{vrBean.departmentSearch}"/>
+	            </p:selectOneMenu>
+	            &nbsp;&nbsp;
+	            <p:commandButton id="findOwnId" update="dataVr vId"  icon="fa fa-search" actionListener="#{vrBean.load}"/>	
+			</f:facet>
+			</p:toolbar>
+			
+			<p:dataTable id="dataVr" value="#{vrBean.vrs}" var="vr" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         style="#{skin.table}" paginatorPosition="top"
+                         
+                         >
+                         
+                         	<f:facet name="{Exporters}">
+            						<h:commandLink title="Export Expense Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="dataVr" fileName="DispenseCheques" />
+            						</h:commandLink>
+            						<h:commandLink title="Export Expense Report in pdf format" target="_blank" ajax="false" immediate="false"  actionListener="#{vrBean.printExpense}">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+            						</h:commandLink>
+            				</f:facet>			
+                         	
+                         	<p:column width="10" exportable="false">
+								<p:rowToggler/>
+							</p:column>
+                         	
+							<p:column headerText="[*]" width="20" exportable="false">
+            					<p:commandButton update="dataVr msg" icon="fa fa-trash" actionListener="#{vrBean.deleteRow(vr)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+            				
+							<p:column headerText="View" width="20" exportable="false">
+								<p:commandButton icon="fa fa-search" update="dataVr vId" actionListener="#{vrBean.clickItem(vr)}"/>
+							</p:column>
+							
+							<p:column headerText="Date" width="50">
+            						<p:outputLabel value="#{vr.date}"/>
+            				</p:column>
+							
+							<p:column headerText="Month" width="120">
+            						<p:outputLabel value="#{vr.monthGroup}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Code" width="120">
+            						<p:outputLabel value="#{vr.voucherSeries}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Center" width="50">
+            						<p:outputLabel value="#{vr.department.code}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Check No" width="60">
+            						<p:outputLabel value="#{vr.checkNo}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Gross" width="70" exportFooterValue="true">
+            						<p:outputLabel value="#{vr.gross}">
+            							<f:convertNumber currencySymbol="Php" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				
+            				<p:column headerText="Net" width="70" exportFooterValue="true">
+            						<p:outputLabel value="#{vr.net}">
+            							<f:convertNumber currencySymbol="Php" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+							
+							<p:rowExpansion>
+								<p:panelGrid columns="2" layout="grid">
+									<p:outputLabel value="Date" /><p:outputLabel value="#{vr.date}" />
+									<p:outputLabel value="Payee" /><p:outputLabel value="#{vr.payee}" />
+									<p:outputLabel value="Nature of Payment" /><p:outputLabel value="#{vr.paymentDesc}" />
+									<p:outputLabel value="Signed By" /><p:outputLabel value="#{vr.signature1.name} (#{vr.signature1.position})" />
+									<p:outputLabel value="Signed By" /><p:outputLabel value="#{vr.signature2.name} (#{vr.signature2.position})" />
+								</p:panelGrid>
+							</p:rowExpansion>
+							
+							<p:columnGroup type="footer">
+								<p:row>
+									<p:column colspan="8" style="text-align:right" footerText="Totals:"/>
+									<p:column footerText="#{vrBean.totalGross}" />
+									<p:column footerText="#{vrBean.totalNet}" />
+								</p:row>
+							</p:columnGroup>
+							
+				</p:dataTable>
+			
+			</p:layoutUnit>
+			
+</p:layout>	
+	
+	<p:dialog position="center center" widgetVar="dlgPrintable" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" width="500px" height="500px">
+    	<p:toolbar id="tbMsg">
+			    		<f:facet name="left">
+			    				<p:selectOneMenu value="#{vrBean.mondIdR}" style="color: black;width: 9em" filter="true" filterMatchMode="contains">
+			            		<f:selectItems value="#{vrBean.monthsR}"/>
+						        	</p:selectOneMenu>
+						        <p:selectOneMenu value="#{vrBean.yearIdR}" style="color: black;width: 6em" filter="true" filterMatchMode="contains">
+						            <f:selectItems value="#{vrBean.yearsR}"/>
+						        </p:selectOneMenu>
+						        <p:selectOneMenu value="#{vrBean.seriesMonthIdSearchPer}" style="width:10em;color: black;" filter="true" filterMatchMode="contains">
+									<f:selectItems value="#{vrBean.seriesMonthsSearchPer}"/>
+								</p:selectOneMenu>
+			    			   <p:commandButton value="Retrieve New Info" actionListener="#{vrBean.loadDepartmentExpense}" update="dataVP"/>
+			    		</f:facet>	   
+			    		<f:facet name="right">
+			    			<p:commandButton value="Close" onclick="PF('dlgPrintable').hide();"/>
+			    		</f:facet>
+					</p:toolbar>
+					
+					<p:dataTable id="dataVP" value="#{vrBean.vrsPer}" var="vp" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         style="#{skin.table}" paginatorPosition="top"
+                         
+                         >
+                     
+                     	<p:column headerText="Department" width="100">
+            						<p:outputLabel value="#{vp.department.departmentName}"/>
+            			</p:column>
+            			
+            			<p:column headerText="Amount" width="70">
+            						<p:outputLabel value="#{vp.gross}">
+            							<f:convertNumber currencySymbol="Php" type="currency"/>
+            						</p:outputLabel>
+            			</p:column>
+                     	
+                     	<p:column headerText="PDF" width="10" exportable="false">
+								<p:commandLink title="Print in PDF" target="_blank" actionListener="#{vrBean.loadPer(vp)}" ajax="false" immediate="false">
+            				 			<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+								</p:commandLink>
+							</p:column>
+                     	
+                     </p:dataTable>    
+
+	</p:dialog>	
+	
+	<ui:include src="department.xhtml" />
+	<ui:include src="responsibility.xhtml" />
+	<ui:include src="loader.xhtml" />
+	<ui:include src="menu.xhtml" />
+</h:form>
+			
+</h:body>
+</html>
+		

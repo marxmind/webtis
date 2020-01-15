@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"   
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:composite="http://java.sun.com/jsf/composite"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    >
+
+<composite:interface componentType="AutoCompleteInput">
+    <composite:attribute name="value"/>
+    <composite:attribute name="delay" default="400" type="java.lang.Integer"/>
+    <composite:attribute name="strict" default="true" type="java.lang.Boolean"/>
+    <composite:attribute name="required" default="false" type="java.lang.Boolean"/>
+    <composite:attribute name="requiredMessage"/>
+    <composite:attribute name="placeholder" default="" />
+    <composite:attribute name="label"/>
+    <composite:attribute name="inputSize" default="25" type="java.lang.Integer"/>
+    <composite:attribute name="listboxSize" default="20" type="java.lang.Integer"/>
+    <composite:attribute name="maxlength" default="10000" type="java.lang.Integer"/>
+</composite:interface>
+
+<composite:implementation>
+    <h:outputScript name="components/js/autoCompleteInput.js" />
+    <!-- <h:outputStylesheet name="components/css/autoCompleteInput.css"/> -->
+
+
+    <div id="#{cc.clientId}-container" 
+         class="#{cc.attrs.styleClass} has-success"
+         style="#{cc.attrs.style}">
+
+         <h:selectBooleanCheckbox id="strictCheckbox"
+                                  binding="#{cc.strictCheckbox}"
+                                  value="#{cc.attrs.strict}" 
+                                  style="display:none"/>
+
+        <h:inputHidden id="clientIdInput"
+                       value="#{cc.clientId}"
+                       binding="#{autoCompleteUtils.clientIdInput}" 
+                       pt:disabled="disabled"/>
+
+        <h:inputHidden id="utilsValueInput"
+                       value="#{cc.attrs.value}"
+                       binding="#{autoCompleteUtils.itemValueInput}" />
+
+        <h:inputHidden id="listboxSizeInput"
+                       binding="#{autoCompleteUtils.listboxSizeInput}"
+                       value="#{cc.attrs.listboxSize}" />
+
+        <h:inputHidden id="valueInput"
+                       binding="#{cc.valueInput}"
+                       value="#{cc.attrs.value}" />
+
+        <h:inputText id="labelInput"
+                     value="#{autoCompleteUtils.itemLabel}"
+                     binding="#{cc.labelInput}"
+                     pt:placeholder="#{cc.attrs.placeholder}"
+                     label="#{cc.attrs.label}"
+                     required="#{cc.attrs.required}"
+                     requiredMessage="#{cc.attrs.requiredMessage}"
+                     autocomplete="off"
+                     size="#{cc.attrs.inputSize}"
+                     styleClass="form-control focusable"
+                     maxlength="#{cc.attrs.maxlength}"                       
+                     onblur="#{cc.id}JS.checkFocus(#{cc.attrs.strict})"
+                     onfocus="#{cc.id}JS.showMatches()"
+                     rendered="#{autoCompleteUtils.loadExistingItem}">
+            <f:ajax event="keyup" listener="#{autoCompleteUtils.itemLabelChange}" render="matches" onevent="function(data) { if (data.status === 'success') { #{cc.id}JS.inputKeyup(#{cc.attrs.strict}) }}"/>
+        </h:inputText>
+
+        <h:selectOneListbox id="matches"
+                            onkeyup="#{cc.id}JS.listboxKeypress(this)"
+                            onclick="#{cc.id}JS.listboxClick(this)"
+                            tabindex="0"
+                            onblur="#{cc.id}JS.checkFocus(#{cc.attrs.strict})"
+                            styleClass="matchesContainer focusable"
+                            size="#{autoCompleteUtils.listboxSize}">
+            <f:selectItems value="#{autoCompleteUtils.selectItems}"/>
+
+        </h:selectOneListbox>
+    </div>
+
+    <script type="text/javascript">
+        var #{cc.id}JS = new AutoCompleteInput('#{cc.clientId}', #{cc.attrs.delay});
+    </script>
+</composite:implementation>
+</html>

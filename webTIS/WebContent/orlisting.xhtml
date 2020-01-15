@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>General Municipal Income Recording</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.css"/>
+            <h:outputStylesheet name="intro/bootstrap-responsive.mini.css"/>
+            <h:outputStylesheet name="intro/themes/introjs.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputScript name="bootstrap/js/bootstrap.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>General Municipal Income Recording</title>
+ 
+ <style>
+<!-- 
+
+ -->
+ </style>
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>General Municipal Income Recording</title>
+
+</h:head>
+<h:body>
+<h:form prependId="false" id="formId" style="background-color: #8fdbf5">
+	<p:growl id="msg" showDetail="true" life="2000" />
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+    	 
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="70">
+				<p:graphicImage name="gif/treasury.png" style="width: 5em; height: 5em" styleClass="img-circle"/>
+				<p:outputLabel value="General Municipal Income Recording" style="#{skin.pageTitle}"/>
+			</p:layoutUnit>
+			<p:layoutUnit position="south" size="50">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="east" size="400" visible="false">
+			
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="west" size="400" visible="true">
+				
+				<p:toolbar id="tbSave">
+			    		<f:facet name="left">
+			    			<p:commandButton update="dataSelectedId fldId" value="New" icon="fa fa-file-o" actionListener="#{orBean.clearFlds}"/>
+			    		</f:facet>	   
+			    		<f:facet name="right">
+			    			<p:commandButton update="dataSelectedId dataOrId fldId dtlsId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{orBean.saveData}">
+			    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+			    			</p:commandButton>			
+			    		</f:facet>
+					</p:toolbar>
+				
+				<p:panelGrid id="fldId" columns="2" layout="grid">
+					<p:calendar value="#{orBean.dateTrans}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
+					<p:selectOneMenu id="frmstat" value="#{orBean.statusId}" style="width: 12em">
+						<f:selectItems value="#{orBean.status}"/>
+					</p:selectOneMenu>
+					<p:selectOneMenu id="frmId" value="#{orBean.formTypeId}" style="width: 12em">
+						<f:selectItems value="#{orBean.formTypes}"/>
+						<p:ajax event="change" listener="#{orBean.updateORNumber}" update="oridd idPayd idSearchPname"/>
+					</p:selectOneMenu>
+					<p:autoComplete id="idPayd" placeholder="Payor Name"  value="#{orBean.payorName}" completeMethod="#{orBean.payorNameSuggested}" effect="fade" maxResults="10" inputStyle="width: 12em"/>
+					<p:selectOneMenu id="cid" value="#{orBean.collectorId}" style="width: 12em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{orBean.collectors}"/>
+								<p:ajax event="change" listener="#{orBean.updateORNumber}" update="oridd idPayd idSearchPname"/>
+					</p:selectOneMenu>
+					
+					<p:keyboard id="oridd" value="#{orBean.orNumber}" placeholder="OR No/CTC No" style="width: 12em" layout="custom" layoutTemplate="rocks-close,faces-clear,prime-back" keypadOnly="true"/>
+					<p:inputText placeholder="Address" value="#{orBean.address}" style="width: 12em"/>
+					<p:commandButton value="Payment Name Lookup" icon="fa fa-search" actionListener="#{orBean.loadPaymentNames}" update="dataId idSearchPname dataSugId" oncomplete="PF('selectDialog').show();"/>
+				</p:panelGrid>
+				
+				   <p:dataTable id="dataSelectedId" value="#{orBean.namesDataSelected}" var="rs" stickyHeader="false"
+							rows="100" paginator="false" style="#{skin.table}">
+                         	
+                         	<p:column headerText="[*]" width="20" exportable="false">
+            					<p:commandButton update="dataSelectedId dataOrId dtlsId msg" icon="fa fa-trash" actionListener="#{orBean.paynameDelete(rs)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+            				<p:column headerText="View" width="20" exportable="false">
+								<p:commandButton icon="fa fa-search" update="dataId idSearchPname dataSugId" actionListener="#{orBean.editPay(rs)}" oncomplete="PF('selectDialog').show();"/>
+							</p:column>
+            				<p:column headerText="Name" width="100">
+            						<p:outputLabel value="#{rs.name}"/>
+            				</p:column>
+            				<p:column headerText="Amount" width="50">
+            						<p:outputLabel value="#{rs.amount}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:columnGroup type="footer">
+            					<p:row>
+            						<p:column colspan="3" style="text-align:right" footerText="Totals:"/>
+            						<p:column footerText="Php#{orBean.totalAmount}" />
+            					</p:row>
+            				</p:columnGroup>
+            		</p:dataTable>
+				
+    			
+    			   
+    			
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="center">
+			
+				<p:toolbar id="tbToolbar">
+			    		<f:facet name="left">
+			    			<p:commandButton value="Summary Info" actionListener="#{orBean.loadMsg}" update="idContentAnalys" oncomplete="PF('msgDialog').show();"/>
+			    			<p:inputText value="#{orBean.searchName}" placeholder="Search Name...">
+			    				<p:ajax event="keyup" listener="#{orBean.load}" update="dataOrId dtlsId" delay="800"/>
+			    			</p:inputText>
+			    			<p:inputText value="#{orBean.limitData}" placeholder="provide limit in number" style="width: 5em"/>
+			    			<p:selectBooleanButton id="filId" value="#{orBean.filtered}" onLabel="Not Filtered - DESC"
+							offLabel="Filtered - ASC" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax event="change" listener="#{orBean.load}" update="dataOrId dtlsId"/>
+							</p:selectBooleanButton>
+							
+			    		</f:facet>	   
+			    		<f:facet name="right">
+			    			
+			    		</f:facet>
+					</p:toolbar>
+					<p:toolbar id="tbToolbar2">
+			    		<f:facet name="left">
+			    			<p:selectOneMenu id="frmstatS" value="#{orBean.statusSearchId}" style="width: 8em">
+								<f:selectItems value="#{orBean.statusSearch}"/>
+							</p:selectOneMenu>
+			    			<p:selectOneMenu id="sid" value="#{orBean.sortId}" style="width: 8em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{orBean.sorts}"/>
+							</p:selectOneMenu>
+			    			<p:selectOneMenu id="scid" value="#{orBean.collectorSearchId}" style="width: 8em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{orBean.collectorsSearch}"/>
+							</p:selectOneMenu>
+			    			<p:selectOneMenu id="mId" value="#{orBean.monthId}" style="width: 8em">
+								<f:selectItems value="#{orBean.months}"/>
+							</p:selectOneMenu>
+							<p:selectOneMenu id="yId" value="#{orBean.yearId}" style="width: 8em">
+								<f:selectItems value="#{orBean.years}"/>
+							</p:selectOneMenu>
+							<p:selectOneMenu id="fId" value="#{orBean.formTypeSearchId}" style="width: 8em">
+								<f:selectItems value="#{orBean.formTypeSearch}"/>
+							</p:selectOneMenu>
+			    			<p:selectOneMenu id="pId" value="#{orBean.paymentId}" style="width: 8em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{orBean.paymentTypes}"/>
+							</p:selectOneMenu>
+							<p:selectOneMenu id="frmDep" value="#{orBean.depId}" style="width: 10em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{orBean.departments}"/>
+							</p:selectOneMenu>	
+			    		</f:facet>
+			    		<f:facet name="right">
+			    			<p:commandButton value="Reload Data" actionListener="#{orBean.load}" update="dataOrId dtlsId" />
+			    		</f:facet>
+					</p:toolbar>
+				
+				<p:tabView prependId="false" cache="true">
+				
+					<p:ajax event="tabChange" listener="#{orBean.onChange}"/>
+					
+					<p:tab title="Reports Viewing">
+						<p:dataTable id="dataOrId" value="#{orBean.ors}" var="ors" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false"
+							>
+							
+							<p:column headerText="Info" width="10" exportable="false">
+								<p:rowToggler/>
+							</p:column>
+							
+							<p:column headerText="View" width="20" exportable="false">
+								<p:commandButton icon="fa fa-search" update="dataOrId dataSelectedId fldId" actionListener="#{orBean.clickItem(ors)}"/>
+							</p:column>
+							
+							<p:column headerText="[*]" width="20" exportable="false">
+            					<p:commandButton update="dataOrId dataSelectedId fldId msg" icon="fa fa-trash" actionListener="#{orBean.deleteRow(ors)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+							
+							<p:column headerText="PDF" width="60" exportable="false">
+            				 	<p:commandLink title="Print OR in PDF" target="_blank" action="#{orBean.printOR(ors)}" ajax="false" immediate="false" >
+            				 			<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+								</p:commandLink>
+							</p:column>
+							
+                         	<p:column headerText="Date" width="70">
+            						<p:outputLabel value="#{ors.dateTrans}"/>
+            				</p:column>
+            				<p:column headerText="Status" width="70">
+            						<p:outputLabel value="#{ors.statusName}"/>
+            				</p:column>
+            				<p:column headerText="Collector" width="100">
+            						<p:outputLabel value="#{ors.collector.name}"/>
+            				</p:column>
+            				<p:column headerText="Form" width="70">
+            						<p:outputLabel value="#{ors.formName}"/>
+            				</p:column>
+            				<p:column headerText="OR No." width="70">
+            						<p:outputLabel value="#{ors.orNumber}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Name" width="100">
+            						<p:outputLabel value="#{ors.customer.fullName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Amount" width="50">
+            						<p:outputLabel value="#{ors.amount}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				
+            				<p:rowExpansion>
+								
+								<p:dataTable value="#{ors.orNameList}" var="sc" stickyHeader="false"
+									rows="100" paginator="false" style="#{skin.table}">
+		                         	
+		            				<p:column headerText="Name" width="100">
+		            						<p:outputLabel value="#{sc.paymentName.name}"/>
+		            				</p:column>
+		            				<p:column headerText="Amount" width="50">
+		            						<p:outputLabel value="#{sc.amount}">
+		            							<f:convertNumber currencySymbol="" type="currency"/>
+		            						</p:outputLabel>
+		            				</p:column>
+            					</p:dataTable>
+								
+							</p:rowExpansion>
+            				
+            				<p:columnGroup type="footer">
+            					<p:row>
+            						<p:column colspan="9" style="text-align:right" footerText="Totals:"/>
+            						<p:column footerText="Php#{orBean.totalCollection}" />
+            					</p:row>
+            				</p:columnGroup>
+            				
+            		</p:dataTable>
+					</p:tab>
+					<p:tab title="Details/Extract">
+						<p:dataTable id="dtlsId" value="#{orBean.dtls}" var="dt" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="true"
+							>
+							
+							<f:facet name="{Exporters}">
+            						<h:commandLink title="Export Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="dtlsId" fileName="GeneralCollectionReportsExtracted" />
+            						</h:commandLink>
+            						<h:commandLink title="Summary with details reports" target="_blank" ajax="false" immediate="false"  actionListener="#{orBean.print}">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+            						</h:commandLink>
+            						<h:commandLink title="Summary Only" target="_blank" ajax="false" immediate="false"  actionListener="#{orBean.printSummaryOnly}">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+            						</h:commandLink>
+            				</f:facet>
+            				
+            				<p:column headerText="Date" width="70">
+            						<p:outputLabel value="#{dt.f1}"/>
+            				</p:column>
+            				<p:column headerText="Status" width="70">
+            						<p:outputLabel value="#{dt.f8}"/>
+            				</p:column>
+            				<p:column headerText="Collector" width="100">
+            						<p:outputLabel value="#{dt.f7}"/>
+            				</p:column>
+            				<p:column headerText="OR No." width="70">
+            						<p:outputLabel value="#{dt.f2}"/>
+            				</p:column>
+            				<p:column headerText="Payor" width="100">
+            						<p:outputLabel value="#{dt.f3}"/>
+            				</p:column>
+            				<p:column headerText="Form" width="70">
+            						<p:outputLabel value="#{dt.f4}"/>
+            				</p:column>
+            				<p:column headerText="Description" width="100">
+            						<p:outputLabel value="#{dt.f5}"/>
+            				</p:column>
+            				<p:column headerText="Amount" width="70">
+            						<p:outputLabel value="#{dt.f6}"/>
+            				</p:column>
+            				
+            			</p:dataTable>	
+					</p:tab>
+				</p:tabView>
+			</p:layoutUnit>
+		
+	</p:layout>
+		
+	
+	<p:dialog position="center center" widgetVar="selectDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" width="500px" height="500px">
+    				<p:toolbar id="tbAdd">
+			    		<f:facet name="left">
+			    			   <p:inputText id="idSearchPname" value="#{orBean.searchPayName}" placeholder="Search...">
+			    			   		<p:ajax event="keyup" listener="#{orBean.loadPaymentNames}" update="dataId" delay="800"/>
+			    			   </p:inputText>
+			    		</f:facet>	   
+			    		<f:facet name="right">
+			    			<p:commandButton value="Close" onclick="PF('selectDialog').hide();" update="dataSelectedId"/>
+			    		</f:facet>
+					</p:toolbar>
+					
+					<p:dataGrid id="dataSugId" value="#{orBean.suggestedData}" var="sug" stickyHeader="false"
+							paginator="false" style="#{skin.table}" rows="10" columns="3">
+                         	
+            				<p:column headerText="Suggested" width="50">
+            						<p:commandButton value="#{sug.name} Php#{sug.amount}" actionListener="#{orBean.addSuggested(sug)}" update="dataId dataSelectedId"/>
+            				</p:column>
+            		</p:dataGrid>			
+					
+    				<p:dataTable id="dataId" value="#{orBean.namesData}" var="rpt" stickyHeader="false"
+							rows="100" paginator="false" style="#{skin.table}" 
+							editable="true" editMode="cell" rowKey="#{rpt.id}" 
+                         >
+                         	
+                         	<p:ajax event="cellEdit"  listener="#{orBean.onCellEdit}" update="dataId dataSelectedId" />
+                         	
+            				<p:column headerText="Name" width="100">
+            						<p:outputLabel value="#{rpt.name}"/>
+            				</p:column>
+            				<p:column headerText="Amount" width="50">
+            						<p:cellEditor>
+					              	  <f:facet name="output">
+					              	  	<h:outputText value="#{rpt.amount}" />
+					              	  </f:facet>
+					                  <f:facet name="input">
+					                  	<p:inputNumber  value="#{rpt.amount}"/>
+					                  </f:facet>
+					               </p:cellEditor>
+            				</p:column>
+            		</p:dataTable>
+	</p:dialog>
+	
+	
+	<p:dialog position="center center" widgetVar="msgDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" width="500px" height="500px">
+    	<p:toolbar id="tbMsg">
+			    		<f:facet name="left">
+			    			   <p:commandButton value="Retrieve New Info" actionListener="#{orBean.loadContent}" update="idContentAnalys"/>
+			    			   <h:commandLink title="Export Report in pdf format" target="_blank" ajax="false" immediate="false"  actionListener="#{orBean.printSummary}">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+            					</h:commandLink>
+			    		</f:facet>	   
+			    		<f:facet name="right">
+			    			<p:commandButton value="Close" onclick="PF('msgDialog').hide();"/>
+			    		</f:facet>
+					</p:toolbar>
+					<p:textEditor id="idContentAnalys" toolbarVisible="false" widgetVar="msgComposeText" value="#{orBean.textContent}" readonly="true"/>
+	</p:dialog>				
+	
+<ui:include src="loader.xhtml" />
+<ui:include src="menu.xhtml" />		
+</h:form>
+</h:body>
+</html>

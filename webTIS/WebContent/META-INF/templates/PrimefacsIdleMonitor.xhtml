@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"> 
+
+<h:head></h:head> 
+<body>  
+  <h:form>
+    <p:growl id="msgIdl" showDetail="true" sticky="true" />
+
+    <p:idleMonitor timeout="10000" onidle="idleDialog.show()" />
+
+    <p:confirmDialog id="confirmDialog"
+        message="You have been idle for a copule of minutes. Please click Ok to continue." 
+        header="Application Idle Alert" severity="alert" widgetVar="idleDialog">
+
+        <p:commandButton id="confirmId" value="Ok" update="msgIdl"
+            oncomplete="idleDialog.hide()"
+            actionListener="#{loginBean.validateUserNamePassword}" />
+
+        <p:commandButton id="LogoutId" value="Logout" update="msgIdl"
+            oncomplete="idleDialog.hide()"
+            actionListener="#{loginBean.logout}" />
+
+    </p:confirmDialog>
+
+  </h:form>
+</body> 
+</html>

@@ -1,0 +1,78 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h = "http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+ 
+    <ui:composition>
+        <div class="navbar navbar-inverse navbar-fixed-bottom" role="navigation" style="background-color: #8fdbf5">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menuId">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <p:commandButton update="dialogbuy" value="WebTIS" oncomplete="PF('ibuyDialog').show()" 
+                    style="width: 10px;
+    height: 50px;
+    background: #8fdbf5;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+    width: 50px;
+    top: 1px;
+    right: 9px;"/>
+                </div>
+                <div class="navbar-collapse collapse" id="menuId">
+                    <ul class="nav navbar-nav navbar-right">
+                    		<li><a href="#">About Us</a></li>
+				        	<li><a href="#">Contact Us</a></li>
+				        	
+        			</ul>
+                </div>
+            </div>
+        </div>
+        
+        <p:dialog visible="false" header="Software Information" position="right center" style="background: transparent; !important;" widgetVar="ibuyDialog" modal="false" showEffect="fade" hideEffect="fade" resizable="false" width="400">
+        <p:outputPanel id="dialogbuy" style="text-align:left;">
+        	<p:commandButton  value="WebTIS" 
+                    style="width: 10px;
+    height: 50px;
+    background: #8fdbf5;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+    width: 50px;
+    top: 1px;
+    right: 9px;"/>
+    
+    <br/>
+    
+        	<h:outputLabel value="Application name: "/><h:outputText value=" #{versionBean.copyright.appname}" /><br/>
+        	<h:outputLabel value="Developed by: "/><h:outputText value=" #{versionBean.copyright.author}" /><br/>
+        	<h:outputLabel value="Email: "/><h:outputText value=" #{versionBean.copyright.email}" /><br/>
+        	<h:outputLabel value="Phone: "/><h:outputText value=" #{versionBean.copyright.contactno}"/><br/>
+        	<h:outputLabel value="Latest version: "/><h:outputText value=" #{versionBean.copyright.currentversion}"/><br/>
+        	<h:outputLabel value="Previous version: "/><h:outputText value=" #{versionBean.copyright.oldversion}"/><br/>
+        	<h:outputLabel value="Date updated: "/><h:outputText value=" #{versionBean.versionController.buildapplieddate}"/><br/>
+        	<h:outputLabel value="Note: "/><h:outputText value="A software update can include, but is not limited to: (1)Application stability improvements, bug fixes. (2)New or Enhanced features. (3)Further improvements to performance."/><br/>
+        	<p:dataList value="#{versionBean.fixes}" var="rpt" type="ordered">
+            	<f:facet name="header">
+            		What's New!
+        		</f:facet>
+        			#{rpt.fixdesc}
+            </p:dataList>
+            <p:dataList value="#{expiredBean.exes}" var="rpt" type="ordered">
+            	<f:facet name="header">
+            		Module Expiration
+        		</f:facet>
+        			#{rpt.moduleName} - #{rpt.monthExpiration}
+            </p:dataList>
+		</p:outputPanel>
+		</p:dialog>
+        
+    </ui:composition>
+</html>

@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jsf/core"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:dt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"
+  >
+<head>
+
+<meta http-equiv="Content-Type" content="text/xhtml+xml; charset=utf-8" />
+<title>Main</title>
+
+ <style>
+<!--
+label{
+	font-size: 0.8rem;
+    font-weight: bold;
+}
+select{
+	font-size: 0.8rem;
+    font-weight: bold;
+    color: #ed7f00;
+}
+.centerPage{
+	margin: auto;
+	width:60%
+	border: 3px solid #73AD21;
+	padding: 10px;
+}
+inputs-moz-placeholder {
+    color: #b5b5b5;
+}
+
+.inputs {
+	color: #ed7f00;
+    background: #f5f5f5;
+    font-size: 0.8rem;
+    font-weight: bold;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    border: none;
+    padding: 1px 1px;
+    width: 200px;
+    margin-bottom: 5px;
+    box-shadow: inset 0 2px 3px rgba( 0, 0, 0, 0.1 );
+    clear: both;
+}
+
+.inputs:focus {
+    background: #fff;
+    box-shadow: 0 0 0 3px #fff38e, inset 0 2px 3px rgba( 0, 0, 0, 0.2 ), 0px 5px 5px rgba( 0, 0, 0, 0.15 );
+    outline: none;
+}
+
+.inWords{
+	color: #ed7f00;
+	-moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+	margin-bottom: 5px;
+	border: none;
+    padding: 1px 1px;
+	font-size: 1rem;
+	font-weight: bold;
+	box-shadow: inset 0 2px 3px rgba( 0, 0, 0, 0.1 );
+}
+.inWords:focus {
+    background: #fff;
+    box-shadow: 0 0 0 3px #fff38e, inset 0 2px 3px rgba( 0, 0, 0, 0.2 ), 0px 5px 5px rgba( 0, 0, 0, 0.15 );
+    outline: none;
+}
+
+ /* Font Definitions */
+@font-face
+	{font-family:"Trebuchet MS";
+	panose-1:2 11 6 3 2 2 2 2 2 4;}
+@font-face
+	{font-family:"Times New Roman";
+	panose-1:2 2 6 3 5 4 5 2 3 4;}
+@font-face
+	{font-family:Elephant;
+	panose-1:2 2 9 4 9 5 5 2 3 3;}
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-right:0pt;
+	text-indent:0pt;
+	margin-top:0pt;
+	margin-bottom:0pt;
+	text-align:left;
+	font-family:"Times New Roman";
+	font-size:10.0pt;
+	color:black;}
+p.MsoOrganizationName, li.MsoOrganizationName, div.MsoOrganizationName
+	{margin-right:0pt;
+	text-indent:0pt;
+	margin-top:0pt;
+	margin-bottom:0pt;
+	line-height:113%;
+	text-align:left;
+	font-family:"Trebuchet MS";
+	font-size:9.7626pt;
+	color:black;
+	font-weight:bold;}
+p.MsoTagline, li.MsoTagline, div.MsoTagline
+	{margin-right:0pt;
+	text-indent:0pt;
+	margin-top:0pt;
+	margin-bottom:0pt;
+	line-height:113%;
+	text-align:left;
+	font-family:"Trebuchet MS";
+	font-size:9.1524pt;
+	color:black;
+	letter-spacing:.5pt;}
+p.MsoBodyText3, li.MsoBodyText3, div.MsoBodyText3
+	{margin-right:0pt;
+	text-indent:0pt;
+	margin-top:0pt;
+	margin-bottom:6.0pt;
+	line-height:154%;
+	text-align:left;
+	font-family:"Trebuchet MS";
+	font-size:8.0pt;
+	color:black;}
+p.MsoTitle3, li.MsoTitle3, div.MsoTitle3
+	{margin-right:0pt;
+	text-indent:0pt;
+	margin-top:0pt;
+	margin-bottom:0pt;
+	line-height:113%;
+	text-align:left;
+	font-family:"Trebuchet MS";
+	font-size:18.0pt;
+	color:black;}
+p.MsoAccentText5, li.MsoAccentText5, div.MsoAccentText5
+	{margin-right:0pt;
+	text-indent:0pt;
+	margin-top:0pt;
+	margin-bottom:0pt;
+	line-height:113%;
+	text-align:left;
+	font-family:"Trebuchet MS";
+	font-size:8.0pt;
+	color:#336666;}
+p.MsoAddress, li.MsoAddress, div.MsoAddress
+	{margin-right:0pt;
+	text-indent:0pt;
+	margin-top:0pt;
+	margin-bottom:0pt;
+	line-height:114%;
+	text-align:left;
+	font-family:"Trebuchet MS";
+	font-size:8.0pt;
+	color:black;}
+p.MsoAccentText, li.MsoAccentText, div.MsoAccentText
+	{margin-right:0pt;
+	text-indent:0pt;
+	margin-top:0pt;
+	margin-bottom:3.0pt;
+	line-height:113%;
+	text-align:left;
+	font-family:"Trebuchet MS";
+	font-size:8.3pt;
+	color:black;
+	font-weight:bold;}
+ol
+	{margin-top:0in;
+	margin-bottom:0in;
+	margin-left:-2197in;}
+ul
+	{margin-top:0in;
+	margin-bottom:0in;
+	margin-left:-2197in;}
+@page
+	{size:8.0302in 11.0in;}
+	
+	body {
+    margin: 1;
+    padding: 0;
+}
+
+.button{
+ position: inherit;
+ border:4px solid #ed7f00;
+ -webkit-box-shadow: #878787 0px 2px 2px ;
+ -moz-box-shadow: #878787 0px 2px 2px ; 
+ box-shadow: #878787 0px 2px 2px ; 
+ -webkit-border-radius: 23px; 
+ -moz-border-radius: 23px;
+ border-radius: 23px;
+ font-size:13px;
+ font-family:arial, helvetica, sans-serif; 
+ padding: 10px 20px 10px 20px; 
+ text-decoration:none; 
+ display:inline-block;
+ text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+ font-weight:bold; 
+ color: #FFFFFF;
+ background-color: #ed7f00; 
+ background-image: -webkit-gradient(linear, left top, left bottom, from(#4ba614), to(#008c00));
+ background-image: -webkit-linear-gradient(top, #4ba614, #008c00);
+ background-image: -moz-linear-gradient(top, #4ba614, #008c00);
+ background-image: -ms-linear-gradient(top, #4ba614, #008c00);
+ background-image: -o-linear-gradient(top, #4ba614, #008c00);
+ background-image: linear-gradient(to bottom, #4ba614, #008c00);
+ filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#4ba614, endColorstr=#008c00);
+}
+
+.button:hover{
+ border:4px solid #ed7f00;
+ background-color: #ed7f00; 
+ background-image: -webkit-gradient(linear, left top, left bottom, from(#36780f), to(#005900));
+ background-image: -webkit-linear-gradient(top, #36780f, #005900);
+ background-image: -moz-linear-gradient(top, #36780f, #005900);
+ background-image: -ms-linear-gradient(top, #36780f, #005900);
+ background-image: -o-linear-gradient(top, #36780f, #005900);
+ background-image: linear-gradient(to bottom, #36780f, #005900);
+ filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#36780f, endColorstr=#005900);
+}	
+	
+-->
+</style>
+<h:outputScript>
+
+function checkData(){
+	return alert('Hey');
+}
+
+</h:outputScript>
+</head>
+<h:body>
+<h:form prependId="false">
+		<h:panelGrid id="panel" class="centerPage" columns="6" border="0" cellpadding="10" cellspacing="1" 
+		style="border-top-left-radius: 1em;border-top-right-radius: 1em;   color: white; background-color: #ed7f00;">
+        		<f:facet name="header">
+        			<h:graphicImage value="/index_files/image3871.jpg"/>		
+        		</f:facet>
+        		<h:panelGroup style="display:block; text-align:center">
+        			<h:commandButton value="Writing Cheque" action="#{reportBean.writing}" styleClass="button" style="color: #ed7f00;font-weight: bold;"/>
+            		<h:commandButton value="User Maintenance" action="#{checkBean.userpage}" styleClass="button" style="color: #ed7f00;font-weight: bold;"/>
+            		<!-- <h:commandButton value="Cheque Maintenance" action="login" style="color: #ed7f00;font-weight: bold;"/> -->
+            		<h:commandButton value="   Logout        " action="#{loginBean.logout}" styleClass="button" style="color: #ed7f00;font-weight: bold;"/>
+               	</h:panelGroup>
+        		
+	</h:panelGrid>
+	<h:panelGrid class="centerPage"  columns="1" cellpadding="0" cellspacing="0"  style="color: #ed7f00;">
+		<h:outputFormat value="Please refer below on how to use search"/>
+	</h:panelGrid>
+	<h:panelGrid class="centerPage"  columns="4" cellpadding="0" cellspacing="0"  style="color: #ed7f00;">
+		<h:outputLabel value="Search: " />
+		<h:inputText class="inputs" value="#{reportBean.search}" style="width: 500px;
+					background-color: transparent;  
+				    border-style: solid;  
+				    border-width: 0px 0px 1px 0px;  
+				    border-color: darkred; 
+				    outline:0; " />
+		<h:commandButton value="Search" action="#{reportBean.find}" styleClass="button" style="font-weight: bold; background-color: #ed7f00">
+			<f:ajax execute="@form" render="@none"/>
+		</h:commandButton>
+		<h:commandButton value="    Print    " action="#{reportBean.printReport}" styleClass="button" style="background-color: #ed7f00;font-weight: bold;">
+            			<f:ajax execute="@form" render="@none" />
+        </h:commandButton>
+	</h:panelGrid>
+	<h:panelGrid class="centerPage"  style="color: #ed7f00;">
+					
+            			<h:dataTable value="#{reportBean.reports}" var="rpt" border="1" 
+            			style="color: black;border-color: #ed7f00; font-weight: bold;align-text: center;
+            			border-style: solid;  
+				    border-width: 0px 0px 1px 0px;
+				    background-color: #ed7f00;  
+				    outline:0;">
+            				<h:column>
+            					<f:facet name="header">
+            						<h:outputText value="Account Number" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            					<h:link  value="#{rpt.accntNumber}"  outcome="welcome" style="color: black;">
+            						<f:param name="checkNo" value="#{rpt.checkNo}" />
+            					</h:link>
+            					<f:facet name="footer">
+            						<h:outputText value="Account Number" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            				</h:column>
+            				
+            				<h:column>
+            					<f:facet name="header">
+            						<h:outputText value="Check No" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            				<h:link value="#{rpt.checkNo}" outcome="welcome" style="color: black;">
+            						<f:param name="checkNo" value="#{rpt.checkNo}" />
+            					</h:link>
+            					<f:facet name="footer">
+            						<h:outputText value="Check No" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            				</h:column>
+            				
+            				<h:column>
+            					<f:facet name="header">
+            						<h:outputText value="Account Name" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            					<h:link value="#{rpt.accntName}" outcome="welcome" style="color: black;">
+            						<f:param name="checkNo" value="#{rpt.checkNo}" />
+            					</h:link>
+            					<f:facet name="footer">
+            						<h:outputText value="Account Name" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            				</h:column>
+            				
+            				<h:column>
+            					<f:facet name="header">
+            						<h:outputText value="Bank Name" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            					<h:link value="#{rpt.bankName}" outcome="welcome" style="color: black;">
+            						<f:param name="checkNo" value="#{rpt.checkNo}" />
+            					</h:link>
+            					<f:facet name="footer">
+            						<h:outputText value="Bank Name" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            				</h:column>
+            				
+            				<h:column>
+            					<f:facet name="header">
+            						<h:outputText value="Date Disbursement" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            					<h:link value="#{rpt.date_disbursement}" outcome="welcome" style="color: black;">
+            						<f:param name="checkNo" value="#{rpt.checkNo}" />
+            					</h:link>
+            					<f:facet name="footer">
+            						<h:outputText value="Date Disbursement" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            				</h:column>
+            				
+            				<h:column>
+            					<f:facet name="header">
+            						<h:outputText value="Amount" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            					<h:link value="#{rpt.amount}" outcome="welcome" style="color: black;">
+            						<f:param name="checkNo" value="#{rpt.checkNo}" />
+            					</h:link>
+            					<f:facet name="footer">
+            						<h:outputText value="Amount" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            				</h:column>
+            				
+            				<h:column>
+            					<f:facet name="header">
+            						<h:outputText value="Pay To The Order Of" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            					<h:link value="#{rpt.payToTheOrderOf}" outcome="welcome" style="color: black;">
+            						<f:param name="checkNo" value="#{rpt.checkNo}" />
+            					</h:link>
+            					<f:facet name="footer">
+            						<h:outputText value="Pay To The Order Of" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            				</h:column>
+            				
+            				<h:column>
+            					<f:facet name="header">
+            						<h:outputText value="Process By" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            					<h:link value="#{rpt.processBy}" outcome="welcome" style="color: black;">
+            						<f:param name="checkNo" value="#{rpt.checkNo}" />
+            					</h:link>
+            					<f:facet name="footer">
+            						<h:outputText value="Process By" style="background-color: #ed7f00;"/>
+            					</f:facet>
+            				</h:column>
+            				
+            				
+            			</h:dataTable>
+	</h:panelGrid>
+	<h:panelGrid class="centerPage" columns="1" border="0" cellpadding="10" cellspacing="0" style="color: #ed7f00;">
+		<h:outputLabel value="Grand Total: #{reportBean.grandTotal}"/>
+	</h:panelGrid>
+	<h:panelGrid class="centerPage"  columns="1" cellpadding="1" cellspacing="0"  style="color: #ed7f00;">
+		<h:outputLabel value="Use for searchimg an information."/>
+		<h:outputLabel value="* - to retrieve all data."/>
+		<h:outputLabel value="month:month e.g. month:january - to retrieve all january data."/>
+		<h:outputLabel value="day:day e.g. day:18 - to retrieve all 18 day data."/>
+		<h:outputLabel value="year:year e.g. year:2016 - to retrieve year 2016 data."/>
+		<h:outputLabel value="Normal search just input data to search"/>
+	</h:panelGrid>
+	<h:panelGrid class="centerPage" columns="2" border="0" cellpadding="10" cellspacing="0" style="color: #ed7f00;">
+				
+				<!-- <h:panelGroup style="display:block; text-align:center">
+            		
+            		
+               	</h:panelGroup> -->
+               	<f:facet name="footer">
+            		<h:panelGroup style="display:block; text-align:center">
+               			<p class="MsoAddress">
+               				<span lang="en-US" style="text-align:center;language:en-US;font-weight: bold;color:black;">
+               					<h:outputLabel value="#{msg.copyright}" style="font-weight: bold;"/>
+               				</span>
+               			</p>
+  						<p class="MsoAddress">
+  							<span lang="en-US" style="language:en-US;font-weight: bold;color:white;">
+  								<h:outputLabel value="#{msg.appsVersion}" style="color: black; font-weight: bold;"/>
+  							</span>
+  						</p>
+            		</h:panelGroup>
+         		</f:facet>
+	</h:panelGrid>
+	 
+</h:form>
+
+</h:body>
+</html>

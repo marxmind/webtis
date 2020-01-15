@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>#{versionBean.copyright.appname} Email</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+			<h:outputStylesheet name="css/menu.css"/>
+			<h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/> 
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>#{versionBean.copyright.appname} Email</title>
+
+<style>
+<!-- 
+
+
+
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>#{versionBean.copyright.appname} Email</title>
+
+</h:head>
+
+<h:body>
+<h:form prependId="false" id="formId" >
+	
+	<div class="page-header">
+	 	<a><p:outputLabel value="Email" style="#{skin.pageTitle};"/></a>
+	 	<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+	 </div>
+	
+	<p:growl id="msg" showDetail="true"/>
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+       	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+       	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    </p:confirmDialog>
+	
+	
+	<p:layout fullPage="true">
+			
+			<p:layoutUnit position="east" size="0" visible="false" />
+			<p:layoutUnit position="north" size="100"  visible="false" />
+			<p:layoutUnit position="south" size="50" visible="false" />
+			
+			<p:layoutUnit position="west" size="400">
+				<p:tabView prependId="false" orientation="top" id="tabViewId" cache="true">
+					<p:ajax event="tabChange" listener="#{eBean.onChange}" update="tabViewId idContent menuId sendTable showNoteId"/>
+					<p:tab title="Inbox">
+							<p:accordionPanel id="inDataId" value="#{eBean.mails}" var="in" prependId="false" style="#{skin.accordionPanelMain}">
+							
+								<p:ajax event="tabChange" listener="#{eBean.clickEmail(in, 'INBOX')}" update="tabViewId idContent menuId sendTable showNoteId"/>
+							
+								<p:tab title="#{in.fromNamesCut} [#{in.titleCut}]" >
+									
+									<p:panelGrid columns="1" layout="grid">
+									
+										<p:outputLabel value="To: #{in.toNames}" />
+										<p:outputLabel value="From: #{in.fromNames}" />
+										<p:outputLabel value="Sent: #{in.timestamp}" />
+										<p:outputLabel value="Title: #{in.title}" />
+										
+									</p:panelGrid>
+									
+								</p:tab>
+							</p:accordionPanel>		
+						
+					</p:tab>
+					<p:tab title="Outbox">
+						
+						<p:accordionPanel id="outDataId" value="#{eBean.mails}" var="out" prependId="false" style="#{skin.accordionPanelMain}">
+						
+							<p:ajax event="tabChange" listener="#{eBean.clickEmail(out, 'OUTBOX')}" update="tabViewId idContent menuId sendTable"/>
+						
+							<p:tab title="#{out.fromNamesCut} [#{out.titleCut}]">
+								<p:panelGrid columns="1" layout="grid">
+										
+									<p:outputLabel value="To: #{out.toNames}" />
+									<p:outputLabel value="From: #{out.fromNames}" />
+									<p:outputLabel value="Sent: #{out.timestamp}" />
+									<p:outputLabel value="Title: #{out.title}" />
+									
+								</p:panelGrid>
+							</p:tab>
+						</p:accordionPanel>
+						
+					</p:tab>
+					<p:tab title="Sent">
+						
+						<p:accordionPanel id="sentDataId" value="#{eBean.mails}" var="sent" prependId="false" style="#{skin.accordionPanelMain}">
+						
+							<p:ajax event="tabChange" listener="#{eBean.clickEmail(sent, 'SEND')}" update="tabViewId idContent menuId sendTable"/>
+						
+							<p:tab title="#{sent.toNamesCut} [#{sent.titleCut}]">
+								<p:panelGrid columns="1" layout="grid">
+									
+									<p:outputLabel value="To: #{sent.toNames}" />
+									<p:outputLabel value="From: #{sent.fromNames}" />
+									<p:outputLabel value="Sent: #{sent.timestamp}" />
+									<p:outputLabel value="Title: #{sent.title}" />
+									
+								</p:panelGrid>
+							</p:tab>
+						</p:accordionPanel>
+						
+					</p:tab>
+					<p:tab title="Draft">
+						<p:accordionPanel id="draftDataId" value="#{eBean.mails}" var="dr" prependId="false" style="#{skin.accordionPanelMain}">
+						
+							<p:ajax event="tabChange" listener="#{eBean.clickEmail(dr, 'DRAFT')}" update="tabViewId idContent menuId sendTable"/>
+						
+							<p:tab title="#{dr.toNamesCut} [#{dr.titleCut}]">
+								<p:panelGrid columns="1" layout="grid">
+									
+									<p:outputLabel value="To: #{dr.toNames}" />
+									<p:outputLabel value="From: #{dr.fromNames}" />
+									<p:outputLabel value="Sent: #{dr.timestamp}" />
+									<p:outputLabel value="Title: #{dr.title}" />
+									
+								</p:panelGrid>
+							</p:tab>
+						</p:accordionPanel>
+					</p:tab>
+					<p:tab title="Trash">
+						<p:accordionPanel id="trashDataId" value="#{eBean.mails}" var="tr" prependId="false" style="#{skin.accordionPanelMain}">
+						
+							<p:ajax event="tabChange" listener="#{eBean.clickEmail(tr, 'DELETED')}" update="tabViewId idContent menuId sendTable"/>
+							
+							<p:tab title="#{tr.fromNamesCut} [#{tr.titleCut}]">
+								<p:panelGrid columns="1" layout="grid">
+									<p:outputLabel value="To: #{tr.toNames}" />
+									<p:outputLabel value="From: #{tr.fromNames}" />
+									<p:outputLabel value="Sent: #{tr.timestamp}" />
+									<p:outputLabel value="Title: #{tr.title}" />
+								</p:panelGrid>
+							</p:tab>
+						</p:accordionPanel>
+					</p:tab>
+				</p:tabView>
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="center">
+				
+				<p:menubar id="menuId" style="#{skin.emailMenu};float:bottom; position: fixed;z-index: 1500;">
+					<p:menuitem value="#{eBean.bLabels[0]}" icon="fa fa-file-text-o" disabled="#{eBean.buttons[0]}" actionListener="#{eBean.clickButton('New')}" title="Create new Email" update="menuId tabViewId idContent sendTable msg"/>
+					<p:menuitem value="#{eBean.bLabels[1]}" icon="fa fa-pencil-square-o" disabled="#{eBean.buttons[1]}" actionListener="#{eBean.clickButton('Edit')}" title="Edit Email" update="menuId tabViewId idContent sendTable msg"/>
+					<p:menuitem value="#{eBean.bLabels[2]}" icon="fa fa-undo" disabled="#{eBean.buttons[2]}" actionListener="#{eBean.clickButton('Cancel')}" title="Cancel Email" update="menuId tabViewId idContent sendTable msg"/>
+					<p:menuitem value="#{eBean.bLabels[3]}" icon="fa fa-pencil-square-o" disabled="#{eBean.buttons[3]}" actionListener="#{eBean.clickButton('Delete')}" title="Delete  Email" update="menuId tabViewId idContent sendTable msg">
+						<p:confirm header="Confirmation" message="Are you sure you want to delete this email?" icon="ui-icon-alert" />
+					</p:menuitem>
+					<p:menuitem value="#{eBean.bLabels[4]}" icon="fa fa-floppy-o" disabled="#{eBean.buttons[4]}" actionListener="#{eBean.clickButton('Draft')}" title="Save as Draft new created Email" update="menuId tabViewId idContent sendTable msg"/>
+					<p:menuitem value="#{eBean.bLabels[5]}" icon="fa fa-reply" disabled="#{eBean.buttons[5]}" actionListener="#{eBean.clickButton('Reply')}" title="Reply to Email" update="menuId tabViewId idContent sendTable msg"/>
+					<p:menuitem value="#{eBean.bLabels[6]}" icon="fa fa-reply-all" disabled="#{eBean.buttons[6]}" actionListener="#{eBean.clickButton('ReplyAll')}" title="Reply to all" update="menuId tabViewId idContent sendTable msg"/>
+					<p:menuitem value="#{eBean.bLabels[7]}" icon="fa fa-share" disabled="#{eBean.buttons[7]}" actionListener="#{eBean.clickButton('Send')}" title="Send Email" update="menuId tabViewId idContent sendTable msg"/>
+					<p:menuitem value="#{eBean.bLabels[8]}" icon="fa fa-history" disabled="#{eBean.buttons[8]}" actionListener="#{eBean.clickButton('Recall')}" title="Recall newly send Email" update="menuId tabViewId idContent sendTable msg">
+						<p:confirm header="Confirmation" message="Are you sure you want to recall this email?" icon="ui-icon-alert" />
+					</p:menuitem>
+					<p:menuitem value="#{eBean.bLabels[9]}" icon="fa fa-print" disabled="#{eBean.buttons[9]}" actionListener="#{eBean.clickButton('Print')}" title="Print Email Received" update="menuId tabViewId idContent sendTable msg">
+						<p:printer target="idContent" />
+					</p:menuitem>
+				</p:menubar>
+				<br/><br/>
+				<p:panelGrid id="sendTable" columns="1" layout="grid">
+					
+					 <p:selectCheckboxMenu id="sendNameId" value="#{eBean.selectedSendUsers}"  disabled="#{eBean.sendToEnable}" label="Select Names" style="#{skin.sendToLabel}" updateLabel="true" filterMatchMode="contains" filter="true">
+						<f:selectItems value="#{eBean.sendUsers}" />
+					 </p:selectCheckboxMenu>						
+		    		 <p:inputText value="#{eBean.title}" readonly="#{eBean.sendToEnable}" a:placeholder="Title of Email" style="#{skin.textInput}" styleClass="form-control"/>
+					 
+				</p:panelGrid>
+				<p:textEditor id="idContent" toolbarVisible="#{eBean.editorToolbar}" widgetVar="msgComposeText" value="#{eBean.contentMsg}" height="310" readonly="#{eBean.sendToEnable}">
+									<f:facet name="toolbar">
+										<span class="ql-formats">
+											<button class="ql-bold"></button>
+											<button class="ql-italic"></button>
+											<button class="ql-underline"></button>
+											<button class="ql-strike"></button>
+										</span>
+										<span class="ql-formats">
+											<select class="ql-font"></select>
+											<select class="ql-size"></select>
+										</span>
+										<span class="ql-formats">
+											<select class="ql-color"></select>
+											<select class="ql-align"></select>
+										</span>
+									</f:facet>
+				  </p:textEditor>
+				
+			</p:layoutUnit>
+	</p:layout>
+<ui:include src="loader.xhtml" />
+<ui:include src="menu.xhtml" />
+</h:form>
+
+<br/><br/><br/><br/>
+</h:body>
+</html>

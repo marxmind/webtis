@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+
+	<f:facet name="first">
+		    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+		    <meta name="description" content=""/>
+		    <meta name="author" content=""/>
+            <title>Template</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputStylesheet name="maxdesign/css/sb-admin-2.min.css"/>
+            <h:outputStylesheet name="maxdesign/vendor/fontawesome-free/css/all.min.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputScript name="maxdesign/vendor/jquery/jquery.min.js"/>
+        <h:outputScript name="maxdesign/vendor/bootstrap/js/bootstrap.bundle.min.js"/>
+        <h:outputScript name="maxdesign/vendor/jquery-easing/jquery.easing.min.js"/>
+        <h:outputScript name="maxdesign/js/sb-admin-2.min.js"/>
+    </f:facet>
+
+</h:head>
+
+<h:body id="page-top">
+<h:form prependId="false" id="formId">
+<p:growl id="msg" showDetail="true" life="2000" />
+
+
+<!-- Page Wrapper -->
+  <div id="wrapper">
+  	
+  	<!-- Sidebar -->
+  	<ui:include src="sidebar.xhtml" />
+  	<!-- End of Sidebar -->
+  	
+	<!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+    
+       <!-- Main Content -->
+      <div id="content">
+      		
+      	<!-- Topbar -->
+        <ui:include src="topbar.xhtml" />
+        <!-- End of Topbar -->
+      	
+      	
+      	<!-- Begin Page Content Fluid -->
+        <div class="container-fluid">
+        	
+        	  <!-- Page Heading -->
+	          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+	            <h1 class="h3 mb-0 text-gray-800">Template</h1>
+	            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+	          </div>
+	          
+	           <!-- Start Main -->
+           <div class="row">
+           
+           <div class="col-xl-4 col-lg-5">
+           		<div class="card shadow mb-4">
+           				<div class="card-body">
+		                  
+                		</div>
+           		</div>
+           </div>
+           
+           <div class="col-xl-8 col-lg-7">
+           		<div class="card shadow mb-4">
+           			<div class="card-body">
+		                  
+                	
+                	</div>
+           		</div>
+           </div>
+           
+           </div>
+        	
+        </div>
+        <!-- End Page Content Fluid-->
+      		
+      </div>
+      <!-- End Main Content -->
+    	
+      <!-- Start Footer -->	
+      <ui:include src="copyright.xhtml" />
+      <!-- End Footer -->		
+    	
+    </div>
+	<!-- End Content Wrapper -->
+	  	
+  </div>
+<!-- End Page Wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+<!-- Start Footer -->	
+   <ui:include src="logoutmodal.xhtml" />
+<!-- End Footer -->
+
+</h:form>
+</h:body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	

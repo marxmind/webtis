@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Daily Timesheet Generator</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Daily Timesheet Generator</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Daily Timesheet Generator</title>
+
+</h:head>
+
+<h:body>
+	
+	<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId">
+	<p:growl id="msg" life="2000" />
+	
+	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+	
+	
+	
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="50" visible="false"/>
+			<p:layoutUnit position="south" size="100" visible="false">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="east" size="0" visible="false"/>
+			<p:layoutUnit position="west" size="500" visible="true">
+				
+				<p:panelGrid id="gridId" columns="2" layout="grid">
+			
+			<p:outputLabel value="Year"/>	
+		    <p:selectOneMenu id="yearId" value="#{dtrBean.year}" style="width: 12em">
+					<f:selectItems value="#{dtrBean.years}"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Month"/>	
+		    <p:selectOneMenu id="monthId" value="#{dtrBean.monthId}" style="width: 12em">
+		    		<f:selectItem itemLabel="Please select" />
+					<f:selectItems value="#{dtrBean.months}"/>
+					<p:ajax event="change" listener="#{dtrBean.loadDates}" update="holId bzId"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Holidays"/>
+			<p:selectCheckboxMenu id="holId" value="#{dtrBean.selectedHoliday}" label="Select Holiday" updateLabel="true" filterMatchMode="contains" filter="true" style="width: 12em">
+				<f:selectItems value="#{dtrBean.holidays}" />
+			</p:selectCheckboxMenu>
+			
+			<p:outputLabel value="Official Business"/>
+			<p:selectCheckboxMenu id="bzId" value="#{dtrBean.selectedBz}" label="Select OB" updateLabel="true" filterMatchMode="contains" filter="true" style="width: 12em">
+				<f:selectItems value="#{dtrBean.officialBzs}" />
+			</p:selectCheckboxMenu>
+			
+			<p:outputLabel value="Employee:"/>
+			<p:inputText value="#{dtrBean.employeeName}" a:placeholder="Employee Name" style="width: 12em"/>
+			
+			<p:outputLabel value="In-Charge:"/>
+			<p:inputText value="#{dtrBean.adminPerson}" a:placeholder="In-Charge" style="width: 12em"/>
+			
+			<p:commandButton value="Generate DTR" actionListener="#{dtrBean.generateDTR}"  update="dataTransId"/>
+			<h:commandLink title="Export DTR in pdf format" target="_blank" ajax="false" immediate="false"  actionListener="#{dtrBean.printReportAll}" a:data-step="12" a:data-intro="This function use to export this table to pdf file.">
+                		<p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+            </h:commandLink>
+			</p:panelGrid>
+				
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="center">
+			
+				
+				<p:dataTable id="dataTransId" value="#{dtrBean.dtrs}" var="rpt" stickyHeader="false"
+							rows="31" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="31"
+                         scrollable="true" scrollWidth="100%" style="#{skin.table}" paginatorPosition="top"
+                         >
+                         
+                         <f:facet name="{Exporters}">
+            						<h:commandLink title="Export DTR in excel format" a:data-step="11" a:data-intro="This function use to export this table to excel file.">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="dataTransId" fileName="dtr" />
+            						</h:commandLink>
+            						
+            						
+            				</f:facet>
+            						
+									<p:column headerText="Date" width="20">
+            								<p:outputLabel value="#{rpt.f1}"/>
+            						</p:column>
+            						
+            						<p:column headerText="Morning In" width="70">
+            								<p:outputLabel value="#{rpt.f2}"/>
+            						</p:column>
+            						
+            						<p:column headerText="Morning Out" width="70">
+            								<p:outputLabel value="#{rpt.f3}"/>
+            						</p:column>
+									
+									<p:column headerText="Afternoon In" width="70">
+            								<p:outputLabel value="#{rpt.f4}"/>
+            						</p:column>
+            						
+            						<p:column headerText="Afternoon Out" width="70">
+            								<p:outputLabel value="#{rpt.f5}"/>
+            						</p:column>
+									
+				</p:dataTable>
+				
+			</p:layoutUnit>
+	</p:layout>
+	
+	<ui:include src="loader.xhtml" />
+	<ui:include src="menu.xhtml" />
+</h:form>		
+</h:body>
+</html>
+		

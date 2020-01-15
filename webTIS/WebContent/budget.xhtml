@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Budgeting</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Budgeting</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Budgeting</title>
+
+</h:head>
+
+<h:body>
+	
+	<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId" style="background-color: #8fdbf5">
+	<p:growl id="msg" life="2000" />
+	
+	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+	<p:focus context="tb"/>
+	
+	
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="50" visible="false"/>
+			<p:layoutUnit position="south" size="100" visible="false">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="east" size="0" visible="false"/>
+			<p:layoutUnit position="west" size="0" visible="false"/>
+			
+			<p:layoutUnit position="center">
+			
+			<p:toolbar id="tb" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				<p:commandButton update="formId" value="Check Writing" icon="ui-icon-document" action="#{budgetBean.checkWriting}"/>
+    		</f:facet>
+    		<f:facet name="right">
+    			
+    			<h:commandLink title="Export Budget Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="formDataId" fileName="Budget" />
+            						</h:commandLink>
+            						<h:commandLink title="Export Budget Report in pdf format">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+                						    <p:dataExporter type="pdf" target="formDataId" fileName="Budget" />
+            						</h:commandLink>
+            	<p:commandButton update="formDataId" value="Update" icon="ui-icon-document" actionListener="#{budgetBean.init}"/>
+    		</f:facet>
+		</p:toolbar>
+		<p:sticky target="tb" />
+	
+	<p:dataTable id="formDataId" var="rpt" value="#{budgetBean.budgets}" editable="true" paginatorTemplate="{Exporters}" style="#{skin.table}"
+       editMode="cell" widgetVar="cellTrans" rowKey="#{rpt.id}" scrollable="true" selection="#{budgetBean.budgetData}" selectionMode="single">
+       <f:facet name="header">
+           Internal Revenue Allotment for the month of #{budgetBean.monthToday}
+       </f:facet>
+			
+		<p:ajax event="cellEdit"  listener="#{budgetBean.onCellEdit}" update=":formId:formDataId,:formId:msg" />	
+		
+		 <p:column headerText="Account Name" >
+              <p:cellEditor>
+              	  <f:facet name="output"><p:outputLabel value="#{rpt.accounts.bankAccntName}"/></f:facet>
+                  <f:facet name="input"><p:outputLabel id="modelInput" value="#{rpt.accounts.bankAccntName}"/></f:facet>
+              </p:cellEditor>
+         </p:column>
+         
+         <p:column headerText="Bank Branch" >
+              <p:cellEditor>
+              	  <f:facet name="output"><p:outputLabel value="#{rpt.accounts.bankAccntBranch}"/></f:facet>
+                  <f:facet name="input"><p:outputLabel  value="#{rpt.accounts.bankAccntBranch}"/></f:facet>
+              </p:cellEditor>
+         </p:column>
+		
+		<p:column headerText="Added Amount">
+              <p:cellEditor>
+                  <f:facet name="output"><p:outputLabel value="Php#{rpt.addedAmountTmp}" a:placeholder="0.00"/></f:facet>
+                  <f:facet name="input"><p:inputText  value="#{rpt.addedAmount}" a:type="number" a:placeholder="0.00" style="width:96%;color:black"/></f:facet>
+              </p:cellEditor>
+       </p:column>
+		
+		 <p:column>
+		 	<f:facet name="header">Budget Amount</f:facet>
+              <p:cellEditor>
+                  <f:facet name="output"><p:outputLabel value="Php#{rpt.budgetAmount}"/></f:facet>
+                  <f:facet name="input"><p:outputLabel value="Php#{rpt.budgetAmount}"/></f:facet>
+              </p:cellEditor>
+            <f:facet name="footer">Php #{budgetBean.total}</f:facet>  
+       </p:column>
+       
+       <p:column>
+       		 <f:facet name="header">Used Amount</f:facet>
+              <p:cellEditor>
+                  <f:facet name="output"><p:outputLabel value="Php#{rpt.usedAmount}"/></f:facet>
+                  <f:facet name="input"><p:outputLabel value="Php#{rpt.usedAmount}"/></f:facet>
+              </p:cellEditor>
+              <f:facet name="footer">Php #{budgetBean.totalUsed}</f:facet>
+       </p:column>
+       
+       <p:column>
+       	      <f:facet name="header">Remaining Amount</f:facet>
+              <p:cellEditor>
+                  <f:facet name="output"><p:outputLabel value="Php#{rpt.remainingAmount}"/></f:facet>
+                  <f:facet name="input"><p:outputLabel value="Php#{rpt.remainingAmount}"/></f:facet>
+              </p:cellEditor>
+              <f:facet name="footer">Php #{budgetBean.totalRem}</f:facet>
+       </p:column>
+		
+		
+	  <p:column headerText="Limit Amount">
+              <p:cellEditor>
+                  <f:facet name="output"><p:outputLabel value="Php#{rpt.limitAmountTmp}" a:placeholder="0.00"/></f:facet>
+                  <f:facet name="input"><p:inputText  value="#{rpt.limitAmount}" a:type="number" a:placeholder="0.00" style="width:96%;"/></f:facet>
+              </p:cellEditor>
+       </p:column>
+       
+       <p:column headerText="Activated">
+               <p:selectBooleanCheckbox value="#{rpt.isActivated}">
+                	<p:ajax update="formDataId,msg" listener="#{budgetBean.limitCheck(rpt)}" />
+               </p:selectBooleanCheckbox>
+       </p:column>
+        
+        <p:column headerText="Cycle Date">
+              <p:cellEditor>
+                  <f:facet name="output"><p:outputLabel value="#{rpt.cycleDate}"/></f:facet>
+                  <f:facet name="input"><p:inputText  value="#{rpt.cycleDate}" a:type="number" a:placeholder="0.00" style="width:96%;color:black"/></f:facet>
+              </p:cellEditor>
+       </p:column>
+        
+	</p:dataTable>
+			
+			</p:layoutUnit>
+	</p:layout>
+	
+	
+	
+	<p:contextMenu for="formDataId" widgetVar="cMenu" style="#{skin.label}">
+       <p:menuitem value="Update" icon="ui-icon-document" actionListener="#{budgetBean.updateBudget}" onclick="PF('cMenu').hide()" update="formDataId,msg"/>
+   </p:contextMenu> 		
+	
+	
+	<ui:include src="loader.xhtml" />
+	<ui:include src="menu.xhtml" />
+</h:form>		
+</h:body>
+</html>
+		

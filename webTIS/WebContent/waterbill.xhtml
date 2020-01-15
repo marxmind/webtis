@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Water Billing</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.css"/>
+            <h:outputStylesheet name="intro/bootstrap-responsive.mini.css"/>
+            <h:outputStylesheet name="intro/themes/introjs.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputScript name="bootstrap/js/bootstrap.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+ 
+ <style>
+<!-- 
+
+ -->
+ </style>
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+
+</h:head>
+<h:body>
+<h:form prependId="false" id="formId" style="background-color: #8fdbf5">
+	<p:growl id="msg" showDetail="true" life="2000" />
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+    	 
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="70" visible="false">
+				<p:graphicImage name="gif/treasury.png" style="width: 5em; height: 5em" styleClass="img-circle"/>
+				<p:outputLabel value="Water Billing" style="#{skin.pageTitle}"/>
+			</p:layoutUnit>
+			<p:layoutUnit position="south" size="50">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="east" size="400" visible="false">
+			
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="west" size="400" visible="true">
+			
+			<p:toolbar id="tbSave">
+			    		<f:facet name="left">
+			    			<p:commandButton value="Account" icon="fa fa-file-o" oncomplete="PF('msgDialog').show()" actionListener="#{woBean.loadAccounts}" update="dataAccId"/>
+			    		</f:facet>	   
+			    		<f:facet name="right">
+			    			<p:commandButton update="fldId1 fldId2 msg" value="Save" icon="fa fa-floppy-o" actionListener="#{woBean.saveBill}">
+			    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+			    			</p:commandButton>				
+			    		</f:facet>
+					</p:toolbar>
+			
+			<p:panelGrid id="fldId1" columns="2" layout="grid">
+				<p:outputLabel value="Member Name"/>
+				<p:autoComplete id="idName" placeholder="Member Name"  value="#{woBean.memberName}" minQueryLength="4" queryDelay="800" completeMethod="#{woBean.payorNameOwnerSuggested}" effect="fade" maxResults="10" inputStyle="width: 12em">
+					<p:ajax event="change" listener="#{woBean.loadDetails}" update="fldId2"/>
+				</p:autoComplete>
+			</p:panelGrid>
+				
+			<p:panelGrid id="fldId2" columns="2" layout="grid">
+				
+				<p:outputLabel value="Date"/>
+				<p:calendar value="#{woBean.dateBill}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
+				
+				<p:outputLabel value="Bill No"/>
+				<p:inputNumber id="idBillNo" value="#{woBean.billNo}" readOnly="true" inputStyle="width: 12em"/>
+				
+				<p:outputLabel value="Status"/>
+				<p:selectOneMenu value="#{woBean.statusId}" style="width: 12em">
+					<f:selectItems value="#{woBean.status}"/>
+				</p:selectOneMenu>
+				
+				<p:outputLabel value="Previous Reading"/>
+				<p:inputNumber value="#{woBean.previousReading}" inputStyle="width: 12em">
+					<p:ajax event="keyup" listener="#{woBean.calculationReading}" update="idCon idConAm idAmDue idUnpaidAm" />
+				</p:inputNumber>
+				
+				<p:outputLabel value="Current Reading"/>
+				<p:inputNumber value="#{woBean.currentReading}" inputStyle="width: 12em">
+					<p:ajax event="keyup" listener="#{woBean.calculationReading}" update="idCon idConAm idAmDue idUnpaidAm" />
+				</p:inputNumber>
+				
+				<p:outputLabel value="Consumption"/>
+				<p:inputNumber id="idCon" value="#{woBean.consumption}" inputStyle="width: 12em"/>
+				
+				<p:outputLabel value="Amount Consumed"/>
+				<p:inputNumber id="idConAm" value="#{woBean.amountConsumed}" inputStyle="width: 12em"/>
+				
+				<p:outputLabel value="Unpaid Amount"/>
+				<p:inputNumber id="idUnpaidAm" value="#{woBean.previousUnpaidAmount}" readOnly="true" inputStyle="width: 12em"/>
+				
+				<p:outputLabel value="Amount Due"/>
+				<p:inputNumber id="idAmDue" value="#{woBean.amountDue}" inputStyle="width: 12em"/>
+				
+				<p:outputLabel value="Due Date"/>
+				<p:calendar value="#{woBean.dueDate}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
+				
+				<p:outputLabel value="Disconnection Date"/>
+				<p:calendar value="#{woBean.disconnectiondate}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
+				
+			</p:panelGrid>	
+				
+    			
+    			   
+    			
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="center">
+			
+				
+			</p:layoutUnit>
+		
+	</p:layout>
+		
+	<p:dialog position="center center" widgetVar="msgDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" width="500px" height="500px">
+    	<p:toolbar id="tbMsg">
+			    		<f:facet name="left">
+			    			   <p:commandButton update="dataAccId fldO" value="New" icon="fa fa-file-o" actionListener="#{woBean.clearFlds}"/>
+			    		</f:facet>	   
+			    		<f:facet name="right">
+			    			<p:commandButton update="dataAccId fldO msg" value="Save" icon="fa fa-floppy-o" actionListener="#{woBean.saveDataOwner}">
+			    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+			    			</p:commandButton>	
+			    			<p:commandButton value="Close" onclick="PF('msgDialog').hide();"/>
+			    		</f:facet>
+					</p:toolbar>
+					
+					<p:panelGrid id="fldO" columns="2" layout="grid">
+						
+						<p:outputLabel value="Date"/>
+						<p:calendar value="#{woBean.dateRegistered}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
+						
+						<p:outputLabel value="Account No"/>
+						<p:outputLabel value="#{woBean.accountNumber}"/>
+						
+						<p:outputLabel value="Member Name"/>
+						<p:autoComplete id="idPayd" placeholder="Member Name"  value="#{woBean.ownerName}" minQueryLength="4" queryDelay="800" completeMethod="#{woBean.payorNameSuggested}" effect="fade" maxResults="10" inputStyle="width: 12em">
+							<p:ajax event="change" listener="#{woBean.selectedCustomer}" update="idLoca"/>
+						</p:autoComplete>
+						
+						<p:outputLabel value="Location"/>
+						<p:inputText id="idLoca" value="#{woBean.location}" style="width: 12em"/>
+						
+						<p:outputLabel value="Meter No"/>
+						<p:inputText value="#{woBean.meterNo}" style="width: 12em"/>
+						
+					</p:panelGrid>
+					
+					<p:dataTable id="dataAccId" value="#{woBean.accounts}" var="ws" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false"
+							>
+					
+							<p:column headerText="View" width="20" exportable="false">
+								<p:commandButton icon="fa fa-search" update="dataAccId fldO" actionListener="#{woBean.clickAccount(ws)}"/>
+							</p:column>
+							
+							<p:column headerText="[*]" width="20" exportable="false">
+            					<p:commandButton update="dataAccId fldO msg" icon="fa fa-trash" actionListener="#{woBean.deleteAccount(ws)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+							
+                         	<p:column headerText="Date" width="70">
+            						<p:outputLabel value="#{ws.dateTrans}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Member" width="100">
+            						<p:outputLabel value="#{ws.customer.fullName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Meter No" width="70">
+            						<p:outputLabel value="#{ws.meter.meterNo}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Location" width="100">
+            						<p:outputLabel value="#{ws.location}"/>
+            				</p:column>
+            						
+							
+					</p:dataTable>		
+					
+	</p:dialog>
+				
+	
+<ui:include src="loader.xhtml" />
+<ui:include src="menu.xhtml" />		
+</h:form>
+</h:body>
+</html>

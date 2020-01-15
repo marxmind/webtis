@@ -1,0 +1,171 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h = "http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      >
+ 
+    <ui:composition>
+    
+    
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+      <!-- Sidebar - Brand -->
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.xhtml">
+        <div class="sidebar-brand-icon rotate-n-15">
+          <p:graphicImage styleClass="img-profile rounded-circle" name="/img/document.png" height="50" width="50"/>
+        </div>
+        <div class="sidebar-brand-text mx-3">webTIS<sup>14</sup></div>
+      </a>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0"/>
+
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item active">
+        <a class="nav-link" href="dashboard.xhtml">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Dashboard</span></a>
+      </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider"/>
+
+      <!-- Heading -->
+      <div class="sidebar-heading">
+        Modules
+      </div>
+	
+	  <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCollectionPages" aria-expanded="true" aria-controls="collapseCollectionPages">
+          <i class="fas fa-fw fa-folder"></i>
+          <span>Collections</span>
+        </a>
+        <div id="collapseCollectionPages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Stock Recording</h6>
+            	<p:commandLink styleClass="collapse-item" action="stocks14.xhtml" ajax="true" immediate="true">Stocks</p:commandLink>
+            <div class="collapse-divider"></div>
+            <h6 class="collapse-header">Forms/Collections</h6>
+	            <p:commandLink styleClass="collapse-item" action="issuedform14.xhtml" ajax="true" immediate="true">Issuing Form</p:commandLink>
+	            <p:commandLink styleClass="collapse-item" action="logform14.xhtml" ajax="true" immediate="true">Collector's Recording</p:commandLink>
+          </div>
+        </div>
+      </li>
+      
+       <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLandPages" aria-expanded="true" aria-controls="collapseLandPages">
+          <i class="fas fa-fw fa-folder"></i>
+          <span>Land Tax</span>
+        </a>
+        <div id="collapseLandPages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Forms</h6>
+            	<p:commandLink styleClass="collapse-item" action="form5614.xhtml" ajax="true" immediate="true">Reciepts</p:commandLink>
+            <div class="collapse-divider"></div>
+            <h6 class="collapse-header">Land Details</h6>
+            	<p:commandLink styleClass="collapse-item" action="landpayor14.xhtml" ajax="true" immediate="true">Payor Lookup</p:commandLink>
+            <div class="collapse-divider"></div>
+            <h6 class="collapse-header">Penalty</h6>
+            	<p:commandLink styleClass="collapse-item" action="penalty14.xhtml" ajax="true" immediate="true">Penalty Control</p:commandLink>
+          </div>
+        </div>
+      </li>
+      
+       <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseBudgetPages" aria-expanded="true" aria-controls="collapseBudgetPages">
+          <i class="fas fa-fw fa-folder"></i>
+          <span>Budget Management</span>
+        </a>
+        <div id="collapseBudgetPages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Check Creation</h6>
+            	<p:commandLink styleClass="collapse-item" action="welcome14.xhtml" ajax="true" immediate="true">Check Writing</p:commandLink>
+            <div class="collapse-divider"></div>
+            <h6 class="collapse-header">Budgeting</h6>
+            	<p:commandLink styleClass="collapse-item" action="budget14.xhtml" ajax="true" immediate="true">Budget Management</p:commandLink>
+            <div class="collapse-divider"></div>
+            <h6 class="collapse-header">Voucher</h6>
+            	<p:commandLink styleClass="collapse-item" action="voucher14.xhtml" ajax="true" immediate="true">Voucher Logging</p:commandLink>
+          </div>
+        </div>
+      </li>
+		
+		
+	  <li class="nav-item">  
+          <p:commandLink styleClass="nav-link" action="orlisting14.xhtml" ajax="true" immediate="true">
+          <i class="fas fa-fw fa-file"></i><span>General Collection</span></p:commandLink>
+      </li>	
+		
+      <!-- Divider -->
+      <hr class="sidebar-divider"/>
+
+      <!-- Heading -->
+      <div class="sidebar-heading">
+        Addons
+      </div>
+
+	  <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+          <i class="fas fa-fw fa-cog"></i>
+          <span>Settings</span>
+        </a>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">System</h6>
+            <a class="collapse-item" href="buttons.html">Themes</a>
+            <div class="collapse-divider"></div>
+            <h6 class="collapse-header">Maintenance</h6>
+            <a class="collapse-item" href="cards.html">User</a>
+            <a class="collapse-item" href="cards.html">Collector</a>
+            <a class="collapse-item" href="cards.html">Forms</a>
+          </div>
+        </div>
+      </li>
+
+      <!-- Nav Item - Utilities Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
+          <i class="fas fa-fw fa-wrench"></i>
+          <span>Utilities</span>
+        </a>
+        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">System Backup:</h6>
+            <a class="collapse-item" href="utilities-color.html">Backup Entire System</a>
+            <a class="collapse-item" href="utilities-color.html">Backup Database</a>
+          </div>
+        </div>
+      </li>
+	
+      <!-- Nav Item - Charts -->
+      <li class="nav-item">
+        <a class="nav-link" href="charts.html">
+          <i class="fas fa-fw fa-chart-area"></i>
+          <span>Charts</span></a>
+      </li>
+
+      <!-- Nav Item - Tables -->
+      <li class="nav-item">
+        <a class="nav-link" href="tables.html">
+          <i class="fas fa-fw fa-table"></i>
+          <span>Tables</span></a>
+      </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider d-none d-md-block"/>
+
+      <!-- Sidebar Toggler (Sidebar) -->
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+
+    </ul>
+    
+    </ui:composition>
+</html>

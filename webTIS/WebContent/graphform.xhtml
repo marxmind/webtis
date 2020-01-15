@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Form Graph</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Form Graph</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Form Graph</title>
+
+</h:head>
+
+<h:body>
+	
+	<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId">
+	<p:growl id="msg" showDetail="true" life="2000" />
+	<p:growl id="msgUpload" showDetail="true" sticky="true" />
+	
+	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+	
+	
+	
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="50" visible="false"/>
+			<p:layoutUnit position="south" size="100" visible="false">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="east" size="0" visible="false"/>
+			<p:layoutUnit position="west" size="100" visible="true">
+				<p:panelGrid layout="grid" columns="1">
+					
+					<p:commandButton value="Collections Info" style="height: 5em; width:7em" actionListener="#{grapFormBean.graphButton('line-summary','open')}" update="graphRcd1 graphRcd2 dataId"/>
+					<p:commandButton value="Per Collector Info" style="height: 5em; width:7em" actionListener="#{grapFormBean.graphButton('per-collector-summary','open')}" update="grapcColId dataCollectId"/>
+					<p:commandButton value="Form Type Info (Collector)" style="height: 5em; width:7em" actionListener="#{grapFormBean.graphButton('collector-collection','open')}" update="collId dataPerId"/>
+					
+				</p:panelGrid>
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="center">
+			
+			<p:toolbar id="tbCom">
+		    		<f:facet name="left"/>
+		    		<f:facet name="right">
+		    			<p:fileUpload fileUploadListener="#{grapFormBean.uploadFile}"
+					                    			mode="advanced" auto="true" sizeLimit="50000000" label="Upload Excel File Here"
+					                    			update="dataId dataCollectId dataPerId graphRcd1 graphRcd2 grapcColId collId clcId msgUpload" dragDropSupport="true" style="#{skin.button}"
+					                    			allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/" />
+		    		</f:facet>
+			</p:toolbar>
+			<div id="idSummaryLine" style="display: block">
+			
+			<p:tabView prependId="false" activeIndex="0">
+				<p:tab title="Add New/Update Collection Per Year">
+				
+					<p:dataTable id="dataId" value="#{grapFormBean.summData}" var="rpt" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                          style="#{skin.table}" paginatorPosition="top" 
+                         
+                         >
+                         
+                         	<f:facet name="{Exporters}">
+            						<h:commandLink title="Export Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="dataId" fileName="Reports" />
+            						</h:commandLink>
+            				</f:facet>
+            				
+            				<p:column headerText="[*]" width="20" exportable="false">
+            					<p:commandButton update="dataId msg" icon="fa fa-trash" actionListener="#{grapFormBean.deleteRow(rpt)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+            				
+            				<p:column headerText="Edit" width="20" exportable="false">
+								<p:commandButton icon="fa fa-search" update="yearSumId" actionListener="#{grapFormBean.clickItem(rpt)}" oncomplete="PF('editDialogSummary').show();"/>
+							</p:column>
+            					
+            				<p:column headerText="Year" width="30">
+            					<p:outputLabel value="#{rpt.year}"/>
+            				</p:column>
+            				
+            				<p:column headerText="January" width="40">
+            						<p:outputLabel value="#{rpt.january}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="February" width="40">
+            						<p:outputLabel value="#{rpt.february}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="March" width="40">
+            						<p:outputLabel value="#{rpt.march}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="April" width="40">
+            						<p:outputLabel value="#{rpt.april}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="May" width="40">
+            						<p:outputLabel value="#{rpt.may}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="June" width="40">
+            						<p:outputLabel value="#{rpt.june}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="July" width="40">
+            						<p:outputLabel value="#{rpt.july}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="August" width="40">
+            						<p:outputLabel value="#{rpt.august}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="September" width="40">
+            						<p:outputLabel value="#{rpt.september}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="October" width="40">
+            						<p:outputLabel value="#{rpt.october}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="November" width="40">
+            						<p:outputLabel value="#{rpt.november}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="December" width="40">
+            						<p:outputLabel value="#{rpt.december}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="Total" width="70">
+            						<p:outputLabel value="#{rpt.total}">
+            							<f:convertNumber currencySymbol="Php" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+					</p:dataTable>
+					
+				</p:tab>
+				<p:tab title="Line Graph">
+					<p:lineChart id="graphRcd1" model="#{grapFormBean.lineModel}" style="width: 100%; height: 400px;background-color: white" widgetVar="chart1"/>
+					<p:commandButton type="button" value="Export" icon="pi pi-home" onclick="exportChart('chart1')"/>
+				</p:tab>
+				<p:tab title="Percentage Graph">
+					<p:barChart id="graphRcd2" model="#{grapFormBean.stackedGroupBarModel}" style="width: 100%; height: 400px;background-color: white" widgetVar="chart2"/>
+					<p:commandButton type="button" value="Export" icon="pi pi-home" onclick="exportChart('chart2')"/>
+				</p:tab>
+			</p:tabView>
+			
+			</div>
+			
+			<div id="idSummaryFormCollector" style="display: none">
+			
+					<p:toolbar id="tbCom1">
+			    		<f:facet name="left">
+			    			<p:selectOneMenu id="mntIdPer" value="#{grapFormBean.monthIdPer}" style="width: 12em">
+								<f:selectItems value="#{grapFormBean.monthsPer}"/>
+								<p:ajax event="change" listener="#{grapFormBean.selectedCollectorPer}" update="grapcColId dataCollectId"/>
+						    </p:selectOneMenu>
+			    			<p:selectOneMenu id="yrIdPer" value="#{grapFormBean.yearIdPer}" style="width: 12em">
+								<f:selectItems value="#{grapFormBean.yearsPer}"/>
+								<p:ajax event="change" listener="#{grapFormBean.selectedCollectorPer}" update="grapcColId dataCollectId"/>
+						    </p:selectOneMenu>
+			    			<p:selectOneMenu id="clcIdPer" value="#{grapFormBean.collectorIdPer}" style="width: 12em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{grapFormBean.collectorsPer}"/>
+								<p:ajax event="change" listener="#{grapFormBean.selectedCollectorPer}" update="grapcColId dataCollectId"/>
+						    </p:selectOneMenu>
+						 </f:facet>   
+			    		<f:facet name="right"/>
+					</p:toolbar>
+			
+			<p:tabView prependId="false" activeIndex="0">
+				<p:tab title="Add New/Update Per Collector Summary Collection">
+				
+					<p:dataTable id="dataCollectId" value="#{grapFormBean.summColletorData}" var="rs" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         style="#{skin.table}" paginatorPosition="top"
+                         
+                         >
+                         
+                         	<f:facet name="{Exporters}">
+            						<h:commandLink title="Export Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="dataCollectId" fileName="Reports" />
+            						</h:commandLink>
+            				</f:facet>	
+            				
+            				<p:column headerText="[*]" width="20" exportable="false">
+            					<p:commandButton update="dataCollectId msg" icon="fa fa-trash" actionListener="#{grapFormBean.deleteRow(rpt)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+            				
+            				<p:column headerText="Edit" width="20" exportable="false">
+								<p:commandButton icon="fa fa-search" update="yearSumPerCollId" actionListener="#{grapFormBean.clickItem(rs)}" oncomplete="PF('editDialogPerCollectorSummary').show();"/>
+							</p:column>
+            				
+            				<p:column headerText="Name" width="100">
+            						<p:outputLabel value="#{rs.collector.name}"/>
+            				</p:column>
+            				<p:column headerText="Year" width="30">
+            						<p:outputLabel value="#{rs.year}"/>
+            				</p:column>
+            				<p:column headerText="January" width="40">
+            						<p:outputLabel value="#{rs.january}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="February" width="40">
+            						<p:outputLabel value="#{rs.february}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="March" width="40">
+            						<p:outputLabel value="#{rs.march}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="April" width="40">
+            						<p:outputLabel value="#{rs.april}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="May" width="40">
+            						<p:outputLabel value="#{rs.may}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="June" width="40">
+            						<p:outputLabel value="#{rs.june}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="July" width="40">
+            						<p:outputLabel value="#{rs.july}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="August" width="40">
+            						<p:outputLabel value="#{rs.august}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="September" width="40">
+            						<p:outputLabel value="#{rs.september}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="October" width="40">
+            						<p:outputLabel value="#{rs.october}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="November" width="40">
+            						<p:outputLabel value="#{rs.november}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="December" width="40">
+            						<p:outputLabel value="#{rs.december}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:column headerText="Total" width="70">
+            						<p:outputLabel value="#{rs.total}">
+            							<f:convertNumber currencySymbol="Php" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:columnGroup type="footer">
+            					<p:row>
+            						<p:column colspan="16" style="text-align:right" footerText="Totals:"/>
+            						<p:column footerText="Php#{grapFormBean.totalCollectionPerYer}" />
+            					</p:row>
+            				</p:columnGroup>
+					</p:dataTable>
+				
+				</p:tab>
+				<p:tab title="Graph">
+					<p:barChart id="grapcColId" model="#{grapFormBean.hbarModelCollector}" style="width: 100%; height: 400px;background-color: white" widgetVar="chart4"/>
+					<p:commandButton type="button" value="Export" icon="pi pi-home" onclick="exportChart('chart4')"/>
+				</p:tab>
+			</p:tabView>	
+			
+			</div>
+			
+			<div id="idCollector" style="display: none">
+			<p:toolbar id="tbCom2">
+			    		<f:facet name="left">
+			    			<p:selectOneMenu id="mntId" value="#{grapFormBean.monthId}" style="width: 12em">
+								<f:selectItems value="#{grapFormBean.months}"/>
+								<p:ajax event="change" listener="#{grapFormBean.selectedCollector}" update="collId dataPerId"/>
+						    </p:selectOneMenu>
+			    			<p:selectOneMenu id="yrId" value="#{grapFormBean.yearId}" style="width: 12em">
+								<f:selectItems value="#{grapFormBean.years}"/>
+								<p:ajax event="change" listener="#{grapFormBean.selectedCollector}" update="collId dataPerId"/>
+						    </p:selectOneMenu>
+			    			<p:selectOneMenu id="clcId" value="#{grapFormBean.collectorId}" style="width: 12em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{grapFormBean.collectors}"/>
+								<p:ajax event="change" listener="#{grapFormBean.selectedCollector}" update="collId dataPerId"/>
+						    </p:selectOneMenu>
+						 </f:facet>   
+			    		<f:facet name="right"/>
+					</p:toolbar>
+			<p:tabView prependId="false" activeIndex="0">
+				<p:tab title="Add New/Update Per Collector Form Remittance">
+					
+					<p:toolbar id="tbAdd">
+			    		<f:facet name="left">
+			    			   <p:commandButton update="yearPerCollId" value="New" icon="fa fa-file-o" actionListener="#{grapFormBean.createNew}" oncomplete="PF('editDialogPerCollector').show();"/>
+			    		</f:facet>	   
+			    		<f:facet name="right"/>
+					</p:toolbar>
+					
+					
+					<p:dataTable id="dataPerId" value="#{grapFormBean.collectorData}" var="cs" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         style="#{skin.table}" paginatorPosition="top"
+                         
+                         >
+                         
+                         	<f:facet name="{Exporters}">
+            						<h:commandLink title="Export Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="dataPerId" fileName="Reports" />
+            						</h:commandLink>
+            				</f:facet>
+            				
+            				<p:column headerText="[*]" width="20" exportable="false">
+            					<p:commandButton update="dataPerId msg" icon="fa fa-trash" actionListener="#{grapFormBean.deleteRow(rpt)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+            				
+            				<p:column headerText="Edit" width="20" exportable="false">
+								<p:commandButton icon="fa fa-search" update="yearPerCollId" actionListener="#{grapFormBean.clickItem(cs)}" oncomplete="PF('editDialogPerCollector').show();"/>
+							</p:column>
+            				<p:column headerText="Date" width="50">
+            						<p:outputLabel value="#{cs.dateTrans}"/>
+            				</p:column>
+            				<p:column headerText="Collector" width="100">
+            						<p:outputLabel value="#{cs.collector.name}"/>
+            				</p:column>
+            				<p:column headerText="Form" width="70">
+            						<p:outputLabel value="#{cs.formName}"/>
+            				</p:column>
+            				<p:column headerText="Amount" width="70">
+            						<p:outputLabel value="#{cs.amount}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				<p:columnGroup type="footer">
+            					<p:row>
+            						<p:column colspan="5" style="text-align:right" footerText="Totals:"/>
+            						<p:column footerText="Php#{grapFormBean.totalCollection}" />
+            					</p:row>
+            				</p:columnGroup>
+            				
+            		</p:dataTable>
+				</p:tab>
+				<p:tab title="Graph">
+					<p:barChart id="collId" model="#{grapFormBean.hbarModel}" style="width: 100%; height: 400px;background-color: white" widgetVar="chart3"/>
+					<p:commandButton type="button" value="Export" icon="pi pi-home" onclick="exportChart('chart3')"/>
+				</p:tab>
+			</p:tabView>
+			
+			</div>
+			
+			<br/><br/><br/><br/><br/>	
+			</p:layoutUnit>
+	</p:layout>
+		 
+		<p:dialog widgetVar="dlg" showEffect="fade" modal="false" header="Chart as an Image" resizable="true">
+		    <p:outputPanel id="output" layout="block" style="width:500px;height:300px"/>
+		</p:dialog>	
+	
+	  <script type="text/javascript">
+            //<![CDATA[
+            function exportChart(chart) {
+                //export image
+                $('#output').empty().append(PF(chart).exportAsImage());
+ 
+                //show the dialog
+                PF('dlg').show();
+            }
+            
+            //]]>
+        </script>
+	
+	
+	<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" /> 
+	<p:dialog position="center center" widgetVar="statusDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false">
+    	<p:graphicImage name="/gif/loading.gif" style="width: 3em;height: 3em" styleClass="img-circle"/>
+	</p:dialog>
+	
+	<p:dialog position="center top" widgetVar="editDialogSummary" modal="false" draggable="false" closable="false" showHeader="false" style="z-index:1031">
+		<p:toolbar id="tbSumYear">
+		    		<f:facet name="left">
+		    			<p:commandButton update="yearSumId" value="New" icon="fa fa-file-o" actionListener="#{grapFormBean.createNew}" />
+		    		</f:facet>
+		    		<f:facet name="right">
+		    			<p:commandButton update="yearSumId dataId graphRcd1 graphRcd2 msg" value="Save" icon="fa fa-floppy-o" actionListener="#{grapFormBean.saveDataSumYear}" oncomplete="PF('editDialogSummary').hide()">
+		    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+		    			</p:commandButton>
+		    			<p:commandButton value="Close" oncomplete="PF('editDialogSummary').hide()"/>
+		    		</f:facet>
+			</p:toolbar>
+		<p:panelGrid columns="2" id="yearSumId">
+		<p:outputLabel value="Year"/>
+    	<p:inputNumber value="#{grapFormBean.year1}" placeholder="Year"/>
+    	<p:outputLabel value="January"/>
+    	<p:inputNumber value="#{grapFormBean.january1}" placeholder="January"/>
+    	<p:outputLabel value="February"/>
+    	<p:inputNumber value="#{grapFormBean.february1}" placeholder="February"/>
+    	<p:outputLabel value="March"/>
+    	<p:inputNumber value="#{grapFormBean.march1}" placeholder="March"/>
+    	<p:outputLabel value="April"/>
+    	<p:inputNumber value="#{grapFormBean.april1}" placeholder="April"/>
+    	<p:outputLabel value="May"/>
+    	<p:inputNumber value="#{grapFormBean.may1}" placeholder="May"/>
+    	<p:outputLabel value="June"/>
+    	<p:inputNumber value="#{grapFormBean.june1}" placeholder="June"/>
+    	<p:outputLabel value="July"/>
+    	<p:inputNumber value="#{grapFormBean.july1}" placeholder="July"/>
+    	<p:outputLabel value="August"/>
+    	<p:inputNumber value="#{grapFormBean.august1}" placeholder="August"/>
+    	<p:outputLabel value="September"/>
+    	<p:inputNumber value="#{grapFormBean.september1}" placeholder="September"/>
+    	<p:outputLabel value="October"/>
+    	<p:inputNumber value="#{grapFormBean.october1}" placeholder="October"/>
+    	<p:outputLabel value="November"/>
+    	<p:inputNumber value="#{grapFormBean.november1}" placeholder="November"/>
+    	<p:outputLabel value="December"/>
+    	<p:inputNumber value="#{grapFormBean.december1}" placeholder="December"/>
+    	</p:panelGrid>
+	</p:dialog>
+	
+	<p:dialog position="center top" widgetVar="editDialogPerCollectorSummary" modal="false" draggable="false" closable="false" showHeader="false" style="z-index:1031">
+		<p:toolbar id="tbSumPerCollYear">
+		    		<f:facet name="left">
+		    			<p:commandButton update="yearSumId" value="New" icon="fa fa-file-o" actionListener="#{grapFormBean.createNew}" />
+		    		</f:facet>
+		    		<f:facet name="right">
+		    			<p:commandButton update="yearSumPerCollId grapcColId dataCollectId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{grapFormBean.saveDataSumCollectorPerYear}" oncomplete="PF('editDialogPerCollectorSummary').hide()">
+		    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+		    			</p:commandButton>
+		    			<p:commandButton value="Close" oncomplete="PF('editDialogPerCollectorSummary').hide()"/>
+		    		</f:facet>
+			</p:toolbar>
+		<p:panelGrid columns="2" id="yearSumPerCollId">
+		<p:outputLabel value="Collector"/>
+		<p:selectOneMenu value="#{grapFormBean.collectorPerYearId}" style="width: 12em" filterMatchMode="contains" filter="true">
+				<f:selectItems value="#{grapFormBean.collectorsPerYear}"/>
+		</p:selectOneMenu>
+    	<p:outputLabel value="January"/>
+    	<p:inputNumber value="#{grapFormBean.january}" placeholder="January"/>
+    	<p:outputLabel value="February"/>
+    	<p:inputNumber value="#{grapFormBean.february}" placeholder="February"/>
+    	<p:outputLabel value="March"/>
+    	<p:inputNumber value="#{grapFormBean.march}" placeholder="March"/>
+    	<p:outputLabel value="April"/>
+    	<p:inputNumber value="#{grapFormBean.april}" placeholder="April"/>
+    	<p:outputLabel value="May"/>
+    	<p:inputNumber value="#{grapFormBean.may}" placeholder="May"/>
+    	<p:outputLabel value="June"/>
+    	<p:inputNumber value="#{grapFormBean.june}" placeholder="June"/>
+    	<p:outputLabel value="July"/>
+    	<p:inputNumber value="#{grapFormBean.july}" placeholder="July"/>
+    	<p:outputLabel value="August"/>
+    	<p:inputNumber value="#{grapFormBean.august}" placeholder="August"/>
+    	<p:outputLabel value="September"/>
+    	<p:inputNumber value="#{grapFormBean.september}" placeholder="September"/>
+    	<p:outputLabel value="October"/>
+    	<p:inputNumber value="#{grapFormBean.october}" placeholder="October"/>
+    	<p:outputLabel value="November"/>
+    	<p:inputNumber value="#{grapFormBean.november}" placeholder="November"/>
+    	<p:outputLabel value="December"/>
+    	<p:inputNumber value="#{grapFormBean.december}" placeholder="December"/>
+    	</p:panelGrid>
+	</p:dialog>
+	
+	<p:dialog position="center top" widgetVar="editDialogPerCollector" modal="false" draggable="false" closable="false" showHeader="false" style="z-index:1031">
+		<p:toolbar id="tbSumPerColl">
+		    		<f:facet name="left">
+		    			<p:commandButton update="yearPerCollId" value="New" icon="fa fa-file-o" actionListener="#{grapFormBean.createNew}" />
+		    		</f:facet>
+		    		<f:facet name="right">
+		    			<p:commandButton update="yearPerCollId collId dataPerId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{grapFormBean.saveDataPerCollector}" oncomplete="PF('editDialogPerCollector').hide()">
+		    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+		    			</p:commandButton>
+		    			<p:commandButton value="Close" oncomplete="PF('editDialogPerCollector').hide()"/>
+		    		</f:facet>
+			</p:toolbar>
+		<p:panelGrid columns="2" id="yearPerCollId">
+		<p:outputLabel value="Collector"/>
+		<p:selectOneMenu value="#{grapFormBean.collectorAddId}" style="width: 12em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{grapFormBean.collectorAdd}"/>
+						    </p:selectOneMenu>
+		<p:outputLabel value="AP Forms"/>
+		<p:selectOneMenu value="#{grapFormBean.formTypeId}" style="width: 12em" filterMatchMode="contains" filter="true">
+				<f:selectItems value="#{grapFormBean.forms}"/>
+		</p:selectOneMenu>
+    	<p:outputLabel value="Date"/>
+    	<p:calendar value="#{grapFormBean.dateTrans}" pattern="yyyy-MM-dd" effect="slideDown"/>
+		<p:outputLabel value="Amount"/>
+    	<p:inputNumber value="#{grapFormBean.amountReceived}" placeholder="00.00"/>
+		</p:panelGrid>
+	</p:dialog>	
+	
+	<ui:include src="menu.xhtml" />
+</h:form>		
+</h:body>
+</html>
+		

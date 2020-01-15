@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Collector's Recording</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Collector's Recording</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Collector's Recording</title>
+
+</h:head>
+
+<h:body>
+	
+	<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId">
+	<p:growl id="msg" showDetail="true" life="2000" />
+	
+	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+	
+	
+	<p:dialog widgetVar="dlgCash" width="500" position="center center" height="210" header="Cash Ticket Details" closeOnEscape="true" closable="false">
+		<p:toolbar id="tbCash" style="#{skin.toolbar}">
+    		<f:facet name="left"/>
+    		<f:facet name="right">
+    				<p:commandButton value="Save" actionListener="#{logformBean.saveData}" update="gridId listForm reportData colMapId msg" oncomplete="PF('dlgCash').hide()"/>
+    				<p:commandButton value="Close" onclick="PF('dlgCash').hide()"/>
+    		</f:facet>
+			</p:toolbar> 
+		<p:panelGrid id="ctDtlsId" layout="grid" columns="2">
+			<p:inputText value="#{logformBean.pujLabel}"/>
+			<p:inputText value="#{logformBean.puj}" placeholder="00.00"/>
+			
+			<p:inputText value="#{logformBean.peddlerLabel}"/>
+			<p:inputText value="#{logformBean.pedller}" placeholder="00.00"/>
+			
+			<p:inputText value="#{logformBean.isdaLabel}"/>
+			<p:inputText value="#{logformBean.isda}" placeholder="00.00"/>
+			
+			<p:inputText value="#{logformBean.skylabLabel}"/>
+			<p:inputText value="#{logformBean.skylab}" placeholder="00.00"/>
+			
+		</p:panelGrid>
+		
+	</p:dialog>
+	
+	
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="50" visible="false"/>
+			<p:layoutUnit position="south" size="100" visible="false">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="east" size="0" visible="false"/>
+			<p:layoutUnit position="west" size="700" visible="true">
+			
+			<p:toolbar id="tbForm" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="gridId listForm" value="New" icon="fa fa-file-o" actionListener="#{logformBean.clear}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to create new?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    			<p:commandButton update="gridId listForm" value="Clear" icon="fa fa-trash" action="#{logformBean.clear}">
+    				<p:confirm header="Confirmation" message="Are you sure you want clear below forms list?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    		</f:facet>
+			</p:toolbar> 
+				
+			<p:panelGrid id="gridId" columns="4" layout="grid">
+			
+			<p:outputLabel value="Received Date"/>
+			<p:calendar value="#{logformBean.receivedDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 12em"/>
+				
+			<p:outputLabel/>
+			<p:outputLabel/>
+			
+			<p:outputLabel value="Fund"/>	
+		    <p:selectOneMenu id="fundId" value="#{logformBean.fundId}" style="width: 12em" disabled="false">
+					<f:selectItems value="#{logformBean.funds}"/>
+					<p:ajax event="change" listener="#{logformBean.loadIssuedForm}" update="seriesId fromId endId frmId qtyId listForm grpId"/>
+			</p:selectOneMenu>
+				
+				<p:outputLabel value="Collector"/>	
+			    <p:selectOneMenu id="colId" value="#{logformBean.collectorId}" style="width: 12em" filter="true" filterMatchMode="contains">
+						<f:selectItems value="#{logformBean.collectors}"/>
+						<p:ajax event="change" listener="#{logformBean.loadIssuedForm}" update="seriesId fromId endId frmId qtyId listForm grpId"/>
+				</p:selectOneMenu>
+				
+				<p:outputLabel value="Serial Issued"/>	
+			    <p:selectOneMenu id="seriesId" value="#{logformBean.issuedId}" style="width: 12em" filter="true" filterMatchMode="contains">
+						<f:selectItems value="#{logformBean.issueds}"/>
+						<p:ajax event="change" listener="#{logformBean.loadLatestSeries}" update="fromId endId frmId qtyId"/>
+				</p:selectOneMenu>
+				
+				<p:outputLabel value="Quantity"/>
+				<p:inputText id="qtyId" value="#{logformBean.quantity}" style="width: 12em">
+					<p:ajax event="keyup" listener="#{logformBean.calculateEndingNo}" update="fromId endId amntId msg" />
+				</p:inputText>
+				
+				<p:outputLabel value="From Serial"/>
+				<p:inputText id="fromId" value="#{logformBean.beginningNo}" style="width: 12em">
+					<p:ajax event="keyup" listener="#{logformBean.calculateEndingNo}" update="endId" />
+				</p:inputText>
+				
+				<p:outputLabel value="To Serial"/>
+				<p:inputText id="endId" value="#{logformBean.endingNo}" style="width: 12em"/>
+				
+				<p:outputLabel value="Form Type"/>	
+			    <p:selectOneMenu id="frmId" value="#{logformBean.formTypeId}" style="width: 12em" disabled="true">
+						<f:selectItems value="#{logformBean.formTypes}"/>
+				</p:selectOneMenu>
+				
+				<p:outputLabel value="Amount"/>
+				<p:inputNumber id="amntId" value="#{logformBean.amount}" inputStyle="width: 12em"/>
+				
+				<p:outputLabel value="Group Report Code"/>
+				<p:inputText id="grpId" value="#{logformBean.group}" style="width: 12em"/>
+				
+				<p:outputLabel value="Action"/>	
+				<p:commandButton update="listForm gridId tbFormNew saveNormalId saveNotNormalId msg" value="Add to List" icon="fa fa-file-o" actionListener="#{logformBean.addGroup}"/>
+				
+			</p:panelGrid>
+			
+			<p:toolbar id="tbFormNew" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    			<p:commandButton update="gridId listForm tbFormNew msg" value="Clear Below List" icon="fa fa-trash" action="#{logformBean.clearBelowFormList}">
+    				<p:confirm header="Confirmation" message="Are you sure you want clear below forms list?" icon="ui-icon-alert" />
+    			</p:commandButton>	
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:outputLabel value="Php#{logformBean.totalAmount}"/>
+    		</f:facet>
+			</p:toolbar>
+			 
+			<p:dataTable id="listForm" value="#{logformBean.newForms}" var="rp" stickyHeader="false"
+							rows="13" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="26,50,100"
+                         scrollable="true" style="#{skin.table}" paginatorPosition="top" editable="#{logformBean.currentDate}" editMode="cell">
+                         	
+                         	<p:ajax event="cellEdit"  listener="#{logformBean.onCellEdit}" update="listForm,reportData,tbFormGen,msg" />
+                         	
+                         	<p:column headerText="[*]" width="30" exportable="false">
+            					<p:commandButton update="tbFormNew listForm gridId reportData msg" icon="fa fa-trash" actionListener="#{logformBean.deleteRow(rp)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+            				
+            				<!-- 
+							<p:column headerText="View" width="30" exportable="false">
+								<p:commandButton icon="fa fa-search" update="gridId" actionListener="#{logformBean.clickItemForm(rp)}"/>
+							</p:column>
+							 -->
+                         	
+                         	<p:column headerText="Form" width="70">
+            						<p:outputLabel value="#{rp.formTypeName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="From Serial" width="70">
+            						<p:outputLabel value="#{rp.startNo}"/>
+            				</p:column>
+            				
+            				<p:column headerText="To Serial" width="70">
+            						<p:outputLabel value="#{rp.endNo}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Qty" width="30">
+            						<p:outputLabel value="#{rp.pcs}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Amount" width="30">
+            						<p:cellEditor>
+            							<f:facet name="output"><h:outputText value="#{rp.amount}" /></f:facet>
+            							<f:facet name="input">
+            								<p:inputText value="#{rp.amount}"/>
+            							</f:facet>
+            						</p:cellEditor>
+            				</p:column>	
+                         
+            </p:dataTable>             
+			<p:toolbar id="tbFormNew2" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton id="saveNormalId" update="gridId listForm reportData colMapId msg" value="Save Only" icon="fa fa-floppy-o" actionListener="#{logformBean.saveData}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to save this data? Once saved, previous report is no longer allowed for editing." icon="ui-icon-alert" />
+    			</p:commandButton>
+    			<p:commandButton id="saveNotNormalId" update="ctDtlsId" value="Save With Ticket" onclick="PF('dlgCash').show()"/>
+    		</f:facet>
+			</p:toolbar>
+				
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="center">
+			
+			<p:toolbar id="tbFormGen" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    					<p:selectOneMenu id="fundSerId" value="#{logformBean.fundSearchId}" style="width: 10em" disabled="false">
+							<f:selectItems value="#{logformBean.fundsSearch}"/>
+							<p:ajax event="change" listener="#{logformBean.init}" update="reportData"/>
+						</p:selectOneMenu>
+    					<p:selectOneMenu id="colMapId" value="#{logformBean.collectorMapId}" style="width: 10em" filter="true" filterMatchMode="contains">
+							<f:selectItems value="#{logformBean.collectorsMap}"/>
+							<p:ajax event="change" listener="#{logformBean.init}" update="reportData"/>
+						</p:selectOneMenu>
+    		</f:facet>
+    		<f:facet name="right">
+    					<p:calendar value="#{logformBean.dateFrom}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>
+		    			<p:calendar value="#{logformBean.dateTo}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>	
+		    			<p:commandButton id="findId" update="reportData listForm gridId"  icon="fa fa-search" actionListener="#{logformBean.find}"/>
+    		</f:facet>
+			</p:toolbar> 
+			
+			
+			<p:dataTable id="reportData" value="#{logformBean.infos}" var="in" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="10,20,30,40,50,100"
+                         scrollable="true" style="#{skin.table}" paginatorPosition="top" selection="#{logformBean.selectedCollection}" rowKey="#{in.id}">
+                         	
+                       <f:facet name="{Exporters}">
+                       		<p:inputText value="#{logformBean.reportSeriesSummary}" style="width: 8em">
+                       			<p:ajax event="change" listener="#{logformBean.updateSeriesSummary}"/>
+                       		</p:inputText>
+                       		<p:calendar value="#{logformBean.summaryDate}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>  	
+                         	<p:commandLink title="PRINT ALL RCD" target="_blank" actionListener="#{logformBean.printAllRCD}" ajax="false" immediate="false">
+            					<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+							</p:commandLink>
+							<p:commandLink title="PRINT SUMMARY RCD" target="_blank" actionListener="#{logformBean.printSummary}" ajax="false" immediate="false">
+		            					<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+							</p:commandLink>
+							<p:commandLink title="MONTHLY COLLECTOR PRINT SUMMARY REPORT" target="_blank" actionListener="#{logformBean.printInternalCollectorSummary('collector')}" ajax="false" immediate="false">
+		            					<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+							</p:commandLink>
+							<p:commandLink title="MONTHLY COLLECTION PRINT SUMMARY REPORT" target="_blank" actionListener="#{logformBean.printInternalCollectorSummary('all')}" ajax="false" immediate="false">
+		            					<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+							</p:commandLink>
+					   </f:facet>
+                         	
+                         	<p:column selectionMode="multiple" width="15"/>
+                         	
+                         	<p:column headerText="View" width="10" exportable="false">
+								<p:commandButton icon="fa fa-search" update="gridId listForm tbFormNew" actionListener="#{logformBean.clickItem(in)}"/>
+							</p:column>
+                         	
+                         	<p:column headerText="PDF" width="10" exportable="false">
+								<p:commandLink title="Print in PDF" actionListener="#{logformBean.printDateModify(in)}" oncomplete="PF('dlgPrint').show();" update="idPrintDate printId">
+            				 			<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+								</p:commandLink>
+							</p:column>
+                         	
+                         	<p:column headerText="Created" width="40">
+            						<p:outputLabel value="#{in.receivedDate}"/>
+            				</p:column>
+                         	
+                         	<p:column headerText="Report No" width="40">
+            						<p:outputLabel value="#{in.rptFormat}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Collector" width="100">
+            						<p:outputLabel value="#{in.collector.name}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Fund" width="50">
+            						<p:outputLabel value="#{in.fundName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Total Amount" width="70">
+            						<p:outputLabel value="#{in.amount}" style="font-weight: bold;font-size: 120%">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            					
+                         
+            </p:dataTable>   
+				
+			<br/><br/><br/><br/><br/><br/><br/>	
+				
+			</p:layoutUnit>
+	</p:layout>
+	
+	<p:dialog widgetVar="dlgPrint">
+		<p:panelGrid id="idPrintDate" columns="1" layout="grid">
+			<p:outputLabel value="Date Printed" />
+			<p:calendar value="#{logformBean.perReportDate}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>
+			<p:selectBooleanCheckbox value="#{logformBean.useModifiedDate}" itemLabel="Use above date"/>
+			<p:commandLink id="printId" title="Print in PDF" target="_blank" actionListener="#{logformBean.printChange}" ajax="false" immediate="false">
+            		<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+			</p:commandLink>
+		</p:panelGrid>
+	</p:dialog>
+	
+	<ui:include src="loader.xhtml" />
+	<ui:include src="menu.xhtml" />
+</h:form>		
+</h:body>
+</html>
+		

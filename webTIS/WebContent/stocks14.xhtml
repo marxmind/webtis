@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+
+	<f:facet name="first">
+		    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+		    <meta name="description" content=""/>
+		    <meta name="author" content=""/>
+            <title>Stocks</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputStylesheet name="maxdesign/css/sb-admin-2.min.css"/>
+            <h:outputStylesheet name="maxdesign/vendor/fontawesome-free/css/all.min.css"/>
+            <h:outputStylesheet name="maxdesign/css/max-component.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputScript name="jquery/jquery.min.js" target="head"/>
+ 		<h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+        <h:outputScript name="jquery-easing/jquery.easing.min.js" target="head"/>
+        <h:outputScript name="maxdesign/js/sb-admin-2.min.js"/>
+    </f:facet>
+
+</h:head>
+
+<h:body id="page-top">
+<h:form prependId="false" id="formId">
+<p:growl id="msg" life="2000" showDetail="true"/>
+	
+	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+
+
+<!-- Page Wrapper -->
+  <div id="wrapper">
+  	
+  	<!-- Sidebar -->
+  	<ui:include src="sidebar.xhtml" />
+  	<!-- End of Sidebar -->
+  	
+	<!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+    
+       <!-- Main Content -->
+      <div id="content">
+      		
+      	<!-- Topbar -->
+        <ui:include src="topbar.xhtml" />
+        <!-- End of Topbar -->
+      	
+      	
+      	<!-- Begin Page Content Fluid -->
+        <div class="container-fluid">
+        	
+        	  <!-- Page Heading -->
+	          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+	            <h1 class="h3 mb-0 text-gray-800">Stocks Recording</h1>
+	          </div>
+	          
+	           <!-- Start Main -->
+           <div class="row">
+           
+           <div class="col-xl-4 col-lg-5">
+           		<div class="card shadow mb-4">
+           				<div class="card-body">
+		                  
+		                  <p:toolbar id="tbForm" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="gridId" value="New" icon="fa fa-file-o" actionListener="#{stockBean.createNew}"/>
+    			<p:commandButton update="gridId" value="Clear" icon="fa fa-trash" action="#{stockBean.createNew}"/>
+    			<p:commandButton update="gridId dataForm msg" value="Save" icon="fa fa-floppy-o" actionListener="#{stockBean.saveData}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    		</f:facet>
+			</p:toolbar> 
+				
+				<p:panelGrid id="gridId" columns="2" layout="grid">
+				
+				<p:outputLabel value="Date"/>
+				<p:calendar value="#{stockBean.recordedDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 12em"/>
+				
+				<p:outputLabel value="Form Type"/>	
+			    <p:selectOneMenu id="frmId" value="#{stockBean.formTypeId}" style="width: 12em">
+						<f:selectItems value="#{stockBean.formType}"/>
+						<p:ajax event="change" listener="#{stockBean.generateSeries}" update="fromId toId msg"/>
+				</p:selectOneMenu>
+				
+				<p:outputLabel value="Stab No"/>
+				<p:inputNumber value="#{stockBean.stabNo}" inputStyle="width: 12em"/>
+				
+				<p:outputLabel value="Stab(CT quantity)"/>
+				<p:inputNumber value="#{stockBean.numberOfStab}" inputStyle="width: 12em">
+					<p:ajax event="keyup" listener="#{stockBean.generateSeries}" update="toId msg"/>
+				</p:inputNumber>
+				
+				<p:outputLabel value="Series From"/>
+				<p:inputText id="fromId" value="#{stockBean.seriesFrom}" style="width: 12em">
+					<p:ajax event="keyup" listener="#{stockBean.generateSeries}" update="toId msg"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Series To"/>
+				<p:inputText id="toId" value="#{stockBean.seriesTo}" style="width: 12em" readonly="true"/>
+			
+				</p:panelGrid>
+		                  
+                		</div>
+           		</div>
+           </div>
+           
+           <div class="col-xl-8 col-lg-7">
+           		<div class="card shadow mb-4">
+           			<div class="card-body">
+		                  
+		                  <p:toolbar id="tbFormSearch" style="#{skin.toolbar}">
+    		<f:facet name="left">	
+				    <p:selectOneMenu id="frmIdSearch" value="#{stockBean.formTypeIdSearch}" style="width: 12em">
+							<f:selectItems value="#{stockBean.formTypeSearch}"/>
+							<p:ajax event="change" listener="#{stockBean.init}" update="dataForm" />
+					</p:selectOneMenu>
+    		</f:facet>
+    		<f:facet name="right">
+    			
+    		</f:facet>
+			</p:toolbar> 
+				
+				<p:dataTable id="dataForm" value="#{stockBean.stocks}" var="rpt" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false"
+                         
+                         >
+                         
+                         	<f:facet name="{Exporters}">
+            						<h:commandLink title="Export Form Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="dataForm" fileName="Forms" />
+            						</h:commandLink>
+            						<h:commandLink title="Export Form Report in pdf format">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+                						    <p:dataExporter type="xls" target="dataForm" fileName="Forms" />
+            						</h:commandLink>
+            				</f:facet>			
+                         	
+                         	<p:column headerText="No" width="10" exportable="false">
+								<p:outputLabel value="#{rpt.count}"/>
+							</p:column>
+                         	
+							<p:column headerText="[*]" width="30" exportable="false">
+            					<p:commandButton update="dataForm gridId msg" icon="fa fa-trash" actionListener="#{stockBean.deleteRow(rpt)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+            				
+							<p:column headerText="View" width="30" exportable="false">
+								<p:commandButton icon="fa fa-search" update="gridId" actionListener="#{stockBean.clickItem(rpt)}"/>
+							</p:column>
+							
+							<p:column headerText="Created" width="70">
+            						<p:outputLabel value="#{rpt.dateTrans}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Stab#" width="30">
+            						<p:outputLabel value="#{rpt.stabNo}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Form Type" width="70">
+            						<p:outputLabel value="#{rpt.formTypeName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Status" width="70">
+            						<p:outputLabel value="#{rpt.statusName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="From" width="70">
+            						<p:outputLabel value="#{rpt.seriesFrom}"/>
+            				</p:column>
+            				
+            				<p:column headerText="To" width="70">
+            						<p:outputLabel value="#{rpt.seriesTo}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Qty" width="30">
+            						<p:outputLabel value="#{rpt.quantity}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Collector" width="100">
+            						<p:outputLabel value="#{rpt.collector.name}"/>
+            				</p:column>
+            				
+            	</p:dataTable>	
+                	
+                	</div>
+           		</div>
+           </div>
+           
+           </div>
+        	
+        </div>
+        <!-- End Page Content Fluid-->
+      		
+      </div>
+      <!-- End Main Content -->
+    	
+      <!-- Start Footer -->	
+      <ui:include src="copyright.xhtml" />
+      <!-- End Footer -->		
+    	
+    </div>
+	<!-- End Content Wrapper -->
+	  	
+  </div>
+<!-- End Page Wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+<!-- Start Footer -->	
+   <ui:include src="logoutmodal.xhtml" />
+<!-- End Footer -->
+<!-- Loader -->
+<ui:include src="loader.xhtml" />
+
+</h:form>
+</h:body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	

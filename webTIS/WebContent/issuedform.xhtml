@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Issued Form Recording</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Issued Form Recording</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Issued Form Recording</title>
+
+</h:head>
+
+<h:body>
+	
+	<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId">
+	<p:growl id="msg" life="2000" showDetail="true"/>
+	
+	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+	
+	
+	
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="50" visible="false"/>
+			<p:layoutUnit position="south" size="100" visible="false">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="east" size="0" visible="false"/>
+			<p:layoutUnit position="west" size="300" visible="true">
+			
+			<p:toolbar id="tbForm" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="gridId dataForm" value="New" icon="fa fa-file-o" actionListener="#{formBean.createNew}"/>
+    			<p:commandButton update="gridId dataForm" value="Clear" icon="fa fa-trash" action="#{formBean.createNew}"/>
+    			<p:commandButton update="gridId dataForm msg" value="Save" icon="fa fa-floppy-o" actionListener="#{formBean.saveData}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    		</f:facet>
+			</p:toolbar> 
+				
+			<p:panelGrid id="gridId" columns="2" layout="grid">
+			
+			<p:outputLabel value="Issued Date"/>
+			<p:calendar value="#{formBean.issuedDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 12em"/>
+			
+			<p:outputLabel/>
+			<p:outputLabel/>
+			
+			<p:outputLabel value="Fund"/>	
+		    <p:selectOneMenu id="fundId" value="#{formBean.fundId}" style="width: 12em" disabled="false">
+					<f:selectItems value="#{formBean.funds}"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Select Forms"/>
+			<p:commandButton icon="fa fa-search" update="formsData" actionListener="#{formBean.loadForms}" oncomplete="PF('formsDialog').show()"/>
+			
+			<p:outputLabel value="Quantity"/>
+			<p:inputText value="#{formBean.quantity}" style="width: 12em">
+				<p:ajax event="keyup" listener="#{formBean.calculateEndingNo}" update="fromId endId" />
+			</p:inputText>
+			
+			<p:outputLabel value="From Serial"/>
+			<p:inputText id="fromId" value="#{formBean.beginningNo}" style="width: 12em" readonly="false">
+				<p:ajax event="keyup" listener="#{formBean.calculateEndingNo}" update="endId" />
+			</p:inputText>
+			
+			<p:outputLabel value="To Serial"/>
+			<p:inputText id="endId" value="#{formBean.endingNo}" style="width: 12em" readonly="false"/>
+			
+			<p:outputLabel value="Form Type"/>	
+		    <p:selectOneMenu id="frmId" value="#{formBean.formTypeId}" style="width: 12em" disabled="false">
+					<f:selectItems value="#{formBean.formTypes}"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Status"/>	
+		    <p:selectOneMenu id="statId" value="#{formBean.statusId}" style="width: 12em">
+					<f:selectItems value="#{formBean.status}"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Collector"/>	
+		    <p:selectOneMenu id="colId" value="#{formBean.collectorId}" style="width: 12em" filter="true" filterMatchMode="contains">
+					<f:selectItems value="#{formBean.collectors}"/>
+			</p:selectOneMenu>
+			
+			</p:panelGrid>
+				
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="center">
+				<p:toolbar id="tbTool" style="#{skin.toolbar}">
+	    		<f:facet name="left">
+	    					<p:selectOneMenu id="fundSerId" value="#{formBean.fundSearchId}" style="width: 12em" disabled="false">
+								<f:selectItems value="#{formBean.fundsSearch}"/>
+								<p:ajax event="change" listener="#{formBean.loadData}" update="dataForm dataFormSeries"/>
+							</p:selectOneMenu>
+	    					<p:selectOneMenu id="colMapId" value="#{formBean.collectorMapId}" style="width: 20em" filter="true" filterMatchMode="contains">
+								<f:selectItems value="#{formBean.collectorsMap}"/>
+								<p:ajax event="change" listener="#{formBean.loadData}" update="dataForm dataFormSeries"/>
+							</p:selectOneMenu>
+	    		</f:facet>
+	    		<f:facet name="right"/>
+				</p:toolbar>
+				
+				<p:tabView prependId="false" cache="true" id="tabId">
+				
+				
+				<p:ajax event="tabChange" listener="#{formBean.onChange}" update="tabId"/>
+				
+				<p:tab title="Issued Forms">
+					<p:dataTable id="dataForm" value="#{formBean.forms}" var="rpt" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" style="#{skin.table}" paginatorPosition="top"
+                         
+                         >
+                         
+                         	<f:facet name="{Exporters}">
+            						<h:commandLink title="Export Form Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="dataForm" fileName="Forms" />
+            						</h:commandLink>
+            						<h:commandLink title="Export Form Report in pdf format">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+                						    <p:dataExporter type="xls" target="dataForm" fileName="Forms" />
+            						</h:commandLink>
+            				</f:facet>			
+                         
+							<p:column headerText="[*]" width="20" exportable="false">
+            					<p:commandButton update="dataForm gridId msg" icon="fa fa-trash" actionListener="#{formBean.deleteRow(rpt)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+            				
+							<p:column headerText="View" width="20" exportable="false">
+								<p:commandButton icon="fa fa-search" update="gridId" actionListener="#{formBean.clickItem(rpt)}"/>
+							</p:column>
+							
+							<p:column headerText="Stab#" width="30">
+            						<p:outputLabel value="#{rpt.stabNo}"/>
+            				</p:column>
+							
+							<p:column headerText="Issued" width="50">
+            						<p:outputLabel value="#{rpt.issuedDate}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Fund" width="50">
+            						<p:outputLabel value="#{rpt.fundName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Form" width="50">
+            						<p:outputLabel value="#{rpt.formTypeName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Status" width="50">
+            						<p:outputLabel value="#{rpt.statusName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="From Serial" width="50">
+            						<p:outputLabel value="#{rpt.beginningNo}"/>
+            				</p:column>
+            				
+            				<p:column headerText="To Serial" width="50">
+            						<p:outputLabel value="#{rpt.endingNo}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Quantity" width="30">
+            						<p:outputLabel value="#{rpt.pcs}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Collector" width="100">
+            						<p:outputLabel value="#{rpt.collector.name}"/>
+            				</p:column>
+            				
+            		</p:dataTable>	
+				</p:tab>
+				
+				<p:tab title="Form Series">
+					<p:toolbar id="tbFormGen1" style="#{skin.toolbar}">
+		    		<f:facet name="left">
+		    				<p:selectOneMenu id="monthId" value="#{formBean.monthId}">
+								<f:selectItems value="#{formBean.months}"/>
+								<p:ajax event="change" listener="#{formBean.loadSeries}" update="dataFormSeries" />
+							</p:selectOneMenu>	
+		    		</f:facet>
+		    		<f:facet name="right">
+		    				<h:commandLink title="Export Monthly Report in pdf format" value="Print" target="_blank" ajax="false" immediate="false"  actionListener="#{formBean.printMonthSeries}">
+			                    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+			            	</h:commandLink>
+		    		</f:facet>
+					</p:toolbar> 
+					
+					<p:dataTable id="dataFormSeries" value="#{formBean.seriesForm}" var="sf" stickyHeader="false"
+							rows="1000" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="1000,2000,3000"
+                        style="#{skin.table}" paginatorPosition="top"
+                         
+                         >
+                         
+                         	<f:facet name="{Exporters}">
+            						<h:commandLink title="Export Form Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="dataFormSeries" fileName="Forms" />
+            						</h:commandLink>
+            						<h:commandLink title="Export Form Report in pdf format">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+                						    <p:dataExporter type="xls" target="dataFormSeries" fileName="Forms" />
+            						</h:commandLink>
+            				</f:facet>			
+                         	
+							<p:column headerText="AF No." width="50">
+            						<p:outputLabel value="#{sf.f1}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Qty" width="30">
+            						<p:outputLabel value="#{sf.f2}"/>
+            				</p:column>
+            				
+            				<p:column headerText="From" width="70">
+            						<p:outputLabel value="#{sf.f3}"/>
+            				</p:column>
+            				
+            				<p:column headerText="End" width="70">
+            						<p:outputLabel value="#{sf.f4}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Qty" width="30">
+            						<p:outputLabel value="#{sf.f5}"/>
+            				</p:column>
+            				
+            				<p:column headerText="From" width="70">
+            						<p:outputLabel value="#{sf.f6}"/>
+            				</p:column>
+            				
+            				<p:column headerText="End" width="70">
+            						<p:outputLabel value="#{sf.f7}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Qty" width="30">
+            						<p:outputLabel value="#{sf.f8}"/>
+            				</p:column>
+            				
+            				<p:column headerText="From" width="70">
+            						<p:outputLabel value="#{sf.f9}"/>
+            				</p:column>
+            				
+            				<p:column headerText="End" width="70">
+            						<p:outputLabel value="#{sf.f10}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Qty" width="30">
+            						<p:outputLabel value="#{sf.f11}"/>
+            				</p:column>
+            				
+            				<p:column headerText="From" width="100">
+            						<p:outputLabel value="#{sf.f12}"/>
+            				</p:column>
+            				
+            				<p:column headerText="End" width="70">
+            						<p:outputLabel value="#{sf.f13}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Collector" width="100">
+            						<p:outputLabel value="#{sf.f15}"/>
+            				</p:column>
+            				
+            		</p:dataTable>	
+				</p:tab>
+				
+				</p:tabView>
+				
+			</p:layoutUnit>
+	</p:layout>
+	
+	<p:dialog position="center top" width="600" height="600" widgetVar="formsDialog" responsive="true" header="Series Lookup" modal="false" showEffect="clip" hideEffect="clip" resizable="false">
+	<p:toolbar id="tbpay">
+    		<f:facet name="left">
+    				<p:selectOneMenu id="frmIdSearch" value="#{formBean.formTypeIdSearch}" style="width: 12em">
+							<f:selectItems value="#{formBean.formTypeSearch}"/>
+							<p:ajax event="change" listener="#{formBean.loadForms}" update="formsData" />
+					</p:selectOneMenu>
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="dataForm" value="Close" onclick="PF('formsDialog').hide()"/>
+    		</f:facet>
+		</p:toolbar>
+     
+	
+	<p:dataTable value="#{formBean.stocks}" id="formsData" var="fm" type="ordered" itemType="none" style="#{skin.table}"
+	paginator="true" rows="10" paginatorPosition="top" paginatorAlwaysVisible="false">
+	
+		<p:column headerText="Action" width="60">
+				<p:commandButton value="Select" update="gridId" actionListener="#{formBean.stocksSelected(fm)}" oncomplete="PF('formsDialog').hide()"/>
+	    </p:column>
+        
+        <p:column headerText="Stab#" width="30">
+            <p:outputLabel value="#{fm.stabNo}"/>
+        </p:column>
+        
+        <p:column headerText="Form Type" width="70">
+            <p:outputLabel value="#{fm.formTypeName}"/>
+        </p:column>
+        
+        <p:column headerText="Quantity" width="70">
+        	<p:outputLabel value="#{fm.quantity}"/>
+        </p:column>
+        
+        <p:column headerText="Series" width="70">
+        	<p:outputLabel value="#{fm.seriesFrom}-#{fm.seriesTo}"/>
+        </p:column>
+        
+    </p:dataTable>
+</p:dialog>
+	
+	<ui:include src="loader.xhtml" />
+	<ui:include src="menu.xhtml" />
+</h:form>		
+</h:body>
+</html>
+		

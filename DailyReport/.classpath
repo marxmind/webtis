@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/webtis/dailyreport/webtis.jar"/>
+	<classpathentry kind="lib" path="C:/webtis/dailyreport/mysql-connector-java-5.1.38-bin.jar"/>
+	<classpathentry kind="lib" path="C:/webtis/dailyreport/javax.faces.jar"/>
+	<classpathentry kind="lib" path="C:/webtis/dailyreport/jasperreports-6.2.0.cheque.jar"/>
+	<classpathentry kind="lib" path="C:/webtis/dailyreport/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/webtis/dailyreport/commons-digester-2.1.jar"/>
+	<classpathentry kind="lib" path="C:/webtis/dailyreport/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/webtis/dailyreport/commons-beanutils-1.9.0.jar"/>
+	<classpathentry kind="lib" path="C:/webtis/dailyreport/itext-2.1.7.js4.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

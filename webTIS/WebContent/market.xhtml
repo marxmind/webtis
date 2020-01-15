@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Market Rentals</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Market Rentals</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Market Rentals</title>
+
+</h:head>
+
+<h:body>
+	
+	<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId">
+	<p:growl id="msg" life="2000" />
+	
+	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+	
+	
+	
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="50" visible="false"/>
+			<p:layoutUnit position="south" size="100" visible="false"/>
+			<p:layoutUnit position="east" size="0" visible="false"/>
+			<p:layoutUnit position="west" size="500" visible="false"/>
+			<p:layoutUnit position="center">
+			
+			<p:toolbar id="tbMarket" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    			<p:commandButton update="customerFld dataCustomerId" actionListener="#{customerBean.clearFlds}" value="Owner Profile" icon="fa fa-file-o" onclick="PF('customerDlg').show()"/>
+    			<p:commandButton update="buildingFld dataBuildingId" actionListener="#{buildBean.clearFlds}" value="Building Profile" icon="fa fa-file-o" onclick="PF('buildingDlg').show()"/>
+    			<p:commandButton update="stallFld dataStallId" actionListener="#{stallBean.clearFlds}" value="Stall Profile" icon="fa fa-file-o" onclick="PF('stallDlg').show()"/>
+    			<p:commandButton update="ownerFld dataOwnerId" actionListener="#{assBean.clearFlds}" value="Stall Owner Profile" icon="fa fa-file-o" onclick="PF('ownerDlg').show()"/>
+    			
+    			<p:commandButton update="dataId" actionListener="#{marketBean.init}" value="Refresh" icon="fa fa-refresh"/>
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="paymentFldId payNotesId" actionListener="#{marketBean.clearFldsPayment}" onclick="PF('payDlg').show()" value="Analyze Payment" icon="fa fa-file-o"/>
+    		</f:facet>
+			</p:toolbar> 
+			
+			<p:dataTable id="dataId" value="#{marketBean.reports}" var="rpt" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" scrollWidth="100%" style="#{skin.table}" paginatorPosition="top"
+                         
+                         >
+                         
+                         	<f:facet name="{Exporters}">
+            						<h:commandLink title="Export Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="dataId" fileName="Reports" />
+            						</h:commandLink>
+            				</f:facet>	
+            		
+            				<p:column headerText="Owner" width="100">
+            						<p:outputLabel value="#{rpt.f1}"/>
+            				</p:column>
+            				<p:column headerText="Location" width="70">
+            						<p:outputLabel value="#{rpt.f14}"/>
+            				</p:column>	
+            				<p:column headerText="Stall/Store" width="70">
+            						<p:outputLabel value="#{rpt.f15}"/>
+            				</p:column>	
+            				<p:column headerText="January" width="70">
+            						<p:outputLabel value="#{rpt.f2}"/>
+            				</p:column>	
+            				<p:column headerText="February" width="70">
+            						<p:outputLabel value="#{rpt.f3}"/>
+            				</p:column>
+            				<p:column headerText="March" width="70">
+            						<p:outputLabel value="#{rpt.f4}"/>
+            				</p:column>	
+            				<p:column headerText="April" width="70">
+            						<p:outputLabel value="#{rpt.f5}"/>
+            				</p:column>		
+            				<p:column headerText="May" width="70">
+            						<p:outputLabel value="#{rpt.f6}"/>
+            				</p:column>
+            				<p:column headerText="June" width="70">
+            						<p:outputLabel value="#{rpt.f7}"/>
+            				</p:column>
+            				<p:column headerText="July" width="70">
+            						<p:outputLabel value="#{rpt.f8}"/>
+            				</p:column>
+            				<p:column headerText="August" width="70">
+            						<p:outputLabel value="#{rpt.f9}"/>
+            				</p:column>
+            				<p:column headerText="September" width="70">
+            						<p:outputLabel value="#{rpt.f10}"/>
+            				</p:column>
+            				<p:column headerText="October" width="70">
+            						<p:outputLabel value="#{rpt.f11}"/>
+            				</p:column>
+            				<p:column headerText="November" width="70">
+            						<p:outputLabel value="#{rpt.f12}"/>
+            				</p:column>
+            				<p:column headerText="December" width="70">
+            						<p:outputLabel value="#{rpt.f13}"/>
+            				</p:column>
+            				
+            </p:dataTable>				
+			
+			</p:layoutUnit>		
+	</p:layout>
+	
+	<p:sidebar widgetVar="customerDlg" style="width: 800px">
+		<p:toolbar id="tbCustomer" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="customerFld" value="Clear" icon="fa fa-trash" actionListener="#{customerBean.clearFlds}"/>
+    			<p:commandButton update="customerFld dataCustomerId dataId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{customerBean.save}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    		</f:facet>
+			</p:toolbar>
+			
+			<p:panelGrid columns="4" id="customerFld" style="#{skin.grid}">
+			
+			<p:outputLabel value="Registered"/>
+			<p:calendar value="#{customerBean.regDate}" />
+			
+			<p:outputLabel value="Contact"/>
+			<p:inputText value="#{customerBean.contactNo}"  />
+			
+			<p:outputLabel value="Owner"/>
+			<p:inputTextarea value="#{customerBean.fullName}" />
+			
+			<p:outputLabel value="Address"/>
+			<p:inputTextarea value="#{customerBean.address}" />
+			
+			</p:panelGrid>
+			<p:inputText id="idSearch" value="#{customerBean.searchName}" a:type="search" a:placeholder="Search name here..." styleClass="form-control">
+		        	<p:ajax  event="keyup" listener="#{customerBean.init}" update="customerFld dataCustomerId"/>
+		        </p:inputText>
+			<p:dataScroller id="dataCustomerId" value="#{customerBean.customers}" var="cz" chunkSize="5">
+				<f:facet name="header">List</f:facet>
+				<p:commandLink actionListener="#{customerBean.clickItem(cz)}" update="customerFld" style="#{skin.label}">
+					#{cz.fullName}
+				</p:commandLink>
+				
+				<f:facet name="loader">
+					<p:commandButton type="button" value="View More" style="#{skin.button}"/>
+				</f:facet>
+			</p:dataScroller>
+	</p:sidebar>
+	
+	<p:sidebar widgetVar="buildingDlg" style="width: 800px">
+		<p:toolbar id="tbBuilding" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="buildingFld" value="Clear" icon="fa fa-trash" actionListener="#{buildBean.clearFlds}"/>
+    			<p:commandButton update="buildingFld dataBuildingId dataId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{buildBean.save}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    		</f:facet>
+			</p:toolbar>
+			
+			<p:panelGrid columns="4" id="buildingFld" style="#{skin.grid}">
+			
+			<p:outputLabel value="Building No"/>
+			<p:inputText value="#{buildBean.stallNo}"  />
+			
+			<p:outputLabel value="Name"/>
+			<p:inputText value="#{buildBean.name}" />
+			
+			<p:outputLabel value="Type"/>
+			<p:selectOneMenu value="#{buildBean.typeId}">
+				<f:selectItems value="#{buildBean.types}"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Monthly"/>
+			<p:inputNumber value="#{buildBean.amount}"/>
+			
+			</p:panelGrid>
+			
+			<p:dataScroller id="dataBuildingId" value="#{buildBean.buildings}" var="bl" chunkSize="5">
+				<f:facet name="header">List</f:facet>
+				<p:commandLink actionListener="#{buildBean.clickItem(bl)}" update="buildingFld" style="#{skin.label}">
+					#{bl.typeName}, #{bl.name}, Rental:Php #{bl.monthlyRental}
+				</p:commandLink>
+				
+				<f:facet name="loader">
+					<p:commandButton type="button" value="View More" style="#{skin.button}"/>
+				</f:facet>
+			</p:dataScroller>
+	</p:sidebar>
+	
+	<p:sidebar widgetVar="ownerDlg" style="width: 800px">
+		<p:toolbar id="tbOwner" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="ownerFld" value="Clear" icon="fa fa-trash" actionListener="#{assBean.clearFlds}"/>
+    			<p:commandButton update="ownerFld dataOwnerId dataId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{assBean.save}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    		</f:facet>
+			</p:toolbar>
+			
+			<p:panelGrid columns="4" id="ownerFld" style="#{skin.grid}">
+			
+			<p:outputLabel value="Start"/>
+			<p:calendar value="#{assBean.dateStart}" />
+			
+			<p:outputLabel value="End"/>
+			<p:calendar value="#{assBean.dateEnd}" />
+			
+			<p:outputLabel value="Owner"/>
+			<p:selectOneMenu value="#{assBean.customerId}" filter="true" filterMatchMode="contains">
+				<f:selectItems value="#{assBean.customers}"/>
+				<p:ajax event="change" update="stallProcId"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Building"/>
+			<p:selectOneMenu value="#{assBean.buildingId}" filter="true" filterMatchMode="contains">
+				<f:selectItems value="#{assBean.buildings}"/>
+				<p:ajax event="change" update="stallProcId"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Stall"/>
+			<p:selectOneMenu id="stallProcId" value="#{assBean.stallId}" filter="true" filterMatchMode="contains">
+				<f:selectItems value="#{assBean.stalls}"/>
+			</p:selectOneMenu>
+			
+			</p:panelGrid>
+			<p:inputText id="idSearchOwnerStall" value="#{assBean.searchName}" a:type="search" a:placeholder="Search name here..." styleClass="form-control">
+		        	<p:ajax  event="keyup" listener="#{assBean.init}" update="dataOwnerId"/>
+		        </p:inputText>
+			<p:dataScroller id="dataOwnerId" value="#{assBean.owners}" var="own" chunkSize="5">
+				<f:facet name="header">List</f:facet>
+				<p:commandLink actionListener="#{assBean.clickItem(own)}" update="ownerFld" style="#{skin.label}">
+					#{own.marketBuilding.name}, #{own.customer.fullName}
+				</p:commandLink>
+				
+				<f:facet name="loader">
+					<p:commandButton type="button" value="View More" style="#{skin.button}"/>
+				</f:facet>
+			</p:dataScroller>
+	</p:sidebar>
+	
+	<p:sidebar widgetVar="stallDlg" style="width: 800px">
+		<p:toolbar id="tbStall" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="stallFld" value="Clear" icon="fa fa-trash" actionListener="#{stallBean.clearFlds}"/>
+    			<p:commandButton update="stallFld dataStallId dataId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{stallBean.save}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    		</f:facet>
+			</p:toolbar>
+			
+			<p:panelGrid columns="4" id="stallFld" style="#{skin.grid}">
+			
+			<p:outputLabel value="Store Name"/>
+			<p:inputText value="#{stallBean.stallName}" />
+			
+			<p:outputLabel value="Occupied"/>
+			<p:selectBooleanCheckbox value="#{stallBean.occupied}"/>
+			
+			<p:outputLabel value="Rental"/>
+			<p:inputNumber value="#{stallBean.rental}" />
+			
+			<p:outputLabel value="Type"/>
+			<p:selectOneMenu value="#{stallBean.typeId}" filter="true" filterMatchMode="contains">
+				<f:selectItems value="#{stallBean.types}"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Owner"/>
+			<p:selectOneMenu value="#{stallBean.customerId}" filter="true" filterMatchMode="contains">
+				<f:selectItems value="#{stallBean.customers}"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Building"/>
+			<p:selectOneMenu value="#{stallBean.buildingId}" filter="true" filterMatchMode="contains">
+				<f:selectItems value="#{stallBean.buildings}"/>
+			</p:selectOneMenu>
+			
+			</p:panelGrid>
+			<p:inputText id="idSearchStall" value="#{stallBean.searchName}" a:type="search" a:placeholder="Search name here..." styleClass="form-control">
+		        	<p:ajax  event="keyup" listener="#{stallBean.init}" update="dataStallId"/>
+		        </p:inputText>
+			<p:dataScroller id="dataStallId" value="#{stallBean.stalls}" var="sta" chunkSize="5">
+				<f:facet name="header">List</f:facet>
+				<p:commandLink actionListener="#{stallBean.clickItem(sta)}" update="stallFld" style="#{skin.label}">
+					#{sta.building.name}, #{sta.name}, #{sta.customer.fullName}
+				</p:commandLink>
+				
+				<f:facet name="loader">
+					<p:commandButton type="button" value="View More" style="#{skin.button}"/>
+				</f:facet>
+			</p:dataScroller>
+	</p:sidebar>
+	
+	<p:sidebar widgetVar="payDlg" style="width: 700px" position="right">
+		<p:toolbar id="tbPay" style="#{skin.toolbar}">
+    		<f:facet name="left">
+				<p:selectOneMenu id="selectCustomerId" value="#{marketBean.customerId}" filter="true" filterMatchMode="contains">
+					<f:selectItems value="#{marketBean.customers}"/>
+					<p:ajax event="change" update="payNotesId stallpayId dataORId" listener="#{marketBean.calculatePayments}"/>
+				</p:selectOneMenu>
+				
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="selectCustomerId paymentFldId payNotesId dataORId" value="Clear" icon="fa fa-trash" actionListener="#{marketBean.clearFldsPayment}"/>
+    			<p:commandButton update="payNotesId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{marketBean.savePayment}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    		</f:facet>
+			</p:toolbar>
+			<p:panelGrid id="paymentFldId" columns="4" style="#{skin.grid}">
+				
+				<p:outputLabel value="Paid Date"/>
+				<p:calendar value="#{marketBean.paidDate}" />
+				
+				<p:outputLabel value="Officail Reciept No"/>
+				<p:inputText value="#{marketBean.orNumber}"/>
+				
+				<p:outputLabel value="Amount"/>
+				<p:inputNumber value="#{marketBean.paidAmount}"/>
+				
+				<p:outputLabel value="Stall/Building"/>
+				<p:selectOneMenu id="stallpayId" value="#{marketBean.stallId}" filter="true" filterMatchMode="contains">
+					<f:selectItems value="#{marketBean.stalls}"/>
+				</p:selectOneMenu>
+				
+				<p:outputLabel value="Split Payment"/>
+				<p:selectBooleanCheckbox value="#{marketBean.splitPayment}"/>
+				
+				<p:commandButton update="payNotesId dataORId paymentFldId" actionListener="#{marketBean.calculateAmountPaid}" icon="fa fa-refresh" value="Analyze Payment"/>
+				<p:commandButton update="payNotesId dataORId paymentFldId" actionListener="#{marketBean.loadORHistory}" icon="fa fa-refresh" value="Load OR"/>
+				
+			</p:panelGrid>
+			<p:scrollPanel style="width:700px;height:500px" mode="native">
+				<p:dataTable id="dataORId" value="#{marketBean.ors}" var="orno" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" scrollWidth="100%" style="#{skin.table}" paginatorPosition="top"
+                         >	
+                         
+                         	<p:column headerText="Date" width="70">
+            						<p:outputLabel value="#{orno.dateTrans}"/>
+            				</p:column>
+            				
+                         	<p:column headerText="OR Number" width="70">
+            						<p:outputLabel value="#{orno.orNumber}"/>
+            				</p:column>
+            				
+            				<p:column>
+								<p:rowToggler collapseLabel="Close Month Details" expandLabel="Open Month Details" />
+							</p:column>
+            				
+            				<p:column headerText="Amount" width="70">
+            						<p:outputLabel value="#{orno.amountPaid}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Edit" width="70">
+            						<p:commandButton update="paymentFldId payNotesId" icon="fa fa-file-o" actionListener="#{marketBean.clickBuildingPayment(orno)}" />
+            				</p:column>
+            				
+            				<p:rowExpansion>
+            						<p:dataTable value="#{orno.months}" var="mn">
+            							<p:column headerText="Date" width="70">
+			            						<p:outputLabel value="#{mn.dateTrans}"/>
+			            				</p:column>
+            							<p:column headerText="Month" width="70">
+			            						<p:outputLabel value="#{mn.monthName}"/>
+			            				</p:column>
+			            				<p:column headerText="Amount" width="70">
+			            						<p:outputLabel value="#{mn.amountPaid}"/>
+			            				</p:column>
+			            				<p:column headerText="Remarks" width="70">
+			            						<p:outputLabel value="#{mn.remarks}"/>
+			            				</p:column>
+            						</p:dataTable>
+							</p:rowExpansion>
+            				
+				</p:dataTable>			
+				
+				<p:textEditor id="payNotesId" value="#{marketBean.paymentBillingNotes}" toolbarVisible="false" readonly="true"/>
+				<br/><br/><br/><br/>
+			</p:scrollPanel>
+	</p:sidebar>
+	
+	<p:commandButton id="idMenuFilter" onclick="PF('sideBarSearch').show();" icon="fa fa-search" style="#{skin.searchButton}" title="Click this button to search" />
+				<p:sidebar widgetVar="sideBarSearch" fullScreen="false" style="height: 3rem;background: linear-gradient(#0789b2, #086583, #044357);" position="top">
+					<p:toolbar id="tb" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    							<p:autoComplete a:placeholder="Search..." value="#{marketBean.searchName}" completeMethod="#{marketBean.autoPayToName}" effect="fade" maxResults="10">
+    								<f:ajax event="change" listener="#{marketBean.init}" render="dataId"/>
+    							</p:autoComplete>
+		        				<p:commandButton id="findId" update="dataId"  icon="fa fa-search" actionListener="#{marketBean.init}"/>
+		        				
+    		</f:facet>
+		</p:toolbar> 
+				</p:sidebar>
+	
+	<ui:include src="loader.xhtml" />	
+	<ui:include src="menu.xhtml" />
+</h:form>		
+</h:body>
+</html>		
+			
+			
+			
+			
