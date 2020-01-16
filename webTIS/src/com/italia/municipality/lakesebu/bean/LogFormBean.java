@@ -220,7 +220,7 @@ public class LogFormBean implements Serializable{
 		}*/
 		
 		for(CollectionInfo in : CollectionInfo.retrieve(sql, params)){
-			String key = in.getRptGroup() + in.getFundId() + in.getCollector().getId() +"";
+			String key = in.getRptGroup() +"-"+ in.getFundId() +"-"+ in.getCollector().getId() +"";
 			
 			if(maps!=null && maps.containsKey(key)) {
 					double newAmount = maps.get(key).getAmount() + in.getAmount();

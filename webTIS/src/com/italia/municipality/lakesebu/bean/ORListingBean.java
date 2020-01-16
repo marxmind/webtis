@@ -1541,9 +1541,13 @@ private void close(Closeable resource) {
 		
 		years = new ArrayList<>();
 		years.add(new SelectItem(0, "All years"));
+		int lastYear=0;
 		for(int year=2019; year<=DateUtils.getCurrentYear(); year++) {
 			years.add(new SelectItem(year, year+""));
+			lastYear=year;
 		}
+		lastYear += 1;
+		years.add(new SelectItem(lastYear, lastYear+""));
 		
 		return years;
 	}
