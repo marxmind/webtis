@@ -174,6 +174,7 @@ public class LogFormBean implements Serializable{
 	public void find() {
 		clear();
 		init();
+		
 	}
 	
 	@PostConstruct
