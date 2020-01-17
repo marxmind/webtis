@@ -2292,11 +2292,132 @@ public class LogFormBean implements Serializable{
 		return rpt;
 	}
 	
+	private Form11Report collectLastYearFormIssued(IssuedForm isform, Form11Report rpt) {
+		
+		String[] params = new String[3];
+		String sql = " AND frm.isactivecol=1 AND frm.fundid=? AND cl.isid=? AND sud.logid=? ORDER BY frm.rptgroup DESC LIMIT 1";	
+		params[0] = isform.getFundId()+"";
+		params[1] = isform.getCollector().getId()+"";
+		params[2] = isform.getId()+"";
+		
+		rpt.setF1(FormType.nameId(isform.getFormType()));
+		
+		List<CollectionInfo> ins = CollectionInfo.retrieve(sql, params);
+		
+		if(isform.getFormType()<9) {
+		
+		if(ins.size()>0) {
+			CollectionInfo info = ins.get(0);
+			long newCountRem = isform.getEndingNo() - info.getEndingNo();
+			
+			rpt.setF2(newCountRem+"");
+			long newEnding = info.getEndingNo() + 1;
+			
+			rpt.setF3(DateUtils.numberResult(isform.getFormType(),newEnding));
+			rpt.setF4(DateUtils.numberResult(isform.getFormType(),isform.getEndingNo()));
+			
+			rpt.setF5("");
+			rpt.setF6("");
+			rpt.setF7("");
+			
+			rpt.setF5("");
+			rpt.setF6("");
+			rpt.setF7("");
+			
+			rpt.setF8("");
+			rpt.setF9("No Iss.");
+			rpt.setF10("");
+			
+			
+			rpt.setF11(newCountRem+"");
+			rpt.setF12(DateUtils.numberResult(isform.getFormType(),newEnding));
+			rpt.setF13(DateUtils.numberResult(isform.getFormType(),isform.getEndingNo()));
+			
+		}else {
+			rpt.setF2("50");
+			rpt.setF3(DateUtils.numberResult(isform.getFormType(),isform.getBeginningNo()));
+			rpt.setF4(DateUtils.numberResult(isform.getFormType(),isform.getEndingNo()));
+			
+			rpt.setF5("");
+			rpt.setF6("");
+			rpt.setF7("");
+			
+			rpt.setF5("");
+			rpt.setF6("");
+			rpt.setF7("");
+			
+			rpt.setF8("");
+			rpt.setF9("No Iss.");
+			rpt.setF10("");
+			
+			
+			rpt.setF11("50");
+			rpt.setF12(DateUtils.numberResult(isform.getFormType(),isform.getBeginningNo()));
+			rpt.setF13(DateUtils.numberResult(isform.getFormType(),isform.getEndingNo()));
+		}
+		
+		}else {
+		//change the value if the form is Cash ticket
+		//FormType.CT_2 || FormType.CT_5
+			
+			System.out.println("Cash ticket previous years >> " + isform.getFormTypeName());
+			
+			rpt.setF1(FormType.nameId(isform.getFormType()));
+			double amount = 0d;
+				
+			if(ins.size()>0) {
+				CollectionInfo in = ins.get(0);
+				amount = in.getBeginningNo();
+			}
+			
+			String f4 = isform.getStabNo()==0? "" : "#"+isform.getStabNo();
+			
+			//beginning
+			rpt.setF2("");
+			rpt.setF3(Currency.formatAmount(amount));
+			rpt.setF4(f4);
+								
+			//Receipt
+			rpt.setF5("");
+			rpt.setF6("");
+			rpt.setF7("");	
+			
+			//issued
+			rpt.setF8("");
+			rpt.setF9("No Iss.");
+			rpt.setF10("");	
+			
+			//ending balance
+			rpt.setF11("");
+			rpt.setF12(Currency.formatAmount(amount));
+			rpt.setF13(f4);
+			
+			//remarks
+			rpt.setF14("");
+		//}
+		}
+		
+		
+		return rpt;
+	}
+	
 	public Form11Report reportIssued(IssuedForm isform) {
 		
 		System.out.println("reportIssued>>>");
+		String[] dateForm = isform.getIssuedDate().split("-");
+		int yearForm = Integer.valueOf(dateForm[0]);
+		int month = Integer.valueOf(dateForm[1]);
 		
 		Form11Report rpt = new Form11Report();
+		
+		boolean currentYear = true;
+		if(DateUtils.getCurrentYear()!=yearForm) { 
+			System.out.println("year not match for form >> " + yearForm);
+			rpt = collectLastYearFormIssued(isform, rpt);
+			currentYear = false;
+		}
+		
+		if(currentYear) {
 		
 		String f3 = "";
 		String f4 = "";
@@ -2510,6 +2631,8 @@ public class LogFormBean implements Serializable{
 						
 						//remarks
 						rpt.setF14("");
+		}
+		
 		}
 		
 		return rpt;
