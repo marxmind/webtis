@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.9.0.final using JasperReports Library version 6.9.0-cb8f9004be492ccc537180b49c026951f4220bf3  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="OR" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ffd076b2-9ffe-4fbf-8319-fbf4f7fea363">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="OR" pageWidth="595" pageHeight="842" columnWidth="570" leftMargin="5" rightMargin="20" topMargin="3" bottomMargin="20" uuid="ffd076b2-9ffe-4fbf-8319-fbf4f7fea363">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<parameter name="PARAM_COLLECTING_OFFICER" class="java.lang.String"/>
 	<parameter name="PARAM_CASHCHECK" class="java.lang.String"/>
@@ -17,25 +17,34 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="46" splitType="Stretch">
+		<band height="251" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="480" y="2" width="78" height="11" uuid="f8dfd7af-38fc-4fa7-afdc-352f18908dfb">
+				<reportElement x="112" y="152" width="100" height="14" uuid="f8dfd7af-38fc-4fa7-afdc-352f18908dfb">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement>
-					<font size="8"/>
+				<textElement textAlignment="Center">
+					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_DATE}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="398" y="22" width="160" height="11" uuid="aee6fbdb-01ca-4aad-bb4e-8329c8974a9f">
+				<reportElement x="32" y="199" width="198" height="14" uuid="aee6fbdb-01ca-4aad-bb4e-8329c8974a9f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font size="8"/>
+					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_PAYOR}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="32" y="174" width="112" height="14" uuid="fa78f26f-ee92-4e17-8612-35857fb5b3e9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[MTO Lake Sebu]]></text>
+			</staticText>
 		</band>
 	</title>
 	<pageHeader>
@@ -49,9 +58,9 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="11" splitType="Stretch">
+		<band height="14" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="399" y="0" width="87" height="11" uuid="183ac405-d88d-4da4-9165-9de07e90f290">
+				<reportElement x="3" y="0" width="145" height="11" uuid="183ac405-d88d-4da4-9165-9de07e90f290">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
@@ -60,16 +69,20 @@
 				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="486" y="0" width="24" height="11" uuid="6d46b00c-7faf-4399-9508-a8eacb2ca8b9"/>
+				<reportElement x="148" y="0" width="31" height="11" uuid="6d46b00c-7faf-4399-9508-a8eacb2ca8b9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{code}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="510" y="0" width="50" height="11" uuid="255404a7-eb47-4eb9-8666-f34f38c6cb0f"/>
+				<reportElement x="179" y="0" width="51" height="12" uuid="255404a7-eb47-4eb9-8666-f34f38c6cb0f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
@@ -86,9 +99,9 @@
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="66" splitType="Stretch">
+		<band height="155" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="399" y="1" width="160" height="11" uuid="4f307908-b388-425a-a6b7-5a3c052671db">
+				<reportElement x="4" y="16" width="226" height="11" uuid="4f307908-b388-425a-a6b7-5a3c052671db">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
@@ -97,7 +110,7 @@
 				<textFieldExpression><![CDATA[$P{PARAM_WORDS}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="399" y="25" width="40" height="11" uuid="bea3db83-9032-4e5d-8eab-3d2a62185372">
+				<reportElement x="11" y="51" width="68" height="11" uuid="bea3db83-9032-4e5d-8eab-3d2a62185372">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
@@ -106,8 +119,10 @@
 				<textFieldExpression><![CDATA[$P{PARAM_CASHCHECK}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="409" y="52" width="144" height="14" uuid="5efe44d8-0367-443c-b81d-9722a8142748"/>
-				<textElement textAlignment="Center">
+				<reportElement x="62" y="142" width="150" height="11" uuid="5efe44d8-0367-443c-b81d-9722a8142748">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_COLLECTING_OFFICER}]]></textFieldExpression>
