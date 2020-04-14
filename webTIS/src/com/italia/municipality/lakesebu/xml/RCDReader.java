@@ -216,6 +216,7 @@ public class RCDReader {
 		 */
 	}
 	
+	
 	public static void saveXML(RCDReader rcd, String fileName, String fileSaveLocation, boolean isForMonthly) {
 		System.out.println("saving xml");
 		File dir = new File(fileSaveLocation);
@@ -224,7 +225,7 @@ public class RCDReader {
 			dir.mkdir();
 		}
 		
-		File xmlFile = new File(fileSaveLocation + fileName);
+		File xmlFile = new File(fileSaveLocation + fileName + ".xml");
 		
 			try {
 				Document document = DocumentHelper.createDocument();
