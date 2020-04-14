@@ -64,18 +64,22 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 			<p:layoutUnit position="west" size="800" visible="true" id="formWidgetId">
 				
+				<p:accordionPanel prependId="false" widgetVar="accWid">
+				
+				<p:tab title="Fill Up Fields">
+				
 				<p:toolbar id="tbDetails" style="#{skin.toolbar}">
 	    		<f:facet name="left">
 	    				<p:commandButton update="ownerId,formDataId,recFromId,wordId,scId,statId,payId,caseId,grandId,form56Id,payorSearchId,paySearchId" value="New" icon="ui-icon-document" actionListener="#{form56Bean.newForm}" a:data-step="6" a:data-intro="New Button - use to add new data."/>
 	    		</f:facet>
 	    		<f:facet name="right">
 	    			<p:commandButton update="formDataId,form56Id,grandId,wordId" value="Calculate" icon="ui-icon-note"  action="#{form56Bean.updateTotal}"/>
-	    			<p:commandButton update="formDataId,form56Id,dataTransId,wordId,msg" value="Save" icon="ui-icon-note" actionListener="#{form56Bean.saveData}" >
+	    			<p:commandButton update="formDataId,form56Id,dataTransId,wordId,paySearchId,msg" value="Save" icon="ui-icon-note" actionListener="#{form56Bean.saveData}" >
 	    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 	    			</p:commandButton>
 	    		</f:facet>
 				</p:toolbar> 
-				<br/><br/>
+				
 				<p:panelGrid columns="4" id="form56Id" layout="grid">
 				
 				<p:outputLabel/>
@@ -107,6 +111,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:outputLabel id="wordId"  value="The Sum of: #{form56Bean.amountInWords}"  
 			            		 style="#{skin.textInput};align-text: left;color:red"/>
 				<br/>
+				</p:tab>
+				<p:tab title="Form 56">
 		        <p:outputLabel value="Special Case" style="#{skin.textInput}"/>&nbsp;&nbsp;
 		        <p:selectBooleanCheckbox id="caseId" value="#{form56Bean.specialCase}" style="#{skin.checkbox}">
 		            		<p:ajax event="change" update="formDataId,caseId,wordId,grandId,msg" listener="#{form56Bean.specialCaseCheck}"/>
@@ -124,7 +130,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:dataTable id="formDataId" var="rpt" value="#{form56Bean.receipts}" editable="true" style="#{skin.table}"
 			       editMode="cell" widgetVar="cellTrans" rowKey="#{rpt.cnt}" scrollable="true" selection="#{form56Bean.receiptSelected}" selectionMode="single" >
 					
-					<p:ajax event="cellEdit"  listener="#{form56Bean.onCellEdit}" update=":formId:formDataId,msg" />	
+					<p:ajax event="cellEdit"  listener="#{form56Bean.onCellEdit}" update="formDataId,msg" />	
 					
 					<p:column headerText="Find" width="20">
 						<p:commandButton id="findOwner" update="ownDataId,paySearchId" icon="fa fa-search" oncomplete="PF('ownerDialog').show()" actionListener="#{form56Bean.viewLandOwner(rpt)}"/>
@@ -140,7 +146,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		               <f:facet name="input">
 		                   <p:selectOneMenu  value="#{form56Bean.idFromYear}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
 		                        <f:selectItems value="#{form56Bean.fromYear}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-		                        <f:ajax event="change" render=":formId:formDataId" listener="#{form56Bean.onCellEdit}" />
+		                        <f:ajax event="change" render="formDataId" listener="#{form56Bean.onCellEdit}" />
 		                   </p:selectOneMenu>
 		               </f:facet>
 		           </p:cellEditor>
@@ -151,7 +157,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			               <f:facet name="input">
 			                   <p:selectOneMenu  value="#{form56Bean.idToYear}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
 			                       <f:selectItems value="#{form56Bean.toYear}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-			                       <f:ajax event="change" render=":formId:formDataId" listener="#{form56Bean.onCellEdit}"/>
+			                       <f:ajax event="change" render="formDataId" listener="#{form56Bean.onCellEdit}"/>
 			                   </p:selectOneMenu>
 			               </f:facet>
 			           </p:cellEditor>
@@ -163,7 +169,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		                   <p:selectOneMenu  value="#{form56Bean.idPaymentType}" style="width:100%;color:black">
 		                       <f:selectItem itemLabel="Select"/>
 		                       <f:selectItems value="#{form56Bean.paymentTypes}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-		                       <f:ajax event="change" render=":formId:formDataId" listener="#{form56Bean.onCellEdit}" />
+		                       <f:ajax event="change" render="formDataId" listener="#{form56Bean.onCellEdit}" />
 		                   </p:selectOneMenu>
 		               </f:facet>
 		           </p:cellEditor>
@@ -210,7 +216,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		       <p:menuitem value="Copy Paste Cell" icon="fa fa-search" actionListener="#{form56Bean.copyPasteCell}" onclick="PF('cMenu').hide()" update="formDataId,wordId,grandId"/>
 		       <p:menuitem value="Delete" update="formDataId,wordId,grandId" icon="ui-icon-close" actionListener="#{form56Bean.deleteCell}"/>
 		       <p:menuitem value="Hide Menu" icon="ui-icon-close" onclick="PF('cMenu').hide()"/>  
-		   </p:contextMenu>  
+		   </p:contextMenu>
+		   
+		   </p:tab>
+		   </p:accordionPanel>
+		     
 			</p:layoutUnit>
 			<p:layoutUnit position="east" size="0" visible="false"/>
 			<p:layoutUnit position="center">
@@ -264,7 +274,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 									</p:column>
 									
 									<p:column headerText="View" width="20" exportable="false">
-										<p:commandButton icon="fa fa-search" update="form56Id formDataId ownerId grandId wordId" actionListener="#{form56Bean.clickItem(rpt)}"/>
+										<p:commandButton icon="fa fa-search" update="form56Id formDataId ownerId grandId wordId" actionListener="#{form56Bean.clickItem(rpt)}" onclick="PF('accWid').select(1)"/>
 									</p:column>
 									
 									<p:column headerText="Date Issued" width="60">
@@ -312,9 +322,14 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
 
 	<p:toolbar id="tbown" style="#{skin.toolbar}">
     		<f:facet name="left">
+    				<p:selectOneMenu  id="bgId" value="#{form56Bean.barangayIdSearch}" style="color: black" filter="true" filterMatchMode="contains">
+    				   <f:selectItem itemLabel="All"/>
+                       <f:selectItems value="#{form56Bean.barangayListSearch}" var="man" itemLabel="#{man}" itemValue="#{man}" />
+                   </p:selectOneMenu>
     				<p:inputText id="paySearchId" value="#{form56Bean.searchParam}" a:placeholder="Search Owner">
-    					<f:ajax event="change" listener="#{form56Bean.findLandOwner}" render="ownDataId"/>
+    					<p:ajax event="keyup" listener="#{form56Bean.findLandOwner}" update="ownDataId" delay="800"/>
     				</p:inputText>
+    				<p:commandButton id="findOwnId" update="ownDataId"  icon="fa fa-search" actionListener="#{form56Bean.findLandOwner}"/>
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton update="formId" value="Payor Lookup" icon="ui-icon-document" action="landpayor.xhtml"/>
@@ -322,24 +337,9 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
     		</f:facet>
     		
 	</p:toolbar>
-	<p:toolbar id="tbown1" style="#{skin.toolbar}">
-    		<f:facet name="left">
-    				<p:selectOneMenu  id="bgId" value="#{form56Bean.barangayIdSearch}" style="color: black" filter="true" filterMatchMode="contains">
-    				   <f:selectItem itemLabel="All"/>
-                       <f:selectItems value="#{form56Bean.barangayListSearch}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-                   </p:selectOneMenu>
-                   <p:commandButton id="findOwnId" update="ownDataId"  icon="fa fa-search" actionListener="#{form56Bean.findLandOwner}"/>
-    		</f:facet>
-    		<f:facet name="right"/>
-	</p:toolbar>
-     
 	
 	 <p:dataList value="#{form56Bean.payorLand}"  id="ownDataId"  var="land" type="ordered" itemType="none" style="#{skin.table}"
 	 paginator="true" rows="10" styleClass="paginated" paginatorPosition="top" paginatorAlwaysVisible="false">
-        <f:facet name="header">
-            Land Owner
-        </f:facet>
-        
         
         <h:outputText value="#{land.fullName}" style="display:inline-block"/>
         
@@ -371,6 +371,7 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
        
      </p:dataTable>  
      
+     
     </p:dataList>
     
 </p:dialog>
@@ -381,8 +382,8 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
 	<p:toolbar id="tbpay" style="#{skin.toolbar}">
     		<f:facet name="left">
     				<p:inputText id="payorSearchId" value="#{form56Bean.payorSearchParam}" a:placeholder="Search Name" style="width: 20em">
-    					<f:ajax event="keyup" listener="#{form56Bean.payorLookup}" render="payorDataId"/>
-    				</p:inputText>&nbsp;
+    					<p:ajax event="keyup" listener="#{form56Bean.payorLookup}" update="payorDataId" delay="800"/>
+    				</p:inputText>
                    <p:commandButton id="findpayorId" update="payorDataId"  icon="fa fa-search" actionListener="#{form56Bean.payorLookup}"/>
     		</f:facet>
     		<f:facet name="right">
@@ -396,10 +397,8 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
 	paginator="true" rows="10" styleClass="paginated" paginatorPosition="top" paginatorAlwaysVisible="false">
 	
 		<p:column headerText="Action" width="60">
-				<p:commandButton value="Selected" update="recFromId" actionListener="#{form56Bean.payorLookupSelected(payor)}" oncomplete="PF('payorDialog').hide()"/>
+				<p:commandButton value="#{payor.fullName}" update="recFromId" actionListener="#{form56Bean.payorLookupSelected(payor)}" oncomplete="PF('payorDialog').hide()"/>
 	   </p:column>
-        
-        <h:outputText value="#{payor.fullName}" style="display:inline-block;"/>
         
     </p:dataList>    
 </p:dialog>
