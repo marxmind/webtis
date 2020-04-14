@@ -135,6 +135,9 @@ public class ORListingBean implements Serializable{
 	
 	private String limitData;
 	
+	private int selectOrTypeId;
+	private List selectOrTypes;
+	
 	@PostConstruct
 	public void init() {
 		if(monthId==0) {
@@ -146,6 +149,16 @@ public class ORListingBean implements Serializable{
 		load();
 		
 		suggestedInfo();
+	}
+	
+	public void reloadInit() {
+		if(monthId==0) {
+			monthId = DateUtils.getCurrentMonth();
+		}
+		System.out.println("Initialized....");
+		
+		setLimitData("10");
+		load();
 	}
 	
 	private void suggestedInfo() {
@@ -273,6 +286,7 @@ public class ORListingBean implements Serializable{
 		
 		System.out.println("filetered >> " +sql);
 		
+		
 		if(getPaymentId()>0) {
 			for(ORListing o : ORListing.retrieve(sql, params)) {
 				
@@ -330,6 +344,7 @@ public class ORListingBean implements Serializable{
 		detailsData();
 		setTotalCollection(Currency.formatAmount(amount));
 	}
+	
 	
 	private void detailsData() {
 		rpts = new ArrayList<Reports>();//Collections.synchronizedList(new ArrayList<Reports>());
@@ -640,6 +655,41 @@ public class ORListingBean implements Serializable{
 		
 	}
 	
+	public void loadLastORToSuggestForNewReceipt() {
+		setOrRecordData(null);
+		namesDataSelected = new ArrayList<PaymentName>();
+		selectedPaymentNameMap = new HashMap<Long, PaymentName>();
+		double amount = 0d;
+		String sql = "";
+		String[] params = new String[1];
+		params[0] = getFormTypeId()+"";
+		sql = " AND orl.isactiveor=1 AND orl.aform=? ORDER BY orl.orid DESC LIMIT 1";
+		
+		List<ORListing> ol = ORListing.retrieve(sql, params);
+		if(ol!=null && ol.size()>0) {
+			ORListing o = ol.get(0);
+			
+			params = new String[1];
+			params[0] = o.getId()+"";
+			sql = " AND orl.orid=? AND nameL.isactiveol=1";
+			
+			for(ORNameList or : ORNameList.retrieve(sql, params)) {
+				PaymentName py = or.getPaymentName();
+				py.setAmount(or.getAmount());
+				amount += or.getAmount();
+				namesDataSelected.add(py);
+				getSelectedPaymentNameMap().put(py.getId(), py);
+			}
+			
+			setFormTypeId(o.getFormType());
+			if(getCollectorId()==1) {
+				setCollectorId(o.getCollector().getId());
+			}
+			setTotalAmount(Currency.formatAmount(amount));
+		}
+		
+	}
+	
 	private Customer selectedCustomer() {
 		String sql = " AND cus.fullname like '%"+getPayorName()+"%'";
 		String[] params = new String[0];
@@ -666,6 +716,43 @@ public class ORListingBean implements Serializable{
 		 }catch(Exception e){}  
 	 }       
 	
+	 public void onCellEditSelected(CellEditEvent event) {
+		 try{
+		        Object oldValue = event.getOldValue();
+		        Object newValue = event.getNewValue();
+		        
+		        System.out.println("old Value: " + oldValue);
+		        System.out.println("new Value: " + newValue);
+		        
+		        int index = event.getRowIndex();
+		        
+		        namesDataSelected.get(index).setAmount(Double.valueOf(newValue+""));
+		        long id = namesDataSelected.get(index).getId();
+		        boolean reloadInit = false;
+		        
+		        if(getOrRecordData()!=null) {//update
+		        	try {
+			        	ORNameList py = ORNameList.retrieve(" AND nameL.isactiveol=1 AND orl.orid="+getOrRecordData().getId() + " AND pay.pyid=" + id, new String[0]).get(0);
+			        	py.setAmount(namesDataSelected.get(index).getAmount());
+			        	py.save();
+			        	reloadInit = true;
+		        	}catch(Exception e) {}
+		        }
+		        
+		        double amount = 0d;
+		        for(PaymentName na : namesDataSelected) {
+		        	amount += na.getAmount();
+		        }
+		        setTotalAmount(Currency.formatAmount(amount));
+		        
+		        if(reloadInit) {
+		        	//init();
+		        	reloadInit();
+		        }
+		        
+			 }catch(Exception e){}  
+	}  
+	 
 	 public void addSuggested(PaymentName name) {
 		 addNamePayment(name);
 	 }
@@ -691,9 +778,170 @@ public class ORListingBean implements Serializable{
 		
 	}
 	
+	public void calculateSelected() {
+		double amount = 0d;
+		for(PaymentName na : namesDataSelected) {
+			amount += na.getAmount();
+		}
+		setTotalAmount(Currency.formatAmount(amount));
+	}
+	
+	public void selectedOR() {
+		
+		String sql = "";
+		String[] params = new String[0];
+		
+		clearFlds();//clearing all fields
+		
+		if (getSelectOrTypeId()==0) {//new
+		 //plain new
+		}else if (getSelectOrTypeId()==1) {//new cedula
+			
+			/**
+			 * 60-CTC Individual
+			 * 65-CTC Interest 
+			 */
+			setFormTypeId(FormType.CTC_INDIVIDUAL.getId());
+			int[] ids = {60};
+			double[] amounts = {0.00};
+			double amount = 0d;
+			
+			try {
+				for(int i=0; i< ids.length; i++) {
+					sql = " AND pyid="+ids[i];
+					PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+					py.setAmount(amounts[i]);
+					amount += amounts[i];
+					namesDataSelected.add(py);
+					getSelectedPaymentNameMap().put(py.getId(), py);
+				}
+			}catch(Exception e) {e.printStackTrace();}
+			
+			
+			
+			if(DateUtils.getCurrentMonth()>=3) {
+				try {
+						sql = " AND pyid=65";
+						PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+						py.setAmount(00.00);
+						amount += 0.00;
+						namesDataSelected.add(py);
+						getSelectedPaymentNameMap().put(py.getId(), py);
+				}catch(Exception e) {}
+			}
+			setTotalAmount(Currency.formatAmount(amount));
+			
+		}else if(getSelectOrTypeId()==2) {//new OR
+			setFormTypeId(FormType.AF_51.getId());
+			loadLastORToSuggestForNewReceipt();//suggest last transaction
+		}else if (getSelectOrTypeId()==3) { //business
+			
+			/**
+			 * 60-CT Individual
+			 * 38-Business Plate Misc.
+			 * 28-Garbage fee
+			 * 18-Inspection fee
+			 * 4-Mayor's Permit
+			 * 37-other Misc income
+			 * 48-Occupation Tax
+			 * 36-Police Misc
+			 * 33-Sanitary Fees
+			 * 20-Secretary Fees
+			 * 9-Zonal
+			 */
+			setFormTypeId(FormType.AF_51.getId());
+			int[] ids = {60,38,28,18,4,37,48,36,33,20,9};
+			double[] amounts = {0.00,350.00,1100.00,40.00,770.00,40.00,100.00,40.00,40.00,50.00,100.00};
+			double amount = 0d;
+			try {
+				for(int i=0; i< ids.length; i++) {
+					sql = " AND pyid="+ids[i];
+					PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+					py.setAmount(amounts[i]);
+					amount += amounts[i];
+					namesDataSelected.add(py);
+					getSelectedPaymentNameMap().put(py.getId(), py);
+				}
+			}catch(Exception e) {e.printStackTrace();}
+			
+			setTotalAmount(Currency.formatAmount(amount));
+			
+		}else if (getSelectOrTypeId()==4) { //fish cage
+			//3-fishery rental 0.00
+			/**
+			 * 3-Fishery Rental
+			 * 4-Mayor's Permit
+			 * 20-Secretary Fees
+			 * 36-Police Misc
+			 * 33-Sanitary Fees
+			 * 18-Inspection fee
+			 * 53-DST
+			 * 14-Banca Registration Fee
+			 * 9-Zonal
+			 * 60-CT Individual
+			 */
+			setFormTypeId(FormType.AF_51.getId());
+			int[] ids = {3,4,20,36,33,18,53,14,9,60};
+			double[] amounts = {0.00,100.00,50.00,40.00,40.00,40.00,30.00,75.00,100.00,0.00};
+			double amount = 0d;
+			try {
+				for(int i=0; i< ids.length; i++) {
+					sql = " AND pyid="+ids[i];
+					PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+					py.setAmount(amounts[i]);
+					amount += amounts[i];
+					namesDataSelected.add(py);
+					getSelectedPaymentNameMap().put(py.getId(), py);
+				}
+			}catch(Exception e) {}
+			
+			setTotalAmount(Currency.formatAmount(amount));
+		}else if (getSelectOrTypeId()==5) { //skylab permit
+			
+			/**
+			 * 10-Skylab Permit
+			 * 11-Filling Permit
+			 * 20-Secretary Fees
+			 * 12-Sticker
+			 * 53-DST
+			 * 13-Fines and Penalty
+			 */
+			setFormTypeId(FormType.AF_51.getId());
+			int[] ids = {10,11,20,12,53};
+			double[] amounts = {320.00,180.00,50.00,50.00,30.00};
+			double amount = 0d;
+			try {
+				for(int i=0; i< ids.length; i++) {
+					sql = " AND pyid="+ids[i];
+					PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+					py.setAmount(amounts[i]);
+					amount += amounts[i];
+					namesDataSelected.add(py);
+					getSelectedPaymentNameMap().put(py.getId(), py);
+				}
+			}catch(Exception e) {}
+			
+			if(DateUtils.getCurrentMonth()==1 && DateUtils.getCurrentDay()>20) {
+				try {
+						sql = " AND pyid=13";
+						PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+						py.setAmount(80.00);
+						amount += 80.00;
+						namesDataSelected.add(py);
+						getSelectedPaymentNameMap().put(py.getId(), py);
+				}catch(Exception e) {}
+			}
+			
+			
+			setTotalAmount(Currency.formatAmount(amount));
+			
+			
+		}
+	}
+	
+	
 	public void clearFlds() {
-		namesDataSelected = new ArrayList<PaymentName>();//Collections.synchronizedList(new ArrayList<PaymentName>());
-		selectedPaymentNameMap = new HashMap<Long, PaymentName>();//Collections.synchronizedMap(new HashMap<Long, PaymentName>());
+		
 		setStatusId(4);
 		setStatusSearchId(0);
 		setCollectorId(0);
@@ -707,6 +955,9 @@ public class ORListingBean implements Serializable{
 		setOrnameListData(null);
 		setSelectedPaymentNameMap(null);
 		setSearchPayName(null);
+		
+		namesDataSelected = new ArrayList<PaymentName>();//Collections.synchronizedList(new ArrayList<PaymentName>());
+		selectedPaymentNameMap = new HashMap<Long, PaymentName>();//Collections.synchronizedMap(new HashMap<Long, PaymentName>());
 	}
 	
 	public void saveData() {
@@ -760,14 +1011,22 @@ public class ORListingBean implements Serializable{
 			//this will ensure for duplication of data
 			ORNameList.delete("DELETE FROM ornamelist WHERE orid=" + or.getId(), new String[0]);
 			
+			List<PaymentName> tmpName = new ArrayList<PaymentName>();
+			Map<Long, PaymentName> tmpMap = new HashMap<Long, PaymentName>();
 			for(PaymentName name : getSelectedPaymentNameMap().values()) {
-				ORNameList o = new ORNameList();
-				o.setAmount(name.getAmount());
-				o.setOrList(or);
-				o.setCustomer(customer);
-				o.setIsActive(1);
-				o.setPaymentName(name);
-				o.save();
+				if(name.getAmount()>0) {
+					ORNameList o = new ORNameList();
+					o.setAmount(name.getAmount());
+					o.setOrList(or);
+					o.setCustomer(customer);
+					o.setIsActive(1);
+					o.setPaymentName(name);
+					o.save();
+					
+					name.setAmount(0);
+					tmpName.add(name);
+					tmpMap.put(name.getId(), name);
+				}
 			}
 			Application.addMessage(1, "Success", "Successfully saved.");
 			
@@ -780,7 +1039,15 @@ public class ORListingBean implements Serializable{
 			setOrnameListData(null);
 			setSelectedPaymentNameMap(null);
 			setOrNumber(null);
-			init();
+			init(); //do not load data to reduce loading
+			
+			setCollectorId(or.getCollector().getId());
+			setFormTypeId(or.getFormType());
+			
+			if(getSelectOrTypeId()>0) {
+				namesDataSelected = tmpName;
+				selectedPaymentNameMap = tmpMap;
+			}
 			//forSaveOnly();
 		}
 		
@@ -876,23 +1143,28 @@ public class ORListingBean implements Serializable{
 	  		int cnt = 0;
 	  		double amount = 0d;
 	  		for(ORNameList na : py.getOrNameList()) {
-	  			OR51 or = new OR51();
-		  		or.setDescription(na.getPaymentName().getName());
-		  		or.setCode(na.getPaymentName().getAccountingCode());
-		  		or.setAmount(Currency.formatAmount(na.getAmount()));
-	  			ors.add(or);
-	  			cnt++;
-	  			amount += na.getAmount();
+	  			if(na.getAmount()>0) {
+	  				OR51 or = new OR51();
+			  		or.setDescription(na.getPaymentName().getName());
+			  		or.setCode(na.getPaymentName().getAccountingCode());
+			  		or.setAmount(Currency.formatAmount(na.getAmount()));
+		  			ors.add(or);
+		  			cnt++;
+		  			amount += na.getAmount();
+	  			}
 	  		}
 	  		
-	  		int addFldSize = 11 - cnt;
-	  		for(int i=1; i<=addFldSize; i++) {
-	  			OR51 or = new OR51();
-		  		or.setDescription("");
-		  		or.setCode("");
-		  		or.setAmount("");
-	  			ors.add(or);
+	  		if(cnt<12) {
+	  			int addFldSize = 11 - cnt;
+		  		for(int i=1; i<=addFldSize; i++) {
+		  			OR51 or = new OR51();
+			  		or.setDescription("");
+			  		or.setCode("");
+			  		or.setAmount("");
+		  			ors.add(or);
+		  		}
 	  		}
+	  		
 	  		
 	  		//total amount
 	  		OR51 or = new OR51();
@@ -904,7 +1176,7 @@ public class ORListingBean implements Serializable{
 	  		JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(ors);
 	  		HashMap param = new HashMap();
 	  		
-	  		param.put("PARAM_DATE", py.getDateTrans());
+	  		param.put("PARAM_DATE", DateUtils.convertDateToMonthDayYear(py.getDateTrans()));
 	  		param.put("PARAM_PAYOR", py.getCustomer().getFullName());
 	  		com.italia.municipality.lakesebu.controller.NumberToWords numberToWords = new NumberToWords();
 	  		param.put("PARAM_WORDS", numberToWords.changeToWords(py.getAmount()).toUpperCase());
@@ -1391,6 +1663,7 @@ private void close(Closeable resource) {
 	
 	public void updateORNumber() {
 		orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
+		
 		if(FormType.CT_2.getId()==getFormTypeId() || FormType.CT_5.getId()==getFormTypeId()) {
 			setPayorName("N/A");
 			setOrNumber("0");
@@ -1403,6 +1676,10 @@ private void close(Closeable resource) {
 			setSearchPayName("cattle");
 		}else if(FormType.AF_47.getId()==getFormTypeId()) {
 			setSearchPayName("Death/Burial Income");
+		}
+		
+		if(getSelectOrTypeId()>0) {//show suggested if not NEW is selected
+			loadLastORToSuggestForNewReceipt();
 		}
 	}
 	
@@ -1985,6 +2262,30 @@ private void close(Closeable resource) {
 
 	public void setLimitData(String limitData) {
 		this.limitData = limitData;
+	}
+
+	public int getSelectOrTypeId() {
+		return selectOrTypeId;
+	}
+
+	public void setSelectOrTypeId(int selectOrTypeId) {
+		this.selectOrTypeId = selectOrTypeId;
+	}
+
+	public List getSelectOrTypes() {
+		
+		selectOrTypes = new ArrayList<>();
+		selectOrTypes.add(new SelectItem(0, "New"));
+		selectOrTypes.add(new SelectItem(1, "New Cedula"));
+		selectOrTypes.add(new SelectItem(2, "New OR"));
+		selectOrTypes.add(new SelectItem(3, "New Business OR"));
+		selectOrTypes.add(new SelectItem(4, "New Fish Cage OR"));
+		selectOrTypes.add(new SelectItem(5, "New Skylab Permit OR"));
+		return selectOrTypes;
+	}
+
+	public void setSelectOrTypes(List selectOrTypes) {
+		this.selectOrTypes = selectOrTypes;
 	}
 		
 }

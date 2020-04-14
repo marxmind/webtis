@@ -48,7 +48,7 @@ public class PaymentName {
 			}
 			
 		}
-		//System.out.println("SQL " + ps.toString());
+		System.out.println("SQL " + ps.toString());
 		rs = ps.executeQuery();
 		
 		while(rs.next()){

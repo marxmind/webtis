@@ -141,6 +141,11 @@ public class StocksBean implements Serializable{
 		
 		}
 		
+		if(isOk && getStockData()==null && Stocks.isExistedSeries(getSeriesFrom(), getFormTypeId())) {
+			isOk = false;
+			Application.addMessage(3, "Error", "Series is already existed");
+		}
+		
 		if(isOk) {
 		
 		if(FormType.CT_2.getId()==getFormTypeId() || FormType.CT_5.getId()==getFormTypeId()) {

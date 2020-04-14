@@ -64,39 +64,35 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 			<p:layoutUnit position="west" size="400" visible="true">
 				
-				<p:toolbar id="tbSave">
-			    		<f:facet name="left">
-			    			<p:commandButton update="dataSelectedId fldId" value="New" icon="fa fa-file-o" actionListener="#{orBean.clearFlds}"/>
-			    		</f:facet>	   
-			    		<f:facet name="right">
-			    			<p:commandButton update="dataSelectedId dataOrId fldId dtlsId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{orBean.saveData}">
-			    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
-			    			</p:commandButton>			
-			    		</f:facet>
-					</p:toolbar>
-				
 				<p:panelGrid id="fldId" columns="2" layout="grid">
+					<p:selectOneMenu value="#{orBean.selectOrTypeId}"  filter="true" filterMatchMode="contains" style="width: 12em" styleClass="js-tilt">
+					      			<f:selectItems value="#{orBean.selectOrTypes}"/>
+					       			<f:ajax event="change" listener="#{orBean.selectedOR}" render="dataSelectedId fldId totalId cid"/>
+		      				</p:selectOneMenu>
 					<p:calendar value="#{orBean.dateTrans}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
 					<p:selectOneMenu id="frmstat" value="#{orBean.statusId}" style="width: 12em">
 						<f:selectItems value="#{orBean.status}"/>
 					</p:selectOneMenu>
 					<p:selectOneMenu id="frmId" value="#{orBean.formTypeId}" style="width: 12em">
 						<f:selectItems value="#{orBean.formTypes}"/>
-						<p:ajax event="change" listener="#{orBean.updateORNumber}" update="oridd idPayd idSearchPname"/>
+						<p:ajax event="change" listener="#{orBean.updateORNumber}" update="oridd idPayd idSearchPname dataSelectedId totalId cid"/>
 					</p:selectOneMenu>
-					<p:autoComplete id="idPayd" placeholder="Payor Name"  value="#{orBean.payorName}" completeMethod="#{orBean.payorNameSuggested}" effect="fade" maxResults="10" inputStyle="width: 12em"/>
 					<p:selectOneMenu id="cid" value="#{orBean.collectorId}" style="width: 12em" filterMatchMode="contains" filter="true">
 								<f:selectItems value="#{orBean.collectors}"/>
 								<p:ajax event="change" listener="#{orBean.updateORNumber}" update="oridd idPayd idSearchPname"/>
 					</p:selectOneMenu>
-					
+					<p:autoComplete id="idPayd" placeholder="Payor Name"  value="#{orBean.payorName}" completeMethod="#{orBean.payorNameSuggested}" queryDelay="800" effect="fade" maxResults="10" inputStyle="width: 12em"/>
 					<p:keyboard id="oridd" value="#{orBean.orNumber}" placeholder="OR No/CTC No" style="width: 12em" layout="custom" layoutTemplate="rocks-close,faces-clear,prime-back" keypadOnly="true"/>
 					<p:inputText placeholder="Address" value="#{orBean.address}" style="width: 12em"/>
-					<p:commandButton value="Payment Name Lookup" icon="fa fa-search" actionListener="#{orBean.loadPaymentNames}" update="dataId idSearchPname dataSugId" oncomplete="PF('selectDialog').show();"/>
+					
 				</p:panelGrid>
 				
 				   <p:dataTable id="dataSelectedId" value="#{orBean.namesDataSelected}" var="rs" stickyHeader="false"
-							rows="100" paginator="false" style="#{skin.table}">
+							rows="100" paginator="false" style="#{skin.table}"
+							editable="true" editMode="cell" rowKey="#{rs.id}"
+							>
+                         	
+                         	<p:ajax event="cellEdit"  listener="#{orBean.onCellEditSelected}" update="frmId totalId dataId dataOrId" />
                          	
                          	<p:column headerText="[*]" width="20" exportable="false">
             					<p:commandButton update="dataSelectedId dataOrId dtlsId msg" icon="fa fa-trash" actionListener="#{orBean.paynameDelete(rs)}">
@@ -110,18 +106,25 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						<p:outputLabel value="#{rs.name}"/>
             				</p:column>
             				<p:column headerText="Amount" width="50">
-            						<p:outputLabel value="#{rs.amount}">
-            							<f:convertNumber currencySymbol="" type="currency"/>
-            						</p:outputLabel>
+            						<p:cellEditor>
+					              	  <f:facet name="output">
+					              	  	<h:outputText value="#{rs.amount}">
+					              	  		<f:convertNumber currencySymbol="" type="currency"/>
+					              	  	</h:outputText>
+					              	  </f:facet>
+					                  <f:facet name="input">
+					                  	<p:inputNumber  value="#{rs.amount}"/>
+					                  </f:facet>
+					               </p:cellEditor>
             				</p:column>
-            				<p:columnGroup type="footer">
-            					<p:row>
-            						<p:column colspan="3" style="text-align:right" footerText="Totals:"/>
-            						<p:column footerText="Php#{orBean.totalAmount}" />
-            					</p:row>
-            				</p:columnGroup>
+            				
             		</p:dataTable>
-				
+					<p:toolbar id="tbTotal">
+						<f:facet name="left">
+							<p:outputLabel id="totalId"  value="Php#{orBean.totalAmount}"/>
+						</f:facet>
+						<f:facet name="right"/>
+					</p:toolbar>
     			
     			   
     			
@@ -194,7 +197,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							</p:column>
 							
 							<p:column headerText="View" width="20" exportable="false">
-								<p:commandButton icon="fa fa-search" update="dataOrId dataSelectedId fldId" actionListener="#{orBean.clickItem(ors)}"/>
+								<p:commandButton icon="fa fa-search" update="dataOrId dataSelectedId fldId totalId" actionListener="#{orBean.clickItem(ors)}"/>
 							</p:column>
 							
 							<p:column headerText="[*]" width="20" exportable="false">
@@ -254,7 +257,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             				
             				<p:columnGroup type="footer">
             					<p:row>
-            						<p:column colspan="9" style="text-align:right" footerText="Totals:"/>
+            						<p:column colspan="10" style="text-align:right" footerText="Totals:"/>
             						<p:column footerText="Php#{orBean.totalCollection}" />
             					</p:row>
             				</p:columnGroup>
@@ -322,7 +325,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			    			   </p:inputText>
 			    		</f:facet>	   
 			    		<f:facet name="right">
-			    			<p:commandButton value="Close" onclick="PF('selectDialog').hide();" update="dataSelectedId"/>
+			    			<p:commandButton value="Close" onclick="PF('selectDialog').hide();"/>
 			    		</f:facet>
 					</p:toolbar>
 					
@@ -330,7 +333,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							paginator="false" style="#{skin.table}" rows="10" columns="3">
                          	
             				<p:column headerText="Suggested" width="50">
-            						<p:commandButton value="#{sug.name} Php#{sug.amount}" actionListener="#{orBean.addSuggested(sug)}" update="dataId dataSelectedId"/>
+            						<p:commandButton value="#{sug.name} Php#{sug.amount}" actionListener="#{orBean.addSuggested(sug)}" update="dataId dataSelectedId totalId"/>
             				</p:column>
             		</p:dataGrid>			
 					
@@ -339,7 +342,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							editable="true" editMode="cell" rowKey="#{rpt.id}" 
                          >
                          	
-                         	<p:ajax event="cellEdit"  listener="#{orBean.onCellEdit}" update="dataId dataSelectedId" />
+                         	<p:ajax event="cellEdit"  listener="#{orBean.onCellEdit}" update="dataId dataSelectedId totalId" />
                          	
             				<p:column headerText="Name" width="100">
             						<p:outputLabel value="#{rpt.name}"/>
@@ -372,6 +375,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					</p:toolbar>
 					<p:textEditor id="idContentAnalys" toolbarVisible="false" widgetVar="msgComposeText" value="#{orBean.textContent}" readonly="true"/>
 	</p:dialog>				
+	
+	<p:commandButton title="Payment Name Lookup" icon="fa fa-search" actionListener="#{orBean.loadPaymentNames}" update="dataId idSearchPname dataSugId" oncomplete="PF('selectDialog').show();" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 450px;left: 370px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	
+	<p:commandButton title="Click to save" update="dataSelectedId dataOrId fldId dtlsId totalId msg"  icon="fa fa-floppy-o" actionListener="#{orBean.saveData}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 500px;left: 370px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
+			<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+	</p:commandButton>
 	
 <ui:include src="loader.xhtml" />
 <ui:include src="menu.xhtml" />		

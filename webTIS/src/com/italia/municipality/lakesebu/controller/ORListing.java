@@ -178,7 +178,7 @@ public class ORListing {
 			}
 			
 		}
-		//System.out.println("SQL " + ps.toString());
+		System.out.println("ORLISTING SQL " + ps.toString());
 		rs = ps.executeQuery();
 		
 		while(rs.next()){

@@ -206,6 +206,8 @@ public class RealTaxForm56Bean {
 		
 		setTransAmountGrandTotal(Numbers.roundOf(TaxPayorTrans.retrieveTotal(sql, params),2));
 		
+		//create new form
+		newForm();
 	}
 	
 	private void saveLoad(String orNumber, String transDate) {
@@ -1322,11 +1324,12 @@ public class RealTaxForm56Bean {
 				rpt.setUserDtls(Login.getUserLogin().getUserDtls());
 				rpt.save();
 				
-				clickItem(trans);
+				//clickItem(trans);
 			}
 			saveLoad(getScNo(), getTransDate());
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Information has been successfully saved", "");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
+			newForm();
 		}else{
 			String str="";
 			if(getReceiveFrom()==null){ str="Receive From is empty ";}
@@ -1715,6 +1718,16 @@ private void close(Closeable resource) {
 			try{rec.setToYear(copyrec.getToYear());}catch(NullPointerException e){}
 			if(i==1){
 				rec.setInstallmentType("BASIC");
+				
+				//added to update year
+				int toY = Integer.valueOf(copyrec.getToYear()) + 1;
+				rec.setFromYear(toY+"");
+				rec.setToYear(toY+"");
+				rec.setRemarks("");
+				
+				setIdFromYear(toY);
+				setIdToYear(toY);
+				
 			}else{
 				rec.setInstallmentType("SEF");
 			}
@@ -1824,8 +1837,13 @@ private void close(Closeable resource) {
 		land.setId(1);
 		land.setLandType("Agricultural");
 		rec.setLandType(land);
-		rec.setFromYear(DateUtils.getCurrentYear()+"");
-		rec.setToYear(DateUtils.getCurrentYear()+"");
+		
+		//rec.setFromYear(DateUtils.getCurrentYear()+"");
+		//rec.setToYear(DateUtils.getCurrentYear()+"");
+		//temp
+		rec.setFromYear("2018");
+		rec.setToYear("2018");
+		
 		rec.setInstallmentType("BASIC");
 		rec.setIsAdjust(false);
 		//ITaxPayor payor = new TaxPayor();
@@ -2114,9 +2132,9 @@ private void close(Closeable resource) {
 	}
 
 	public int getIdFromYear() {
-		/*if(idFromYear==0){
-			idFromYear = DateUtils.getCurrentYear();
-		}*/
+		if(idFromYear==0){
+			idFromYear = 2018;//DateUtils.getCurrentYear();
+		}
 		return idFromYear;
 	}
 
@@ -2138,9 +2156,9 @@ private void close(Closeable resource) {
 	}
 
 	public int getIdToYear() {
-		/*if(idToYear==0){
-			idToYear = DateUtils.getCurrentYear();
-		}*/
+		if(idToYear==0){
+			idToYear = 2018;//DateUtils.getCurrentYear();
+		}
 		return idToYear;
 	}
 

@@ -38,12 +38,42 @@ public class Stocks {
 	
 	private int count;
 	
+	
+	public static boolean isExistedSeries(String seriesFrom, int formType) {
+		
+		if(FormType.CT_2.getId()==formType || FormType.CT_5.getId()==formType) {
+			return false;
+		}
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement("SELECT * FROM stockreceipt WHERE isactivestock=1 AND seriesfrom='"+ seriesFrom +"' AND formType=" + formType);
+		
+		System.out.println("SQL is existing "+ps.toString());
+		
+		rs = ps.executeQuery();
+		while(rs.next()){
+			return true;
+			
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return false;
+	}
+	
 	public static List<Stocks> retrieve(String sqlAdd, String[] params){
 		List<Stocks> stocks = new ArrayList<Stocks>();
 		
 		String tableStock ="st";
 		String tableCol = "cl";
-		String sql = "SELECT * FROM stockreceipt "+ tableStock +",issuedcollector "+tableCol +"  WHERE "+tableStock+".isactivestock=1 AND " + 
+		String sql = "SELECT * FROM stockreceipt "+ tableStock +",issuedcollector "+tableCol +"  WHERE "+tableStock+".isactivestock=1 AND "+  
 		tableStock +".isid=" + tableCol + ".isid ";
 				
 		sql = sql + sqlAdd;		
@@ -62,7 +92,7 @@ public class Stocks {
 			}
 			
 		}
-		//System.out.println("SQL " + ps.toString());
+		System.out.println("SQL " + ps.toString());
 		rs = ps.executeQuery();
 		int count = 1;
 		while(rs.next()){
