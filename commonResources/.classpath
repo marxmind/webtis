@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/openjdk-14+36">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/javax.faces-2.3.9.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/javax.servlet-api-3.1.0.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/primefaces-8.0.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/maxappsutils-1.0.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/commons-beanutils-1.9.4.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/commons-codec-1.14.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/commons-collections4-4.4.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/commons-configuration2-2.7.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/commons-digester3-3.2.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/commons-fileupload-1.4.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/commons-io-2.6.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/commons-lang3-3.10.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/commons-text-1.8.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/mariadb-java-client-2.6.0.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/maxdb-connector-1.0.jar"/>
+	<classpathentry kind="lib" path="D:/workspace-2020/webtis/gso/WebContent/WEB-INF/lib/weld-servlet-shaded-3.1.4.Final.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
