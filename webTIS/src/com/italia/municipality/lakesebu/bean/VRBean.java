@@ -201,7 +201,9 @@ public class VRBean implements Serializable{
 		List<VRData> lds = new ArrayList<VRData>();//Collections.synchronizedList(new ArrayList<VRData>());
 		lds = VRData.retrieve(sql,params);
 		
-		if(lds!=null && lds.size()==1) {
+		int size = lds!=null? lds.size() : 0;
+		
+		if(size>0) {
 			clickItem(lds.get(0));
 		}else {
 			if(getResId()==0) {
@@ -382,7 +384,6 @@ public class VRBean implements Serializable{
 		Map<String, List<VRData>> codes = new LinkedHashMap<String, List<VRData>>();//Collections.synchronizedMap(new LinkedHashMap<String, List<VRData>>());
 		//data list
 		List<VRData> vrData = new ArrayList<VRData>();//Collections.synchronizedList(new ArrayList<VRData>());
-		
 		
 		for(VRData v : vData) {
 			
@@ -1143,6 +1144,9 @@ public void printExpense() {
   		
   		Map<String, Object> param = new LinkedHashMap<String, Object>();//Collections.synchronizedMap(new LinkedHashMap<String, Object>());
   		
+  		String date = "Report for the month of " + DateUtils.getMonthName(getMondId()) + " " + getYearId();
+  		
+  		param.put("PARAM_DATE", date);
   		param.put("PARAM_TOTAL", getTotalGross());
   		String expenseName = getSeriesMonthIdSearch()==null? "All" : (getSeriesMonthIdSearch().isEmpty()? "All" : getSeriesMonthIdSearch());
   		param.put("PARAM_REPORT_EXPENSE_NAME", expenseName);
@@ -1524,6 +1528,7 @@ public void printExpense() {
 	public void setSeriesMonthsSearchPer(List seriesMonthsSearchPer) {
 		this.seriesMonthsSearchPer = seriesMonthsSearchPer;
 	}
+	
 	
 
 }

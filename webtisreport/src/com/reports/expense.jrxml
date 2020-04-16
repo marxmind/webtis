@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.9.0.final using JasperReports Library version 6.9.0-cb8f9004be492ccc537180b49c026951f4220bf3  -->
+<!-- Created with Jaspersoft Studio version 6.12.2.final using JasperReports Library version 6.12.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="expense" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="626f7400-716c-4908-85e4-4deaed935c63">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<parameter name="PARAM_LOGO_TRANS" class="java.io.InputStream"/>
 	<parameter name="PARAM_LOGO" class="java.io.InputStream"/>
 	<parameter name="PARAM_REPORT_EXPENSE_NAME" class="java.lang.String"/>
@@ -8,6 +9,7 @@
 	<parameter name="PARAM_DEPARTMENT" class="java.lang.String"/>
 	<parameter name="PARAM_DEPHEAD" class="java.lang.String"/>
 	<parameter name="PARAM_PREPARED" class="java.lang.String"/>
+	<parameter name="PARAM_DATE" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -90,43 +92,33 @@
 	<pageHeader>
 		<band height="51" splitType="Stretch">
 			<textField>
-				<reportElement x="353" y="0" width="100" height="13" uuid="04488d3d-4e6c-42cc-ba4c-6fb32861598e">
+				<reportElement x="426" y="0" width="72" height="13" uuid="04488d3d-4e6c-42cc-ba4c-6fb32861598e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="454" y="0" width="100" height="13" uuid="f6abc8f2-dff8-498d-a31a-5f5902ea457e">
+				<reportElement x="498" y="0" width="56" height="13" uuid="f6abc8f2-dff8-498d-a31a-5f5902ea457e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left"/>
 				<textFieldExpression><![CDATA[" of " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
-			<textField pattern="MMMMM dd, yyyy">
-				<reportElement x="35" y="0" width="100" height="13" uuid="7135184a-e018-439e-aa62-85c5b77e1349">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="100" y="13" width="230" height="13" uuid="8c29a69a-d2c5-4f24-aea5-b578b6455824">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="0" y="0" width="35" height="13" uuid="3a1b8c30-3d7b-4030-a623-dd0f326906bb">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<text><![CDATA[Printed:]]></text>
-			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="100" y="13" width="230" height="15" uuid="8c29a69a-d2c5-4f24-aea5-b578b6455824">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_REPORT_EXPENSE_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="0" y="13" width="100" height="13" uuid="65a6b81d-55cd-4e54-a05b-d5e934d72f58"/>
 				<text><![CDATA[Expense Type Name:]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="331" y="35" width="224" height="15" uuid="87c3c987-e301-4fd3-9a78-78b27704e1a0">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -137,22 +129,35 @@
 				<reportElement x="0" y="24" width="60" height="13" uuid="f2ae5ae7-609b-40d4-8afa-c1f93126c221"/>
 				<text><![CDATA[Department:]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="60" y="23" width="230" height="15" uuid="29476ba0-e226-4d9e-a7e4-7a7d9db69042">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="60" y="24" width="230" height="13" uuid="29476ba0-e226-4d9e-a7e4-7a7d9db69042">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_DEPARTMENT}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="0" y="37" width="70" height="13" uuid="52415f65-477b-4277-b7dd-a95244269b3c"/>
 				<text><![CDATA[Head of Office:]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="70" y="36" width="310" height="15" uuid="99419299-37ed-41cc-b0da-362fe86eb489">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="329" height="13" uuid="bd906634-5ecc-4888-a199-70c54ea021dd">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAM_DATE}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="70" y="37" width="230" height="13" uuid="b718fdb6-70ee-487d-87d3-2f768388a968">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_DEPHEAD}]]></textFieldExpression>
 			</textField>
 		</band>
@@ -217,7 +222,7 @@
 	</columnHeader>
 	<detail>
 		<band height="12" splitType="Stretch">
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="50" height="10" uuid="22f67602-e796-4e0a-8f74-495edc26f702">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="aae36b2d-de06-46ee-9496-01133c2f2d48"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -227,7 +232,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{f2}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="50" y="0" width="85" height="10" uuid="1ca7a088-5152-4261-a177-209c45a002b2">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="aae36b2d-de06-46ee-9496-01133c2f2d48"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -238,7 +243,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{f3}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="135" y="0" width="125" height="10" uuid="4968f876-d7a1-4554-9acf-9bd5e4690124">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="aae36b2d-de06-46ee-9496-01133c2f2d48"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -249,7 +254,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{f4}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="470" y="0" width="84" height="10" uuid="045e56bd-cfb9-4f50-9c07-40da046b9dc8">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="aae36b2d-de06-46ee-9496-01133c2f2d48"/>
 				</reportElement>
@@ -258,7 +263,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{f6}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="260" y="0" width="210" height="10" uuid="7991ee91-ea5c-47ae-b7fc-10b41031eee0">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="aae36b2d-de06-46ee-9496-01133c2f2d48"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -271,7 +276,7 @@
 			</textField>
 			<line>
 				<reportElement x="0" y="11" width="554" height="1" uuid="5cc1171e-a7ae-4e4e-8119-0de1d7eba4fc">
-					<printWhenExpression><![CDATA[$F{f7}==null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[new Boolean($F{f7}==null)]]></printWhenExpression>
 				</reportElement>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
@@ -316,7 +321,7 @@
 	</pageFooter>
 	<summary>
 		<band height="21" splitType="Stretch">
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="367" y="1" width="187" height="20" uuid="339380ac-8484-43a4-a320-1a0bbfa7635f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>

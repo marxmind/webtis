@@ -26,6 +26,7 @@ public class ReportCompiler {
 		jasperFile = rptLocation + rptFileJasper + ".jasper";
 		}catch(JRException jre){
 			jre.getMessage();
+			jre.printStackTrace();
 		}
 		return jasperFile;
 	}
