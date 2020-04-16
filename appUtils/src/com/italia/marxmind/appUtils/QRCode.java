@@ -1,0 +1,85 @@
+package com.italia.marxmind.appUtils;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.Hashtable;
+
+/**
+ * 
+ * @author Mark Italia
+ * @version 1.0
+ * @since 08/14/2019
+ *
+ */
+public class QRCode {
+	
+	public static void main(String[] args) throws IOException {
+	 	String note = "Name: Italia, Mark Rivera\n";
+	 	note += "Address: Purok Lugan, Poblacion, Lake Sebu, So. Cot.\n";
+        BufferedImage qrCode = getQRCode(note, 200, 200);
+        File file = new File("C:\\gso\\qrcode.png");
+        ImageIO.write(qrCode, "png", file);
+
+	
+    }
+ 	/**
+ 	 * 
+ 	 * @param content recommended character is less than 300 for better reading
+ 	 * @param width
+ 	 * @param height
+ 	 * @param locationToSave
+ 	 * @param qrname
+ 	 * @return File
+ 	 * @return ext file extension like png,jpg etc
+ 	 * @throws IOException
+ 	 */
+ public static File createQRCode(String content, int width, int height, String locationToSave, String qrname, String ext) throws IOException{
+	 	File file = null;
+	 	BufferedImage qrCode = getQRCode(content, width, height);
+        file = new File(locationToSave + qrname);
+        ImageIO.write(qrCode, ext, file);
+        return file;
+ }
+ 
+ 
+    private static BufferedImage getQRCode(String targetUrl, int width, int height) {
+        try {
+            Hashtable<EncodeHintType, Object> hintMap = new Hashtable<>();
+
+            hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix byteMatrix = qrCodeWriter.encode(targetUrl, BarcodeFormat.QR_CODE, width, height, hintMap);
+            int CrunchifyWidth = byteMatrix.getWidth();
+
+            BufferedImage image = new BufferedImage(CrunchifyWidth, CrunchifyWidth, BufferedImage.TYPE_INT_RGB);
+            image.createGraphics();
+
+            Graphics2D graphics = (Graphics2D) image.getGraphics();
+            graphics.setColor(Color.WHITE);
+            graphics.fillRect(0, 0, CrunchifyWidth, CrunchifyWidth);
+            graphics.setColor(Color.BLACK);
+
+            for (int i = 0; i < CrunchifyWidth; i++) {
+                for (int j = 0; j < CrunchifyWidth; j++) {
+                    if (byteMatrix.get(i, j)) {
+                        graphics.fillRect(i, j, 1, 1);
+                    }
+                }
+            }
+            return image;
+        } catch (WriterException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error getting QR Code");
+        }
+
+    }
+}
