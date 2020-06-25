@@ -146,7 +146,9 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							
 			    		</f:facet>	   
 			    		<f:facet name="right">
-			    			
+			    			<p:selectBooleanCheckbox value="#{orBean.collectorsMode}" itemLabel="Collector's mode">
+					            <p:ajax update="msg" listener="#{orBean.modeMsg}" />
+					        </p:selectBooleanCheckbox>
 			    		</f:facet>
 					</p:toolbar>
 					<p:toolbar id="tbToolbar2">

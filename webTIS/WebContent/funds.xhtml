@@ -89,13 +89,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		        <p:commandButton update="formDataId" value="Refresh" icon="ui-icon-document" actionListener="#{fundBean.init}" a:data-step="6" a:data-intro="Refresh Button - use to refresh data."/>
 		        <p:commandButton update="formDataId" value="Calculate" icon="ui-icon-document" actionListener="#{fundBean.init}" a:data-step="7" a:data-intro="Calculate Button - use to recalculate amount balance."/>				
 		        <p:commandButton update="formDataId" value="New" icon="ui-icon-document" actionListener="#{fundBean.addNew}" a:data-step="8" a:data-intro="New Button - use to add new data."/>
-    			
+    			<p:commandButton update="formDataId" value="Delete" icon="ui-icon-document" actionListener="#{fundBean.deleteData}" a:data-step="9" a:data-intro="Delete Button - use to remove data."/>
     		</f:facet>
 		</p:toolbar> 
 		<p:sticky target="tb" />
 		
 		<p:dataTable id="formDataId" var="rpt" value="#{fundBean.trans}" editable="true" 
-       editMode="cell" widgetVar="cellTrans" rowKey="#{rpt.cnt}" scrollable="true" selection="#{fundBean.selectedData}" selectionMode="single" 
+       editMode="cell" widgetVar="cellTrans" rowKey="#{rpt.cnt}" scrollable="true" selection="#{fundBean.selectedData}"
        rows="55" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,55,110" style="#{skin.table}" paginatorPosition="top"
        >
@@ -116,7 +116,9 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						</h:commandLink>
             						
             				</f:facet>
+            				
        
+       <p:column selectionMode="multiple" width="15" exportable="false" headerText="Check"/>
        <p:ajax event="cellEdit"  listener="#{fundBean.onCellEdit}" update=":formId:formDataId,debitId,creditId,balId" />
        
        <p:column headerText="#" width="10">
@@ -193,10 +195,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{rpt.transactionName}"/></f:facet>
                   <f:facet name="input">
-                  <h:selectOneMenu  value="#{fundBean.transId}" style="width:100%;color:black">
+                  <p:selectOneMenu  value="#{fundBean.transId}" filter="true" filterMatchMode="contains">
                        <f:selectItem itemLabel="Select..."/>
-                       <f:selectItems value="#{fundBean.transType}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-                   </h:selectOneMenu>
+                       <f:selectItems value="#{fundBean.transType}"/>
+                   </p:selectOneMenu>
                   </f:facet>
               </p:cellEditor>
        </p:column>

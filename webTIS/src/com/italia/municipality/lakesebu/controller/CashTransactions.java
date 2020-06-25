@@ -672,6 +672,7 @@ public class CashTransactions {
 			
 		}
 		ps.executeUpdate();
+		System.out.println("cash delete id =" + getId());
 		ps.close();
 		CashBookConnect.close(conn);
 		}catch(SQLException s){

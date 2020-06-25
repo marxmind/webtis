@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Payment History</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Payment History</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Payment History</title>
+
+</h:head>
+
+<h:body>
+	
+<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId">
+	<p:growl id="msg" life="2000" showDetail="true"/>
+	
+	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+	
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="50" visible="false"/>
+			<p:layoutUnit position="south" size="100" visible="false">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			<p:layoutUnit position="east" size="0" visible="false"/>
+			<p:layoutUnit position="west" size="00" visible="false"/>
+			<p:layoutUnit position="center">
+				<p:toolbar id="tbDetails" style="#{skin.toolbar}">
+    		<f:facet name="left">
+				<p:commandButton value="Load file from RPT Server" onclick="PF('dlgExtract').show()" actionListener="#{historyBean.clearUpload}" update="extractData"/>
+    			<p:commandButton value="Payment Lookup" actionListener="#{historyBean.loadHistory}" onclick="PF('dlgDataBase').show()"/>
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandLink title="Print Certificate" target="_blank" actionListener="#{historyBean.printReport}" ajax="false" immediate="false">
+            					<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+				</p:commandLink>
+    		</f:facet>
+			</p:toolbar>
+			<p:panelGrid id="ownerInfoId" layout="grid" columns="6" >
+				<p:outputLabel value="Requestor:" />
+				<p:inputText id="contentId" value="#{historyBean.requestor}" placeholder="Requestor's Name" style="width: 20em"/>
+				<p:outputLabel value="Purpose:" />
+				<p:inputText value="#{historyBean.purpose}" placeholder="Please specify the purpose" style="width: 20em"/>
+				<p:outputLabel value="Prepared by:" />
+				<p:inputText value="#{historyBean.preparedBy}" placeholder="Prepared by" style="width: 20em"/>
+			</p:panelGrid>
+			
+			
+			<p:dataTable id="dataB" value="#{historyBean.basicTax}" var="bx" stickyHeader="false" 
+							rows="10" paginator="true"  paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} "
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         style="#{skin.table}" paginatorPosition="top" rowKey="#{bx.id}" selection="#{historyBean.selectedBasic}">
+                        
+                        <f:facet name="header">
+                        	<p:outputLabel>BASIC</p:outputLabel>
+                        </f:facet>
+                        <f:facet name="{Exporters}">
+                        	
+                        </f:facet>
+                        
+                        <p:column selectionMode="multiple" width="10" exportable="false" headerText="Check"/>
+                        
+                        
+                     	<p:column headerText="T.D. No" width="50">
+            						<p:outputLabel value="#{bx.tdNo}"/>
+            			</p:column>
+            			<p:column headerText="Ass. Value" width="50">
+            						<p:outputLabel value="#{bx.assessedValue}"/>
+            			</p:column>
+            			<p:column headerText="Ann. Tax" width="50">
+            						<p:outputLabel value="#{bx.annualTax}"/>
+            			</p:column>
+            			<p:column headerText="Tax Due" width="50">
+            						<p:outputLabel value="#{bx.taxDue}"/>
+            			</p:column>
+            			<p:column headerText="Penalty" width="50">
+            						<p:outputLabel value="#{bx.penalty}"/>
+            			</p:column>
+            			<p:column headerText="Total" width="50">
+            						<p:outputLabel value="#{bx.total}"/>
+            			</p:column>
+            			<p:column headerText="Date Paid" width="50">
+            						<p:outputLabel value="#{bx.datePaid}"/>
+            			</p:column>
+            			<p:column headerText="OR No." width="50">
+            						<p:outputLabel value="#{bx.orNumber}"/>
+            			</p:column>
+            			<p:column headerText="Year Paid" width="50">
+            						<p:outputLabel value="#{bx.yearPaid}"/>
+            			</p:column>
+            			
+            </p:dataTable>
+            <p:dataTable id="dataS" value="#{historyBean.sefTax}" var="sx" stickyHeader="false" 
+							rows="10" paginator="true"  paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} "
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         style="#{skin.table}" paginatorPosition="top" rowKey="#{sx.id}" selection="#{historyBean.selectedSef}">
+                        
+                        <f:facet name="header">
+                        	<p:outputLabel>SEF</p:outputLabel>
+                        </f:facet>
+                        <f:facet name="{Exporters}">
+                        	
+                        </f:facet>
+                        
+                        <p:column selectionMode="multiple" width="10" exportable="false" headerText="Check"/>
+                        
+                        
+                     	<p:column headerText="T.D. No" width="50">
+            						<p:outputLabel value="#{sx.tdNo}"/>
+            			</p:column>
+            			<p:column headerText="Ass. Value" width="50">
+            						<p:outputLabel value="#{sx.assessedValue}"/>
+            			</p:column>
+            			<p:column headerText="Ann. Tax" width="50">
+            						<p:outputLabel value="#{sx.annualTax}"/>
+            			</p:column>
+            			<p:column headerText="Tax Due" width="50">
+            						<p:outputLabel value="#{sx.taxDue}"/>
+            			</p:column>
+            			<p:column headerText="Penalty" width="50">
+            						<p:outputLabel value="#{sx.penalty}"/>
+            			</p:column>
+            			<p:column headerText="Total" width="50">
+            						<p:outputLabel value="#{sx.total}"/>
+            			</p:column>
+            			<p:column headerText="Date Paid" width="50">
+            						<p:outputLabel value="#{sx.datePaid}"/>
+            			</p:column>
+            			<p:column headerText="OR No." width="50">
+            						<p:outputLabel value="#{sx.orNumber}"/>
+            			</p:column>
+            			<p:column headerText="Year Paid" width="50">
+            						<p:outputLabel value="#{sx.yearPaid}"/>
+            			</p:column>
+            			
+            </p:dataTable>
+			
+			</p:layoutUnit>
+			
+</p:layout>	
+	
+	<p:dialog position="center center" widgetVar="dlgOwner" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" width="600" height="500">
+    	<p:toolbar id="tbOnwer">
+			    		<f:facet name="left">
+			    				<p:inputText value="#{historyBean.searchPayor}" placeholder="Search Owner">
+			    					<p:ajax event="keyup" listener="#{historyBean.loadPayor}" update="dataVP" delay="800"/>
+			    				</p:inputText>
+			    		</f:facet>	   
+			    		<f:facet name="right">
+			    			<p:commandButton value="Close" onclick="PF('dlgOwner').hide()"/>
+			    			
+			    		</f:facet>
+					</p:toolbar>
+					
+					<p:dataTable id="dataVP" value="#{historyBean.lands}" var="ln" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         style="#{skin.table}" paginatorPosition="top"
+                         
+                         >
+                         
+                        <p:column headerText="Action" width="50">
+            						<p:commandButton icon="fa fa-search" actionListener="#{historyBean.selectedLand(ln)}" onclick="PF('dlgOwner').hide()" update="dataB dataS contentId"/>
+            			</p:column> 
+                     
+                     	<p:column headerText="Name" width="100">
+            						<p:outputLabel value="#{ln.payor.fullName}"/>
+            			</p:column>
+            			<p:column headerText="Assessed Value" width="70">
+            						<p:outputLabel value="#{ln.landValue}"/>
+            			</p:column>
+            			
+            			<p:column headerText="Location" width="120">
+            						<p:outputLabel value="#{ln.address}"/>
+            			</p:column>
+                     	
+                     	
+                     	
+                     </p:dataTable>    
+
+	</p:dialog>	
+	
+	<p:dialog widgetVar="dlgExtract" position="center top" draggable="false" fitViewport="true" responsive="true" maximizable="true" minimizable="false" >
+ 
+ 		<p:toolbar id="tbExt">
+    		<f:facet name="left">
+    				<p:inputText value="#{historyBean.searchParama}" placeholder="Search Name here">
+    					<p:ajax event="keyup" listener="#{historyBean.searchExtract}" update="extractData"/>
+    				</p:inputText>
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:fileUpload fileUploadListener="#{historyBean.uploadData}"
+					                    			mode="advanced" auto="true" sizeLimit="50000000" label="Upload RPTS File"
+					                    			update="extractData msg" dragDropSupport="true" 
+					                    			allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX|txt|TXT)$/" />
+    			<p:commandButton id="saveId" update="extractData msg" value="Save" icon="fa fa-floppy-o" actionListener="#{historyBean.saveExtract}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to save this extracted data?" icon="ui-icon-alert" />
+    			</p:commandButton>
+    		</f:facet>
+    		
+		</p:toolbar>
+ 
+ 		 <p:dataTable id="extractData" var="ex" value="#{historyBean.pays}"
+       rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="10,20,50,100" paginatorPosition="top" paginatorAlwaysVisible="false"
+       >
+       	<p:column headerText="Type" width="10">
+       		<p:outputLabel value="#{ex.type}"/>
+       	</p:column>
+       	<p:column headerText="OR No." width="20">
+       		<p:outputLabel value="#{ex.orNumber}"/>
+       	</p:column>
+       	<p:column headerText="Paid" width="20">
+       		<p:outputLabel value="#{ex.paidDate}"/>
+       	</p:column>
+       	<p:column headerText="TD No" width="20">
+       		<p:outputLabel value="#{ex.tdNo}"/>
+       	</p:column>
+       	<p:column headerText="Quarters" width="10">
+       		<p:outputLabel value="#{ex.fromQtr} - #{ex.toQtr}"/>
+       	</p:column>
+       	<p:column headerText="Years" width="15">
+       		<p:outputLabel value="#{ex.fromYear} - #{ex.toYear}"/>
+       	</p:column>
+       	<p:column headerText="Lot No" width="20">
+       		<p:outputLabel value="#{ex.lotNo}"/>
+       	</p:column>
+       	<p:column headerText="Owner" width="100">
+       		<p:outputLabel value="#{ex.owner}"/>
+       	</p:column>
+       	<p:column headerText="Barangay" width="50">
+       		<p:outputLabel value="#{ex.barangay}"/>
+       	</p:column>
+       	<p:column headerText="Kind" width="5">
+       		<p:outputLabel value="#{ex.kind}"/>
+       	</p:column>
+       	<p:column headerText="Actual" width="5">
+       		<p:outputLabel value="#{ex.actualUse}"/>
+       	</p:column>
+       	<p:column headerText="Assessed Value" width="20">
+       		<p:outputLabel value="#{ex.assessedValue}">
+       			<f:convertNumber currencySymbol="" type="currency"/>
+       		</p:outputLabel>
+       	</p:column>
+       	<p:column headerText="Principal" width="20">
+       		<p:outputLabel value="#{ex.principal}">
+       			<f:convertNumber currencySymbol="" type="currency"/>
+       		</p:outputLabel>
+       	</p:column>
+       	<p:column headerText="Penalty" width="20">
+       		<p:outputLabel value="#{ex.penalty}">
+       			<f:convertNumber currencySymbol="" type="currency"/>
+       		</p:outputLabel>
+       	</p:column>
+       	<p:column headerText="Total" width="20">
+       		<p:outputLabel value="#{ex.total}">
+       			<f:convertNumber currencySymbol="" type="currency"/>
+       		</p:outputLabel>
+       	</p:column>
+       	<p:column headerText="Collector" width="50">
+       		<p:outputLabel value="#{ex.collector}"/>
+       	</p:column>
+       </p:dataTable>
+ </p:dialog>
+ 
+ <p:dialog widgetVar="dlgDataBase" position="center top" draggable="false" fitViewport="true" responsive="true" maximizable="true" minimizable="false" >
+ 
+ 		<p:toolbar id="tbDb">
+    		<f:facet name="left">
+    				<p:inputText value="#{historyBean.searchHistory}" placeholder="Search Name here">
+    					<p:ajax event="keyup" listener="#{historyBean.loadHistory}" update="extractDb"/>
+    				</p:inputText>
+    		</f:facet>
+    		<f:facet name="right">
+    			
+    		</f:facet>
+    		
+		</p:toolbar>
+ 
+ 		 <p:dataTable id="extractDb" var="dx" value="#{historyBean.payments}"
+       rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="10,20,50,100" paginatorPosition="top" paginatorAlwaysVisible="false"
+       >
+        <p:column headerText="Add" width="10">
+        	<p:commandButton id="addId" update="extractDb dataB dataS ownerInfoId msg" icon="fa fa-floppy-o" actionListener="#{historyBean.addRow(dx)}"/>
+        </p:column>
+       	<p:column headerText="Type" width="10">
+       		<p:outputLabel value="#{dx.type}"/>
+       	</p:column>
+       	<p:column headerText="OR No." width="20">
+       		<p:outputLabel value="#{dx.orNumber}"/>
+       	</p:column>
+       	<p:column headerText="Paid" width="20">
+       		<p:outputLabel value="#{dx.paidDate}"/>
+       	</p:column>
+       	<p:column headerText="TD No" width="20">
+       		<p:outputLabel value="#{dx.tdNo}"/>
+       	</p:column>
+       	<p:column headerText="Years" width="15">
+       		<p:outputLabel value="#{dx.fromYear} - #{dx.toYear}"/>
+       	</p:column>
+       	<p:column headerText="Lot No" width="20">
+       		<p:outputLabel value="#{dx.lotNo}"/>
+       	</p:column>
+       	<p:column headerText="Owner" width="100">
+       		<p:outputLabel value="#{dx.owner}"/>
+       	</p:column>
+       	<p:column headerText="Barangay" width="50">
+       		<p:outputLabel value="#{dx.barangay}"/>
+       	</p:column>
+       	<p:column headerText="Assessed Value" width="20">
+       		<p:outputLabel value="#{dx.assessedValue}">
+       			<f:convertNumber currencySymbol="" type="currency"/>
+       		</p:outputLabel>
+       	</p:column>
+       	<p:column headerText="Tax Due" width="20">
+       		<p:outputLabel value="#{dx.principal}">
+       			<f:convertNumber currencySymbol="" type="currency"/>
+       		</p:outputLabel>
+       	</p:column>
+       	<p:column headerText="Penalty" width="20">
+       		<p:outputLabel value="#{dx.penalty}">
+       			<f:convertNumber currencySymbol="" type="currency"/>
+       		</p:outputLabel>
+       	</p:column>
+       	<p:column headerText="Total" width="20">
+       		<p:outputLabel value="#{dx.total}">
+       			<f:convertNumber currencySymbol="" type="currency"/>
+       		</p:outputLabel>
+       	</p:column>
+       </p:dataTable>
+ </p:dialog>
+	
+	<ui:include src="loader.xhtml" />
+	<ui:include src="menu.xhtml" />
+</h:form>		
+</h:body>
+</html>
+		

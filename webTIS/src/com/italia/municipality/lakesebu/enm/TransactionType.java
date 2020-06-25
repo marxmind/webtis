@@ -20,7 +20,8 @@ public enum TransactionType {
 	COLLECTION(9, "COLLECTION"),
 	PAYMENT(10, "PAYMENT"),
 	CHECK_ISSUED(11,"CHECK ISSUED"),
-	CASH_ADVANCE(12, "CASH ADVANCE");
+	CASH_ADVANCE(12, "CASH ADVANCE"),
+	JEV(13,"JOURNAL ENTRY VOUCHER");
 	
 	private int id;
 	private String name;

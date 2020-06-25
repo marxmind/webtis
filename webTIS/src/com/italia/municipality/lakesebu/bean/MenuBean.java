@@ -241,6 +241,9 @@ public class MenuBean implements Serializable{
 		this.userFullName = userFullName;
 	}
 
+	public String landTaxCert() {
+		return "history";
+	}
 	
 	public String moereport(){
 		return "moereport.xhtml";

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Payment History</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Payment History</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Payment History</title>
+
+</h:head>
+
+<h:body>
+	
+<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId">
+	<p:growl id="msg" life="2000" showDetail="true"/>
+	
+	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+	
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="50" visible="false"/>
+			<p:layoutUnit position="south" size="100" visible="false">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			<p:layoutUnit position="east" size="0" visible="false"/>
+			<p:layoutUnit position="west" size="550">
+				
+			<p:toolbar id="tbDetails" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				<p:commandButton value="New" actionListener="#{paymentHistoryBean.createNew}" update="vId modeid"/>
+    		</f:facet>
+    		<f:facet name="right">
+    			
+    		</f:facet>
+			</p:toolbar> 
+				
+			
+			<p:panelGrid id="vId" layout="grid" columns="4" >
+			
+			<p:outputLabel value="Date Paid"/>	
+			<p:calendar value="#{paymentHistoryBean.datePaid}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="color: black;width:10em;"/>
+			
+			<p:outputLabel value="Year Paid"/>
+			<p:outputLabel>
+				<p:selectOneMenu value="#{paymentHistoryBean.yearFromId}" style="width:10em;color: black;" filter="true" filterMatchMode="contains">
+						<f:selectItems value="#{paymentHistoryBean.yearFrom}"/>
+						<p:ajax event="change" listener="#{paymentHistoryBean.calculateTaxDue}" update="txtId  modeid"/>
+				</p:selectOneMenu>
+				<p:selectOneMenu value="#{paymentHistoryBean.yearToId}" style="width:10em;color: black;" filter="true" filterMatchMode="contains">
+						<f:selectItems value="#{paymentHistoryBean.yearTo}"/>
+						<p:ajax event="change" listener="#{paymentHistoryBean.calculateTaxDue}" update="txtId modeid"/>
+				</p:selectOneMenu>
+			</p:outputLabel>
+			
+			<p:outputLabel value="Land Owner"/>
+			<p:commandButton id="idPay" value="#{paymentHistoryBean.payorName}" actionListener="#{paymentHistoryBean.loadPayor}" onclick="PF('dlgOwner').show()"/>
+			
+			<p:outputLabel value="TD No"/>
+			<p:outputLabel value="#{paymentHistoryBean.tdNumber}" />
+			
+			<p:outputLabel value="OR Number"/>
+			<p:inputText value="#{paymentHistoryBean.ORNumber}" placeholder="0000000" style="color: black;width:10em;"/>
+			
+			<p:outputLabel value="Assessed Value"/>
+			<p:outputLabel value="#{paymentHistoryBean.assessedValue}" >
+				<f:convertNumber currencySymbol="Php" type="currency"/>
+			</p:outputLabel>
+			
+			<p:outputLabel value="Annual Tax"/>
+			<p:outputLabel value="#{paymentHistoryBean.annualTax}">
+				<f:convertNumber currencySymbol="Php" type="currency"/>
+			</p:outputLabel>
+			
+			<p:outputLabel value="Tax Due"/>
+			<p:outputLabel id="txtId" value="#{paymentHistoryBean.taxDue}">
+				<f:convertNumber currencySymbol="Php" type="currency"/>
+			</p:outputLabel>
+				
+			</p:panelGrid>
+			
+			<p:panelGrid id="modeid" layout="grid" columns="3" >
+			
+			<p:outputLabel value="Type"/>
+			<p:outputLabel value="Penalty"/>
+			<p:outputLabel value="Total"/>
+			
+			<p:outputLabel value="Basic"/>
+			<p:inputNumber id="pay1" value="#{paymentHistoryBean.penaltyAmount1}">
+				<p:ajax event="keyup" listener="#{paymentHistoryBean.calculateTotal('BASIC')}" update="totalId1"/>
+			</p:inputNumber>
+			<p:outputLabel value="#{paymentHistoryBean.totalAmount1}" id="totalId1">
+				<f:convertNumber currencySymbol="Php" type="currency"/>
+			</p:outputLabel>
+			
+			<p:outputLabel value="SEF"/>
+			<p:inputNumber id="pay2" value="#{paymentHistoryBean.penaltyAmount2}">
+				<p:ajax event="keyup" listener="#{paymentHistoryBean.calculateTotal('SEF')}" update="totalId2"/>
+			</p:inputNumber>
+			<p:outputLabel value="#{paymentHistoryBean.totalAmount2}" id="totalId2">
+				<f:convertNumber currencySymbol="Php" type="currency"/>
+			</p:outputLabel>
+			
+			</p:panelGrid>
+			</p:layoutUnit>
+			<p:layoutUnit position="center">
+			
+			
+			</p:layoutUnit>
+			
+</p:layout>	
+	
+	<p:dialog position="center center" widgetVar="dlgOwner" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" width="500px" height="500px">
+    	<p:toolbar id="tbOnwer">
+			    		<f:facet name="left">
+			    				<p:inputText value="#{paymentHistoryBean.searchPayor}" placeholder="Search Owner">
+			    					<p:ajax event="keyup" listener="#{paymentHistoryBean.loadPayor}" update="dataVP" delay="800"/>
+			    				</p:inputText>
+			    		</f:facet>	   
+			    		<f:facet name="right">
+			    			<p:commandButton value="Close" onclick="PF('dlgOwner').hide()"/>
+			    		</f:facet>
+					</p:toolbar>
+					
+					<p:dataTable id="dataVP" value="#{paymentHistoryBean.lands}" var="ln" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         style="#{skin.table}" paginatorPosition="top"
+                         
+                         >
+                         
+                        <p:column headerText="Action" width="50">
+            						<p:commandButton icon="fa fa-search" actionListener="#{paymentHistoryBean.selectedLand(ln)}" onclick="PF('dlgOwner').hide()" update="vId modeid"/>
+            			</p:column> 
+                     
+                     	<p:column headerText="Name" width="100">
+            						<p:outputLabel value="#{ln.payor.fullName}"/>
+            			</p:column>
+            			
+            			<p:column headerText="TD No" width="70">
+            						<p:outputLabel value="#{ln.taxDeclarionNo}"/>
+            			</p:column>
+            			
+            			<p:column headerText="Lot No" width="70">
+            						<p:outputLabel value="#{ln.lotNo}"/>
+            			</p:column>
+            			
+            			<p:column headerText="Assessed Value" width="70">
+            						<p:outputLabel value="#{ln.landValue}"/>
+            			</p:column>
+                     	
+                     	
+                     	
+                     </p:dataTable>    
+
+	</p:dialog>	
+	
+	<ui:include src="loader.xhtml" />
+	<ui:include src="menu.xhtml" />
+</h:form>		
+</h:body>
+</html>
+		

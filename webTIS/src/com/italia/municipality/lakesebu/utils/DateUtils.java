@@ -19,6 +19,9 @@ import com.italia.municipality.lakesebu.enm.FormType;
  *
  */
 public class DateUtils {
+	
+	
+	
 
 	/**
 	 * 	
@@ -48,6 +51,16 @@ public class DateUtils {
 	 */
 	public static String getCurrentDateYYYYMMDD(){//MMMM d, yyyy
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		return dateFormat.format(date);
+	}
+	/**
+	 * 	
+	 * @return current date
+	 * @format yyyy-MM-dd
+	 */
+	public static String getCurrentDateMonthDayYear(){//MMMM d, yyyy
+		DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 		Date date = new Date();
 		return dateFormat.format(date);
 	}
@@ -293,6 +306,28 @@ public class DateUtils {
 		}catch(Exception e){}
 		return null;
 	}
+	
+	/**
+	 * 
+	 * @param datevalue
+	 * @param format
+	 * @return date
+	 */
+	public static String convertDateCustom(String datevalue){
+		
+		try{
+			String[] tmp = datevalue.split("-");
+			String month = tmp[1];
+			String day = tmp[2];
+			String year = tmp[0];
+			return month + "/" + day + "/" + year;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 	
 	public static Date getDateToday(){
 		return new Date();

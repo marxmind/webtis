@@ -27,7 +27,8 @@ public enum Pages {
 	Orlisting(15,"orlisting"),
 	UploadRcd(16,"uploadrcd"),
 	VoucherExpense(17,"vr"),
-	WaterBilling(18,"waterbill");
+	WaterBilling(18,"waterbill"),
+	LandTaxCertification(19,"history");
 	
 	
 	private int id;

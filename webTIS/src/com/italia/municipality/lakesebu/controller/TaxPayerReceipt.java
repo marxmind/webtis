@@ -178,6 +178,108 @@ public class TaxPayerReceipt implements ITaxPayerReceipt {
 		return pays;
 	}
 	
+	public static List<TaxPayerReceipt> retrieveReceipts(String sql, String[] params){
+		List<TaxPayerReceipt> pays = new ArrayList<TaxPayerReceipt>();
+		
+		String dbTax = ReadConfig.value(AppConf.DB_NAME_TAX);
+		//String dbWeb = ReadConfig.value(AppConf.DB_NAME_WEBTIS);
+		String tblRp = "rc";
+		String tblTrn = "tr";
+		String tblOwn = "ow";
+		String tblType = "tp";
+		
+		String st = "SELECT * FROM  "+ dbTax +".taxpayortransreceipt " + tblRp + ", " + dbTax + ".taxpayortrans " + tblTrn +
+				", " + dbTax + ".taxpayor " + tblOwn + ", " + dbTax + ".landtype " + tblType + " WHERE " +
+				tblRp + ".payortransid=" + tblTrn + ".payortransid AND " +
+				tblRp + ".payorid=" + tblOwn + ".payorid AND " +
+				tblRp + ".landid=" + tblType + ".landid AND " +  tblRp + ".recisactive=1 ";
+		
+		sql = st + sql;
+		
+		System.out.println("SQL >> receipt " + sql);
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = TaxDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		if(params!=null && params.length>0){
+			
+			for(int i=0; i<params.length; i++){
+				ps.setString(i+1, params[i]);
+			}
+			
+		}
+		//System.out.println("SQL : " + ps.toString());
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			TaxPayerReceipt rec = new TaxPayerReceipt();
+			try{rec.setId(rs.getLong("recid"));}catch(NullPointerException e){}
+			try{rec.setLocation(rs.getString("propertylocation"));}catch(NullPointerException e){}
+			try{rec.setLotBlockNo(rs.getString("lotblockno"));}catch(NullPointerException e){}
+			try{rec.setTaxDecNo(rs.getString("taxdecno"));}catch(NullPointerException e){}
+			try{rec.setAssValueLand(rs.getDouble("assvalueland"));}catch(NullPointerException e){}
+			try{rec.setAssValueImprv(rs.getDouble("assvalueimprv"));}catch(NullPointerException e){}
+			try{rec.setAssValueTotal(rs.getDouble("assvaluetotal"));}catch(NullPointerException e){}
+			try{rec.setTaxDue(rs.getDouble("taxdue"));}catch(NullPointerException e){}
+			try{rec.setInstallmentRangeAndType(rs.getString("insrangeandtype"));}catch(NullPointerException e){}
+			try{rec.setFullPayment(rs.getDouble("fullpayment"));}catch(NullPointerException e){}
+			try{rec.setPenaltyPercent(rs.getDouble("penaltypercent"));}catch(NullPointerException e){}
+			try{rec.setOverallTotal(rs.getDouble("overalltotal"));}catch(NullPointerException e){}
+			try{rec.setIsActive(rs.getInt("recisactive"));}catch(NullPointerException e){}
+			try{rec.setTimestamp(rs.getTimestamp("rectimestamp"));}catch(NullPointerException e){}
+			try{rec.setIsAdjust(rs.getInt("isAdjust")==1? true : false);}catch(NullPointerException e){}
+			try{rec.setIsCase(rs.getInt("iscase")==1? true : false);}catch(NullPointerException e){}
+			try{rec.setRemarks(rs.getString("remarks"));}catch(NullPointerException e){}
+			try{rec.setLandOwnerName(rs.getString("landownername"));}catch(NullPointerException e){}
+			try{UserDtls user = new UserDtls();
+			user.setUserdtlsid(rs.getLong("processby"));
+			rec.setUserDtls(user);}catch(NullPointerException e){}
+			
+			TaxPayorTrans trans = new TaxPayorTrans();
+			try{trans.setId(rs.getLong("payortransid"));}catch(NullPointerException e){}
+			try{trans.setTransDate(rs.getString("payortransdate"));}catch(NullPointerException e){}
+			try{trans.setAmount(rs.getDouble("payortransamount"));}catch(NullPointerException e){}
+			try{trans.setAmountInWords(rs.getString("payortransamountinwords"));}catch(NullPointerException e){}
+			try{trans.setScNo(rs.getString("payorscno"));}catch(NullPointerException e){}
+			try{trans.setAccountFormNo(rs.getInt("payoraccntform"));}catch(NullPointerException e){}
+			try{trans.setIsactive(rs.getInt("paytransisactive"));}catch(NullPointerException e){}
+			try{trans.setCheckNo(rs.getString("paycheckno"));}catch(NullPointerException e){}
+			try{trans.setCheckDate(rs.getString("paycheckdate"));}catch(NullPointerException e){}
+			try{trans.setSigned1(rs.getString("paysigned1"));}catch(NullPointerException e){}
+			try{trans.setSigned2(rs.getString("paysigned2"));}catch(NullPointerException e){}
+			try{trans.setTimestamp(rs.getTimestamp("payortranstimestamp"));}catch(NullPointerException e){}
+			rec.setPayorTrans(trans);
+			
+			TaxPayor pay = new TaxPayor();
+			try{pay.setId(rs.getLong("payorid"));}catch(NullPointerException e){}
+			try{pay.setFullName(rs.getString("payorname"));}catch(NullPointerException e){}
+			try{pay.setAddress(rs.getString("payoraddress"));}catch(NullPointerException e){}
+			try{pay.setIsactive(rs.getInt("payisactive"));}catch(NullPointerException e){}
+			try{pay.setTimestamp(rs.getTimestamp("paytimestamp"));}catch(NullPointerException e){}
+			rec.setPayor(pay);
+			
+			LandType type = new LandType();
+			try{type.setId(rs.getInt("landid"));}catch(NullPointerException e){}
+			try{type.setLandType(rs.getString("landtype"));}catch(NullPointerException e){}
+			try{type.setTimestamp(rs.getTimestamp("landtimestamp"));}catch(NullPointerException e){}
+			rec.setLandType(type);
+			
+			pays.add(rec);
+		}
+		
+		
+		rs.close();
+		ps.close();
+		TaxDatabaseConnect.close(conn);
+		}catch(SQLException sl){}
+		
+		return pays;
+	}
+	
 	public static List<ITaxPayerReceipt> retrieveLand(String sql, String[] params){
 		List<ITaxPayerReceipt> pays = new ArrayList<ITaxPayerReceipt>();//Collections.synchronizedList(new ArrayList<ITaxPayerReceipt>());
 		

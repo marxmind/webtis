@@ -138,6 +138,8 @@ public class ORListingBean implements Serializable{
 	private int selectOrTypeId;
 	private List selectOrTypes;
 	
+	private boolean collectorsMode;
+	
 	@PostConstruct
 	public void init() {
 		if(monthId==0) {
@@ -149,6 +151,10 @@ public class ORListingBean implements Serializable{
 		load();
 		
 		suggestedInfo();
+	}
+	
+	public void modeMsg() {
+		Application.addMessage(1, "Collector's Mode", "You have " + (isCollectorsMode()==true? "activated the collector's mode" : "deactivated the collector's mode"));
 	}
 	
 	public void reloadInit() {
@@ -1029,7 +1035,9 @@ public class ORListingBean implements Serializable{
 				}
 			}
 			Application.addMessage(1, "Success", "Successfully saved.");
-			
+			if(isCollectorsMode()) {
+				setSearchName(getPayorName());
+			}
 			
 			namesDataSelected = new ArrayList<PaymentName>();//Collections.synchronizedList(new ArrayList<PaymentName>());
 			selectedPaymentNameMap = new HashMap<Long, PaymentName>();//Collections.synchronizedMap(new HashMap<Long, PaymentName>());
@@ -1049,6 +1057,9 @@ public class ORListingBean implements Serializable{
 				selectedPaymentNameMap = tmpMap;
 			}
 			//forSaveOnly();
+			
+			
+			
 		}
 		
 	}
@@ -2286,6 +2297,14 @@ private void close(Closeable resource) {
 
 	public void setSelectOrTypes(List selectOrTypes) {
 		this.selectOrTypes = selectOrTypes;
+	}
+
+	public boolean isCollectorsMode() {
+		return collectorsMode;
+	}
+
+	public void setCollectorsMode(boolean collectorsMode) {
+		this.collectorsMode = collectorsMode;
 	}
 		
 }

@@ -128,10 +128,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{rpt.departmentCode} - #{rpt.departmentName}"/></f:facet>
                   <f:facet name="input">
-                  <h:selectOneMenu  value="#{voucherBean.departmentId}" style="width:100%;color:black">
-                       <f:selectItem itemLabel="Select..."/>
-                       <f:selectItems value="#{voucherBean.departments}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-                   </h:selectOneMenu>
+                   <p:selectOneMenu value="#{voucherBean.departmentId}" style="width:100%" filter="true" filterMatchMode="contains">
+                   		<f:selectItem itemLabel="Select..."/>
+                        <f:selectItems value="#{voucherBean.departments}"/>
+                        <p:ajax event="change" listener="#{voucherBean.updateDepartment}" update="formDataId"/>
+                   </p:selectOneMenu>
                   </f:facet>
               </p:cellEditor>
        </p:column>

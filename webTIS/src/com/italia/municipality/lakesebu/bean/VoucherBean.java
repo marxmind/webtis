@@ -168,6 +168,7 @@ public class VoucherBean implements Serializable{
         if(getDepartmentId()!=0){
         	Department department = Department.retrieve("SELECT * FROM department WHERE departmentid="+ getDepartmentId(), new String[0]).get(0);
         	trans.get(index).setDepartment(department);
+        	trans.get(index).setDepartmentName(department.getDepartmentName());
         	trans.get(index).setDepartmentCode(department.getCode());
         }
         

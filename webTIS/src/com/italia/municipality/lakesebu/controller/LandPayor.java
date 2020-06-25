@@ -29,8 +29,12 @@ public class LandPayor {
 	private ILandType landType;
 	private UserDtls userDtls;
 	private Timestamp timestamp;
-	
+
 	public LandPayor(){}
+	
+	public LandPayor(long id){
+		this.id = id;
+	}
 	
 	public LandPayor(
 			long id,
@@ -61,7 +65,85 @@ public class LandPayor {
 	}
 	
 	public static List<LandPayor> retrieve(String sql, String[] params){
-		List<LandPayor> lands = Collections.synchronizedList(new ArrayList<LandPayor>());
+		List<LandPayor> lands = new ArrayList<LandPayor>();
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = TaxDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		if(params!=null && params.length>0){
+			
+			for(int i=0; i<params.length; i++){
+				ps.setString(i+1, params[i]);
+			}
+			
+		}
+		
+		System.out.println("SQL land: " + ps.toString());
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			
+			LandPayor pay = new LandPayor();
+			try{pay.setId(rs.getLong("payorlandid"));}catch(NullPointerException e){}
+			try{pay.setTaxDeclarionNo(rs.getString("landtd"));}catch(NullPointerException e){}
+			try{pay.setLandValue(rs.getDouble("landvalue"));}catch(NullPointerException e){}
+			try{pay.setAddress(rs.getString("address"));}catch(NullPointerException e){}
+			try{pay.setLotNo(rs.getString("lotno"));}catch(NullPointerException e){}
+			try{pay.setRemarks(rs.getString("landremarks"));}catch(NullPointerException e){}
+			try{pay.setIsActive(rs.getInt("isactiveland"));}catch(NullPointerException e){}
+			try{pay.setTimestamp(rs.getTimestamp("timestamp"));}catch(NullPointerException e){}
+			try{pay.setStatus(rs.getInt("landstatus"));}catch(NullPointerException e){}
+			
+			Barangay bar = new Barangay();
+			try{bar.setId(rs.getInt("bgid"));}catch(NullPointerException e){}
+			try{bar.setName(rs.getString("bgname"));}catch(NullPointerException e){}
+			pay.setBarangay(bar);
+			
+			TaxPayor payor = new TaxPayor();
+			try{payor.setId(rs.getLong("payorid"));}catch(NullPointerException e){}
+			try{payor.setFullName(rs.getString("payorname"));}catch(NullPointerException e){}
+			try{payor.setAddress(rs.getString("payoraddress"));}catch(NullPointerException e){}
+			try{payor.setIsactive(rs.getInt("payisactive"));}catch(NullPointerException e){}
+			pay.setPayor(payor);
+			
+			ILandType type = new LandType();
+			try{type.setId(rs.getInt("landid"));}catch(NullPointerException e){}
+			try{type.setLandType(rs.getString("landtype"));}catch(NullPointerException e){}
+			try{type.setTimestamp(rs.getTimestamp("landtimestamp"));}catch(NullPointerException e){}
+			pay.setLandType(type);
+			
+			UserDtls user = new UserDtls();
+			try{user.setUserdtlsid(rs.getLong("userdtlsid"));}catch(NullPointerException e){}
+			try{user.setFirstname(rs.getString("firstname"));}catch(NullPointerException e){}
+			try{user.setMiddlename(rs.getString("middlename"));}catch(NullPointerException e){}
+			try{user.setLastname(rs.getString("lastname"));}catch(NullPointerException e){}
+			pay.setUserDtls(user);
+			
+			lands.add(pay);
+			
+		}
+		
+		rs.close();
+		ps.close();
+		TaxDatabaseConnect.close(conn);
+		}catch(SQLException sl){}
+		
+		return lands;
+	}
+	
+	public static List<LandPayor> load(String sql, String[] params){
+		List<LandPayor> lands = new ArrayList<LandPayor>();
+		
+		String dbTax = ReadConfig.value(AppConf.DB_NAME_TAX);
+		String dbWeb = ReadConfig.value(AppConf.DB_NAME_WEBTIS);
+		String st = "SELECT * FROM  " + dbTax + ".payorland l, "+ dbTax +".landtype t, "+ dbTax +".taxpayor p, "+ dbTax +".barangay b, "+ dbWeb +".userdtls u  "
+				+ "WHERE l.payorid = p.payorid AND l.landid = t.landid AND l.isactiveland=1 AND l.bgid = b.bgid AND l.userdtlsid = u.userdtlsid ";
+				sql = st + sql;
 		
 		Connection conn = null;
 		ResultSet rs = null;

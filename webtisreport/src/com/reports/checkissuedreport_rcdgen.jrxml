@@ -369,17 +369,10 @@
 	<summary>
 		<band height="159" splitType="Stretch">
 			<staticText>
-				<reportElement x="3" y="45" width="340" height="58" uuid="ba958a5d-12c1-4b2e-9e86-2885a4c7b9e2"/>
+				<reportElement x="3" y="50" width="340" height="45" uuid="ba958a5d-12c1-4b2e-9e86-2885a4c7b9e2"/>
 				<textElement textAlignment="Justified"/>
-				<text><![CDATA[      I CERTIFY that the report issued in ____ sheet(s) is full true and correct statement of all checks released by me in payment for obligation of the Municipality of Lake Sebu for the period stated and shown in the attached disbursement voucher.]]></text>
+				<text><![CDATA[         Correct statement of all checks released by me in payment of the Municipality of Lake Sebu for the period stated and shown in the attached disbursment voucher.]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="182" y="44" width="28" height="15" uuid="13fdf1ea-c6f4-44e4-afce-e62da40ceefd"/>
-				<textElement>
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
 			<line>
 				<reportElement x="415" y="64" width="135" height="1" uuid="b01186ce-f6c0-4d19-84f2-097077ad0057"/>
 			</line>

@@ -76,7 +76,7 @@ public String validateUserNamePassword(){
 		System.out.println("Valid: " + valid);*/
 		
 		String result="login";
-		LogU.add("Guest with username : " + name + " and password " + password + " is trying to log in the system.");
+		LogU.add("Guest with username : " + name + " and password ******** is trying to log in the system.");
 		if(in!=null){
 			
 	        HttpSession session = SessionBean.getSession();
@@ -162,6 +162,7 @@ private String assignModule() {
 		case 16 : return Pages.UploadRcd.getName();
 		case 17 : return Pages.VoucherExpense.getName();
 		case 18 : return Pages.WaterBilling.getName();
+		case 19 : return Pages.LandTaxCertification.getName();
 	}
 	
 	

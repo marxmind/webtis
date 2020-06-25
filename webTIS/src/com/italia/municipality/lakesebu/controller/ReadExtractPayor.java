@@ -162,7 +162,7 @@ public class ReadExtractPayor implements Serializable{
 			if(getSearchParama()!=null && !getSearchParama().isEmpty()) {
 				pays = Collections.synchronizedList(new ArrayList<PayorPayment>());
 				for(PayorPayment p : getHoldpays()) {
-					if(p.getOwner().contains(getSearchParama().toUpperCase())) {
+					if(p.getOwner().contains(getSearchParama().toUpperCase()) || p.getTdNo().contains(getSearchParama())) {
 						pays.add(p);
 					}
 				}
@@ -262,7 +262,7 @@ public class ReadExtractPayor implements Serializable{
 		                	case 2 : ro.setTdNo(cell.getStringCellValue());break;
 		                	case 7 : ro.setOwner(cell.getStringCellValue());break;
 		                	case 8 : ro.setBarangay(cell.getStringCellValue());break;
-		                	case 11 : try{ro.setAssessedValue(cell.getNumericCellValue()+"");}catch(Exception e) {}break;
+		                	case 11 : try{ro.setAssessedValue(cell.getNumericCellValue());}catch(Exception e) {}break;
 		                	}
 		                	
 		                	/*if(cell.getCellType()==Cell.CELL_TYPE_NUMERIC) {
@@ -308,27 +308,7 @@ public class ReadExtractPayor implements Serializable{
 				}	
 			}
 			
-			/*if(pay.getOwner().contains("L OT")){
-				val = pay.getOwner().split("L OT");
-				pay.setOwner(val[0].trim());
-				pay.setLotNo(val[1]);
-			}else if(pay.getOwner().contains("LOT")){
-				val = pay.getOwner().split("LOT");
-				pay.setOwner(val[0].trim());
-				pay.setLotNo(val[1]);
-			}else if(pay.getOwner().contains("UNS.")){
-				val = pay.getOwner().split("UNS.");
-				pay.setOwner(val[0].trim());
-				pay.setLotNo("UNS.");
-			}else if(pay.getOwner().contains("UNS")){
-				val = pay.getOwner().split("UNS");
-				pay.setOwner(val[0].trim());
-				pay.setLotNo("UNS ");	
-			}else {
-				//do nothing
-				//pay.setOwner("");
-				pay.setLotNo("");
-			}*/
+			
 			String key = pay.getBarangay().toUpperCase();
 			if(getBars().containsKey(key)) {
 				pay.setAddress(key + ", LAKE SEBU, SO. COT.");

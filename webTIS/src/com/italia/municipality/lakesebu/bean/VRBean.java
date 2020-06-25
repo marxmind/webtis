@@ -203,7 +203,7 @@ public class VRBean implements Serializable{
 		
 		int size = lds!=null? lds.size() : 0;
 		
-		if(size>0) {
+		if(size==1) {
 			clickItem(lds.get(0));
 		}else {
 			if(getResId()==0) {
@@ -594,6 +594,8 @@ public class VRBean implements Serializable{
 			
 			setSeriesMonthIdSearch(getSeriesMonthId());
 			setDepartmentIdSearch(getDepartmentId());
+			
+			System.out.println("Check responsibility... " + getResId());
 			
 			//clear the field if responsibility is not present
 			if(getResId()==0) {

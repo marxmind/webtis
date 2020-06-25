@@ -332,7 +332,7 @@ public class FundsTreasuryBean {
 	public Date getDateFrom() {
 		
 		if(dateFrom==null){
-			String date = DateUtils.getLastDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN); 
+			String date = DateUtils.getFirstDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN); 
 			dateFrom = DateUtils.convertDateString(date, "yyyy-MM-dd");
 		}
 		

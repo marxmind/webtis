@@ -25,6 +25,17 @@ public class Numbers {
 		}catch(Exception e){System.out.println("Error in formatDouble for value : " + value + " error : " + e.getMessage());}
 		return value;
 	}
+	
+	public static double formatDouble(String value){
+		double val = 0d;
+		try{
+		val = Double.parseDouble(value.replace(",", ""));	
+		DecimalFormat df = new DecimalFormat("####0.00");
+		val = Double.valueOf(df.format(val));
+		}catch(Exception e){System.out.println("Error in formatDouble for value : " + value + " error : " + e.getMessage());}
+		return val;
+	}
+	
 	public static double roundOf(double value, int places) {
 	    if (places < 0) throw new IllegalArgumentException();
 

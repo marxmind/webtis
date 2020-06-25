@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class FundsBean implements Serializable{
 	private Date dateTo;
 	
 	private List<CashTransactions> trans = Collections.synchronizedList(new ArrayList<CashTransactions>());
-	private CashTransactions selectedData;
+	private List<CashTransactions> selectedData;
 	
 	private int transId;
 	private List transType;
@@ -90,7 +91,7 @@ public class FundsBean implements Serializable{
 		try{BookCashBook.loadXML(new CashTransactions());}catch(Exception e){}
 		
 		
-		String sql = "SELECT * FROM cashtransactions WHERE cashDate>=? AND cashDate<=? AND bank_id=? ";
+		String sql = "SELECT * FROM cashtransactions WHERE cashisactive=1 AND cashDate>=? AND cashDate<=? AND bank_id=? ";
 		String[] params = new String[3]; 
 		if(getSearchParticulars()!=null && !getSearchParticulars().isEmpty()){
 			sql += " AND cashParticulars like '%" + getSearchParticulars().replace("--", "") + "%'";
@@ -100,7 +101,8 @@ public class FundsBean implements Serializable{
 		params[2] = getAccountNameId()+"";
 		sql +=" ORDER BY cashDate";
 		
-		trans = Collections.synchronizedList(new ArrayList<CashTransactions>());
+		trans = new ArrayList<CashTransactions>();
+		selectedData = new ArrayList<CashTransactions>();
 		//trans = CashTransactions.retrieve(sql, params);
 		
 		int cnt = 1;
@@ -153,7 +155,12 @@ public class FundsBean implements Serializable{
 	        //copy xml
 	        saveXML(trans.get(index));
 	        
+	        //reset transaction type
+	        setTransId(0);
 	 } 
+	 
+	 
+	 
 	
 	 private void saveChanges(int index){
 		 if(trans.size()>0){
@@ -223,6 +230,23 @@ public class FundsBean implements Serializable{
 		trans.add(tran);
 	}
 	 
+	private static final String PATH = AppConf.PRIMARY_DRIVE.getValue() + AppConf.SEPERATOR.getValue();
+	 private static final String APP_FOLDER = AppConf.APP_CONFIG_FOLDER_NAME.getValue();
+	 private static final String BACKUPBANK = PATH +  APP_FOLDER + AppConf.SEPERATOR.getValue() + AppConf.BACKUPCASHBOOKBANKXML.getValue() + AppConf.SEPERATOR.getValue(); 	
+	 public void deleteData() {
+		 if(getSelectedData()!=null && getSelectedData().size()>0) {
+			 System.out.println("deleting files...");
+			 for(CashTransactions cash : getSelectedData()) {
+				 File xml = new File(BACKUPBANK+"BANK-"+cash.getAccounts().getBankId()+"-"+cash.getVoucherNo()+".xml");
+				 System.out.println("deleting >> " + cash.getVoucherNo());
+				 try{xml.delete(); System.out.println("deleted...");}catch(Exception e) {}
+				 cash.delete();
+				 trans.remove(cash);
+			 }
+			 init();
+		 }
+	 }
+	
 	private CashTransactions cashField(){
 		
 		CashTransactions cash = new CashTransactions();
@@ -338,7 +362,7 @@ public class FundsBean implements Serializable{
 	public Date getDateFrom() {
 		
 		if(dateFrom==null){
-			String date = DateUtils.getLastDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN); 
+			String date = DateUtils.getFirstDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN); 
 			dateFrom = DateUtils.convertDateString(date, "yyyy-MM-dd");
 		}
 		
@@ -374,11 +398,11 @@ public class FundsBean implements Serializable{
 		this.trans = trans;
 	}
 
-	public CashTransactions getSelectedData() {
+	public List<CashTransactions> getSelectedData() {
 		return selectedData;
 	}
 
-	public void setSelectedData(CashTransactions selectedData) {
+	public void setSelectedData(List<CashTransactions> selectedData) {
 		this.selectedData = selectedData;
 	}
 
@@ -411,13 +435,18 @@ public class FundsBean implements Serializable{
 	}
 	
 	public void print(){ //check issued only
-		if(trans.size()>0){
+		if(getSelectedData().size()>0){
+		//if(trans.size()>0){
 			List<Reports> reports = Collections.synchronizedList(new ArrayList<Reports>());
 			double total = 0d;
-			for(CashTransactions tran : trans){
-				if(tran.getTransType()==TransactionType.CHECK_ISSUED.getId()){
+			for(CashTransactions tran : getSelectedData()){
+			//for(CashTransactions tran : trans){
+				if(tran.getTransType()==TransactionType.CHECK_ISSUED.getId() ||
+						tran.getTransType()==TransactionType.COLLECTION.getId() ||
+						tran.getTransType()==TransactionType.DEPOSIT.getId() ||
+						tran.getTransType()==TransactionType.JEV.getId()){
 					Reports rpt = new Reports();
-					rpt.setF1(tran.getDateTrans());
+					rpt.setF1(DateUtils.convertDateCustom(tran.getDateTrans()) );
 					rpt.setF2(tran.getCheckNo().equalsIgnoreCase("0")? "" : tran.getCheckNo());
 					rpt.setF3(tran.getVoucherNo());
 					try{rpt.setF4(tran.getDepartmentCode().split("-")[0]);}catch(Exception e){rpt.setF4(tran.getDepartmentCode());}
@@ -442,21 +471,54 @@ public class FundsBean implements Serializable{
 			
 	  		param.put("PARAM_REPORT_TITLE","REPORT OF CHECK ISSUED");
 	  		
-	  		param.put("PARAM_PRINTED_DATE","Printed: "+DateUtils.getCurrentDateMMDDYYYYTIME());
-	  		param.put("PARAM_RANGE_DATE",DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd") + " to " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd"));
+	  		param.put("PARAM_PRINTED_DATE",DateUtils.getCurrentDateMonthDayYear());
+	  		
+	  		String fromMonth = DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd").split("-")[1];
+	  		String fromDay = DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd").split("-")[2];
+	  		String toMonth = DateUtils.convertDate(getDateTo(),"yyyy-MM-dd").split("-")[1];
+	  		String toDay = DateUtils.convertDate(getDateTo(),"yyyy-MM-dd").split("-")[2];
+	  		
+	  		String dateCovered = "";
+	  		if((fromMonth.equalsIgnoreCase(toMonth)) && (fromDay.equalsIgnoreCase(toDay))) {
+	  			dateCovered = DateUtils.convertDateToMonthDayYear(DateUtils.convertDate(getDateTo(),"yyyy-MM-dd"));
+	  		}else {
+	  			if(fromMonth.equalsIgnoreCase(toMonth)){
+	  				dateCovered = DateUtils.getMonthName(Integer.valueOf(fromMonth)) + " " + fromDay + " to " + toDay + ", " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd").split("-")[0];
+	  			}else {
+	  				dateCovered = DateUtils.getMonthName(Integer.valueOf(fromMonth)) + " " + fromDay + " to " + DateUtils.getMonthName(Integer.valueOf(toMonth)) + " " + toDay + ", " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd").split("-")[0];
+		  			
+	  			}
+	  		}
+	  		
+	  		param.put("PARAM_RANGE_DATE",dateCovered);
 	  		
 	  		BankAccounts accnt = BankAccounts.retrieve("SELECT * FROM tbl_bankaccounts WHERE bank_id=" + getAccountNameId(), new String[0]).get(0);
-	  		param.put("PARAM_ACCOUNT_NAME","Bank Name/Account No. "+accnt.getBankAccntNo() + "-" + accnt.getBankAccntBranch());
+	  		param.put("PARAM_ACCOUNT_NAME",accnt.getBankAccntBranch() + " " + accnt.getBankAccntNo());
 			
 	  		param.put("PARAM_SUB_TOTAL",Currency.formatAmount(total));
 	  		
 	  		if(getAccountNameId()==1){
-	  			param.put("PARAM_RECEIVEDBY","");
+	  			param.put("PARAM_RECEIVEDBY","ANITA PASTOR");
 	  		}else if(getAccountNameId()==3 || getAccountNameId()==5){
 	  			param.put("PARAM_RECEIVEDBY","EMMANUEL S. FACTORA");
 	  		}else if(getAccountNameId()==2 || getAccountNameId()==4){
 	  			param.put("PARAM_RECEIVEDBY","SHIRLEY D. SOLIS");
 	  		}
+	  		
+	  		//logo
+			String officialLogo = REPORT_PATH + "logo.png";
+			try{File file = new File(officialLogo);
+			FileInputStream off = new FileInputStream(file);
+			param.put("PARAM_LOGO", off);
+			}catch(Exception e){e.printStackTrace();}
+			
+			//logo
+			String officialLogotrans = REPORT_PATH + "logotrans.png";
+			try{File file = new File(officialLogotrans);
+			FileInputStream off = new FileInputStream(file);
+			param.put("PARAM_LOGO_TRANS", off);
+			}catch(Exception e){e.printStackTrace();}
+	  		
 	  		try{
 		  		String jrprint = JasperFillManager.fillReportToFile(jrxmlFile, param, beanColl);
 		  	    JasperExportManager.exportReportToPdfFile(jrprint,REPORT_PATH+ REPORT_NAME +".pdf");
@@ -512,13 +574,16 @@ public class FundsBean implements Serializable{
 	}
 	
 	public void printCollection(){ //Deposit and collection only
-		if(trans.size()>0){
+		if(getSelectedData().size()>0){
+		//if(trans.size()>0){
 			List<Reports> reports = Collections.synchronizedList(new ArrayList<Reports>());
 			double total = 0d;
-			for(CashTransactions tran : trans){
-				if(tran.getTransType()==TransactionType.COLLECTION.getId() || tran.getTransType()==TransactionType.DEPOSIT.getId()){
+			for(CashTransactions tran : getSelectedData()){
+				if(tran.getTransType()==TransactionType.COLLECTION.getId() || 
+						tran.getTransType()==TransactionType.DEPOSIT.getId() ||
+						tran.getTransType()==TransactionType.JEV.getId()){
 					Reports rpt = new Reports();
-					rpt.setF1(tran.getDateTrans());
+					rpt.setF1(DateUtils.convertDateCustom(tran.getDateTrans()));
 					rpt.setF2(tran.getCheckNo().equalsIgnoreCase("0")? "" : tran.getCheckNo());
 					rpt.setF3(tran.getVoucherNo());
 					rpt.setF4(tran.getDepartmentCode());
@@ -533,7 +598,7 @@ public class FundsBean implements Serializable{
 			//compiling report
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
 					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
-			String REPORT_NAME =ReadConfig.value(AppConf.CHECK_ISSUED);
+			String REPORT_NAME =ReadConfig.value(AppConf.CHECK_ISSUED) +"_rcdgen";
 			System.out.println("Report path " + REPORT_PATH + " name " + REPORT_NAME);
 			ReportCompiler compiler = new ReportCompiler();
 			String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, REPORT_PATH);
@@ -543,11 +608,28 @@ public class FundsBean implements Serializable{
 			
 	  		param.put("PARAM_REPORT_TITLE","REPORT OF COLLECTION AND DEPOSIT");
 	  		
-	  		param.put("PARAM_PRINTED_DATE","Printed: "+DateUtils.getCurrentDateMMDDYYYYTIME());
-	  		param.put("PARAM_RANGE_DATE",DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd") + " to " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd"));
+	  		param.put("PARAM_PRINTED_DATE",DateUtils.getCurrentDateMonthDayYear());
+	  		
+	  		String fromMonth = DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd").split("-")[1];
+	  		String fromDay = DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd").split("-")[2];
+	  		String toMonth = DateUtils.convertDate(getDateTo(),"yyyy-MM-dd").split("-")[1];
+	  		String toDay = DateUtils.convertDate(getDateTo(),"yyyy-MM-dd").split("-")[2];
+	  		String dateCovered = "";
+	  		if((fromMonth.equalsIgnoreCase(toMonth)) && (fromDay.equalsIgnoreCase(toDay))) {
+	  			dateCovered = DateUtils.convertDateToMonthDayYear(DateUtils.convertDate(getDateTo(),"yyyy-MM-dd"));
+	  		}else {
+	  			if(fromMonth.equalsIgnoreCase(toMonth)){
+	  				dateCovered = DateUtils.getMonthName(Integer.valueOf(fromMonth)) + " " + fromDay + " to " + toDay + ", " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd").split("-")[0];
+	  			}else {
+	  				dateCovered = DateUtils.getMonthName(Integer.valueOf(fromMonth)) + " " + fromDay + " to " + DateUtils.getMonthName(Integer.valueOf(toMonth)) + " " + toDay + ", " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd").split("-")[0];
+		  			
+	  			}
+	  		}
+	  		
+	  		param.put("PARAM_RANGE_DATE",dateCovered);
 	  		
 	  		BankAccounts accnt = BankAccounts.retrieve("SELECT * FROM tbl_bankaccounts WHERE bank_id=" + getAccountNameId(), new String[0]).get(0);
-	  		param.put("PARAM_ACCOUNT_NAME","Bank Name/Account No. "+accnt.getBankAccntNo() + "-" + accnt.getBankAccntBranch());
+	  		param.put("PARAM_ACCOUNT_NAME", accnt.getBankAccntBranch() + " - " + accnt.getBankAccntNo());
 			
 	  		param.put("PARAM_SUB_TOTAL",Currency.formatAmount(total));
 	  		
@@ -558,6 +640,21 @@ public class FundsBean implements Serializable{
 	  		}else if(getAccountNameId()==2 || getAccountNameId()==4){
 	  			param.put("PARAM_RECEIVEDBY","SHIRLEY D. SOLIS");
 	  		}
+	  		
+	  	//logo
+			String officialLogo = REPORT_PATH + "logo.png";
+			try{File file = new File(officialLogo);
+			FileInputStream off = new FileInputStream(file);
+			param.put("PARAM_LOGO", off);
+			}catch(Exception e){e.printStackTrace();}
+			
+			//logo
+			String officialLogotrans = REPORT_PATH + "logotrans.png";
+			try{File file = new File(officialLogotrans);
+			FileInputStream off = new FileInputStream(file);
+			param.put("PARAM_LOGO_TRANS", off);
+			}catch(Exception e){e.printStackTrace();}
+	  		
 	  		try{
 		  		String jrprint = JasperFillManager.fillReportToFile(jrxmlFile, param, beanColl);
 		  	    JasperExportManager.exportReportToPdfFile(jrprint,REPORT_PATH+ REPORT_NAME +".pdf");
