@@ -49,6 +49,43 @@ public class PayorPayment implements IPayorPayment{
 	private int isActive;
 	
 	
+	public  static boolean isExistingPayment(PayorPayment py) {
+		
+		String sql = "SELECT * FROM paymenthistory WHERE isactivepayment=1 AND tdNo=? AND paidDate=? AND orNumber=? AND typepay=?";
+		String[] params = new String[4];
+		try{params[0] = py.getTdNo().strip();}catch(NullPointerException e) {params[0]="";}
+		try{params[1] = py.getPaidDate().strip();}catch(NullPointerException e) {params[1]="";}
+		try{params[2] = py.getOrNumber().strip();}catch(NullPointerException e) {params[2]="";}
+		try{params[3] = py.getType().strip();}catch(NullPointerException e) {params[2]="";}
+		
+		//try{sql +=" AND lotNo='"+ py.getLotNo().strip()+"'";}catch(NullPointerException e) {sql +=" AND lotNo is NULL";}
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = TaxDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		if(params!=null && params.length>0){
+			
+			for(int i=0; i<params.length; i++){
+				ps.setString(i+1, params[i]);
+			}
+			
+		}
+		
+		//System.out.println("SQL history payment exist " + ps.toString());
+		
+		rs = ps.executeQuery();
+		
+		return rs.next()==true? true : false;
+		
+		}catch(SQLException e) {}
+		
+		return false;
+	}
+	
 	public static List<PayorPayment> retrieve(String sql, String[] params){
 		
 		List<PayorPayment> pays = new ArrayList<PayorPayment>();

@@ -33,6 +33,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.CellType;
 import org.codehaus.groovy.tools.shell.commands.ClearCommand;
 import org.primefaces.component.api.UIColumn;
 import org.primefaces.event.CellEditEvent;
@@ -86,7 +87,7 @@ public class HistoryBean implements Serializable{
 	private String requestor;
 	private String landAddress;
 	private String purpose;
-	private String preparedBy="JOY ESTARIS";
+	private String preparedBy="JOY ESTARES";
 	private LandPayor selectedLand;
 	private static Map<String, Barangay> bars = Collections.synchronizedMap(new HashMap<String, Barangay>());
 	private static final String DOC_PATH = AppConf.PRIMARY_DRIVE.getValue() + File.separator + AppConf.APP_CONFIG_FOLDER_NAME.getValue() + File.separator +"rptsExtractFiles" + File.separator;
@@ -172,13 +173,22 @@ public class HistoryBean implements Serializable{
 	
 	public void saveExtract() {
 		if(getPays()!=null && getPays().size()>0) {
+			int countAdded = 0;
+			int countExisted = 0;
 			for(PayorPayment pay : getPays()) {
-				pay.setIsActive(1);
-				pay.save();
-				getHoldpays().remove(pay);
+				if(!PayorPayment.isExistingPayment(pay)) {
+					pay.setIsActive(1);
+					pay.save();
+					getHoldpays().remove(pay);
+					countAdded++;
+					System.out.println("Added.... TD: " + pay.getTdNo() + " owner: " + pay.getOwner() + " OR: " + pay.getOrNumber() + " type: " + pay.getType());
+				}else {
+					countExisted++;
+					//System.out.println("Existing.... " + pay.getTdNo());
+				}
 			}
 			setPays(getHoldpays());
-			Application.addMessage(1, "Success", "Successfully saved the extracted data.");
+			Application.addMessage(1, "Success", countAdded + " were successfully saved from extracted data and " + (countExisted==0? "zero duplicate data were saved." : countExisted +" existed data that will not saved."));
 		}else {
 			Application.addMessage(3, "Error", "No data extracted");
 		}
@@ -294,24 +304,23 @@ public class HistoryBean implements Serializable{
 		                    double penalty=0d;
 		                    double total=0d;
 		                	switch(c) {
-		                	case 0 : try{ro.setOrNumber(cell.getStringCellValue());}catch(Exception e) {ro.setOrNumber(cell.getNumericCellValue()+"");} break;
-		                	case 1 : try{ro.setPaidDate(cell.getStringCellValue());}catch(Exception e) {ro.setPaidDate(cell.getNumericCellValue()+"");} break;
-		                	case 2 : ro.setTdNo(cell.getStringCellValue());break;
-		                	case 3 : try{fromQrt= Integer.parseInt(cell.getStringCellValue().replace(".0", ""));}catch(Exception e) {fromQrt= Integer.parseInt(cell.getNumericCellValue()+"");} ro.setFromQtr(fromQrt); break;
-		                	case 4 : try{fromYear=Integer.valueOf(cell.getStringCellValue());}catch(Exception e) {fromYear=Integer.valueOf(cell.getNumericCellValue()+"");} ro.setFromYear(fromYear); break;
-		                	case 5 : try{toQrt= Integer.parseInt(cell.getStringCellValue());}catch(Exception e) {toQrt= Integer.parseInt(cell.getNumericCellValue()+"");} ro.setToQtr(toQrt); break;
-		                	case 6 : try{toYear=Integer.valueOf(cell.getStringCellValue());}catch(Exception e) {toYear=Integer.valueOf(cell.getNumericCellValue()+"");} ro.setToYear(toYear); break;
-		                	case 7 : ro.setOwner(cell.getStringCellValue());break;
-		                	case 8 : ro.setBarangay(cell.getStringCellValue());break;
-		                	case 9 : ro.setKind(cell.getStringCellValue());break;
-		                	case 10 : ro.setActualUse(cell.getStringCellValue());break;
+		                	case 0 : try{ro.setOrNumber(cell.getStringCellValue().strip());}catch(Exception e) {ro.setOrNumber(cell.getNumericCellValue()+"");} break;
+		                	case 1 : try{ro.setPaidDate(cell.getStringCellValue().strip());}catch(Exception e) {ro.setPaidDate(cell.getNumericCellValue()+"");} break;
+		                	case 2 : ro.setTdNo(cell.getStringCellValue().strip());break;
+		                	case 3 : try{fromQrt= Integer.parseInt(cell.getStringCellValue().replace(".0", ""));}catch(Exception e) {fromQrt= cellValue(cell);} ro.setFromQtr(fromQrt); break;
+		                	case 4 : try{fromYear=Integer.valueOf(cell.getStringCellValue());}catch(Exception e) {fromYear=cellValue(cell);} ro.setFromYear(fromYear); break;
+		                	case 5 : try{toQrt= Integer.parseInt(cell.getStringCellValue());}catch(Exception e) {toQrt= cellValue(cell);} ro.setToQtr(toQrt); break;
+		                	case 6 : try{toYear=Integer.valueOf(cell.getStringCellValue());}catch(Exception e) {toYear=cellValue(cell);} ro.setToYear(toYear); break;
+		                	case 7 : ro.setOwner(cell.getStringCellValue().strip());break;
+		                	case 8 : ro.setBarangay(cell.getStringCellValue().strip());break;
+		                	case 9 : ro.setKind(cell.getStringCellValue().strip());break;
+		                	case 10 : ro.setActualUse(cell.getStringCellValue().strip());break;
 		                	case 11 : try{ ro.setAssessedValue(cell.getNumericCellValue());}catch(Exception e) {}break;
 		                	case 12 : try{principal=Numbers.formatDouble(cell.getStringCellValue());}catch(Exception e) {ro.setPrincipal(cell.getNumericCellValue());}  break;
 		                	case 13 : try{penalty = Numbers.formatDouble(cell.getStringCellValue());}catch(Exception e) {ro.setPenalty(cell.getNumericCellValue());} break;
 		                	case 14 : try{total = Numbers.formatDouble(cell.getStringCellValue());}catch(Exception e) {ro.setTotal(cell.getNumericCellValue());} break;
-		                	case 15 : try{ro.setCollector(cell.getStringCellValue());}catch(Exception e) {ro.setCollector(cell.getNumericCellValue()+"");} break;
+		                	case 15 : try{ro.setCollector(cell.getStringCellValue().strip());}catch(Exception e) {ro.setCollector(cell.getNumericCellValue()+"");} break;
 		                	}
-		                	
 		                }
 		            }
 		            String key = ro.getTdNo().strip()+ro.getFromYear()+ro.getToYear();
@@ -347,6 +356,25 @@ public class HistoryBean implements Serializable{
 		return Collections.synchronizedList(new ArrayList<>());
 	}
 	
+	public int cellValue(HSSFCell cell) {
+		String tmpNum ="";
+		if(CellType.NUMERIC==cell.getCellTypeEnum().NUMERIC) {
+			try{tmpNum = cell.getNumericCellValue()+"";}catch(IllegalStateException e) {System.out.println("illegal : " + cell.getStringCellValue()); tmpNum="0";}
+			tmpNum = tmpNum.replace(".0", "");
+		}else if(CellType.STRING==cell.getCellTypeEnum().STRING) {
+			tmpNum = cell.getStringCellValue().replace(".0", "");
+		}else if(CellType.BLANK==cell.getCellTypeEnum().BLANK) {
+			tmpNum = "";
+		}else if(CellType.BOOLEAN==cell.getCellTypeEnum().BOOLEAN) {
+			tmpNum = "0";
+		}else if(CellType.FORMULA==cell.getCellTypeEnum().FORMULA) {
+			tmpNum = "";
+		}
+		System.out.println("change format: " + tmpNum);
+		
+		return 0;
+	}
+	
 	public String[] loadFilter() {
 		
 		try {
@@ -363,6 +391,8 @@ public class HistoryBean implements Serializable{
 		}catch(Exception e) {}
 		return null;
 	}
+	
+	
 	
 	private PayorPayment splitOwnerLot(PayorPayment pay, String[] filters) {
 		
