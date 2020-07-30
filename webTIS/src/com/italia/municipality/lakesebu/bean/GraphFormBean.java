@@ -71,9 +71,7 @@ import com.italia.municipality.lakesebu.utils.Numbers;
 @ViewScoped
 public class GraphFormBean implements Serializable{
 
-	/**
-	 * 
-	 */
+	/*
 	private static final long serialVersionUID = 1445670876346L;
 	
 	private LineChartModel lineModel;
@@ -679,18 +677,7 @@ public class GraphFormBean implements Serializable{
 		params[0] = yearLast+"";
 		params[1] = yearNow+"";
 		
-		//for(CollectionInfo info : CollectionInfo.retrieve(sql, params)) {
-			//String day = info.getReceivedDate().split("-")[1];
-		/**
-		 * int key = Integer.valueOf(day);
-			if(currentData!=null && currentData.containsKey(key+"")) {
-				double amount = currentData.get(key+"");
-				amount += info.getAmount();
-				currentData.put(key+"", amount);
-			}else {
-				currentData.put(key+"", info.getAmount());
-			}
-		 */
+		
 		summData = Collections.synchronizedList(new ArrayList<SummaryCollections>());
 		for(SummaryCollections i : SummaryCollections.retrive(sql, params)) {
 			
@@ -726,25 +713,6 @@ public class GraphFormBean implements Serializable{
 				currentData.put("12", i.getDecember());
 		}	
 		}
-		/*year -=1;
-		
-		params[0] = year + "-01-01";
-		params[1] = year + "-12-31";
-		for(CollectionInfo info : CollectionInfo.retrieve(sql, params)) {
-			String day = info.getReceivedDate().split("-")[1];
-			int key = Integer.valueOf(day);
-			
-			if(lastData!=null && lastData.containsKey(key+"")) {
-				double amount = currentData.get(key+"");
-				amount += info.getAmount();
-				lastData.put(key+"", amount);
-			}else {
-				lastData.put(key+"", info.getAmount());
-			}
-			
-		}*/
-		
-		
 		
 	}
 	
@@ -779,8 +747,7 @@ public class GraphFormBean implements Serializable{
          
         List<String> labels = new ArrayList<>();
         
-        /*Map<String, Double> last = ReadDashboardInfo.getInfo("collection-last-year");
-        Map<String, Double> current = ReadDashboardInfo.getInfo("collection-this-year");*/
+        
         
         Map<String, Double> last = getLastData();
         Map<String, Double> current = getCurrentData();
@@ -925,12 +892,6 @@ public class GraphFormBean implements Serializable{
          
         List<String> labels = new ArrayList<>();
         
-        /*List<Number> values2 = new ArrayList<>();
-        List<String> bgColor2 = new ArrayList<>(); 
-        List<String> borderColor2 = new ArrayList<>();
-         
-        List<String> labels2 = new ArrayList<>();*/
-        
         int rgbColor = 0;
         String[] rgbs = rgbColors();
         for(String key : current.keySet()) {
@@ -941,10 +902,7 @@ public class GraphFormBean implements Serializable{
 	        	borderColor.add(rgbs[rgbColor]);
 	        	labels.add(key + "("+ Currency.formatAmount(number) +")");
 	        	
-	        	/*values2.add(number);
-	        	bgColor2.add(rgbs[rgbColor++]);
-	        	borderColor2.add(rgbs[rgbColor]);
-	        	labels2.add(key + "("+ Currency.formatAmount(number) +")");*/
+	        	
         	}
         }
         hbarDataSet.setData(values);
@@ -955,12 +913,7 @@ public class GraphFormBean implements Serializable{
         data.setLabels(labels);
         hbarModel.setData(data);
         
-        /*hbarDataSet2.setData(values2);
-        hbarDataSet2.setBackgroundColor(bgColor2);
-        data.addChartDataSet(hbarDataSet2);
-        hbarDataSet2.setBorderColor(borderColor2);
-        hbarDataSet2.setBorderWidth(1);
-        data.setLabels(labels2);*/
+       
         
         hbarModel.setData(data);
          
@@ -1066,8 +1019,6 @@ public class GraphFormBean implements Serializable{
         stackedGroupBarModel = new BarChartModel();
         ChartData data = new ChartData();
         
-        /*Map<String, Double> last = ReadDashboardInfo.getInfo("collection-last-year");
-        Map<String, Double> current = ReadDashboardInfo.getInfo("collection-this-year");*/
         Map<String, Double> last = getLastData();
         Map<String, Double> current = getCurrentData();
         
@@ -1086,46 +1037,19 @@ public class GraphFormBean implements Serializable{
         barDataSet.setBackgroundColor("rgb(255, 99, 132)");
         barDataSet.setStack("Stack 0");
         List<Number> dataVal = new ArrayList<>();
-       /* dataVal.add(-22.22);
-        dataVal.add(-70);
-        dataVal.add(-33);
-        dataVal.add(30);
-        dataVal.add(-49);
-        dataVal.add(23);
-        dataVal.add(-92);
-        barDataSet.setData(dataVal);*/
+       
          
         BarChartDataSet barDataSet2 = new BarChartDataSet();
         barDataSet2.setLabel("2018 Income");
         barDataSet2.setBackgroundColor("rgb(54, 162, 235)");
         barDataSet2.setStack("Stack 0");
         List<Number> dataVal2 = new ArrayList<>();
-        /*dataVal2.add(90);
-        dataVal2.add(18);
-        dataVal2.add(86);
-        dataVal2.add(8);
-        dataVal2.add(34);
-        dataVal2.add(46);
-        dataVal2.add(11);
-        barDataSet2.setData(dataVal2);*/
          
         BarChartDataSet barDataSet3 = new BarChartDataSet();
         barDataSet3.setLabel("2019 Income");
         barDataSet3.setBackgroundColor("rgb(75, 192, 192)");
         barDataSet3.setStack("Stack 0");
         List<Number> dataVal3 = new ArrayList<>();
-        /*dataVal3.add(70);
-        dataVal3.add(73);
-        dataVal3.add(-25);
-        dataVal3.add(65);
-        dataVal3.add(49);
-        dataVal3.add(-18);
-        dataVal3.add(46);
-        barDataSet3.setData(dataVal3);*/
-         
-        /*data.addChartDataSet(barDataSet);
-        data.addChartDataSet(barDataSet2);
-        data.addChartDataSet(barDataSet3);*/
          
         List<String> labels = new ArrayList<>();
         
@@ -1406,12 +1330,6 @@ public class GraphFormBean implements Serializable{
 		
 	}
 	
-	/*private void loadFile(File file,int sheetNo) {
-		System.out.println(file.getName());
-		String ext = file.getName().split("\\.")[1];
-		
-	}*/
-	
 	private static List<RcdInfo> readXLSFileYEAR(File file,int sheetNo) {
 		System.out.println("reading excel");
 		try {
@@ -1585,9 +1503,7 @@ public class GraphFormBean implements Serializable{
 		File fileDoc = new File(DOC_PATH +  filename);
 		Path file = fileDoc.toPath();
 		Files.copy(stream, file, StandardCopyOption.REPLACE_EXISTING);
-		/*readingExcelFile(DOC_PATH + filename);
-		createLineModel();
-		createStackedGroupBarModel();*/
+		
 		
 		Map<String, Double> current = Collections.synchronizedMap(new HashMap<String, Double>());
 		int collecotId = 0;
@@ -1781,10 +1697,6 @@ public class GraphFormBean implements Serializable{
 			   
 			    fin.close();
 				
-			    /*for(CollectorCollections c : names) {
-			    	System.out.println("ID:" + c.getCollector().getId() + " form " + c.getFormType() + "  Date " + c.getDateTrans() + " amount " + c.getAmount());
-			    }*/
-			    
 			    return names;
 			    } catch(Exception e) {
 			    	e.printStackTrace();
@@ -2397,6 +2309,6 @@ public class GraphFormBean implements Serializable{
 		this.withCompareCollectorOtherCollection = withCompareCollectorOtherCollection;
 	}
 
-	 
+	*/
 	 
 }

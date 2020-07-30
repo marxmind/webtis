@@ -20,11 +20,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.imageio.ImageIO;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.data.general.PieDataset;
+
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -40,9 +36,10 @@ import com.italia.municipality.lakesebu.controller.Chequedtls;
 @ManagedBean(name="graph56Bean", eager=true)
 @ViewScoped
 public class Graph56Bean implements Serializable  {
-	/**
-	 * 
-	 */
+	
+	/*
+	
+	
 	private static final long serialVersionUID = 7587574416262141247L;
 	private StreamedContent pieChartMonths;
 	private StreamedContent pieChartLandTye;
@@ -64,16 +61,10 @@ public class Graph56Bean implements Serializable  {
     public void init() {
         
         	try{
-            //Graphic Text
-          /* BufferedImage bufferedImg = new BufferedImage(100, 25, BufferedImage.TYPE_INT_RGB);
-           Graphics2D g2 = bufferedImg.createGraphics();
-           g2.drawString("Php "+gTotal, 0, 10);
-           ByteArrayOutputStream os = new ByteArrayOutputStream();
-           ImageIO.write(bufferedImg, "png", os);
-           grandTotal = new DefaultStreamedContent(new ByteArrayInputStream(os.toByteArray()), "image/png"); */
+            
  
             //Chart
-            JFreeChart jfreechart = ChartFactory.createPieChart("Months", createMonthsDataset(), true, true, false);
+            jfreechart jfreechart = ChartFactory.createPieChart("Months", createMonthsDataset(), true, true, false);
             File monthschartFile = new File("dynamiMonthschart");
             ChartUtilities.saveChartAsPNG(monthschartFile, jfreechart, 600, 600);
             pieChartMonths = new DefaultStreamedContent(new FileInputStream(monthschartFile), "image/png");
@@ -198,6 +189,6 @@ public class Graph56Bean implements Serializable  {
 	public void setGrandTotal(StreamedContent grandTotal) {
 		this.grandTotal = grandTotal;
 	}
-	
+	*/
 }
 

@@ -14,16 +14,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.imageio.ImageIO;
- 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.data.general.PieDataset;
+import javax.inject.Named;
+
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -35,13 +29,12 @@ import com.italia.municipality.lakesebu.controller.Chequedtls;
  * @version 1.0
  *
  */
-@ManagedBean(name="graphBean", eager=true)
-@ViewScoped
-public class GraphicImageBean implements Serializable {
 
-	/**
-	 * 
-	 */
+@Named
+@ViewScoped
+public class GraphBean implements Serializable {
+
+	/*
 	private static final long serialVersionUID = 7587574416262141247L;
 	private StreamedContent pieChartMonths;
 	private StreamedContent pieChartAccouns;
@@ -258,5 +251,5 @@ public class GraphicImageBean implements Serializable {
 	public void setGrandTotal(StreamedContent grandTotal) {
 		this.grandTotal = grandTotal;
 	}
-	
+	*/
 }

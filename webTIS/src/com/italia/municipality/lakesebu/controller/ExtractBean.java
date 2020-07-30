@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -37,9 +37,10 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
  * @since 01/23/2019
  *
  */
-@ManagedBean(name="extractBean", eager=true)
+//former name ReadExtractPayorBean
+@Named
 @ViewScoped
-public class ReadExtractPayor implements Serializable{
+public class ExtractBean implements Serializable{
 	
 	/**
 	 * 
@@ -176,7 +177,7 @@ public class ReadExtractPayor implements Serializable{
 	public void uploadData(FileUploadEvent event){
 		
 		 try {
-			 InputStream stream = event.getFile().getInputstream();
+			 InputStream stream = event.getFile().getInputStream();
 			 String file = event.getFile().getFileName();
 			 loadFilter();
 			 if(writeDocToFile(event)){
@@ -193,7 +194,7 @@ public class ReadExtractPayor implements Serializable{
 	
 	private boolean writeDocToFile(FileUploadEvent event){
 		try{
-		InputStream stream = event.getFile().getInputstream();
+		InputStream stream = event.getFile().getInputStream();
 		String fileExt = event.getFile().getFileName().split("\\.")[1];
 		String filename = "rpts-extract-" + DateUtils.getCurrentDateMMDDYYYYTIMEPlain() + "."+fileExt.toLowerCase();
 		

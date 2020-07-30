@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,11 +20,11 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -34,25 +33,17 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.CellType;
-import org.codehaus.groovy.tools.shell.commands.ClearCommand;
-import org.primefaces.component.api.UIColumn;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
 
 import com.italia.municipality.lakesebu.controller.Barangay;
 import com.italia.municipality.lakesebu.controller.Certification;
-import com.italia.municipality.lakesebu.controller.CollectionInfo;
 import com.italia.municipality.lakesebu.controller.ITaxPayorTrans;
 import com.italia.municipality.lakesebu.controller.LandPayor;
-import com.italia.municipality.lakesebu.controller.PaymentHistory;
 import com.italia.municipality.lakesebu.controller.PayorPayment;
-import com.italia.municipality.lakesebu.controller.ReadConfig;
-import com.italia.municipality.lakesebu.controller.ReportFields;
-import com.italia.municipality.lakesebu.controller.Signatory;
 import com.italia.municipality.lakesebu.controller.TaxPayerReceipt;
 import com.italia.municipality.lakesebu.controller.TaxPayor;
 import com.italia.municipality.lakesebu.enm.AppConf;
-import com.italia.municipality.lakesebu.reports.Rcd;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
@@ -63,7 +54,8 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
-@ManagedBean(name="historyBean", eager=true)
+
+@Named
 @ViewScoped
 public class HistoryBean implements Serializable{
 
@@ -223,7 +215,7 @@ public class HistoryBean implements Serializable{
 	public void uploadData(FileUploadEvent event){
 		
 		 try {
-			 InputStream stream = event.getFile().getInputstream();
+			 InputStream stream = event.getFile().getInputStream();
 			 String file = event.getFile().getFileName();
 			 
 			 if(writeDocToFile(event)){
@@ -240,7 +232,7 @@ public class HistoryBean implements Serializable{
 	
 	private boolean writeDocToFile(FileUploadEvent event){
 		try{
-		InputStream stream = event.getFile().getInputstream();
+		InputStream stream = event.getFile().getInputStream();
 		String fileExt = event.getFile().getFileName().split("\\.")[1];
 		String filename = "rpts-extract-" + DateUtils.getCurrentDateMMDDYYYYTIMEPlain() + "."+fileExt.toLowerCase();
 		

@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.charts.ChartData;
@@ -52,9 +52,10 @@ import com.italia.municipality.lakesebu.utils.Numbers;
  * @version 1.0
  *
  */
-@ManagedBean(name="rptGraphBean", eager=true)
+//former name ReportsGraphBean
+@Named
 @ViewScoped
-public class ReportsGraphBean implements Serializable{
+public class RptGraphBean implements Serializable{
 
 	/**
 	 * 
@@ -593,10 +594,10 @@ public class ReportsGraphBean implements Serializable{
         
         
         LineChartDataSet dataSet = new LineChartDataSet();
-        List<Number> values = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         
         LineChartDataSet dataSet2 = new LineChartDataSet();
-        List<Number> values2 = new ArrayList<>();
+        List<Object> values2 = new ArrayList<>();
          
         List<String> labels = new ArrayList<>();
         
@@ -667,10 +668,10 @@ public class ReportsGraphBean implements Serializable{
         
         
         LineChartDataSet dataSet = new LineChartDataSet();
-        List<Number> values = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         values.add(0);
         LineChartDataSet dataSet2 = new LineChartDataSet();
-        List<Number> values2 = new ArrayList<>();
+        List<Object> values2 = new ArrayList<>();
         values2.add(0); 
         List<String> labels = new ArrayList<>();
         labels.add("None");
@@ -710,10 +711,10 @@ public class ReportsGraphBean implements Serializable{
         
         
         LineChartDataSet dataSet = new LineChartDataSet();
-        List<Number> values = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         
         LineChartDataSet dataSet2 = new LineChartDataSet();
-        List<Number> values2 = new ArrayList<>();
+        List<Object> values2 = new ArrayList<>();
          
         List<String> labels = new ArrayList<>();
         

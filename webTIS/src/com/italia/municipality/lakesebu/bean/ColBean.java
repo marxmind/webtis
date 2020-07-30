@@ -11,27 +11,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.map.HashedMap;
-
-import com.italia.municipality.lakesebu.controller.BankAccounts;
 import com.italia.municipality.lakesebu.controller.CollectionInfo;
 import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.Form11Report;
 import com.italia.municipality.lakesebu.controller.IssuedForm;
-import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.FormStatus;
@@ -53,9 +47,13 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  *
  */
 //Not in used
-@ManagedBean(name="colBean", eager=true)
+//former Name collectionFormBean
+//@ManagedBean(name="colBean", eager=true)
+//@ViewScoped
+
+@Named
 @ViewScoped
-public class CollectionFormBean implements Serializable {
+public class ColBean implements Serializable {
 
 	/**
 	 * 

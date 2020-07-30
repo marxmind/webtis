@@ -1,6 +1,7 @@
 package com.italia.municipality.lakesebu.reports;
 
-import java.util.ArrayList;import com.mysql.fabric.xmlrpc.base.Data;
+import java.util.ArrayList;
+
 
 public class DataBeanList {
 

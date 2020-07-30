@@ -314,7 +314,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     				</p:inputText>
     		</f:facet>
     		<f:facet name="right">
-    			<p:fileUpload fileUploadListener="#{extractBean.uploadData}"
+    			<p:fileUpload listener="#{extractBean.uploadData}"
 					                    			mode="advanced" auto="true" sizeLimit="50000000" label="Upload RPTS File"
 					                    			update="extractData msg" dragDropSupport="true" 
 					                    			allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX|txt|TXT)$/" />

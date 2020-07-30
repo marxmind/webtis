@@ -17,14 +17,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
-
-import org.hsqldb.lib.HashMap;
 
 import com.italia.municipality.lakesebu.controller.BankAccounts;
 import com.italia.municipality.lakesebu.controller.Department;
@@ -53,9 +51,9 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  * @since 07/31/2019
  *
  */
-@ManagedBean(name="vrBean", eager=true)
+@Named
 @ViewScoped
-public class VRBean implements Serializable{
+public class VrBean implements Serializable{
 
 	/**
 	 * 

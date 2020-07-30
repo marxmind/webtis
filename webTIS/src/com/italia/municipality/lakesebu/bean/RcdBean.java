@@ -1,6 +1,7 @@
 package com.italia.municipality.lakesebu.bean;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -13,8 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
 
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
@@ -41,9 +42,10 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  * @since 06/20/2019
  *
  */
-@ManagedBean(name="rcdBean", eager=true)
-@SessionScoped
-public class UploadRCDBean implements Serializable{
+//Former Name UploadFormRcdBean
+@Named
+@RequestScoped
+public class RcdBean implements Serializable{
 
 	/**
 	 * 
@@ -64,7 +66,7 @@ public class UploadRCDBean implements Serializable{
 	public void uploadFile(FileUploadEvent event){
 		
 		 try {
-			 InputStream stream = event.getFile().getInputstream();
+			 InputStream stream = event.getFile().getInputStream();
 			 //String ext = FilenameUtils.getExtension(event.getFile().getFileName());
 			 String file = event.getFile().getFileName();
 			 
@@ -120,7 +122,7 @@ public class UploadRCDBean implements Serializable{
   			param.put("PARAM_T"+cnt,d.getName());
 	  		param.put("PARAM_FROM"+cnt,d.getSeriesFrom());
 			param.put("PARAM_TO"+cnt,d.getSeriesTo());
-			param.put("PARAM_A"+cnt,d.getAmount());
+			try{param.put("PARAM_A"+cnt,d.getAmount().replace("?", ""));}catch(NullPointerException e) {param.put("PARAM_A"+cnt,"");}
 			cnt++;
   		}
 		
@@ -147,7 +149,7 @@ public class UploadRCDBean implements Serializable{
 		}
   		
   		
-  		param.put("PARAM_TOTAL",xml.getAddAmount());
+  		try{param.put("PARAM_TOTAL",xml.getAddAmount().replace("?", ""));}catch(NullPointerException e) {param.put("PARAM_TOTAL","");}
   		
   		//logo
 		String officialLogo = REPORT_PATH + "logo.png";
@@ -169,8 +171,14 @@ public class UploadRCDBean implements Serializable{
 	  	    
 	  	    String pdfFile = REPORT_NAME + ".pdf";
 			 File file = new File(REPORT_PATH + pdfFile);
-			 tempPdfFile = new DefaultStreamedContent(new FileInputStream(file), "application/pdf", pdfFile);
-		  	    
+			 //tempPdfFile = new DefaultStreamedContent(new FileInputStream(file), "application/pdf", pdfFile);
+		  	 
+			 tempPdfFile = DefaultStreamedContent.builder()
+					 .contentType("application/pdf")
+					 .name(pdfFile)
+					 .stream(()-> this.getClass().getResourceAsStream(REPORT_PATH + pdfFile))
+					 .build();
+			 
 		  	    PrimeFaces pm = PrimeFaces.current();
 		  	    pm.executeScript("displayPDF();");
 	  	}catch(Exception e){e.printStackTrace();}
@@ -186,7 +194,20 @@ public class UploadRCDBean implements Serializable{
 			
 		    File pdfFile = new File(REPORT_PATH + REPORT_NAME + ".pdf");
   	    
-	    	return new DefaultStreamedContent(new FileInputStream(pdfFile), "application/pdf", REPORT_NAME+".pdf");
+	    	//return new DefaultStreamedContent(new FileInputStream(pdfFile), "application/pdf", REPORT_NAME+".pdf");
+		    return DefaultStreamedContent.builder()
+					 .contentType("application/pdf")
+					 .name(REPORT_NAME + ".pdf")
+					 .stream(()-> {
+						try {
+							return new FileInputStream(pdfFile);
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							return null;
+						}
+					})
+					 .build();
 		}else {
 			return tempPdfFile;
 		}
