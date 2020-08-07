@@ -13,6 +13,7 @@ public enum AppConf {
 	DB_NAME_BANK("databaseBank"),
 	DB_NAME_TAX("databaseTax"),
 	DB_NAME_WEBTIS("databaseWebTis"),
+	DB_AGRICULTURE("bls"),
 	DB_NAME_CASH("databaseCash"),
 	DB_DRIVER("driver"),
 	DB_URL("url"),

@@ -31,13 +31,13 @@ public class AuthorizationFilter implements Filter{
 			HttpSession session = reqt.getSession(false);
 			
 			String reqURI = reqt.getRequestURI();
-			if(reqURI.indexOf("/login.xhtml")>=0
+			if(reqURI.indexOf("/portal.xhtml")>=0 || reqURI.indexOf("/login.xhtml")>=0
 					|| (session != null && session.getAttribute("username") !=null)
 					|| reqURI.indexOf("/public/")>=0
 					|| reqURI.contains("javax.faces.resource")){
 				chain.doFilter(request, response);
 			}else{
-				resp.sendRedirect(reqt.getContextPath() + "/marxmind/login.xhtml");
+				resp.sendRedirect(reqt.getContextPath() + "/marxmind/portal.xhtml");
 			}
 		}catch(Exception e){
 			e.printStackTrace();

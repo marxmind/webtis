@@ -69,11 +69,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 			<p:layoutUnit position="west" size="400">
 				<p:tabView prependId="false" orientation="top" id="tabViewId" cache="true">
-					<p:ajax event="tabChange" listener="#{eBean.onChange}" update="tabViewId idContent menuId sendTable showNoteId"/>
+					<p:ajax event="tabChange" listener="#{eBean.onChange}" update="tabViewId idContent menuId sendTable"/>
 					<p:tab title="Inbox">
 							<p:accordionPanel id="inDataId" value="#{eBean.mails}" var="in" prependId="false" style="#{skin.accordionPanelMain}">
 							
-								<p:ajax event="tabChange" listener="#{eBean.clickEmail(in, 'INBOX')}" update="tabViewId idContent menuId sendTable showNoteId"/>
+								<p:ajax event="tabChange" listener="#{eBean.clickEmail(in, 'INBOX')}" update="tabViewId idContent menuId sendTable"/>
 							
 								<p:tab title="#{in.fromNamesCut} [#{in.titleCut}]" >
 									

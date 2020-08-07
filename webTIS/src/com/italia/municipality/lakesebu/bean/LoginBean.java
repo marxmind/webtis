@@ -63,7 +63,7 @@ public class LoginBean implements Serializable{
 	}
 	
 	//validate login
-public String validateUserNamePassword(){
+ public String validateUserNamePassword(){
 		
 		String sql = "SELECT * FROM login WHERE username=? and password=?";
 		String[] params = new String[2];
@@ -77,6 +77,7 @@ public String validateUserNamePassword(){
 		
 		String result="login";
 		LogU.add("Guest with username : " + name + " and password ******** is trying to log in the system.");
+		System.out.println("validating .... " + name + " - " + password);
 		if(in!=null){
 			
 	        HttpSession session = SessionBean.getSession();
@@ -107,6 +108,8 @@ public String validateUserNamePassword(){
 			 * if(isExpired){ result= "expired.xhtml"; }else{ result= "voucher.xhtml"; }
 			 * break; } }
 			 */
+			
+			System.out.println("correct username and password....");
 			
 			if(getModuleId()>0) {
 				result = assignModule();
