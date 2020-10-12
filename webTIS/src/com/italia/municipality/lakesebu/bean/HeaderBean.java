@@ -2,8 +2,8 @@ package com.italia.municipality.lakesebu.bean;
 
 import java.io.Serializable;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.UserDtls;
@@ -15,8 +15,7 @@ import com.italia.municipality.lakesebu.controller.UserDtls;
  * @since 10/15/1986
  *
  */
-
-@ManagedBean(name="headerBean", eager=true)
+@Named
 @ViewScoped
 public class HeaderBean implements Serializable{
 

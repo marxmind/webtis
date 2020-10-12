@@ -36,8 +36,24 @@ public class PortalBean implements Serializable {
 		return "login.xhtml";
 	}
 	
+	public String mayor() {
+		return getPortal(Department.MAYOR);
+	}
+	
+	public String vice() {
+		return getPortal(Department.VICE_MAYOR);
+	}
+	
 	public String treas() {
-		return getPortal(Department.TREASURER);
+		return "login"; //getPortal(Department.TREASURER);
+	}
+	
+	public String da() {
+		return getPortal(Department.MAO);
+	}
+	
+	public String licensing() {
+		return getPortal(Department.LICENSING);
 	}
 	
 }

@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.controller.Responsibility;
@@ -22,9 +22,9 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
  * @version 1.0
  *
  */
-@ManagedBean(name="rssBean", eager=true)
+@Named
 @ViewScoped
-public class ResponsibilityBean implements Serializable{
+public class RssBean implements Serializable{
 
 	/**
 	 * 

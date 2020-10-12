@@ -255,6 +255,57 @@ public class UserDtls {
 		return users;
 	}
 	
+	public static UserDtls retrieve(int jobId){
+		UserDtls user = new UserDtls();
+		String sql = "SELECT * FROM userdtls WHERE jobtitleid=?";
+		String[] params = new String[1];
+		params[0] = jobId+"";
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		if(params!=null && params.length>0){
+			
+			for(int i=0; i<params.length; i++){
+				ps.setString(i+1, params[i]);
+			}
+			
+		}
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			
+			
+			try{user.setUserdtlsid(rs.getLong("userdtlsid"));}catch(NullPointerException e){}
+			try{user.setRegdate(rs.getString("regdate"));;}catch(NullPointerException e){}
+			try{user.setFirstname(rs.getString("firstname"));}catch(NullPointerException e){}
+			try{user.setMiddlename(rs.getString("middlename"));}catch(NullPointerException e){}
+			try{user.setLastname(rs.getString("lastname"));}catch(NullPointerException e){}
+			try{user.setAddress(rs.getString("address"));}catch(NullPointerException e){}
+			try{user.setContactno(rs.getString("contactno"));}catch(NullPointerException e){}
+			try{user.setAge(rs.getInt("age"));}catch(NullPointerException e){}
+			try{user.setGender(rs.getInt("gender"));}catch(NullPointerException e){}
+			try{user.setLogin(Login.login(rs.getString("logid")));}catch(NullPointerException e){}
+			try{user.setJob(Job.job(rs.getString("jobtitleid")));}catch(NullPointerException e){}
+			try{user.setDepartment(Department.department(rs.getString("departmentid")));}catch(NullPointerException e){}
+			try{user.setUserDtls(UserDtls.addedby(rs.getString("addedby")));}catch(NullPointerException e){}
+			try{user.setTimestamp(rs.getTimestamp("timestamp"));}catch(NullPointerException e){}
+			try{user.setIsActive(rs.getInt("isactive"));}catch(NullPointerException e){}
+			
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return user;
+	}
+	
 	public static UserDtls addedby(String userdtlsid){
 		UserDtls user = new UserDtls();
 		String sql = "SELECT * FROM userdtls WHERE userdtlsid=?";

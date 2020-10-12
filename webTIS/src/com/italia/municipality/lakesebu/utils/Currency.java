@@ -11,14 +11,17 @@ import java.math.BigDecimal;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Locale;
 
 public class Currency {
 	
 	public static void main(String[] args) {
-		String money = "$1234000.01";
-		money = formatAmount(money);
-		System.out.println(money);
+		//String money = "$1234000.01";
+		//money = formatAmount(money);
+		//System.out.println(money);
 		//System.out.println(formatAmount(money));
+		double amount = 14866910.99;
+		System.out.println("Php: " + formatAmount(amount));
 	}
 	
 	public static String removeCurrencySymbol(String value, String replaceChr){
@@ -63,50 +66,53 @@ public class Currency {
 		return formatAmount(amount+"");
 	}
 	
-	
+	/*
 	public static String formatAmount(String amount){
 		
 		if(amount==null) return "0";
 		if(amount.isEmpty()) return "0";
 		try{
 		amount = amount.replaceAll("[^\\d.]", "");	
-		//amount = amount.replace(",", "");
-		//amount = amount.replace("$", "");
-		//amount = amount.replace("Php", "");
-		//amount = amount.replace("\\u20B1", "");
 		double money = Double.valueOf(amount.replace(",", ""));
 		NumberFormat format = NumberFormat.getCurrencyInstance();
+		format.setMinimumFractionDigits(2);
+		format.setMaximumFractionDigits(4);
 		amount = format.format(money);
-		//amount = amount.replace("Php", "");
-		//amount = amount.replace("$", "");
-		//amount = amount.replace("Php", "");
-		//amount = amount.replace("\\u20B1", "");
-		amount = amount.replaceAll("[^\\d.,]", "");
+		
 		}catch(Exception e){
 			
 		}
-		
-		/*
+		return amount;
+	}*/
+	
+	public static String formatAmount(String amount){
 		if(amount==null) return "0";
 		if(amount.isEmpty()) return "0";
 		try{
-			String[] symbols = {"Php","php","PHP","$",","};
-			
-			for(String symbol : symbols){
-				amount = amount.replace(symbol, "");
-			}	
-		double money = Double.valueOf(amount);
-		NumberFormat format = NumberFormat.getCurrencyInstance();
+		amount = amount.replace(",", "");
+		amount = amount.replace("$", "");
+		amount = amount.replace("Php", "");
+		amount = amount.replace("\\u20B1", "");
+		double money = Double.valueOf(amount.replace(",", ""));
+		NumberFormat format = NumberFormat.getNumberInstance();
 		amount = format.format(money).replace("$", "");
 		amount = amount.replace("Php", "");
+		
+		if(amount.contains(".")) {
+			String dec = amount.split("\\.")[1];
+			int len  = dec.length();
+			if(len==1) {
+				amount +="0";
+			}
+		}else {
+			amount += ".00";
+		}
+		
 		}catch(Exception e){
 			
-		}*/
-		
-		
+		}
 		return amount;
 	}
-	
 	
 	public static double amountDouble(String amount){
 		

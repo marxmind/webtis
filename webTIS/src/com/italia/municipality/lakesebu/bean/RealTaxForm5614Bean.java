@@ -1519,7 +1519,7 @@ public class RealTaxForm5614Bean {
 		
 		//compiling report
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME =ReadConfig.value(AppConf.FORM_56);
 		System.out.println("Report path " + REPORT_PATH + " name " + REPORT_NAME);
 		ReportCompiler compiler = new ReportCompiler();
@@ -1880,7 +1880,7 @@ private void close(Closeable resource) {
 		
 		//compiling report
 				String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-						AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+						AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 				String REPORT_NAME =ReadConfig.value(AppConf.FORM_56_ALL);
 				System.out.println("Report path " + REPORT_PATH + " name " + REPORT_NAME);
 				ReportCompiler compiler = new ReportCompiler();

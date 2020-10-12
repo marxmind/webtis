@@ -1,7 +1,6 @@
 package com.italia.municipality.lakesebu.bean;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,9 +9,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.ChartSeries;
@@ -35,9 +34,9 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
  * @version 1.0
  *
  */
-@ManagedBean(name="genBean", eager=true)
+@Named
 @ViewScoped
-public class GraphGenerationBean implements Serializable{
+public class GenBean implements Serializable{
 
 	/**
 	 * 

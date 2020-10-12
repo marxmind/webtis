@@ -6,15 +6,15 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.security.License;
 import com.italia.municipality.lakesebu.security.Module;
 
-@ManagedBean(name= "expiredBean", eager=true)
-@SessionScoped
+@Named
+@ViewScoped
 public class ExpiredBean implements Serializable{
 
 	/**

@@ -67,7 +67,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:toolbar id="tbMarket" style="#{skin.toolbar}">
     		<f:facet name="left">
     			<p:commandButton update="customerFld dataCustomerId" actionListener="#{customerBean.clearFlds}" value="Owner Profile" icon="fa fa-file-o" onclick="PF('customerDlg').show()"/>
-    			<p:commandButton update="buildingFld dataBuildingId" actionListener="#{buildBean.clearFlds}" value="Building Profile" icon="fa fa-file-o" onclick="PF('buildingDlg').show()"/>
+    			<p:commandButton update="buildingFld dataBuildingId" actionListener="#{marketBuildingBean.clearFlds}" value="Building Profile" icon="fa fa-file-o" onclick="PF('buildingDlg').show()"/>
     			<p:commandButton update="stallFld dataStallId" actionListener="#{stallBean.clearFlds}" value="Stall Profile" icon="fa fa-file-o" onclick="PF('stallDlg').show()"/>
     			<p:commandButton update="ownerFld dataOwnerId" actionListener="#{assBean.clearFlds}" value="Stall Owner Profile" icon="fa fa-file-o" onclick="PF('ownerDlg').show()"/>
     			
@@ -192,8 +192,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     				
     		</f:facet>
     		<f:facet name="right">
-    			<p:commandButton update="buildingFld" value="Clear" icon="fa fa-trash" actionListener="#{buildBean.clearFlds}"/>
-    			<p:commandButton update="buildingFld dataBuildingId dataId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{buildBean.save}">
+    			<p:commandButton update="buildingFld" value="Clear" icon="fa fa-trash" actionListener="#{marketBuildingBean.clearFlds}"/>
+    			<p:commandButton update="buildingFld dataBuildingId dataId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{marketBuildingBean.save}">
     				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
     			</p:commandButton>
     		</f:facet>
@@ -202,24 +202,24 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:panelGrid columns="4" id="buildingFld" style="#{skin.grid}">
 			
 			<p:outputLabel value="Building No"/>
-			<p:inputText value="#{buildBean.stallNo}"  />
+			<p:inputText value="#{marketBuildingBean.stallNo}"  />
 			
 			<p:outputLabel value="Name"/>
-			<p:inputText value="#{buildBean.name}" />
+			<p:inputText value="#{marketBuildingBean.name}" />
 			
 			<p:outputLabel value="Type"/>
-			<p:selectOneMenu value="#{buildBean.typeId}">
-				<f:selectItems value="#{buildBean.types}"/>
+			<p:selectOneMenu value="#{marketBuildingBean.typeId}">
+				<f:selectItems value="#{marketBuildingBean.types}"/>
 			</p:selectOneMenu>
 			
 			<p:outputLabel value="Monthly"/>
-			<p:inputNumber value="#{buildBean.amount}"/>
+			<p:inputNumber value="#{marketBuildingBean.amount}"/>
 			
 			</p:panelGrid>
 			
-			<p:dataScroller id="dataBuildingId" value="#{buildBean.buildings}" var="bl" chunkSize="5">
+			<p:dataScroller id="dataBuildingId" value="#{marketBuildingBean.buildings}" var="bl" chunkSize="5">
 				<f:facet name="header">List</f:facet>
-				<p:commandLink actionListener="#{buildBean.clickItem(bl)}" update="buildingFld" style="#{skin.label}">
+				<p:commandLink actionListener="#{marketBuildingBean.clickItem(bl)}" update="buildingFld" style="#{skin.label}">
 					#{bl.typeName}, #{bl.name}, Rental:Php #{bl.monthlyRental}
 				</p:commandLink>
 				

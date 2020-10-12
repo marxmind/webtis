@@ -5,26 +5,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 
 import com.italia.municipality.lakesebu.controller.Login;
-import com.italia.municipality.lakesebu.controller.LoginDAO;
 import com.italia.municipality.lakesebu.enm.Pages;
 import com.italia.municipality.lakesebu.reports.DailyReport;
 import com.italia.municipality.lakesebu.security.ClientInfo;
-import com.italia.municipality.lakesebu.security.Copyright;
-import com.italia.municipality.lakesebu.security.License;
 import com.italia.municipality.lakesebu.security.Module;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
 import com.italia.municipality.lakesebu.utils.Whitelist;
 
-@ManagedBean(name= "loginBean", eager=true)
+@Named
 @SessionScoped
 public class LoginBean implements Serializable{
 
@@ -116,6 +113,21 @@ public class LoginBean implements Serializable{
 			}else {
 				result="main.xhtml";
 				//result="dashboard.xhtml";//temporary
+				
+				switch(in.getAccessLevel().getLevel()) {
+					case 1 : 
+					case 2: 
+					case 3:
+					case 4:
+					case 5:
+					case 6:
+					case 7:
+					case 8:
+					case 9: result="main.xhtml"; break;
+					case 10: result="mainda.xhtml"; break;
+					case 11: result="mainlic.xhtml"; break;
+				}
+				
 			}
 			
 			LogU.add("The user has been successfully login to the application with the username : " + name + " and password " + password);

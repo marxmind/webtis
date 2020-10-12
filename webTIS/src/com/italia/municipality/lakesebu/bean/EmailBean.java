@@ -14,11 +14,11 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.event.TabChangeEvent;
@@ -38,7 +38,7 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
  * @since 04/30/2018
  *
  */
-@ManagedBean(name="eBean", eager=true)
+@Named
 @ViewScoped
 public class EmailBean implements Serializable{
 	

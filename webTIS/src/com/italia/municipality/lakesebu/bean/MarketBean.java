@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.BuildingOwnerHistory;
 import com.italia.municipality.lakesebu.controller.BuildingPaymentTrans;
@@ -37,9 +37,9 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
  *
  */
 
-@ManagedBean(name="marketBean", eager=true)
+@Named
 @ViewScoped
-public class MarketReportBean implements Serializable{
+public class MarketBean implements Serializable{
 
 	/**
 	 * 

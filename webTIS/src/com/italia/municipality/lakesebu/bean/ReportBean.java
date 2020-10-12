@@ -5,8 +5,8 @@ import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -17,40 +17,34 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.component.html.HtmlDataTable;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.italia.municipality.lakesebu.controller.BankAccounts;
 import com.italia.municipality.lakesebu.controller.ReportFields;
 import com.italia.municipality.lakesebu.database.BankChequeDatabaseConnect;
-import com.italia.municipality.lakesebu.reports.DataBean;
-import com.italia.municipality.lakesebu.reports.DataBeanList;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 
-@ManagedBean(name="reportBean", eager=true)
+@Named
 @ViewScoped
-public class ReportBean {
+public class ReportBean implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 187878867767L;
 	private List<ReportFields> reports = new ArrayList<>();
 	private String grandTotal;
 	private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.

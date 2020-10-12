@@ -2,9 +2,8 @@ package com.italia.municipality.lakesebu.bean;
 
 import java.io.Serializable;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 /**
  * 
  * @author Mark Italia
@@ -13,7 +12,7 @@ import javax.faces.bean.ViewScoped;
  *
  */
 
-@ManagedBean(name="dashBoardBean", eager=true)
+@Named
 @ViewScoped
 public class DashBoardBean implements Serializable{
 

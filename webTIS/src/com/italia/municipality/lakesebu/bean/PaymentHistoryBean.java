@@ -6,16 +6,14 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.LandPayor;
 import com.italia.municipality.lakesebu.controller.PenaltyCalculation;
 import com.italia.municipality.lakesebu.enm.PenalyMonth;
 import com.italia.municipality.lakesebu.utils.DateUtils;
-
-import jdk.jfr.Name;
 
 /**
  * 
@@ -24,7 +22,7 @@ import jdk.jfr.Name;
  * @since 5/29/2020
  *
  */
-@ManagedBean(name="paymentHistoryBean", eager=true)
+@Named
 @ViewScoped
 public class PaymentHistoryBean implements Serializable{
 

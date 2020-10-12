@@ -7,41 +7,33 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.IntStream;
-
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import com.italia.municipality.lakesebu.controller.DTR;
-import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
-import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
-@ManagedBean(name="dtrBean", eager=true)
+@Named
 @ViewScoped
-public class DTRGeneratorBean implements Serializable {
+public class DtrBean implements Serializable {
 	
 	/**
 	 * 
@@ -321,7 +313,7 @@ public class DTRGeneratorBean implements Serializable {
 	
 	public void printReportAll(){
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME =ReadConfig.value(AppConf.DTR_REPORT);
 		System.out.println("Report path " + REPORT_PATH + " name " + REPORT_NAME);
 		ReportCompiler compiler = new ReportCompiler();

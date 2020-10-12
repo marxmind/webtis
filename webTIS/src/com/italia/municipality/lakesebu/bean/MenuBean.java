@@ -4,10 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
-
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.Email;
 import com.italia.municipality.lakesebu.controller.Login;
@@ -24,7 +23,7 @@ import com.italia.municipality.lakesebu.security.Module;
  * @version 1.0
  *
  */
-@ManagedBean(name="menuBean", eager=true)
+@Named
 @ViewScoped
 public class MenuBean implements Serializable{
 

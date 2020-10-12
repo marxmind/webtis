@@ -1,14 +1,13 @@
 package com.italia.municipality.lakesebu.bean;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.Chequedtls;
 import com.italia.municipality.lakesebu.controller.Login;
@@ -25,7 +24,7 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
  * @version 1.0
  *
  */
-@ManagedBean(name="mainBean", eager=true)
+@Named
 @ViewScoped
 public class MainBean implements Serializable {
 

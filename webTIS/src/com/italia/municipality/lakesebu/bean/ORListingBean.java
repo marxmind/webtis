@@ -20,11 +20,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.event.CellEditEvent;
@@ -62,7 +62,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  *
  *
  */
-@ManagedBean(name="orBean", eager=true)
+@Named
 @ViewScoped
 public class ORListingBean implements Serializable{
 
@@ -1144,7 +1144,7 @@ public class ORListingBean implements Serializable{
 		try{
 			
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME = "OR51";
 			
 			ReportCompiler compiler = new ReportCompiler();
@@ -1245,7 +1245,7 @@ public class ORListingBean implements Serializable{
 		compileReportList(rpts);
 		
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME = "generalcollections";
 		if(getCollectorSearchId()!=0) {
 			REPORT_NAME = "generalcollectionscollector";
@@ -1310,7 +1310,7 @@ public class ORListingBean implements Serializable{
 					compileReportSummary(rpts);
 				
 				String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-						AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+						AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 				String REPORT_NAME = "summarycollection";
 				
 				
@@ -1367,7 +1367,7 @@ public class ORListingBean implements Serializable{
 		try{
 			
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME = "generalcollections";
 			
 			if(getCollectorSearchId()!=0) {
@@ -1474,7 +1474,7 @@ public class ORListingBean implements Serializable{
 			
 			
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME = "summaryonly";
 			
 			ReportCompiler compiler = new ReportCompiler();
@@ -1564,7 +1564,7 @@ public class ORListingBean implements Serializable{
 		try{
 			
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME = "summarycollection";
 			
 			ReportCompiler compiler = new ReportCompiler();

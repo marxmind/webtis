@@ -11,17 +11,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.PrimeFaces;
@@ -57,9 +55,9 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  * @version 1.0
  *
  */
-@ManagedBean(name="logformBean", eager=true)
+@Named
 @ViewScoped
-public class LogFormBean implements Serializable{
+public class LogformBean implements Serializable{
 
 	/**
 	 * 
@@ -683,7 +681,7 @@ public class LogFormBean implements Serializable{
 	
 	public void openCashTicket(CollectionInfo info) {
 		String XML_FOLDER = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
 				"xml" + AppConf.SEPERATOR.getValue();  
 		System.out.println("save to folder cash ticket>> " + XML_FOLDER);
 		
@@ -745,7 +743,7 @@ public class LogFormBean implements Serializable{
 		}*/
 		//RCDReader.saveCashTicket(rs, fileName, fileSaveLocation)
 		String XML_FOLDER = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
 				"xml" + AppConf.SEPERATOR.getValue();  
 		System.out.println("save to folder cash ticket>> " + XML_FOLDER);
 		
@@ -917,7 +915,7 @@ public class LogFormBean implements Serializable{
 	private boolean isXmlFileExist(CollectionInfo in) {
 		
 		String XML_FOLDER = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
 				"xml" + AppConf.SEPERATOR.getValue();
 		
 		Collector col = Collector.retrieve(in.getCollector().getId());
@@ -958,7 +956,7 @@ public class LogFormBean implements Serializable{
 	public void printXML(CollectionInfo info) {
 		
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME ="rcd";
 		
 		ReportCompiler compiler = new ReportCompiler();
@@ -1351,7 +1349,7 @@ public class LogFormBean implements Serializable{
 		rcd.setRcdFormDtls(dts);
 		
 		String XML_FOLDER = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
 				"xml" + AppConf.SEPERATOR.getValue();  
 		System.out.println("save to folder>> " + XML_FOLDER);
 		
@@ -1413,7 +1411,7 @@ public class LogFormBean implements Serializable{
 		RCDReader rcd = buildFormData(in);
 		
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME ="rcd";
 		ReportCompiler compiler = new ReportCompiler();
 		String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, REPORT_PATH);
@@ -1540,7 +1538,7 @@ public class LogFormBean implements Serializable{
 	public void printReport(CollectionInfo in) {
 		//compiling report
 				String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-						AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+						AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 				String REPORT_NAME ="rcd";
 				System.out.println("Report path " + REPORT_PATH + " name " + REPORT_NAME);
 				ReportCompiler compiler = new ReportCompiler();
@@ -2698,7 +2696,7 @@ public class LogFormBean implements Serializable{
 	public void printInternalCollectorSummary(String titleType) {
 		if(getSelectedCollection()!=null && getSelectedCollection().size()>0) {
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME ="rcdallMonthly";
 			
 			ReportCompiler compiler = new ReportCompiler();
@@ -2836,7 +2834,7 @@ public class LogFormBean implements Serializable{
 	public void printAllRCD() {
 		if(getSelectedCollection()!=null && getSelectedCollection().size()>0) {
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME ="rcdall";
 			
 			ReportCompiler compiler = new ReportCompiler();
@@ -2948,7 +2946,7 @@ public class LogFormBean implements Serializable{
 	public void printSummary() {
 		if(getSelectedCollection()!=null && getSelectedCollection().size()>0) {
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME ="rcdsummary";
 			
 			ReportCompiler compiler = new ReportCompiler();

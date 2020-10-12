@@ -1,0 +1,789 @@
+package com.italia.municipality.lakesebu.da.bean;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.CellType;
+import org.primefaces.PrimeFaces;
+import org.primefaces.event.TabChangeEvent;
+
+import com.italia.municipality.lakesebu.controller.ReadConfig;
+import com.italia.municipality.lakesebu.da.controller.FishCage;
+import com.italia.municipality.lakesebu.da.controller.FishCagePayment;
+import com.italia.municipality.lakesebu.da.controller.WaterRentalsPayment;
+import com.italia.municipality.lakesebu.enm.AppConf;
+import com.italia.municipality.lakesebu.reports.ReportCompiler;
+import com.italia.municipality.lakesebu.utils.Application;
+import com.italia.municipality.lakesebu.utils.Currency;
+import com.italia.municipality.lakesebu.utils.DateUtils;
+
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+
+@Named
+@ViewScoped
+public class FishcageBean implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Getter @Setter
+	private FishCage fishCageSelected;
+	@Getter @Setter
+	private String ownerName;
+	@Getter @Setter
+	private String tenantOwner;
+	@Getter @Setter
+	private String waterSurveyNo;
+	@Getter @Setter
+	private String fishcageArea;
+	@Getter @Setter
+	private String totalCageArea;
+	@Getter @Setter
+	private String remarks;
+	@Getter @Setter
+	private double amountDue;
+	@Getter @Setter
+	private String searchName;
+	@Getter @Setter
+	private String location;
+	@Getter @Setter
+	private List<FishCage> cages = new ArrayList<FishCage>();
+	@Getter @Setter
+	private Date dateRegister;
+	@Getter @Setter
+	private int orderId;
+	@Getter @Setter
+	private List orders;
+	@Getter @Setter
+	private int yearApplied;
+	@Getter @Setter
+	private int motorizedBoat;
+	@Getter @Setter
+	private int nonMotorizedBoat;
+	@Getter @Setter
+	private String cellphoneNo;
+	@Getter @Setter
+	private int numberOfFishCages;
+	@Getter @Setter
+	private int noOfFunctional;
+	@Getter @Setter
+	private int noOfNonFunctional;
+	@Getter @Setter
+	private String sizeCagePerModule;
+	@Getter @Setter
+	private int noOfAnnualProduction;
+	@Getter @Setter
+	private int noOfTotalStock;
+	
+	 
+	
+	//dialog payment
+	@Getter @Setter
+	private Date paymentDate;
+	@Getter @Setter
+	private String orNumber;
+	@Getter @Setter
+	private double amountPaid;
+	@Getter @Setter
+	private List<FishCagePayment> payments = new ArrayList<FishCagePayment>();
+	@Getter @Setter
+	private FishCagePayment paymentSelected;
+	@Getter @Setter
+	private String selectedOwner;
+	@Getter @Setter
+	private FishCage fishPaymentSelected;
+	
+	//unpaid rentals
+	@Getter @Setter
+	private List<WaterRentalsPayment> payRentals = new ArrayList<WaterRentalsPayment>();
+	@Getter @Setter
+	private String searchInUnpaidName;
+	
+	private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
+	private static final String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
+			AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+	private static final String REPORT_NAME = "water_rental_certificate";
+	
+	public void onChange(TabChangeEvent event) {
+		if("Water Rentals".equalsIgnoreCase(event.getTab().getTitle())) {
+			init();
+		}else if("Unpaid Collections".equalsIgnoreCase(event.getTab().getTitle())) {
+			loadUnpaidDtls();
+		}
+	}
+	
+	public void loadUnpaidAll() {
+		payRentals = new ArrayList<WaterRentalsPayment>();
+		String sql = "";
+		if(getSearchInUnpaidName()!=null && !getSearchInUnpaidName().isBlank()) {
+			sql += " AND owner like '%"+ getSearchInUnpaidName() +"%'";
+		}
+		List<FishCage> rentals = new ArrayList<FishCage>();
+		rentals = FishCage.retrieve(sql, new String[0]);
+		
+		for(FishCage cage : rentals) {
+			WaterRentalsPayment w = new WaterRentalsPayment();
+			
+			w.setF1(cage.getOwnerName());
+			w.setF2(cage.getWaterSurveyNo());
+			w.setF3(cage.getYearApplied()+"");
+			w.setF4(cage.getCageArea());
+			w.setF5(cage.getTotalSquareArea());
+			w.setF6(cage.getRemarks());
+			w.setF7(Currency.formatAmount(cage.getAmountDue()));
+			
+			
+			sql = " AND py.cid=" + cage.getId();
+			sql += " ORDER BY py.paymentDate DESC";
+			boolean noPayments = true;
+			int count = 0;
+			
+			for(FishCagePayment py : FishCagePayment.retrieve(sql, new String[0])) {
+				noPayments = false;
+				switch(count) {
+					case 0: w.setF8(Currency.formatAmount(py.getAmountPaid())); break;
+					case 1: w.setF9(Currency.formatAmount(py.getAmountPaid())); break;
+					case 2: w.setF10(Currency.formatAmount(py.getAmountPaid())); break;
+				}
+				count++;
+			}
+			
+			if(noPayments) {
+				w.setF8("0.00");
+				w.setF9("0.00");
+				w.setF10("0.00");
+			}
+			
+			if(count!=3) {//this condition is applicable only for year 2020
+				payRentals.add(w); 
+			}
+			
+		}
+	}
+	
+	public void loadUnpaidDtls() {
+		payRentals = new ArrayList<WaterRentalsPayment>();
+		String sql = "";
+		if(getSearchInUnpaidName()!=null && !getSearchInUnpaidName().isBlank()) {
+			sql += " AND owner like '%"+ getSearchInUnpaidName() +"%'";
+		}else {
+			//sql += " LIMIT 10";
+		}
+		List<FishCage> rentals = new ArrayList<FishCage>();
+		rentals = FishCage.retrieve(sql, new String[0]);
+		int counter = 1;
+		for(FishCage cage : rentals) {
+			
+			if(counter<=10) {
+			WaterRentalsPayment w = new WaterRentalsPayment();
+			
+			w.setF1(cage.getOwnerName());
+			w.setF2(cage.getWaterSurveyNo());
+			w.setF3(cage.getYearApplied()+"");
+			w.setF4(cage.getCageArea());
+			w.setF5(cage.getTotalSquareArea());
+			w.setF6(cage.getRemarks());
+			w.setF7(Currency.formatAmount(cage.getAmountDue()));
+			
+			
+			sql = " AND py.cid=" + cage.getId();
+			sql += " ORDER BY py.paymentDate DESC";
+			boolean noPayments = true;
+			int count = 0;
+			
+			for(FishCagePayment py : FishCagePayment.retrieve(sql, new String[0])) {
+				noPayments = false;
+				switch(count) {
+					case 0: w.setF8(Currency.formatAmount(py.getAmountPaid())); break;
+					case 1: w.setF9(Currency.formatAmount(py.getAmountPaid())); break;
+					case 2: w.setF10(Currency.formatAmount(py.getAmountPaid())); break;
+				}
+				count++;
+			}
+			
+			if(noPayments) {
+				w.setF8("0.00");
+				w.setF9("0.00");
+				w.setF10("0.00");
+				
+			}
+			
+			if(count!=3) {//this condition is applicable only for year 2020
+				payRentals.add(w); 
+				counter++;
+			}
+			
+			}
+			
+		}
+		
+	}
+	
+	public void deletePayment(FishCagePayment cage) {
+		cage.delete();
+		init();
+		Application.addMessage(1, "Deleted", "Successfully deleted.");
+	}
+	
+	public void savePayment() {
+		FishCagePayment py = new FishCagePayment();
+		if(getPaymentSelected()!=null) {
+			py = getPaymentSelected();
+		}else {
+			py.setIsActive(1);
+		}
+		boolean isOk = true;
+		
+		if(getOrNumber()==null || getOrNumber().isBlank()) {
+			Application.addMessage(3, "Error", "Please provide OR");
+			isOk = false;
+		}
+		
+		if(getAmountPaid()==0) {
+			Application.addMessage(3, "Error", "Please provide amount");
+			isOk = false;
+		}
+		
+		if(isOk) {
+			py.setPaymentPaid(DateUtils.convertDate(getPaymentDate(), "yyyy-MM-dd"));
+			py.setYear(Integer.valueOf(DateUtils.convertDate(getPaymentDate(), "yyyy-MM-dd").split("-")[0]));
+			py.setOrNumber(getOrNumber());
+			py.setAmountPaid(getAmountPaid());
+			py.setPayableAmount(getFishPaymentSelected().getAmountDue());
+			if(getAmountPaid()==getFishPaymentSelected().getAmountDue()) {
+				py.setFullpaid(1);
+			}
+			py.setFishCage(getFishPaymentSelected());
+			py.save();
+			clearPayments();
+			loadPayments(getFishPaymentSelected());
+			Application.addMessage(1, "Success", "Successfully saved.");
+		}
+	}
+	
+	public void clearPayments() {
+		setOrNumber(null);
+		setAmountPaid(0);
+	}
+	
+	public void loadPayments(FishCage cage) {
+		System.out.println("loading payments....");
+		setFishPaymentSelected(cage);
+		setSelectedOwner(cage.getOwnerName());
+		payments = new ArrayList<FishCagePayment>();
+		String sql = " AND py.cid=" + cage.getId();
+		sql += " ORDER BY py.paymentDate DESC";
+		payments = FishCagePayment.retrieve(sql, new String[0]);
+	}
+	
+	public void showSelectedPayment(FishCagePayment py) {
+		setPaymentSelected(py);
+		setPaymentDate(DateUtils.convertDateString(py.getPaymentPaid(), "yyyy-MM-dd"));
+		setOrNumber(py.getOrNumber());
+		setAmountPaid(py.getAmountPaid());
+	}
+	
+	public void readExcel() {
+		try {
+		File file = new File("C:\\bls\\Water.xls");
+		String sep = File.separator;
+	    POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(file));
+	    HSSFWorkbook wb = new HSSFWorkbook(fs);
+	    HSSFSheet sheet = wb.getSheetAt(0);
+	    HSSFRow row;
+	    HSSFCell cell;
+
+	    int rows; // No of rows
+	    rows = sheet.getPhysicalNumberOfRows();
+
+	    int cols = 0; // No of columns
+	    int tmp = 0;
+	    
+	 // This trick ensures that we get the data properly even if it doesn't start from first few rows
+	    for(int i = 0; i < 10 || i < rows; i++) {
+	        row = sheet.getRow(i);
+	        if(row != null) {
+	            tmp = sheet.getRow(i).getPhysicalNumberOfCells();
+	            if(tmp > cols) cols = tmp;
+	        }
+	    }
+	    
+	    for(int r = 2; r < rows; r++) {//start from row 1 instead of row 0 (row zero is the header information on excel)
+	    	row = sheet.getRow(r);
+	    	FishCage cage = new FishCage();
+	    	cage.setIsActive(1);
+	    	cage.setDateRegister(DateUtils.getCurrentDateYYYYMMDD());
+	    	FishCagePayment py = new FishCagePayment();
+	    	FishCage tmpcage = new FishCage();
+	    	if(row != null) {
+	    		String area="";
+	    		double payableAmount = 0d;
+	            for(int c = 0; c < cols; c++) {
+	                cell = row.getCell((short)c);
+	                if(cell != null) {
+	                	
+	                	switch(c) {
+	                	case 0 : cage.setOwnerName(cellValue(cell)); break;
+	                	case 1 : cage.setWaterSurveyNo(cellValue(cell)); break;
+	                	
+	                	case 2 : area=cellValue(cell);break;
+	                	case 3 : cage.setCageArea(area + cellValue(cell));break;
+	                	
+	                	case 4 : cage.setTotalSquareArea(cellValue(cell)); break;
+	                	
+	                	case 5 : cage.setRemarks(cellValue(cell)); break;
+	                	case 6 : cage.setAmountDue(Double.valueOf(cellValue(cell).replace(",", ""))); payableAmount=cage.getAmountDue(); break;
+	                	case 7 : cage=FishCage.save(cage);//save to database
+	                			 tmpcage = cage;
+	                			 py = new FishCagePayment();
+	                			 
+	                			 py.setFishCage(tmpcage);
+	                			 py.setYear(2018);
+	                			 try{py.setAmountPaid(Double.valueOf(cellValue(cell).replace(",", "")));}catch(Exception e) {py.setAmountPaid(0);}
+	                			 py.setPayableAmount(payableAmount);
+	                			 if(py.getAmountPaid()>0) {
+	                				 py.setPaymentPaid("2018-01-03");
+	                			 }
+	                			 if(payableAmount==py.getAmountPaid()) {
+	                				 py.setFullpaid(1);
+	                			 }else {
+	                				 py.setFullpaid(0);
+	                			 }
+	                			 py.setIsActive(1);
+	                			 if(py.getAmountPaid()>0) {
+	                				 py.save(); 
+	                			 }
+	                			 break;
+	                	case 8 : py = new FishCagePayment();
+			           			 py.setFishCage(tmpcage);
+			           			try{py.setAmountPaid(Double.valueOf(cellValue(cell).replace(",", "")));}catch(Exception e) {py.setAmountPaid(0);}
+			           			if(py.getAmountPaid()>0) {
+	                				 py.setPaymentPaid("2019-01-03");
+	                			 }
+			           			py.setPayableAmount(payableAmount);
+			           			if(payableAmount==py.getAmountPaid()) {
+	                				 py.setFullpaid(1);
+	                			 }else {
+	                				 py.setFullpaid(0);
+	                			 }
+			           			 py.setIsActive(1);
+			           			 py.setYear(2019);
+			           			 if(py.getAmountPaid()>0) {
+	                				 py.save(); 
+	                			 } 
+			           			 break;
+	                	case 9 : py = new FishCagePayment();
+			           			 py.setFishCage(tmpcage);
+			           			try{py.setAmountPaid(Double.valueOf(cellValue(cell).replace(",", "")));}catch(Exception e) {py.setAmountPaid(0);}
+			           			py.setPayableAmount(payableAmount);
+			           			if(py.getAmountPaid()>0) {
+	                				 py.setPaymentPaid("2020-01-03");
+	                			 }
+			           			if(payableAmount==py.getAmountPaid()) {
+	                				 py.setFullpaid(1);
+	                			 }else {
+	                				 py.setFullpaid(0);
+	                			 }
+			           			 py.setIsActive(1);
+			           			 py.setYear(2020);
+			           			 if(py.getAmountPaid()>0) {
+	                				 py.save(); 
+	                			 } 
+			           			 break;
+	                	
+	                	}
+	                	
+	                }
+	                
+	                
+	                System.out.println(cage.getOwnerName() + " " + cage.getAmountDue() + " " + py.getOrNumber());
+	                
+	            }
+	    	}
+	    	
+	    }	
+	    init();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private String cellValue(HSSFCell cell) {
+		String tmpNum ="";
+		if(CellType.NUMERIC==cell.getCellTypeEnum().NUMERIC) {
+			try{tmpNum = cell.getNumericCellValue()+"";}catch(IllegalStateException e) {System.out.println("illegal : " + cell.getStringCellValue()); tmpNum=cell.getStringCellValue();}
+			tmpNum = tmpNum.replace(".0", "");
+		}else if(CellType.STRING==cell.getCellTypeEnum().STRING) {
+			tmpNum = cell.getStringCellValue().replace(".0", "");
+		}else if(CellType.BLANK==cell.getCellTypeEnum().BLANK) {
+			tmpNum = "";
+		}else if(CellType.BOOLEAN==cell.getCellTypeEnum().BOOLEAN) {
+			tmpNum = "0";
+		}else if(CellType.FORMULA==cell.getCellTypeEnum().FORMULA) {
+			tmpNum = "";
+		}
+		return tmpNum;
+	}
+	
+	private void loadOrderList() {
+		orders = new ArrayList<>();
+		orders.add(new SelectItem(0, "Survey No"));
+		orders.add(new SelectItem(1, "Owner Name"));
+		orders.add(new SelectItem(2, "Cage Area"));
+		orders.add(new SelectItem(3, "Location"));
+		orders.add(new SelectItem(4, "Amount Due"));
+	}
+	
+	public void search() {
+		if(getSearchName()!=null && getSearchName().length()>3) {
+			init(); 	
+		}
+	}
+	
+	@PostConstruct
+	public void init() {
+		setPaymentDate(DateUtils.getDateToday());
+		loadOrderList();
+		
+		if(getDateRegister()==null) {
+			setDateRegister(DateUtils.getDateToday());
+		}
+		
+		cages = new ArrayList<FishCage>();
+		String sql=" ";
+		
+		
+		
+		if(getSearchName()!=null && !getSearchName().isBlank()) {
+			sql = "AND owner like '%"+ getSearchName().replace("--", "") +"%'";
+		}
+		
+		switch(getOrderId()) {
+			case 0: sql += " ORDER BY watersurveyno ASC"; break;
+			case 1: sql += " ORDER BY owner ASC"; break;
+			case 2: sql += " ORDER BY cagearea ASC"; break;
+			case 3: sql += " ORDER BY arealocation ASC"; break;
+			case 4: sql += " ORDER BY amountdue ASC"; break;
+		}
+		
+		if(getSearchName()!=null && !getSearchName().isBlank()) {
+			sql += " LIMIT 10";
+		}
+		
+		cages = FishCage.retrieve(sql, new String[0]);
+		
+		PrimeFaces pf = PrimeFaces.current();
+		if(cages.size()==1) {
+			loadPayments(cages.get(0));
+			
+			pf.executeScript("PF('paymentDlg').show()");
+			//pf.executeScript("$(\"#tblPayment\").show(1000);");
+		}else {
+			//pf.executeScript("$(\"#tblPayment\").hide(1000);");
+			//System.out.println("Running on many size=" + cages.size());
+		}
+		
+	}
+	
+	public void deleteOwner(FishCage cage) {
+		cage.delete();
+		init();
+		Application.addMessage(1, "Deleted", "Successfully deleted.");
+	}
+	
+	public void clear() {
+		setYearApplied(DateUtils.getCurrentYear());
+		setFishCageSelected(null);
+		setOwnerName(null);
+		setTenantOwner(null);
+		setWaterSurveyNo(null);
+		setFishcageArea(null);
+		setTotalCageArea(null);
+		setRemarks(null);
+		setLocation(null);
+		setAmountDue(0);
+		
+		
+		setMotorizedBoat(0);
+		setNonMotorizedBoat(0);
+		setCellphoneNo(null);
+		setNumberOfFishCages(0);
+		setNoOfFunctional(0);
+		setNoOfNonFunctional(0);
+		setSizeCagePerModule(null);
+		setNoOfAnnualProduction(0);
+		setNoOfTotalStock(0);
+	}
+	
+	public void save() {
+		boolean isOk = true;
+		FishCage cage = new FishCage();
+		if(getFishCageSelected()!=null) {
+			cage = getFishCageSelected();
+		}
+		
+		if(getOwnerName()==null || getOwnerName().isBlank()) {
+			Application.addMessage(2, "Owner field is required", "Please provide owner name");
+			isOk = false;
+		}
+		
+		if(getWaterSurveyNo()==null || getWaterSurveyNo().isBlank()) {
+			Application.addMessage(2, "Survey no field is required", "Please provide water survey number");
+			isOk = false;
+		}
+		
+		if(getFishcageArea()==null || getFishcageArea().isBlank()) {
+			Application.addMessage(2, "Fish cage area field is required", "Please provide fish cage area");
+			isOk = false;
+		}
+		
+		if(getTotalCageArea()==null || getTotalCageArea().isBlank()) {
+			Application.addMessage(2, "Total fish cage area field is required", "Please provide total fish cage area");
+			isOk = false;
+		}
+		
+		if(getAmountDue()==0) {
+			Application.addMessage(2, "Amount due field is required", "Please provide amount due");
+			isOk = false;
+		}
+		
+		if(getLocation()==null || getLocation().isBlank()) {
+			Application.addMessage(2, "Location field is required", "Please provide location");
+			isOk = false;
+		}
+		
+		if(getYearApplied()==0) {
+			Application.addMessage(2, "Year Applied field is required", "Please provide year applied");
+			isOk = false;
+		}
+		
+		if(isOk) {
+			cage.setDateRegister(DateUtils.convertDate(getDateRegister(), "yyyy-MM-dd"));
+			cage.setWaterSurveyNo(getWaterSurveyNo());
+			cage.setOwnerName(getOwnerName().toUpperCase());
+			cage.setTenantOwner(getTenantOwner());
+			cage.setCageArea(getFishcageArea());
+			cage.setTotalSquareArea(getTotalCageArea());
+			cage.setRemarks(getRemarks());
+			cage.setAmountDue(getAmountDue());
+			cage.setLocation(getLocation());
+			cage.setYearApplied(getYearApplied());
+			cage.setIsActive(1);
+			
+			cage.setMotorizedBoat(getMotorizedBoat());
+			cage.setNonMotorizedBoat(getNonMotorizedBoat());
+			cage.setCellphoneNo(getCellphoneNo());
+			cage.setNumberOfFishCages(getNumberOfFishCages());
+			cage.setNoOfFunctional(getNoOfFunctional());
+			cage.setNoOfNonFunctional(getNoOfNonFunctional());
+			cage.setSizeCagePerModule(getSizeCagePerModule());
+			cage.setNoOfAnnualProduction(getNoOfAnnualProduction());
+			cage.setNoOfTotalStock(getNoOfTotalStock());
+			
+			cage.save();
+			clear();
+			
+			setSearchName(cage.getOwnerName());
+			
+			init();
+			Application.addMessage(1, "Success", "Successfully saved.");
+		}else {
+			Application.addMessage(3, "Error", "Something went wrong. Please check your data.");
+		}
+		
+		
+	}
+	
+	
+	public void showSelected(FishCage fs) {
+		setYearApplied(fs.getYearApplied());
+		setFishCageSelected(fs);
+		setOwnerName(fs.getOwnerName());
+		setTenantOwner(fs.getTenantOwner());
+		setWaterSurveyNo(fs.getWaterSurveyNo());
+		setFishcageArea(fs.getCageArea());
+		setTotalCageArea(fs.getTotalSquareArea());
+		setRemarks(fs.getRemarks());
+		setLocation(fs.getLocation());
+		setAmountDue(fs.getAmountDue());
+		//setAmountPaid(fs.getAmountDue());
+		setMotorizedBoat(fs.getMotorizedBoat());
+		setNonMotorizedBoat(fs.getNonMotorizedBoat());
+		setCellphoneNo(fs.getCellphoneNo());
+		setNumberOfFishCages(fs.getNumberOfFishCages());
+		setNoOfFunctional(fs.getNoOfFunctional());
+		setNoOfNonFunctional(fs.getNoOfNonFunctional());
+		setSizeCagePerModule(fs.getSizeCagePerModule());
+		setNoOfAnnualProduction(fs.getNoOfAnnualProduction());
+		setNoOfTotalStock(fs.getNoOfTotalStock());
+	}
+	
+	
+	
+	public void printCertificate(FishCagePayment py) {
+		String path = REPORT_PATH;// + AppConf.SEPERATOR.getValue();
+		
+		ReportCompiler compiler = new ReportCompiler();
+		String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, path);
+		List<WaterRentalsPayment> p = new ArrayList<WaterRentalsPayment>();
+		p.add(new WaterRentalsPayment());
+		
+		
+		JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(p);
+		
+		HashMap param = new HashMap();
+		
+		try{param.put("PARAM_SURVEY_NO", py.getFishCage().getWaterSurveyNo());}catch(NullPointerException e) {}
+		try{param.put("PARAM_OWNER_NAME", py.getFishCage().getOwnerName());}catch(NullPointerException e) {}
+		try{param.put("PARAM_TENANT_NAME", py.getFishCage().getTenantOwner());}catch(NullPointerException e) {}
+		try{param.put("PARAM_CAGE_LOCATION", py.getFishCage().getLocation());}catch(NullPointerException e) {}
+		try{param.put("PARAM_DATE_ISSUED_CERT", "Issued on : "+py.getPaymentPaid());}catch(NullPointerException e) {}
+		try{param.put("PARAM_OR_NUMBER", py.getOrNumber());}catch(NullPointerException e) {}
+		try{param.put("PARAM_TOTAL_STOCK", py.getFishCage().getNoOfTotalStock()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_ANNUAL_PROD", py.getFishCage().getNoOfAnnualProduction()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_CAGE_MODULE", py.getFishCage().getSizeCagePerModule());}catch(NullPointerException e) {}
+		try{param.put("PARAM_NON_FUNCTIONAL", py.getFishCage().getNoOfNonFunctional()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_FUNCTIONAL", py.getFishCage().getNoOfFunctional()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_NO_CAGES", py.getFishCage().getNumberOfFishCages()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_CAGE_LENTH", py.getFishCage().getCageArea());}catch(NullPointerException e) {}
+		try{param.put("PARAM_WATER_AREA", py.getFishCage().getTotalSquareArea());}catch(NullPointerException e) {}
+		try{param.put("PARAM_CELLPHONE_NO", py.getFishCage().getCellphoneNo());}catch(NullPointerException e) {}
+		try{param.put("PARAM_NON_MOTORIZED", py.getFishCage().getNonMotorizedBoat()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_MOTORIZED", py.getFishCage().getMotorizedBoat()+"");}catch(NullPointerException e) {}
+		param.put("PARAM_BIRTH_DATE", "");
+		param.put("PARAM_SIGNATURE", py.getFishCage().getOwnerName());
+		
+		param.put("PARAM_OPERATE_YEAR", "Permit to Operate year " + py.getPaymentPaid().split("-")[0]);
+		param.put("PARAM_COORDINATOR", "DEARLY C. TOSOC");
+		param.put("PARAM_ZONING_OFFICER", "NOEMI DITA DALIPE");
+		param.put("PARAM_MAYOR", "FLORO S. GANDAM");
+		param.put("PARAM_DA_HEAD", "ZALDY B. ARTACHO");
+		
+		//logo
+				String dalogo = path + "da_logo.png";
+				try{File fil = new File(dalogo);
+				FileInputStream lof = new FileInputStream(fil);
+				param.put("PARAM_DA_LOGO", lof);
+				}catch(Exception e){}
+		
+		//logo
+		String logo = path + "logo.png";
+		try{File file = new File(logo);
+		FileInputStream loff = new FileInputStream(file);
+		param.put("PARAM_LOGO_LAKESEBU", loff);
+		}catch(Exception e){}
+
+		//logo
+		String officialLogo = path + "logotrans.png";
+		try{File file = new File(officialLogo);
+		FileInputStream off = new FileInputStream(file);
+		param.put("PARAM_SEALTRANSPARENT", off);
+		}catch(Exception e){}
+		
+		try{
+	  		String jrprint = JasperFillManager.fillReportToFile(jrxmlFile, param, beanColl);
+	  	    JasperExportManager.exportReportToPdfFile(jrprint,path+ REPORT_NAME +".pdf");
+	  		}catch(Exception e){e.printStackTrace();}
+		
+				try{
+					System.out.println("REPORT_PATH:" + path + "REPORT_NAME: " + REPORT_NAME);
+		  		 File file = new File(path, REPORT_NAME + ".pdf");
+				 FacesContext faces = FacesContext.getCurrentInstance();
+				 ExternalContext context = faces.getExternalContext();
+				 HttpServletResponse response = (HttpServletResponse)context.getResponse();
+					
+			     BufferedInputStream input = null;
+			     BufferedOutputStream output = null;
+			     
+			     try{
+			    	 
+			    	 // Open file.
+			            input = new BufferedInputStream(new FileInputStream(file), DEFAULT_BUFFER_SIZE);
+
+			            // Init servlet response.
+			            response.reset();
+			            response.setHeader("Content-Type", "application/pdf");
+			            response.setHeader("Content-Length", String.valueOf(file.length()));
+			            response.setHeader("Content-Disposition", "inline; filename=\"" + REPORT_NAME + ".pdf" + "\"");
+			            output = new BufferedOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE);
+
+			            // Write file contents to response.
+			            byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+			            int length;
+			            while ((length = input.read(buffer)) > 0) {
+			                output.write(buffer, 0, length);
+			            }
+
+			            // Finalize task.
+			            output.flush();
+			    	 
+			     }finally{
+			    	// Gently close streams.
+			            close(output);
+			            close(input);
+			     }
+			     
+			     // Inform JSF that it doesn't need to handle response.
+			        // This is very important, otherwise you will get the following exception in the logs:
+			        // java.lang.IllegalStateException: Cannot forward after response has been committed.
+			        faces.responseComplete();
+			        
+				}catch(Exception ioe){
+					ioe.printStackTrace();
+				}
+		
+	}
+	
+	
+	
+	private void close(Closeable resource) {
+	    if (resource != null) {
+	        try {
+	            resource.close();
+	        } catch (IOException e) {
+	            // Do your thing with the exception. Print it, log it or mail it. It may be useful to 
+	            // know that this will generally only be thrown when the client aborted the download.
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}

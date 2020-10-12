@@ -40,7 +40,7 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
 public class RCDReader {
 
 	public static String REPORT_PATH_XML = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-			AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() + "xml" + AppConf.SEPERATOR.getValue();
+			AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() + "xml" + AppConf.SEPERATOR.getValue();
 	
 	private String brisFile="";
 	private String dateCreated="";
@@ -58,7 +58,7 @@ public class RCDReader {
 	private String dateVerified="";
 	private String treasurer="";
 	
-	private static String xmlFolder = AppConf.PRIMARY_DRIVE.getValue() + File.separator + AppConf.APP_CONFIG_FOLDER_NAME.getValue() +File.separator + AppConf.CHEQUE_REPORT_FOLDER.getValue() + File.separator + "xml" + File.separator;
+	private static String xmlFolder = AppConf.PRIMARY_DRIVE.getValue() + File.separator + AppConf.APP_CONFIG_FOLDER_NAME.getValue() +File.separator + AppConf.REPORT_FOLDER.getValue() + File.separator + "xml" + File.separator;
 	
 	public static void main(String[] args) {
 		

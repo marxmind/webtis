@@ -1,16 +1,23 @@
 package com.italia.municipality.lakesebu.bean;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+
+import java.io.Serializable;
+
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.Email;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.UserDtls;
 
-@ManagedBean(name="notiBean", eager=true)
-@RequestScoped
-public class NotificationBean {
+@Named
+@ViewScoped
+public class NotiBean implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1456546578756L;
 	private boolean displayMsg;
 	private String totalMsg;
 	private String total;

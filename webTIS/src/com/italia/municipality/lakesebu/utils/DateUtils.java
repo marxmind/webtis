@@ -20,7 +20,68 @@ import com.italia.municipality.lakesebu.enm.FormType;
  */
 public class DateUtils {
 	
+	public static String dayNaming(String date){
+		String result = "";
+		int len = date.length();
+		int day = 0;
+		if(len==1)
+			day = Integer.valueOf(date);
+		else
+			day = Integer.valueOf(date.substring(1,2));
+		
+		int first = Integer.valueOf(date.substring(0, 1));
+//		/int second = Integer.valueOf(date.substring(1, 2));
+		
+		if(first==0 || first==2 || first==3){
+			switch(day){
+				case 0 : result = "th"; break;
+				case 1 : result = "st"; break;
+				case 2 : result = "nd"; break;
+				case 3 : result = "rd"; break;
+				case 4 : result = "th"; break;
+				case 5 : result = "th"; break;
+				case 6 : result = "th"; break;
+				case 7 : result = "th"; break;
+				case 8 : result = "th"; break;
+				case 9 : result = "th"; break;
+			}
+		}
+		
+		if(first==1){
+			switch(day){
+				case 0 : result = "th"; break;
+				case 1 : result = "th"; break;
+				case 2 : result = "th"; break;
+				case 3 : result = "th"; break;
+				case 4 : result = "th"; break;
+				case 5 : result = "th"; break;
+				case 6 : result = "th"; break;
+				case 7 : result = "th"; break;
+				case 8 : result = "th"; break;
+				case 9 : result = "th"; break;
+			}
+		}
+		
+		date = removeFirstZero(date);
+		
+		
+	return date + result;
+	}
 	
+	private static String removeFirstZero(String number) {
+		switch(number) {
+		case "01": number="1"; break;
+		case "02": number="2"; break;
+		case "03": number="3"; break;
+		case "04": number="4"; break;
+		case "05": number="5"; break;
+		case "06": number="6"; break;
+		case "07": number="7"; break;
+		case "08": number="8"; break;
+		case "09": number="9"; break;
+		}
+	 return number;
+	}
 	
 
 	/**
@@ -161,7 +222,42 @@ public class DateUtils {
 		
 		return mm + "-" + dd + "-" + yyyy;
 	}
-	
+	/**
+	 * 
+	 * @param dateFormat 1=MM-dd-yyyy 2=yyyy-MM-dd 3=dd-MM-yyyy
+	 * @param locale
+	 * @return dateFormat
+	 */
+	public static String getEndOfMonthDate(int dateFormat, Locale locale){
+		String datePatern = "yyyy-MM-dd";
+		if(dateFormat==1){
+			datePatern = "MM-dd-yyyy";
+		}else if(dateFormat==2){
+			datePatern = "yyyy-MM-dd";
+		}else if(dateFormat==3){
+			datePatern = "dd-MM-yyyy";
+		}	
+		
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(datePatern, locale);
+		LocalDate now = LocalDate.parse(DateUtils.getCurrentDateMMDDYYYY(), dateTimeFormatter);
+		LocalDate lastDay = now.with(TemporalAdjusters.lastDayOfMonth()); //2015-11-30
+		
+		String mm="",dd="",yyyy="",endOfMonth=lastDay.atStartOfDay().toString().split("T")[0];
+		yyyy=endOfMonth.split("-")[0];
+		mm=endOfMonth.split("-")[1];
+		dd=endOfMonth.split("-")[2];
+		
+		if(dateFormat==1){
+			return mm + "-" + dd + "-" + yyyy;
+		}else if(dateFormat==2){
+			return yyyy + "-" + mm + "-" + dd;
+		}else if(dateFormat==3){
+			datePatern = "dd-MM-yyyy";
+			return dd + "-" + mm + "-" + yyyy;
+		}
+		
+		return yyyy + "-" + mm + "-" + dd;
+	}
 	/**
 	 * Convert 24 format hour to 12 format
 	 * @param hour
@@ -436,7 +532,6 @@ public class DateUtils {
 		
 		return result;
 	}
-	
 }
 
 

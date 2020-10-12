@@ -760,7 +760,7 @@ public class Chequedtls {
 	public static void compileReport(Chequedtls reportFields){
 		try{
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME = ReadConfig.value(AppConf.CHEQUE_REPORT_NAME);
 		String JRXMLFILE= ReadConfig.value(AppConf.CHEQUE_JRXML_FILE);
 		
@@ -820,9 +820,9 @@ public class Chequedtls {
 	public static void backupPrint(){
 		
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME = AppConf.CHEQUE_REPORT_NAME.getValue();
-		String REPORT_PATH_FILE = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() +  AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+		String REPORT_PATH_FILE = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() +  AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String dll = "rundll32 url.dll,FileProtocolHandler";
 		String fileName = REPORT_PATH + REPORT_NAME + ".pdf"; 
 		File file = new File(fileName);

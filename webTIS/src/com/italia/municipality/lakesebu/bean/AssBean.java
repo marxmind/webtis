@@ -7,9 +7,9 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.BuildingOwnerHistory;
 import com.italia.municipality.lakesebu.controller.BuildingStall;
@@ -26,9 +26,9 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
  * @since 06/15/2018
  * @version 1.0
  */
-@ManagedBean(name="assBean", eager=true)
+@Named
 @ViewScoped
-public class AssigningBuildingBean implements Serializable{
+public class AssBean implements Serializable{
 
 	/**
 	 * 

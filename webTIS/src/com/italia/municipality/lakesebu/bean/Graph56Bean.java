@@ -1,30 +1,10 @@
 package com.italia.municipality.lakesebu.bean;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.Serializable;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
-import javax.imageio.ImageIO;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
-
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
-
-import com.italia.municipality.lakesebu.controller.Chequedtls;
 
 /**
  * 
@@ -33,7 +13,7 @@ import com.italia.municipality.lakesebu.controller.Chequedtls;
  * @version 1.0
  *
  */
-@ManagedBean(name="graph56Bean", eager=true)
+@Named
 @ViewScoped
 public class Graph56Bean implements Serializable  {
 	

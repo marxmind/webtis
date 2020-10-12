@@ -14,16 +14,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
-import javax.faces.component.UIOutput;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorEvent;
-import javax.servlet.ServletContext;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import com.italia.municipality.lakesebu.controller.NumberToWords;
@@ -32,7 +26,7 @@ import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 
-@ManagedBean(name="dBPCheckBean", eager=true)
+@Named
 @ViewScoped
 public class DBPCheckBean implements Serializable{
 

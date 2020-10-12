@@ -7,9 +7,9 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.Customer;
 import com.italia.municipality.lakesebu.controller.Login;
@@ -29,7 +29,7 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
  * @version 1.0
  */
 
-@ManagedBean(name="woBean", eager=true)
+@Named
 @ViewScoped
 public class WaterBillBean implements Serializable{
 

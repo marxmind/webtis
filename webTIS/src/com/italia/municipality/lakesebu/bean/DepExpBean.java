@@ -9,17 +9,15 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.ChartSeries;
 import org.primefaces.model.chart.LegendPlacement;
-
-import com.italia.municipality.lakesebu.controller.Chequedtls;
 import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.controller.Voucher;
 import com.italia.municipality.lakesebu.enm.Months;
@@ -32,9 +30,9 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
  * @version 1.0
  *
  */
-@ManagedBean(name="depExpBean", eager=true)
+@Named
 @ViewScoped
-public class DepartmentExpensesBean implements Serializable{
+public class DepExpBean implements Serializable{
 
 	/**
 	 * 

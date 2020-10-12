@@ -6,11 +6,10 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
-import com.italia.municipality.lakesebu.controller.BuildingPaymentTrans;
 import com.italia.municipality.lakesebu.controller.MarketBuilding;
 import com.italia.municipality.lakesebu.enm.BuildingType;
 import com.italia.municipality.lakesebu.utils.Application;
@@ -21,7 +20,7 @@ import com.italia.municipality.lakesebu.utils.Application;
  * @since 06/15/2018
  * @version 1.0
  */
-@ManagedBean(name="buildBean", eager=true)
+@Named
 @ViewScoped
 public class MarketBuildingBean implements Serializable{
 

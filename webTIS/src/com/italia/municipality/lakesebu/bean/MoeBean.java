@@ -1,11 +1,10 @@
 package com.italia.municipality.lakesebu.bean;
 
 import java.io.Serializable;
-
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
 import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.CategoryAxis;
@@ -22,9 +21,9 @@ import com.italia.municipality.lakesebu.controller.MOETypes;
  * @version 1.0
  *
  */
-@ManagedBean(name="moeBean", eager=true)
+@Named
 @ViewScoped
-public class MOEBean  implements Serializable{
+public class MoeBean  implements Serializable{
 
 	/**
 	 * 

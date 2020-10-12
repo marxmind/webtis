@@ -259,8 +259,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                        		<p:inputText value="#{logformBean.reportSeriesSummary}" style="width: 8em">
                        			<p:ajax event="change" listener="#{logformBean.updateSeriesSummary}"/>
                        		</p:inputText>
-                       		<p:calendar value="#{logformBean.summaryDate}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>  	
-                         	<p:commandLink title="PRINT ALL RCD" target="_blank" actionListener="#{logformBean.printAllRCD}" ajax="false" immediate="false">
+                       		<p:calendar value="#{logformBean.summaryDate}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/> 
+                       		<p:commandLink title="PRINT ALL RCD" target="_blank" actionListener="#{logformBean.printAllRCD}" ajax="false" immediate="false">
             					<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
 							</p:commandLink>
 							<p:commandLink title="PRINT SUMMARY RCD" target="_blank" actionListener="#{logformBean.printSummary}" ajax="false" immediate="false">

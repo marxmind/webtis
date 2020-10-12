@@ -7,8 +7,8 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.Customer;
 import com.italia.municipality.lakesebu.controller.Login;
@@ -22,7 +22,8 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
  * @since 06/15/2018
  * @version 1.0
  */
-@ManagedBean(name="customerBean", eager=true)
+
+@Named
 @ViewScoped
 public class CustomerBean implements Serializable{
 

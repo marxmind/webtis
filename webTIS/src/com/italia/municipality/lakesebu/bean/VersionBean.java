@@ -1,10 +1,12 @@
 package com.italia.municipality.lakesebu.bean;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.security.ApplicationFixes;
 import com.italia.municipality.lakesebu.security.ApplicationVersionController;
@@ -17,8 +19,10 @@ import com.italia.municipality.lakesebu.security.License;
  * @since 11/16/2016
  * @version 1.0
  */
-@ManagedBean(name="versionBean", eager=true)
-public class ApplicationVersionControllerBean {
+
+@Named
+@ViewScoped
+public class VersionBean implements Serializable{
 
 private static final long serialVersionUID = 1394801825228386363L;
 	

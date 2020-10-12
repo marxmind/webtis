@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.utils.Application;
@@ -19,7 +19,7 @@ import com.italia.municipality.lakesebu.utils.Application;
  *@since 08/16/2019
  *
  */
-@ManagedBean(name="depBean", eager = true)
+@Named
 @ViewScoped
 public class DepartmentBean implements Serializable{
 

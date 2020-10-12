@@ -65,10 +65,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 			<p:toolbar id="tbSave">
 			    		<f:facet name="left">
-			    			<p:commandButton value="Account" icon="fa fa-file-o" oncomplete="PF('msgDialog').show()" actionListener="#{woBean.loadAccounts}" update="dataAccId"/>
+			    			<p:commandButton value="Account" icon="fa fa-file-o" oncomplete="PF('msgDialog').show()" actionListener="#{waterBillBean.loadAccounts}" update="dataAccId"/>
 			    		</f:facet>	   
 			    		<f:facet name="right">
-			    			<p:commandButton update="fldId1 fldId2 msg" value="Save" icon="fa fa-floppy-o" actionListener="#{woBean.saveBill}">
+			    			<p:commandButton update="fldId1 fldId2 msg" value="Save" icon="fa fa-floppy-o" actionListener="#{waterBillBean.saveBill}">
 			    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 			    			</p:commandButton>				
 			    		</f:facet>
@@ -76,51 +76,51 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 			<p:panelGrid id="fldId1" columns="2" layout="grid">
 				<p:outputLabel value="Member Name"/>
-				<p:autoComplete id="idName" placeholder="Member Name"  value="#{woBean.memberName}" minQueryLength="4" queryDelay="800" completeMethod="#{woBean.payorNameOwnerSuggested}" effect="fade" maxResults="10" inputStyle="width: 12em">
-					<p:ajax event="change" listener="#{woBean.loadDetails}" update="fldId2"/>
+				<p:autoComplete id="idName" placeholder="Member Name"  value="#{waterBillBean.memberName}" minQueryLength="4" queryDelay="800" completeMethod="#{waterBillBean.payorNameOwnerSuggested}" effect="fade" maxResults="10" inputStyle="width: 12em">
+					<p:ajax event="change" listener="#{waterBillBean.loadDetails}" update="fldId2"/>
 				</p:autoComplete>
 			</p:panelGrid>
 				
 			<p:panelGrid id="fldId2" columns="2" layout="grid">
 				
 				<p:outputLabel value="Date"/>
-				<p:calendar value="#{woBean.dateBill}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
+				<p:calendar value="#{waterBillBean.dateBill}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
 				
 				<p:outputLabel value="Bill No"/>
-				<p:inputNumber id="idBillNo" value="#{woBean.billNo}" readOnly="true" inputStyle="width: 12em"/>
+				<p:inputNumber id="idBillNo" value="#{waterBillBean.billNo}" readOnly="true" inputStyle="width: 12em"/>
 				
 				<p:outputLabel value="Status"/>
-				<p:selectOneMenu value="#{woBean.statusId}" style="width: 12em">
-					<f:selectItems value="#{woBean.status}"/>
+				<p:selectOneMenu value="#{waterBillBean.statusId}" style="width: 12em">
+					<f:selectItems value="#{waterBillBean.status}"/>
 				</p:selectOneMenu>
 				
 				<p:outputLabel value="Previous Reading"/>
-				<p:inputNumber value="#{woBean.previousReading}" inputStyle="width: 12em">
-					<p:ajax event="keyup" listener="#{woBean.calculationReading}" update="idCon idConAm idAmDue idUnpaidAm" />
+				<p:inputNumber value="#{waterBillBean.previousReading}" inputStyle="width: 12em">
+					<p:ajax event="keyup" listener="#{waterBillBean.calculationReading}" update="idCon idConAm idAmDue idUnpaidAm" />
 				</p:inputNumber>
 				
 				<p:outputLabel value="Current Reading"/>
-				<p:inputNumber value="#{woBean.currentReading}" inputStyle="width: 12em">
-					<p:ajax event="keyup" listener="#{woBean.calculationReading}" update="idCon idConAm idAmDue idUnpaidAm" />
+				<p:inputNumber value="#{waterBillBean.currentReading}" inputStyle="width: 12em">
+					<p:ajax event="keyup" listener="#{waterBillBean.calculationReading}" update="idCon idConAm idAmDue idUnpaidAm" />
 				</p:inputNumber>
 				
 				<p:outputLabel value="Consumption"/>
-				<p:inputNumber id="idCon" value="#{woBean.consumption}" inputStyle="width: 12em"/>
+				<p:inputNumber id="idCon" value="#{waterBillBean.consumption}" inputStyle="width: 12em"/>
 				
 				<p:outputLabel value="Amount Consumed"/>
-				<p:inputNumber id="idConAm" value="#{woBean.amountConsumed}" inputStyle="width: 12em"/>
+				<p:inputNumber id="idConAm" value="#{waterBillBean.amountConsumed}" inputStyle="width: 12em"/>
 				
 				<p:outputLabel value="Unpaid Amount"/>
-				<p:inputNumber id="idUnpaidAm" value="#{woBean.previousUnpaidAmount}" readOnly="true" inputStyle="width: 12em"/>
+				<p:inputNumber id="idUnpaidAm" value="#{waterBillBean.previousUnpaidAmount}" readOnly="true" inputStyle="width: 12em"/>
 				
 				<p:outputLabel value="Amount Due"/>
-				<p:inputNumber id="idAmDue" value="#{woBean.amountDue}" inputStyle="width: 12em"/>
+				<p:inputNumber id="idAmDue" value="#{waterBillBean.amountDue}" inputStyle="width: 12em"/>
 				
 				<p:outputLabel value="Due Date"/>
-				<p:calendar value="#{woBean.dueDate}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
+				<p:calendar value="#{waterBillBean.dueDate}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
 				
 				<p:outputLabel value="Disconnection Date"/>
-				<p:calendar value="#{woBean.disconnectiondate}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
+				<p:calendar value="#{waterBillBean.disconnectiondate}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
 				
 			</p:panelGrid>	
 				
@@ -139,10 +139,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<p:dialog position="center center" widgetVar="msgDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" width="500px" height="500px">
     	<p:toolbar id="tbMsg">
 			    		<f:facet name="left">
-			    			   <p:commandButton update="dataAccId fldO" value="New" icon="fa fa-file-o" actionListener="#{woBean.clearFlds}"/>
+			    			   <p:commandButton update="dataAccId fldO" value="New" icon="fa fa-file-o" actionListener="#{waterBillBean.clearFlds}"/>
 			    		</f:facet>	   
 			    		<f:facet name="right">
-			    			<p:commandButton update="dataAccId fldO msg" value="Save" icon="fa fa-floppy-o" actionListener="#{woBean.saveDataOwner}">
+			    			<p:commandButton update="dataAccId fldO msg" value="Save" icon="fa fa-floppy-o" actionListener="#{waterBillBean.saveDataOwner}">
 			    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 			    			</p:commandButton>	
 			    			<p:commandButton value="Close" onclick="PF('msgDialog').hide();"/>
@@ -152,36 +152,36 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					<p:panelGrid id="fldO" columns="2" layout="grid">
 						
 						<p:outputLabel value="Date"/>
-						<p:calendar value="#{woBean.dateRegistered}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
+						<p:calendar value="#{waterBillBean.dateRegistered}"  pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
 						
 						<p:outputLabel value="Account No"/>
-						<p:outputLabel value="#{woBean.accountNumber}"/>
+						<p:outputLabel value="#{waterBillBean.accountNumber}"/>
 						
 						<p:outputLabel value="Member Name"/>
-						<p:autoComplete id="idPayd" placeholder="Member Name"  value="#{woBean.ownerName}" minQueryLength="4" queryDelay="800" completeMethod="#{woBean.payorNameSuggested}" effect="fade" maxResults="10" inputStyle="width: 12em">
-							<p:ajax event="change" listener="#{woBean.selectedCustomer}" update="idLoca"/>
+						<p:autoComplete id="idPayd" placeholder="Member Name"  value="#{waterBillBean.ownerName}" minQueryLength="4" queryDelay="800" completeMethod="#{waterBillBean.payorNameSuggested}" effect="fade" maxResults="10" inputStyle="width: 12em">
+							<p:ajax event="change" listener="#{waterBillBean.selectedCustomer}" update="idLoca"/>
 						</p:autoComplete>
 						
 						<p:outputLabel value="Location"/>
-						<p:inputText id="idLoca" value="#{woBean.location}" style="width: 12em"/>
+						<p:inputText id="idLoca" value="#{waterBillBean.location}" style="width: 12em"/>
 						
 						<p:outputLabel value="Meter No"/>
-						<p:inputText value="#{woBean.meterNo}" style="width: 12em"/>
+						<p:inputText value="#{waterBillBean.meterNo}" style="width: 12em"/>
 						
 					</p:panelGrid>
 					
-					<p:dataTable id="dataAccId" value="#{woBean.accounts}" var="ws" stickyHeader="false"
+					<p:dataTable id="dataAccId" value="#{waterBillBean.accounts}" var="ws" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="false" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false"
 							>
 					
 							<p:column headerText="View" width="20" exportable="false">
-								<p:commandButton icon="fa fa-search" update="dataAccId fldO" actionListener="#{woBean.clickAccount(ws)}"/>
+								<p:commandButton icon="fa fa-search" update="dataAccId fldO" actionListener="#{waterBillBean.clickAccount(ws)}"/>
 							</p:column>
 							
 							<p:column headerText="[*]" width="20" exportable="false">
-            					<p:commandButton update="dataAccId fldO msg" icon="fa fa-trash" actionListener="#{woBean.deleteAccount(ws)}">
+            					<p:commandButton update="dataAccId fldO msg" icon="fa fa-trash" actionListener="#{waterBillBean.deleteAccount(ws)}">
             						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
             					</p:commandButton>
             				</p:column>

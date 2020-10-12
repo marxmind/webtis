@@ -64,11 +64,10 @@ xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 			
 		<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
 		<a class="navbar-brand js-scroll-trigger">
-			<p:outputLabel value="LGU Lake Sebu Portal"/>
+			<p:graphicImage name="gif/portal.png" height="200" width="200"/>
 		</a>
 		<a class="navbar-brand js-scroll-trigger">
-		
-		<p:graphicImage name="gif/logo.png" styleClass="img-fluid rounded-circle" />
+			<p:graphicImage name="gif/logo.png" styleClass="img-fluid rounded-circle" />
 		</a>
       	
       
@@ -108,18 +107,17 @@ xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 								}  
 							</h:outputStylesheet>
 							
-							<p:commandButton icon="fa fa-file-o"   value="Mayor's Office" styleClass="button" immediate="false" ajax="false"/>
-							<p:commandButton icon="fa fa-file-o"  value="Vice Mayor's Office" styleClass="button" immediate="false" ajax="false"/>
+							<p:commandButton icon="fa fa-file-o"  action="#{portalBean.mayor}" value="Mayor's Office" styleClass="button" immediate="false" ajax="false"/>
+							<p:commandButton icon="fa fa-file-o"  action="#{portalBean.vice}" value="Vice Mayor's Office" styleClass="button" immediate="false" ajax="false"/>
 							<p:commandButton icon="fa fa-file-o"  value="SB Office" styleClass="button" immediate="false" ajax="false"/>
 							<p:commandButton icon="fa fa-file-o"  value="Admin Office" styleClass="button" immediate="false" ajax="false"/>
-							<p:commandButton icon="fa fa-file-o"  value="Treasurer's Office" styleClass="button" immediate="false" ajax="false"/>
 				            <p:commandButton icon="fa fa-file-o"  value="Budget Office" styleClass="button" immediate="false" ajax="false"/>
 				            <p:commandButton icon="fa fa-file-o"  action="#{portalBean.treas}" value="Treasurer's Office" styleClass="button" immediate="false" ajax="false"/>
-							<p:commandButton icon="fa fa-file-o"  value="Accounting Office" styleClass="button" immediate="false" ajax="false"/>
-							<p:commandButton icon="fa fa-file-o"  value="Licensing Office" styleClass="button" immediate="false" ajax="false"/>
+							<p:commandButton icon="fa fa-file-o"   value="Accounting Office" styleClass="button" immediate="false" ajax="false"/>
+							<p:commandButton icon="fa fa-file-o"  action="#{portalBean.licensing}"  value="Licensing Office" styleClass="button" immediate="false" ajax="false"/>
 							<p:commandButton icon="fa fa-file-o"  value="MSDWD Office" styleClass="button" immediate="false" ajax="false"/>
 							<p:commandButton icon="fa fa-file-o"  value="Registrar's Office" styleClass="button" immediate="false" ajax="false"/>
-							<p:commandButton icon="fa fa-file-o"  value="MAO Office" styleClass="button" immediate="false" ajax="false"/>
+							<p:commandButton icon="fa fa-file-o"  action="#{portalBean.da}" value="MAO Office" styleClass="button" immediate="false" ajax="false"/>
 							<p:commandButton icon="fa fa-file-o"  value="Personnel Office" styleClass="button" immediate="false" ajax="false"/>
 							<p:commandButton icon="fa fa-file-o"  value="Engineering Office" styleClass="button" immediate="false" ajax="false"/>
 							<p:commandButton icon="fa fa-file-o"  value="MPDC Office" styleClass="button" immediate="false" ajax="false"/>
@@ -136,7 +134,7 @@ xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
       <div class="row">
         <div class="col-lg-6 text-lg-left text-center">
           <div class="copyright">
-            &copy; Copyright <strong>Thirteen</strong>. All Rights Reserved
+            &copy; Copyright <strong>Fourteen</strong>. All Rights Reserved
           </div>
           <div class="credits">
             Managed by <a href="http://www.facebook.com/marxmind">MARXMIND</a>

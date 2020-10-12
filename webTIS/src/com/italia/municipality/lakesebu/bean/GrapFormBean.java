@@ -1,25 +1,10 @@
 package com.italia.municipality.lakesebu.bean;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-import javax.faces.model.SelectItem;
+import java.io.Serializable;
+
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -67,9 +52,9 @@ import com.italia.municipality.lakesebu.utils.Numbers;
  *
  */
 
-@ManagedBean(name="grapFormBean", eager=true)
+@Named
 @ViewScoped
-public class GraphFormBean implements Serializable{
+public class GrapFormBean implements Serializable{
 
 	/*
 	private static final long serialVersionUID = 1445670876346L;

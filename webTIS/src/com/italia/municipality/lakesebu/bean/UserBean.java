@@ -1,25 +1,27 @@
 package com.italia.municipality.lakesebu.bean;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
-import com.italia.municipality.lakesebu.controller.ReportFields;
 import com.italia.municipality.lakesebu.database.BankChequeDatabaseConnect;
 
-@ManagedBean (name="userBean", eager=true)
+@Named
 @ViewScoped
-public class UserMaintenance {
+public class UserBean implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 134434343678L;
 	private String userCompleteName;
 	private String userName;
 	private String userPassword;

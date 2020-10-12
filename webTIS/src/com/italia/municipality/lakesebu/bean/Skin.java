@@ -3,10 +3,9 @@ package com.italia.municipality.lakesebu.bean;
 import java.io.FileInputStream;
 import java.io.Serializable;
 import java.util.Properties;
-
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.enm.AppConf;
 
@@ -17,9 +16,9 @@ import com.italia.municipality.lakesebu.enm.AppConf;
  * @version 1.0
  *
  */
-@ManagedBean(name="skin", eager=true)
+@Named
 @ViewScoped
-public class Skinning implements Serializable{
+public class Skin implements Serializable{
 	
 	/**
 	 * 
@@ -60,7 +59,7 @@ public class Skinning implements Serializable{
 												AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() +	
 												AppConf.APP_CONFIG_SETTING_FOLDER.getValue() + AppConf.SEPERATOR.getValue() + "skin.properties";
 	
-	public Skinning(){
+	public Skin(){
 		
 		Properties prop = new Properties();
 		try{
@@ -103,7 +102,7 @@ public class Skinning implements Serializable{
 	
 	@PostConstruct
 	public void init(){
-		new Skinning();
+		new Skin();
 	}
 	
 	public String getLabel() {

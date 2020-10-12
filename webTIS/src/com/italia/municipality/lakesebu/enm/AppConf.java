@@ -13,8 +13,9 @@ public enum AppConf {
 	DB_NAME_BANK("databaseBank"),
 	DB_NAME_TAX("databaseTax"),
 	DB_NAME_WEBTIS("databaseWebTis"),
-	DB_AGRICULTURE("bls"),
+	DB_AGRICULTURE("da"),
 	DB_NAME_CASH("databaseCash"),
+	DB_NAME_LICENSING("licensing"),
 	DB_DRIVER("driver"),
 	DB_URL("url"),
 	DB_PORT("port"),
@@ -37,7 +38,7 @@ public enum AppConf {
 	APP_LOG_PATH("logPath"),
 	CHEQUE_REPORT_NAME("chequePdfName"),
 	CHEQUE_REPORT_NAME_DISPENSE("dispenseChequePdfName"),
-	CHEQUE_REPORT_FOLDER("reports"),
+	REPORT_FOLDER("reports"),
 	CHEQUE_JRXML_FILE("chequeJrxml"),
 	FORM_56("form56"),
 	FORM_56_ALL("form56all"),
@@ -53,7 +54,8 @@ public enum AppConf {
 	LOADCASHBOOKTREASURYXML("cashbookintreasuryxml"),
 	THEME_STYLE("themeStyle"),
 	DTR_REPORT("dtr"),
-	FORM11_REPORT("form11");
+	FORM11_REPORT("form11"),
+	LICENSING_IMG("license-img");
 	
 	private String value;
 	

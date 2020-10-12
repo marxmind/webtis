@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.primefaces.event.CellEditEvent;
 
@@ -24,9 +24,9 @@ import com.italia.municipality.lakesebu.utils.Numbers;
  * @version 1.0
  *
  */
-@ManagedBean(name="penaltyBean", eager=true)
+@Named
 @ViewScoped
-public class PenaltyTableBean implements Serializable{
+public class PenaltyBean implements Serializable{
 
 	/**
 	 * 

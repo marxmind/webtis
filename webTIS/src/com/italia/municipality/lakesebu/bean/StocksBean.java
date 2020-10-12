@@ -2,14 +2,12 @@ package com.italia.municipality.lakesebu.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.Stocks;
 import com.italia.municipality.lakesebu.enm.FormType;
@@ -24,15 +22,14 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
  * @version 1.0
  *
  */
-
-@ManagedBean(name="stockBean", eager=true)
+@Named
 @ViewScoped
 public class StocksBean implements Serializable{
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 154687697435L;
+	private static final long serialVersionUID = 1546876970435L;
 	
 	private Date recordedDate;
 	private int numberOfStab;
@@ -40,13 +37,13 @@ public class StocksBean implements Serializable{
 	private String seriesTo;
 	private int stabNo;
 	private Stocks stockData;
-	public List<Stocks> stocks = new ArrayList<Stocks>();//Collections.synchronizedList(new ArrayList<Stocks>());
+	private List<Stocks> stocks = new ArrayList<Stocks>();//Collections.synchronizedList(new ArrayList<Stocks>());
 	
-	public int formTypeId;
-	public List formType;
+	private int formTypeId;
+	private List formType;
 	
-	public int formTypeIdSearch;
-	public List formTypeSearch;
+	private int formTypeIdSearch;
+	private List formTypeSearch;
 	
 	@PostConstruct
 	public void init() {

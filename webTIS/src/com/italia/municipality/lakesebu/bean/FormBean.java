@@ -13,15 +13,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.event.TabChangeEvent;
@@ -55,9 +53,9 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  * @version 1.0
  *
  */
-@ManagedBean(name="formBean", eager=true)
+@Named
 @ViewScoped
-public class IssuedFormBean implements Serializable{
+public class FormBean implements Serializable{
 
 	/**
 	 * 
@@ -247,7 +245,7 @@ public class IssuedFormBean implements Serializable{
 	
 	private void readXML() {
 		String XML_FOLDER = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
 				"xml" + AppConf.SEPERATOR.getValue();  
 		
 		String monthlyReportName = DateUtils.getMonthName(getMonthId()).toUpperCase() + "-" + DateUtils.getCurrentYear();
@@ -286,7 +284,7 @@ public class IssuedFormBean implements Serializable{
 		
 		//compiling report
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME =ReadConfig.value(AppConf.FORM11_REPORT);
 		System.out.println("Report path " + REPORT_PATH + " name " + REPORT_NAME);
 		ReportCompiler compiler = new ReportCompiler();
@@ -468,7 +466,7 @@ public class IssuedFormBean implements Serializable{
 		rcd.setRcdFormSeries(ss);
 		
 		String XML_FOLDER = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
 				"xml" + AppConf.SEPERATOR.getValue();  
 		
 		RCDReader.saveXML(rcd, monthlyReportName, XML_FOLDER, true);

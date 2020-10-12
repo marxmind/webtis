@@ -28,13 +28,12 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -65,9 +64,11 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
-@ManagedBean(name="checkBean", eager=true)
+
+
+@Named
 @ViewScoped
-public class BankCheckBean implements Serializable{
+public class CheckBean implements Serializable{
 
 	/**
 	 * 
@@ -395,7 +396,7 @@ public class BankCheckBean implements Serializable{
 		compileReportList(reportFields);
 		
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME = ReadConfig.value(AppConf.CHEQUE_REPORT_NAME_DISPENSE);
 		//String REPORT_PATH_FILE = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() +  AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		
@@ -451,9 +452,9 @@ public class BankCheckBean implements Serializable{
 	private void backupPrintDispense(){
 		
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME = AppConf.CHEQUE_REPORT_NAME_DISPENSE.getValue();
-		String REPORT_PATH_FILE = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() +  AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+		String REPORT_PATH_FILE = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() +  AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String dll = "rundll32 url.dll,FileProtocolHandler";
 		String fileName = REPORT_PATH + REPORT_NAME + ".pdf"; 
 		File file = new File(fileName);
@@ -537,7 +538,7 @@ public class BankCheckBean implements Serializable{
 		try{
 			
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME =ReadConfig.value(AppConf.CHEQUE_REPORT_NAME_DISPENSE);
 			//String REPORT_PATH_FILE = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() +  AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			
@@ -1848,7 +1849,7 @@ public class BankCheckBean implements Serializable{
 		chk.setDate_disbursement(tmpDate);
 		try{
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME = ReadConfig.value(AppConf.CHEQUE_REPORT_NAME);
 		
 		File file = new File(REPORT_PATH, REPORT_NAME + ".pdf");
@@ -2422,7 +2423,7 @@ public void setNatureOfPayment(String natureOfPayment) {
 
 	public static void main(String[] args) {
 		
-		BankCheckBean b = new BankCheckBean();
+		CheckBean b = new CheckBean();
 		
 		//b.convertDateToMonthDayYear(DateUtils.getCurrentDateYYYYMMDD());
 		b.convertDateToYearMontyDay(DateUtils.getCurrentDateMMMMDDYYYY());

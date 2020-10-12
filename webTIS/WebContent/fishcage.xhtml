@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Fish Cage Transaction</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Fish Cage Transaction</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Fish Cage Transaction</title>
+
+</h:head>
+
+<h:body>
+	
+	<ui:include src="header.xhtml" />
+
+	<h:form prependId="false" id="formId">
+	<p:growl id="msg" showDetail="true" life="2000" />
+	
+	
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+	<p:focus context="tb"/>
+	
+	
+	<p:layout fullPage="true">
+			
+			<p:layoutUnit position="east" size="0" visible="false">
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="north" size="100"  visible="false" >
+				
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="south" size="50" visible="false" >
+				
+		     </p:layoutUnit>
+			
+			<p:layoutUnit position="west" size="300">
+				<p:toolbar id="tbClear" style="#{skin.toolbar};float:bottom; position: fixed;z-index: 1500;">
+		    		<f:facet name="left">
+				        <p:commandButton update="fldId" value="New" icon="fa fa-file-o" actionListener="#{fishcageBean.clear}" title="Click this button to start new information"/>
+		    				<p:commandButton update="fldId" value="Clear" icon="fa fa-trash" actionListener="#{fishcageBean.clear}"  title="Click this button to clear information"/>
+		    				<p:commandButton update="fldId cageData msg" value="Save" actionListener="#{fishcageBean.save}"  icon="fa fa-floppy-o" title="Click this button to save your changes" >
+		        				<p:confirm header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
+		        			</p:commandButton>
+		    		</f:facet>
+		    		<f:facet name="right">
+		    				
+		    		</f:facet>
+				</p:toolbar>
+				<br/><br/><br/>
+				<p:panelGrid id="fldId" columns="2" layout="grid">
+				
+				<p:outputLabel value="Date Recorded" style="#{skin.label}" />
+			    <p:calendar  value="#{fishcageBean.dateRegister}" inputStyle="width: 11em;#{skin.textInput}"  required="true" pattern="yyyy-MM-dd" effect="slideDown"/>
+			    
+			    <p:outputLabel value="Year Applied" style="#{skin.label}" />
+				<p:inputText value="#{fishcageBean.yearApplied}"  style="width: 11em;#{skin.textInput}"/>	
+			    
+			    <p:outputLabel value="Water Survey No" style="#{skin.label}" />
+				<p:inputText value="#{fishcageBean.waterSurveyNo}" placeholder="Survey No" style="width: 11em;#{skin.textInput}"/>	
+				
+				<p:outputLabel value="Owner Name" style="#{skin.label}" />
+				<p:inputText value="#{fishcageBean.ownerName}" placeholder="Owner Name" style="width: 11em;#{skin.textInput}"/>	
+				
+				<p:outputLabel value="Tenant Name" style="#{skin.label}" />
+				<p:inputText value="#{fishcageBean.tenantOwner}" placeholder="Tenant Name" style="width: 11em;#{skin.textInput}"/>	
+				
+				<p:outputLabel value="Cage Area" style="#{skin.label}" />
+				<p:inputText value="#{fishcageBean.fishcageArea}" placeholder="Cage Area" style="width: 11em;#{skin.textInput}"/>
+				
+				<p:outputLabel value="Total Fish Cage Area" style="#{skin.label}" />
+				<p:inputText value="#{fishcageBean.totalCageArea}" placeholder="Total Cage Area" style="width: 11em;#{skin.textInput}"/>	
+				
+				<p:outputLabel value="Location" style="#{skin.label}" />
+				<p:inputText value="#{fishcageBean.location}" placeholder="Location" style="width: 11em;#{skin.textInput}"/>	
+				
+				<p:outputLabel value="Remarks" style="#{skin.label}" />
+				<p:inputText value="#{fishcageBean.remarks}" placeholder="Remarks" style="width: 11em;#{skin.textInput}"/>
+				
+				<p:outputLabel value="Amount" style="#{skin.label}" />
+				<p:inputNumber value="#{fishcageBean.amountDue}"  inputStyle="width: 11em;#{skin.textInput}"/>	
+				
+				<p:outputLabel value="Motorized Boat" style="#{skin.label}" />
+				<p:inputNumber value="#{fishcageBean.motorizedBoat}"  inputStyle="width: 11em;#{skin.textInput}"/>	
+				
+				<p:outputLabel value="Non-Motorized Boat" style="#{skin.label}" />
+				<p:inputNumber value="#{fishcageBean.nonMotorizedBoat}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				
+				<p:outputLabel value="Cellphone No" style="#{skin.label}" />
+				<p:inputText value="#{fishcageBean.cellphoneNo}" placeholder="+6300-0000-000" style="width: 11em;#{skin.textInput}"/>
+				
+				<p:outputLabel value="No Of Fish Cages" style="#{skin.label}" />
+				<p:inputNumber value="#{fishcageBean.numberOfFishCages}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				
+				<p:outputLabel value="Functional Fish Cages" style="#{skin.label}" />
+				<p:inputNumber value="#{fishcageBean.noOfFunctional}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				
+				<p:outputLabel value="Non-Functional Fish Cages" style="#{skin.label}" />
+				<p:inputNumber value="#{fishcageBean.noOfNonFunctional}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				
+				<p:outputLabel value="Size cage/Module" style="#{skin.label}" />
+				<p:inputText value="#{fishcageBean.sizeCagePerModule}" placeholder="00x00"  style="width: 11em;#{skin.textInput}"/>
+				
+				<p:outputLabel value="Annual Production" style="#{skin.label}" />
+				<p:inputNumber value="#{fishcageBean.noOfAnnualProduction}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				
+				<p:outputLabel value="Total Stocks" style="#{skin.label}" />
+				<p:inputNumber value="#{fishcageBean.noOfTotalStock}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				
+				</p:panelGrid>
+				
+			</p:layoutUnit> 
+			
+			<p:layoutUnit position="center">
+				
+				<p:tabView prependId="false" cache="true" id="tabId">
+				
+				<p:ajax event="tabChange" listener="#{fishcageBean.onChange}" update="tabId"/>
+				
+				<p:tab title="Water Rentals">
+				
+				<p:toolbar id="tb" style="#{skin.toolbar}">
+			    		<f:facet name="left">
+			        		<p:inputText value="#{fishcageBean.searchName}" placeholder="Searh name..." style="width: 20em">
+			        			<p:ajax event="keyup" listener="#{fishcageBean.search}" delay="800" update="cageData payFld payData idOwn"/>
+			        		</p:inputText>
+			        		
+			        	</f:facet>
+			    		<f:facet name="right">
+			    			
+						</f:facet>
+				</p:toolbar>
+				
+				<p:dataTable id="cageData" value="#{fishcageBean.cages}" var="ct" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         paginatorPosition="top" paginatorAlwaysVisible="true"
+                         >
+                         	<f:facet name="{Exporters}">
+	                         	<p:selectOneMenu value="#{fishcageBean.orderId}" style="float:left; position: left;z-index: 1500;">
+			                		<f:selectItems value="#{fishcageBean.orders}"/>
+			                		<p:ajax event="change" listener="#{fishcageBean.init}" update="cageData"/>
+			            		</p:selectOneMenu>
+			            		<h:commandLink title="Export List in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="cageData" fileName="CageOwner" options="#{exporter.excelOpt}"/>
+            						</h:commandLink>
+		            		</f:facet>
+                         	
+                         	<p:column headerText="Edit" width="20" exportable="false">
+            					<p:commandButton icon="fa fa-search" update="fldId" actionListener="#{fishcageBean.showSelected(ct)}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Payment" width="35" exportable="false">
+            					<p:commandButton icon="fa fa-search" update="cageData payFld payData idOwn" actionListener="#{fishcageBean.loadPayments(ct)}" oncomplete="PF('paymentDlg').show()" />
+            				</p:column>
+                         	
+                         	<p:column headerText="[*]" width="20" exportable="false">
+            					<p:commandButton update="cageData msg" icon="fa fa-trash"  actionListener="#{fishcageBean.deleteOwner(ct)}" title="Click this button to delete">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data? Deleting this owner will delete all his/her history information" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+                         	
+                         	<p:column headerText="No" width="10">
+            						<h:outputText  value="#{ct.waterSurveyNo}"/>
+            				</p:column>
+                         	
+                         	<p:column headerText="Recorded" width="50">
+            						<h:outputText  value="#{ct.dateRegister}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Applied" width="50">
+            						<h:outputText  value="#{ct.yearApplied}"/>
+            				</p:column>
+                         	
+            				<p:column headerText="Name" width="100">
+            						<h:outputText  value="#{ct.ownerName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Tenant" width="100">
+            						<h:outputText  value="#{ct.tenantOwner}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Cage Area" width="70">
+            						<h:outputText  value="#{ct.cageArea}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Total Cage Area" width="70">
+            						<h:outputText  value="#{ct.totalSquareArea}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Location" width="100">
+            						<h:outputText  value="#{ct.location}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Remarks" width="100">
+            						<h:outputText  value="#{ct.remarks}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Amount Due" width="50">
+            						<h:outputText  value="#{ct.amountDue}"/>
+            				</p:column>
+            				
+            				
+     					</p:dataTable>
+     					
+     					</p:tab>
+     					
+     					<p:tab title="Unpaid Collections">
+     						
+     						<p:toolbar id="tbCol" style="#{skin.toolbar}">
+						    		<f:facet name="left">
+						        		<p:inputText value="#{fishcageBean.searchInUnpaidName}" placeholder="Searh name..." style="width: 20em">
+						        			<p:ajax event="keyup" listener="#{fishcageBean.loadUnpaidDtls}" delay="800" update="rentData"/>
+						        		</p:inputText>
+						        		<p:commandButton actionListener="#{fishcageBean.loadUnpaidAll}" value="Load All" update="rentData"/>
+						        	</f:facet>
+						    		<f:facet name="right">
+						    			
+									</f:facet>
+							</p:toolbar>
+     						
+     						<p:dataTable id="rentData" value="#{fishcageBean.payRentals}" var="rt" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         paginatorPosition="top" paginatorAlwaysVisible="true"
+                         >
+                         	<f:facet name="{Exporters}">
+			            		<h:commandLink title="Export List in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="rentData" fileName="PaymentRentals" options="#{exporter.excelOpt}"/>
+            						</h:commandLink>
+		            		</f:facet>
+     						
+     						<p:column headerText="Name" width="150">
+            						<h:outputText  value="#{rt.f1}"/>
+            				</p:column>
+            				
+            				<p:column headerText="No" width="50">
+            						<h:outputText  value="#{rt.f2}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Year Start" width="50">
+            						<h:outputText  value="#{rt.f3}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Cage Area" width="50">
+            						<h:outputText  value="#{rt.f4}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Total Area(sqm)" width="50">
+            						<h:outputText  value="#{rt.f5}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Remarks" width="70">
+            						<h:outputText  value="#{rt.f6}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Amount Due" width="70">
+            						<h:outputText  value="#{rt.f7}"/>
+            				</p:column>
+            				
+            				<p:column headerText="2018" width="70">
+            						<h:outputText  value="#{rt.f8}"/>
+            				</p:column>
+            				
+            				<p:column headerText="2019" width="70">
+            						<h:outputText  value="#{rt.f9}"/>
+            				</p:column>
+            				
+            				<p:column headerText="2020" width="70">
+            						<h:outputText  value="#{rt.f10}"/>
+            				</p:column>
+     						
+     						
+     						</p:dataTable>
+     						
+     					</p:tab>
+     					
+     					</p:tabView>
+     					
+			</p:layoutUnit> 
+			
+			  
+</p:layout>
+
+
+<p:dialog header="Payment Details" style="#{skin.dialog}" position="center top" closeOnEscape="true" modal="false" showEffect="clip" hideEffect="clip" widgetVar="paymentDlg" Height="300" width="800" closable="false">
+						
+		        <p:toolbar id="tbMotor">
+				    		<f:facet name="left">
+						        	<p:outputLabel id="idOwn" value="#{fishcageBean.selectedOwner}" style="color: white"/>
+				    		</f:facet>
+				    		<f:facet name="right">
+				    			<p:commandButton update="payFld" value="Clear" icon="fa fa-trash" actionListener="#{fishcageBean.clearPayments}"  title="Click this button to clear information"/>
+				    			<p:commandButton update="payData payFld msg" value="Save" actionListener="#{fishcageBean.savePayment}"  icon="fa fa-floppy-o" title="Click this button to save your changes" >
+						       		<p:confirm header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
+						        </p:commandButton>
+				    			<p:commandButton  value="Close" icon="ui-icon-closethick" update="cageData payData" style="width: 10em;" oncomplete="PF('paymentDlg').hide()" title="Click this button to hide this dialog"/>
+				    		</f:facet>
+						</p:toolbar>
+						
+						
+						<p:panelGrid id="payFld" columns="6" layout="grid">
+								
+								<p:outputLabel  value="OR Number"/>
+				            	<p:inputText value="#{fishcageBean.orNumber}" placeholder="Official Receipt" style="width: 11em"/>
+								
+								<p:outputLabel  value="Date"/>
+								<p:calendar  value="#{fishcageBean.paymentDate}" inputStyle="width: 11em;#{skin.textInput}"  required="true" pattern="yyyy-MM-dd" effect="slideDown"/>
+								
+				            	<p:outputLabel  value="Amount"/>
+				            	<p:inputNumber value="#{fishcageBean.amountPaid}" placeholder="0.00" inputStyle="width: 11em"/>
+								
+						</p:panelGrid>    
+						
+						
+						<p:dataTable id="payData" value="#{fishcageBean.payments}" var="py" stickyHeader="false"
+											rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				                         rowsPerPageTemplate="5,10,15,20,50,100"
+				                         paginatorPosition="top" paginatorAlwaysVisible="true"
+				                         >
+                         	<f:facet name="{Exporters}">
+			            		<h:commandLink title="Export List in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="payData" fileName="OwnerPaymentHistory" options="#{exporter.excelOpt}"/>
+            						</h:commandLink>
+		            		</f:facet>
+                         	
+                         	<p:column headerText="Edit" width="15" exportable="false">
+            					<p:commandButton icon="fa fa-search" update="payFld" actionListener="#{fishcageBean.showSelectedPayment(py)}"/>
+            				</p:column>
+            				
+            				<p:column headerText="[*]" width="15" exportable="false">
+            					<p:commandButton update="payData msg" icon="fa fa-trash"  actionListener="#{fishcageBean.deletePayment(py)}" title="Click this button to delete">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+            				
+            				<p:column headerText="Print" width="30" exportable="false">
+            						<p:commandLink title="Print in PDF" target="_blank" action="#{fishcageBean.printCertificate(py)}" ajax="false" immediate="false" >
+            				 			<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+									</p:commandLink>
+            				</p:column>
+            				
+            				<p:column headerText="Paid" width="50">
+            						<h:outputText  value="#{py.paymentPaid}"/>
+            				</p:column>
+            				
+            				<p:column headerText="OR Number" width="50">
+            						<h:outputText  value="#{py.orNumber}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Amount" width="50">
+            						<h:outputText  value="#{py.amountPaid}"/>
+            				</p:column>
+          				</p:dataTable>      
+		
+</p:dialog>	
+	
+	
+	<ui:include src="loader.xhtml" />
+	<ui:include src="menuda.xhtml" />
+</h:form>		
+</h:body>
+</html>
+		

@@ -2,8 +2,8 @@ package com.italia.municipality.lakesebu.bean;
 
 import java.io.Serializable;
 
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.enm.AppConf;
@@ -16,9 +16,9 @@ import com.italia.municipality.lakesebu.enm.AppConf;
  *
  */
 
-@ApplicationScoped
-@ManagedBean(name="themBean", eager=true)
-public class ThemeBean implements Serializable{
+@Named
+@SessionScoped
+public class ThemBean implements Serializable{
 
 	/**
 	 * 

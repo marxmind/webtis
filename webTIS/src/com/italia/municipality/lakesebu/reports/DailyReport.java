@@ -279,7 +279,7 @@ public static void saveLog(String log) {
 	private static void createReport(List<Reports> reports, String accountName, double total) {
 		//compiling report
 		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 		String REPORT_NAME ="dailyreport";
 		System.out.println("Report path " + REPORT_PATH + " name " + REPORT_NAME);
 		ReportCompiler compiler = new ReportCompiler();

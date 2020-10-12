@@ -5,7 +5,6 @@ import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,11 +15,11 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.event.CellEditEvent;
@@ -51,9 +50,9 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  * @version 1.0
  *
  */
-@ManagedBean(name="fundBean", eager=true)
+@Named
 @ViewScoped
-public class FundsBean implements Serializable{
+public class FundBean implements Serializable{
 
 	/**
 	 * 
@@ -460,7 +459,7 @@ public class FundsBean implements Serializable{
 			
 			//compiling report
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME =ReadConfig.value(AppConf.CHECK_ISSUED);
 			System.out.println("Report path " + REPORT_PATH + " name " + REPORT_NAME);
 			ReportCompiler compiler = new ReportCompiler();
@@ -597,7 +596,7 @@ public class FundsBean implements Serializable{
 			
 			//compiling report
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME =ReadConfig.value(AppConf.CHECK_ISSUED) +"_rcdgen";
 			System.out.println("Report path " + REPORT_PATH + " name " + REPORT_NAME);
 			ReportCompiler compiler = new ReportCompiler();
@@ -743,7 +742,7 @@ public class FundsBean implements Serializable{
 			baltotal = debitTotal - creditTotal;
 			//compiling report
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME =ReadConfig.value(AppConf.CASH_BOOK);
 			System.out.println("Report path " + REPORT_PATH + " name " + REPORT_NAME);
 			ReportCompiler compiler = new ReportCompiler();
