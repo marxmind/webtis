@@ -13,26 +13,23 @@ public class LicensingDatabaseConnect {
 	}
 	
 	public static Connection getConnection(){
+		Conf conf = Conf.getInstance();
 		Connection conn = null;
 		try{
 			
-			String driver = ReadConfig.value(AppConf.DB_DRIVER);
+			String driver = conf.getDatabaseDriver();//ReadConfig.value(AppConf.DB_DRIVER);
 			       //driver = SecureChar.decode(driver);
 			Class.forName(driver);
-			String db_url = ReadConfig.value(AppConf.DB_URL);
+			String db_url = conf.getDatabaseUrl();// ReadConfig.value(AppConf.DB_URL);
 				   //db_url = SecureChar.decode(db_url);
-			String port = ReadConfig.value(AppConf.DB_PORT);
+			String port = conf.getDatabasePort(); //ReadConfig.value(AppConf.DB_PORT);
 			       //port = SecureChar.decode(port);
-			String dbName = ReadConfig.value(AppConf.DB_NAME_LICENSING);
+			String dbName = conf.getDatabaseLicensing();//ReadConfig.value(AppConf.DB_AGRICULTURE);
 				   //dbName = SecureChar.decode(dbName);
-			String url = db_url + ":" + port + "/" + dbName + "?serverTimezone=UTC&" + ReadConfig.value(AppConf.DB_SSL);
+			String url = db_url + ":" + port + "/" + dbName + "?"+ conf.getDatabaseTimeZone() +"&" +  conf.getDatabaseSSL();//ReadConfig.value(AppConf.DB_SSL);
 			System.out.println("URL DATA: " + url);
-			String u_name = ReadConfig.value(AppConf.USER_NAME);
-				   u_name = SecureChar.decode(u_name);
-			String pword = ReadConfig.value(AppConf.USER_PASS);
-				   pword = SecureChar.decode(pword);
-				   pword = pword.replace("mark", "");
-				   pword = pword.replace("italia", "");
+			String u_name = conf.getDatabaseUserName();
+			String pword = conf.getDatabasePassword();
 			conn = DriverManager.getConnection(url, u_name, pword);
 			return conn;
 		}catch(Exception e){

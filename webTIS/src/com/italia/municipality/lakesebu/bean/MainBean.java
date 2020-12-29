@@ -175,10 +175,10 @@ public class MainBean implements Serializable {
 		UserAccessLevel lvl = UserAccessLevel.retrieve(sql, params).get(0);
 		in.setAccessLevel(lvl);
 		
-		UserDtls user = new UserDtls();
-		user.setUserdtlsid(dtls.getUserdtlsid());
-		user.setIsActive(1);
-		dtls = UserDtls.retrieve(user).get(0);
+		//UserDtls user = new UserDtls();
+		//user.setUserdtlsid(dtls.getUserdtlsid());
+		//user.setIsActive(1);
+		dtls = UserDtls.retrieveUserPositon(dtls.getUserDtls().getJob().getJobid());//UserDtls.retrieve(user).get(0);
 		
 		dtls.setLogin(in);
 		

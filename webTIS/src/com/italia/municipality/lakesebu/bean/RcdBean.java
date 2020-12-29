@@ -170,9 +170,7 @@ public class RcdBean implements Serializable{
 	  	    JasperExportManager.exportReportToPdfFile(jrprint,REPORT_PATH+ REPORT_NAME +".pdf");
 	  	    
 	  	    String pdfFile = REPORT_NAME + ".pdf";
-			 File file = new File(REPORT_PATH + pdfFile);
-			 //tempPdfFile = new DefaultStreamedContent(new FileInputStream(file), "application/pdf", pdfFile);
-		  	 
+			 
 			 tempPdfFile = DefaultStreamedContent.builder()
 					 .contentType("application/pdf")
 					 .name(pdfFile)
@@ -193,8 +191,6 @@ public class RcdBean implements Serializable{
 		if(tempPdfFile==null) {
 			
 		    File pdfFile = new File(REPORT_PATH + REPORT_NAME + ".pdf");
-  	    
-	    	//return new DefaultStreamedContent(new FileInputStream(pdfFile), "application/pdf", REPORT_NAME+".pdf");
 		    return DefaultStreamedContent.builder()
 					 .contentType("application/pdf")
 					 .name(REPORT_NAME + ".pdf")

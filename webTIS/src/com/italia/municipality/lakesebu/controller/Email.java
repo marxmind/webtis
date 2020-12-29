@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 

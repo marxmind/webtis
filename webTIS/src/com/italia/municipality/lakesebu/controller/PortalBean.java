@@ -55,5 +55,11 @@ public class PortalBean implements Serializable {
 	public String licensing() {
 		return getPortal(Department.LICENSING);
 	}
+	public String gso() {
+		return getPortal(Department.GSO);
+	}
 	
+	public String dilg() {
+		return "dilg";//getPortal(Department.DILG);
+	}
 }

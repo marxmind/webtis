@@ -231,14 +231,14 @@ public class OrBean implements Serializable{
 			isCheckNote=true;
 			
 			if("Secretary".equalsIgnoreCase(chk)) {
-				UserDtls toUser = UserDtls.retrieve(Job.SECRETARY.getId());
+				UserDtls toUser = UserDtls.retrieveUserPositon(Job.SECRETARY.getId());
 				if(cnt>1) {
 					toMailUser += ":"+toUser.getUserdtlsid()+"";
 				}else {
 					toMailUser = toUser.getUserdtlsid()+"";
 				}
 			}else if("Treasurer".equalsIgnoreCase(chk)) {
-				UserDtls toUser = UserDtls.retrieve(Job.TREASURER.getId());
+				UserDtls toUser = UserDtls.retrieveUserPositon(Job.TREASURER.getId());
 				if(cnt>1) {
 					toMailUser += ":"+toUser.getUserdtlsid()+"";
 				}else {

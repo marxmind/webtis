@@ -13,8 +13,6 @@ import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.UserAccessLevel;
 import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.enm.AppConf;
-import com.italia.municipality.lakesebu.security.License;
-import com.italia.municipality.lakesebu.security.Module;
  
 /**
  * 
@@ -47,8 +45,8 @@ public class MenuBean implements Serializable{
 	
 	@PostConstruct
 	public void init() {
-		loadCountEmailNote();
-		runReport();
+		//loadCountEmailNote();
+		//runReport();
 	}
 	
 	private void runReport() {
@@ -219,10 +217,10 @@ public class MenuBean implements Serializable{
 		UserAccessLevel lvl = UserAccessLevel.retrieve(sql, params).get(0);
 		in.setAccessLevel(lvl);
 		
-		UserDtls user = new UserDtls();
-		user.setUserdtlsid(dtls.getUserdtlsid());
-		user.setIsActive(1);
-		dtls = UserDtls.retrieve(user).get(0);
+		//UserDtls user = new UserDtls();
+		//user.setUserdtlsid(dtls.getUserdtlsid());
+		//user.setIsActive(1);
+		dtls = UserDtls.retrieveUserPositon(dtls.getUserDtls().getJob().getJobid());
 		
 		dtls.setLogin(in);
 		

@@ -10,43 +10,28 @@ import java.util.List;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * 
  * @author mark italia
  * @since 09/27/2016
  *
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
 public class Job {
 
 	private int jobid;
 	private String jobname;
 	private Timestamp timestamp;
-	
-	public Job(){}
-	
-	public Job(
-			int jobid,
-			String jobname
-			){
-		this.jobid = jobid;
-		this.jobname = jobname;
-	}
-	
-	public static String jobSQL(String tablename,Job job){
-		String sql="";
-		if(job!=null){
-			
-			if(job.getJobid()!=0){
-				sql += " AND "+ tablename +".jobtitleid=" + job.getJobid();
-			}
-			if(job.getJobname()!=null){
-				sql += " AND "+ tablename +".jobname='" + job.getJobname()+"'";
-			}
-			
-		}
-		
-		return sql;
-	}
 	
 	public static List<Job> retrieve(String sql, String[] params){
 		List<Job> jobs = Collections.synchronizedList(new ArrayList<Job>());
@@ -69,9 +54,10 @@ public class Job {
 		rs = ps.executeQuery();
 		
 		while(rs.next()){
-			Job job = new Job();
-			try{job.setJobid(rs.getInt("jobtitleid"));}catch(NullPointerException e){}
-			try{job.setJobname(rs.getString("jobname"));}catch(NullPointerException e){}
+			Job job = Job.builder()
+					.jobid(rs.getInt("jobtitleid"))
+					.jobname(rs.getString("jobname"))
+					.build();
 			jobs.add(job);
 		}
 		rs.close();
@@ -93,24 +79,6 @@ public class Job {
 		return job;
 	}
 	
-	public int getJobid() {
-		return jobid;
-	}
-	public void setJobid(int jobid) {
-		this.jobid = jobid;
-	}
-	public String getJobname() {
-		return jobname;
-	}
-	public void setJobname(String jobname) {
-		this.jobname = jobname;
-	}
-	public Timestamp getTimestamp() {
-		return timestamp;
-	}
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
-	}
 	
 }
 

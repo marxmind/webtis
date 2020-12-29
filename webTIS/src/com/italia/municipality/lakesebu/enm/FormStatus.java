@@ -14,7 +14,8 @@ public enum FormStatus {
 	ALL_ISSUED(2, "ALL ISSUED"),
 	NOT_ALL_ISSUED(3, "NOT ALL ISSUED"),
 	ENCODED(4, "ENCODED"),
-	CANCELLED(5, "CANCELLED");
+	CANCELLED(5, "CANCELLED"),
+	RTS(6,"RTS");
 	
 	private int id;
 	private String name;

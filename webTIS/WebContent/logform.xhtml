@@ -56,7 +56,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     	 </p:confirmDialog>
 	
 	
-	<p:dialog widgetVar="dlgCash" width="500" position="center center" height="210" header="Cash Ticket Details" closeOnEscape="true" closable="false">
+	<p:dialog widgetVar="dlgCash" width="500" position="center center" height="300" header="Cash Ticket Details" closeOnEscape="true" closable="false">
 		<p:toolbar id="tbCash" style="#{skin.toolbar}">
     		<f:facet name="left"/>
     		<f:facet name="right">
@@ -66,17 +66,32 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			</p:toolbar> 
 		<p:panelGrid id="ctDtlsId" layout="grid" columns="2">
 			<p:inputText value="#{logformBean.pujLabel}"/>
-			<p:inputText value="#{logformBean.puj}" placeholder="00.00"/>
+			<p:inputText value="#{logformBean.puj}" placeholder="00.00">
+				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
+			</p:inputText>
 			
 			<p:inputText value="#{logformBean.peddlerLabel}"/>
-			<p:inputText value="#{logformBean.pedller}" placeholder="00.00"/>
+			<p:inputText value="#{logformBean.pedller}" placeholder="00.00">
+				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
+			</p:inputText>
 			
 			<p:inputText value="#{logformBean.isdaLabel}"/>
-			<p:inputText value="#{logformBean.isda}" placeholder="00.00"/>
+			<p:inputText value="#{logformBean.isda}" placeholder="00.00">
+				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
+			</p:inputText>
 			
 			<p:inputText value="#{logformBean.skylabLabel}"/>
-			<p:inputText value="#{logformBean.skylab}" placeholder="00.00"/>
+			<p:inputText value="#{logformBean.skylab}" placeholder="00.00">
+				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
+			</p:inputText>
 			
+			<p:inputText value="#{logformBean.marketLablel}"/>
+			<p:inputText value="#{logformBean.market}" placeholder="00.00">
+				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
+			</p:inputText>
+			
+			<p:outputLabel value="Total"/>
+			<p:outputLabel id="totalCashId" value="#{logformBean.totalCashTicket}"/>
 		</p:panelGrid>
 		
 	</p:dialog>
@@ -110,8 +125,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:outputLabel value="Received Date"/>
 			<p:calendar value="#{logformBean.receivedDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 12em"/>
 				
-			<p:outputLabel/>
-			<p:outputLabel/>
+			<p:outputLabel value="Is RTS?"/>
+			<p:selectOneMenu id="isRtsId" value="#{logformBean.rtsId}" style="width: 12em" disabled="false">
+					<f:selectItems value="#{logformBean.rts}"/>
+			</p:selectOneMenu>
 			
 			<p:outputLabel value="Fund"/>	
 		    <p:selectOneMenu id="fundId" value="#{logformBean.fundId}" style="width: 12em" disabled="false">

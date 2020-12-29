@@ -34,6 +34,8 @@ public class AuthorizationFilter implements Filter{
 			if(reqURI.indexOf("/portal.xhtml")>=0 || reqURI.indexOf("/login.xhtml")>=0
 					|| reqURI.indexOf("/loginda.xhtml")>=0 
 					|| reqURI.indexOf("/loginlic.xhtml")>=0
+					|| reqURI.indexOf("/logingso.xhtml")>=0
+							|| reqURI.indexOf("/dilg.xhtml")>=0
 					|| (session != null && session.getAttribute("username") !=null)
 					|| reqURI.indexOf("/public/")>=0
 					|| reqURI.contains("javax.faces.resource")){

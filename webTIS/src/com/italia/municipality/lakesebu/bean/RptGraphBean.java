@@ -64,9 +64,8 @@ public class RptGraphBean implements Serializable{
 	
 	private Map<String, Double> lastData;
 	private Map<String, Double> currentData;
-	
+
 	private  String DOC_PATH = System.getenv("SystemDrive") + File.separator + "webtis" + File.separator + "upload" + File.separator;
-	
 	private LineChartModel lineModel;
 	private LineChartModel lineModelPerCollector;
 	private BarChartModel stackedGroupBarModel;

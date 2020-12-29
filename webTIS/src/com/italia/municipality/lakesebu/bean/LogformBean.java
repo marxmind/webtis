@@ -105,11 +105,13 @@ public class LogformBean implements Serializable{
 	private String peddlerLabel = "PEDDLER";
 	private String isdaLabel = "ISDA";
 	private String skylabLabel = "SKYLAB";
+	private String marketLablel = "MARKET";
 	
 	private String puj;
 	private String pedller;
 	private String isda;
 	private String skylab;
+	private String market;
 	private String others;
 	
 	private int fundId;
@@ -133,6 +135,21 @@ public class LogformBean implements Serializable{
 	private boolean useModifiedDate;
 	private boolean currentDate;
 	Map<Long, CollectionInfo> mapIssued = new HashMap<Long, CollectionInfo>();
+	
+	private int rtsId;
+	private List rts;
+	
+	private String totalCashTicket;
+	
+	public void calculateCashTicket() {
+		double puj = getPuj().isEmpty()? 0 : Double.valueOf(getPuj());
+		double ped = getPedller().isEmpty()? 0 : Double.valueOf(getPedller());
+		double isda = getIsda().isEmpty()? 0 : Double.valueOf(getIsda());
+		double skylab = getSkylab().isEmpty()? 0 : Double.valueOf(getSkylab());
+		double market = getMarket().isEmpty()? 0 : Double.valueOf(getMarket());
+		double total = puj + ped + isda + skylab + market;
+		setTotalCashTicket(Currency.formatAmount(total));
+	}
 	
 	public void onCellEdit(CellEditEvent event) {
 		Object oldValue = event.getOldValue();
@@ -456,7 +473,7 @@ public class LogformBean implements Serializable{
 		
 		
 		form.setIsActive(1);
-		
+		boolean isNotRts = getRtsId()==0? true : false;
 		
 		if(getBeginningNo()<=0) {
 			
@@ -468,13 +485,13 @@ public class LogformBean implements Serializable{
 			}
 		}
 		
-		if(getEndingNo()<=0) {
+		if(getEndingNo()<=0 && isNotRts) {
 			isOk = false;
 			Application.addMessage(3, "Error", "Please provide Serial To");
 		}
 		
 		
-		if(getQuantity()<=0) {
+		if(getQuantity()<=0 && isNotRts) {
 			isOk = false;
 			Application.addMessage(3, "Error", "Please provide Quantity");
 		}
@@ -484,7 +501,7 @@ public class LogformBean implements Serializable{
 			Application.addMessage(3, "Error", "Please provide Collector");
 		}
 		
-		if(getAmount()==0) {
+		if(getAmount()==0 && isNotRts) {
 			isOk = false;
 			Application.addMessage(3, "Error", "Please provide amount");
 		}
@@ -547,6 +564,12 @@ public class LogformBean implements Serializable{
 			}
 		}
 		
+		if(getRtsId()==1) {
+			form.setStatus(FormStatus.RTS.getId());
+			form.setStatusName(FormStatus.RTS.getName());
+		}
+		
+		
 		if(newForms!=null && newForms.size()>0) {
 			for(CollectionInfo in : newForms) {
 				if(form.getIssuedForm().getId()==in.getIssuedForm().getId()) {
@@ -587,6 +610,7 @@ public class LogformBean implements Serializable{
 		setCollectorId(0);
 		setFundId(1);
 		setIssuedId(0);
+		setRtsId(0);
 		issueds = new ArrayList<>();
 		issueds.add(new SelectItem(0, "No Selected Collector"));
 		
@@ -638,6 +662,11 @@ public class LogformBean implements Serializable{
 				if(FormStatus.ALL_ISSUED.getId()==form.getStatus()) {
 					IssuedForm is = IssuedForm.retrieveId(form.getIssuedForm().getId());
 					is.setStatus(FormStatus.ALL_ISSUED.getId());
+					is.save();
+				}else if(FormStatus.RTS.getId()==form.getStatus()) {
+					IssuedForm is = IssuedForm.retrieveId(form.getIssuedForm().getId());
+					is.setStatus(FormStatus.ALL_ISSUED.getId());
+					is.setEndingNo(form.getBeginningNo()-1);
 					is.save();
 				}
 			}
@@ -735,6 +764,12 @@ public class LogformBean implements Serializable{
 			r.setAmount(getSkylab());
 			rs.add(r);
 		}
+		if(getMarket()!=null || !getMarket().isEmpty()) {
+			r = new RCDFormDetails();
+			r.setName(getMarketLablel());
+			r.setAmount(getMarket());
+			rs.add(r);
+		}
 		/*if(getOthers()!=null || !getOthers().isEmpty()) {
 			r = new RCDFormDetails();
 			r.setName("");
@@ -818,7 +853,7 @@ public class LogformBean implements Serializable{
 		setCollectorId(in.getCollector().getId());
 		reloadAvailableForms();
 		setTotalAmount(Currency.formatAmount(totalAmount));
-		
+		setRtsId(in.getStatus()==FormStatus.RTS.getId()? 1 : 0);
 	}
 	
 	private void reloadAvailableForms() {
@@ -1435,12 +1470,18 @@ public class LogformBean implements Serializable{
   		param.put("PARAM_TOTAL",rcd.getAddAmount());
   		
   		int cnt = 1;
+  		String numberSeriesFrom = null;
   		for(RCDFormDetails d : rcd.getRcdFormDtls()) {
-  			param.put("PARAM_T"+cnt,d.getName());
-  			param.put("PARAM_FROM"+cnt,d.getSeriesFrom());
-			param.put("PARAM_TO"+cnt,d.getSeriesTo());
-			param.put("PARAM_A"+cnt,d.getAmount());
-			cnt++;
+  			if(!d.getAmount().equalsIgnoreCase("0.00")) {
+	  			param.put("PARAM_T"+cnt,d.getName());
+	  			param.put("PARAM_FROM"+cnt,d.getSeriesFrom());
+				param.put("PARAM_TO"+cnt,d.getSeriesTo());
+				param.put("PARAM_A"+cnt,d.getAmount());
+				cnt++;
+  			}else {
+  				//for RTS
+  				numberSeriesFrom = d.getSeriesFrom();
+  			}
   		}
   		
   		cnt = 1;
@@ -1462,6 +1503,23 @@ public class LogformBean implements Serializable{
 	  		param.put("PARAM_EQ"+cnt,s.getEndingQty());
 	  		param.put("PARAM_EF"+cnt,s.getEndingFrom());
 	  		param.put("PARAM_ET"+cnt,s.getEndingTo());
+	  		
+	  		if(numberSeriesFrom!=null && s.getBeginningFrom().equalsIgnoreCase(numberSeriesFrom)) {
+	  			
+	  			int qty = Integer.valueOf(s.getBeginningQty()) + Integer.valueOf(s.getBeginningTo());
+	  				//qty -=1; 	
+	  			param.put("PARAM_BQ"+cnt,s.getBeginningQty());
+		  		param.put("PARAM_BF"+cnt,s.getBeginningFrom());
+		  		param.put("PARAM_BT"+cnt,s.getEndingTo().replace(Integer.valueOf(s.getBeginningTo())+"", qty+""));
+	  			
+	  			param.put("PARAM_IQ"+cnt,"");
+		  		param.put("PARAM_IF"+cnt,"No. Iss.");
+		  		param.put("PARAM_IT"+cnt,"");
+	  			
+	  			param.put("PARAM_EQ"+cnt,"");
+		  		param.put("PARAM_EF"+cnt,"RTS");
+		  		param.put("PARAM_ET"+cnt,"");
+	  		}
 	  		
 		cnt++;
   		}
@@ -3553,6 +3611,51 @@ public class LogformBean implements Serializable{
 
 	public void setMapIssued(Map<Long, CollectionInfo> mapIssued) {
 		this.mapIssued = mapIssued;
+	}
+
+	public int getRtsId() {
+		return rtsId;
+	}
+
+	public void setRtsId(int rtsId) {
+		this.rtsId = rtsId;
+	}
+
+	public List getRts() {
+		rts = new ArrayList<>();
+		
+		rts.add(new SelectItem(0, "No"));
+		rts.add(new SelectItem(1, "Yes"));
+		
+		return rts;
+	}
+
+	public void setRts(List rts) {
+		this.rts = rts;
+	}
+
+	public String getMarket() {
+		return market;
+	}
+
+	public void setMarket(String market) {
+		this.market = market;
+	}
+
+	public String getMarketLablel() {
+		return marketLablel;
+	}
+
+	public void setMarketLablel(String marketLablel) {
+		this.marketLablel = marketLablel;
+	}
+
+	public String getTotalCashTicket() {
+		return totalCashTicket;
+	}
+
+	public void setTotalCashTicket(String totalCashTicket) {
+		this.totalCashTicket = totalCashTicket;
 	}
 
 

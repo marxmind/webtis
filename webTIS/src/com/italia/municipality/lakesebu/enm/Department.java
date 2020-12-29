@@ -29,7 +29,8 @@ public enum Department {
 	SENIOR(25,"SENIOR"),
 	IPMR(26,"IPMR"),
 	IPS(27,"IPS"),
-	SECUIRTY(28,"SECUIRTY");
+	SECUIRTY(28,"SECUIRTY"),
+	DILG(29,"DILG");
 	
 	private int id;
 	private String name;

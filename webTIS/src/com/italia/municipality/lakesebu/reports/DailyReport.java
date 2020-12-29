@@ -22,7 +22,6 @@ import com.italia.municipality.lakesebu.controller.Voucher;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.EmailType;
 import com.italia.municipality.lakesebu.enm.TransactionType;
-import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 

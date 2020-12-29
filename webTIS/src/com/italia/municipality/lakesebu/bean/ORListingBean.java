@@ -65,7 +65,6 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 @Named
 @ViewScoped
 public class ORListingBean implements Serializable{
-
 	/**
 	 * 
 	 */

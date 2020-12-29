@@ -116,7 +116,7 @@ public class UserDtls {
 	 * @param obj[UserDtls]
 	 * @return list of users
 	 */
-	public static List<UserDtls> retrieve(Object ...obj){
+	/*public static List<UserDtls> retrieve(Object ...obj){
 		List<UserDtls> users = Collections.synchronizedList(new ArrayList<UserDtls>());
 		
 		String userTable = "usr";
@@ -205,7 +205,7 @@ public class UserDtls {
 		}catch(Exception e){e.getMessage();}
 		
 		return users;
-	}
+	}*/
 	
 	public static List<UserDtls> retrieve(String sql, String[] params){
 		List<UserDtls> users = Collections.synchronizedList(new ArrayList<UserDtls>());
@@ -255,9 +255,9 @@ public class UserDtls {
 		return users;
 	}
 	
-	public static UserDtls retrieve(int jobId){
+	public static UserDtls retrieveUserPositon(int jobId){
 		UserDtls user = new UserDtls();
-		String sql = "SELECT * FROM userdtls WHERE jobtitleid=?";
+		String sql = "SELECT * FROM userdtls WHERE  isactive=1 AND jobtitleid=?";
 		String[] params = new String[1];
 		params[0] = jobId+"";
 		Connection conn = null;
@@ -1002,35 +1002,18 @@ public class UserDtls {
 	}
 
 	public static void main(String[] args) {
-		
+		/*
 		UserDtls u = new UserDtls();
-		//u.setUserdtlsid(1l);
 		u.setIsActive(1);
 		Department dep = new Department();
-		//dep.setDepartmentName("Accounting");
 		for(UserDtls us : u.retrieve(u,dep)){
 			System.out.println(us.getFirstname() + " Job " +
 		us.getJob().getJobname() + " Department " +
 		us.getDepartment().getDepartmentName() + " Access Level " + us.getLogin().getAccessLevel().getName() + 
 		" added by " + us.getUserDtls().getFirstname());
-		}
+		}*/
 		
-		/*UserDtls u = new UserDtls();
-		u.setUserdtlsid(1L);
-		u.setFirstname("Mark");
-		u.setMiddlename("Rivera");
-		u.setLastname("Italia");
-		u.setIsActive(1);
-		u.setAddress("lake sebu");
-		u.setContactno("1234567890");
-		u.setAge(30);
-		u.setGender(1);
-		u.setLogin(Login.login(1));
-		u.setJob(Job.job(1));
-		u.setDepartment(Department.department(1));
-		u.setUserDtls(UserDtls.user(1));
-		u.save(u);*/
-		//System.out.println(user(1).getFirstname());
+		
 		
 		
 	}
