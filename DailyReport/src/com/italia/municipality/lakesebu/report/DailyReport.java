@@ -13,13 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-
 import com.italia.municipality.lakesebu.controller.BankAccounts;
 import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.controller.Email;
-import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.controller.Reports;
 import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.controller.Voucher;

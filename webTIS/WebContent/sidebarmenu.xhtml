@@ -1,0 +1,29 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h = "http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      >
+ 
+    <ui:composition>
+    	
+    	
+    	
+    	<div class="sidebar bg-intel">
+    	
+            <br/>	
+   			<div id="myMenu" class="sidebarMenu">
+   		  		<p:commandLink style="color: white" styleClass="nav-link" action="#{menuGsoBean.home}" ajax="false" immediate="false" onclick="showLoading()">
+            	<i class="pi pi-home"></i>
+            	<span>Home</span>
+            	</p:commandLink>
+            	<p:commandLink style="color: white" styleClass="nav-link" action="#{menuGsoBean.upload}" ajax="false" immediate="false" onclick="showLoading()">
+            	<i class="pi pi-upload"></i>
+            	<span>Upload Excel</span>
+            	</p:commandLink>
+       		</div>
+    	</div>
+    	
+    </ui:composition>
+</html>

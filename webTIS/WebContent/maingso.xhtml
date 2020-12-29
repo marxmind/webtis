@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui"   
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<link rel="manifest" type="image/x-icon" href="#{resource['bris-manifest.json']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>#{versionBean.copyright.appname}</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="sb-admin/bootstrap/css/bootstrap.min.css"/>
+            <h:outputStylesheet name="sb-admin/font-awesome/css/all.min.css" />
+            <h:outputStylesheet name="sb-admin/css/sb-admin.min.css"/>
+            <h:outputStylesheet name="sb-admin/css/bg-sidebar.min.css"/>
+            
+            <h:outputStylesheet library="webjars" name="font-awesome/5.13.0/css/all.min-jsf.css" />
+			<h:outputStylesheet library="webjars" name="font-awesome/5.13.0/css/v4-shims.min-jsf.css" />
+			<h:outputStylesheet name="primeicons/primeicons.css" library="primefaces" />
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputScript name="jquery/jquery.min.js" target="head"/>
+        <h:outputScript name="sb-admin/bootstrap/js/bootstrap.bundle.min.js"/>
+        <h:outputScript name="sb-admin/jquery-easing/jquery.easing.min.js"/>
+        <h:outputScript name="sb-admin/js/sb-admin.min.js"/>
+    </f:facet>
+    <title>#{versionBean.copyright.appname}</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>#{versionBean.copyright.appname}</title>
+
+
+</h:head>
+
+<h:body id="page-top">
+<h:form prependId="false" id="formIdMain">	
+	
+<p:growl id="msg" showDetail="true" />
+	
+<nav class="navbar navbar-expand navbar-intel bg-intel static-top">
+		
+	  
+      <a class="navbar-brand mr-1" href="main.xhtml">#{versionBean.copyright.appname}</a>
+
+      <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+        <i class="pi pi-bars"></i>
+      </button>
+
+      <!-- Navbar Search -->
+      <div class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+        
+        	
+         <div class="ui-inputgroup">
+   		 <div id="citTextId" style="display: block">
+   		 	  <div class="ui-inputgroup">	
+	          <p:inputText placeholder="Search for..." id="idSearch"  autocomplete="off" value="#{mainGsoBean.searchParam}">
+	          	
+	          </p:inputText>
+	          <button class="btn btn-primary" type="button">
+              	<i class="pi pi-search"></i>
+	           </button>
+	           </div>
+          </div>  
+        </div>
+          
+     </div>
+
+      <!-- menu top-->
+      <ui:include src="menutop.xhtml" />
+
+    </nav>
+	
+	
+	<div id="wrapper">
+		
+      <!-- Sidebar -->
+      <ui:include src="sidebarmenu.xhtml" />
+		
+      <div id="content-wrapper">
+
+        
+		  <div class="container-fluid">	
+         	
+          <!-- Icon Cards-->
+          
+          <div class="row">
+            
+            <div class="col-xl-3 col-sm-6 mb-3 js-tilt">
+              <div class="card text-white bg-primary o-hidden h-100">
+	                <div class="card-body">	
+	                <p:commandLink  onclick="PF('dlgCit').show()" update="citizenId" title="Click to Zoom the graph" >	
+	                  <div class="card-body-icon">
+	                    <i class="fas fa-fw fa-user-circle"></i>
+	                  </div>
+	                  	<div class="mr-5" style="color: white">Offices</div>
+	                 </p:commandLink> 	
+	                </div>
+              </div>
+            </div>
+            
+            <div class="col-xl-3 col-sm-6 mb-3 js-tilt">
+              <div class="card text-white bg-warning o-hidden h-100">
+	                <div class="card-body">
+	                <p:commandLink  onclick="PF('dlgDoc').show()" update="docOtherId" title="Click to Zoom the graph" >	
+	                  <div class="card-body-icon">
+	                    <i class="fas fa-fw fa-list"></i>
+	                  </div>
+	                  	<div class="mr-5" style="color: white">Summary</div>
+	                 </p:commandLink> 	
+	                </div>
+              </div>
+            </div>
+            
+            <div class="col-xl-3 col-sm-6 mb-3 js-tilt">
+              <div class="card text-white bg-danger o-hidden h-100">
+	                <div class="card-body">
+	                <p:commandLink  onclick="PF('dlgSettlement').show()" update="settleId" title="Click to Zoom the graph" >	
+	                  <div class="card-body-icon">
+	                    <i class="fas fa-fw fa-life-ring"></i>
+	                  </div>
+	                  	<div class="mr-5" style="color: white">Procurement</div>
+	                 </p:commandLink> 	
+	                </div>
+              </div>
+            </div>
+            
+            <div class="col-xl-3 col-sm-6 mb-3 js-tilt">
+              <div class="card text-white bg-success o-hidden h-100">
+	                <div class="card-body">
+	                <p:commandLink  onclick="PF('dlgDisburse').show()" update="disChkId" title="Click to Zoom the graph" >	
+	                  <div class="card-body-icon">
+	                    <i class="fas fa-fw fa-shopping-cart"></i>
+	                  </div>
+	                  	<div class="mr-5" style="color: white">Expenses</div>
+	                 </p:commandLink> 	
+	                </div>
+              </div>
+            </div>
+            
+            <p:dialog closeOnEscape="true" id="citizenId" widgetVar="dlgCit" position="center center" responsive="true" showEffect="clip" hideEffect="fade" modal="false" header="Common Document Graph" resizable="false">
+            	
+            </p:dialog>
+        	<p:dialog closeOnEscape="true" id="docOtherId" widgetVar="dlgDoc" position="center center" responsive="true" showEffect="clip" hideEffect="fade" modal="false" header="Common Document Graph" resizable="false">
+    		 	
+			</p:dialog>
+			<p:dialog closeOnEscape="true" id="settleId" widgetVar="dlgSettlement" position="center center" responsive="true" showEffect="clip" hideEffect="fade" modal="false" header="Settlement Graph" resizable="false">
+        		
+        	</p:dialog>
+        	<p:dialog closeOnEscape="true" id="disChkId" widgetVar="dlgDisburse" position="center center" responsive="true" showEffect="clip" hideEffect="fade" modal="false" header="Check Disbursement Graph" resizable="false">
+        		
+        	</p:dialog>
+           </div> 
+           
+         	
+         	
+         	
+         	
+         	
+         	
+            
+            
+         	
+	   </div>
+        
+        <!-- /.container-fluid -->
+
+        <!-- Sticky Footer -->
+        <ui:include src="copyright-footer.xhtml" />
+
+      </div>
+      <!-- /.content-wrapper -->
+      </div>
+    <!-- /#wrapper -->
+   	
+   	 <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+
+	
+	<ui:include src="loader.xhtml" />
+</h:form>	
+</h:body>	
+</html>

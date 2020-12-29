@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui"   
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<link rel="manifest" type="image/x-icon" href="#{resource['bris-manifest.json']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>#{versionBean.copyright.appname}</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="sb-admin/bootstrap/css/bootstrap.min.css"/>
+            <h:outputStylesheet name="sb-admin/font-awesome/css/all.min.css" />
+            <h:outputStylesheet name="sb-admin/css/sb-admin.min.css"/>
+            <h:outputStylesheet name="sb-admin/css/bg-sidebar.min.css"/>
+            <h:outputStylesheet library="webjars" name="font-awesome/5.13.0/css/all.min-jsf.css" />
+			<h:outputStylesheet library="webjars" name="font-awesome/5.13.0/css/v4-shims.min-jsf.css" />
+			<h:outputStylesheet name="primeicons/primeicons.css" library="primefaces" />
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputScript name="jquery/jquery.min.js" target="head"/>
+        <h:outputScript name="sb-admin/bootstrap/js/bootstrap.bundle.min.js"/>
+        <h:outputScript name="sb-admin/jquery-easing/jquery.easing.min.js"/>
+        <h:outputScript name="sb-admin/js/sb-admin.min.js"/>
+    </f:facet>
+    <title>#{versionBean.copyright.appname}</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>#{versionBean.copyright.appname}</title>
+<style type="text/css">
+.ui-datatable .ui-datatable-header {
+        text-align: left !important;
+    }
+</style>
+</h:head>
+
+<h:body id="page-top">
+<h:form prependId="false" id="formId">	
+	
+<p:growl id="msg" showDetail="true" />
+	
+<nav class="navbar navbar-expand navbar-intel bg-intel static-top">
+		
+	  
+      <a class="navbar-brand mr-1" href="main.xhtml">#{versionBean.copyright.appname}</a>
+
+      <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+        <i class="pi pi-bars"></i>
+      </button>
+
+      <!-- Navbar Search -->
+      <div class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+        
+        	
+         <div class="ui-inputgroup">
+   		 <div id="citTextId" style="display: block">
+   		 	  <div class="ui-inputgroup">	
+	          <p:inputText placeholder="Search for..." id="idSearch"  autocomplete="off" value="#{uploadBean.searchParameter}">
+	          		<p:ajax event="keyup" listener="#{uploadBean.search}" delay="800" update="dataId"/>
+	          </p:inputText>
+	          <button class="btn btn-primary" type="button">
+              	<i class="pi pi-search"></i>
+	           </button>
+	           </div>
+          </div>  
+        </div>
+          
+     </div>
+
+      <!-- menu top-->
+      <ui:include src="menutop.xhtml" />
+
+    </nav>
+	
+	
+	<div id="wrapper">
+		
+      <!-- Sidebar -->
+      <ui:include src="sidebarmenu.xhtml" />
+		
+      <div id="content-wrapper">
+
+        
+		  <div class="container-fluid">	
+		  	    <p:toolbar id="tolId">
+			        <f:facet name="left">
+			            <p:commandButton actionListener="#{uploadBean.clearNew}" update="dataId tolId" value="New" icon="pi pi-file" />
+			 
+			            <p:commandButton type="button" value="Open" icon="pi pi-folder-open" />
+			 
+			            <span class="ui-separator">
+			                <span class="ui-icon pi pi-ellipsis-v" />
+			            </span>
+			 
+			            <p:commandButton actionListener="#{uploadBean.saveSelected}" update="dataId tolId msg" title="Save" icon="pi pi-save" />
+			            <p:commandButton actionListener="#{uploadBean.deleteSelected}" update="dataId msg" title="Delete" icon="pi pi-trash" />
+			            <p:commandButton type="button" title="Print" icon="pi pi-print" />
+			            
+			            <span class="ui-separator">
+			                <span class="ui-icon pi pi-ellipsis-v" />
+			            </span>
+			            <p:menuButton value="Exports" style="float: left">
+							<p:menuitem value="Export Excel" ajax="false" immediate="true" icon="fa fa-file-excel-o">
+								<p:dataExporter type="xls" target="dataId" fileName="data" options="#{dataExport.excelOpt}"/> 
+							</p:menuitem>
+							<p:menuitem value="Export PDF" ajax="false" immediate="true" icon="fa fa-file-pdf-o">
+								<p:dataExporter type="pdf" target="dataId" fileName="data" preProcessor="#{dataExport.preProcessPDF}" options="#{dataExport.pdfOpt}"/> 
+							</p:menuitem>
+						</p:menuButton>
+			        </f:facet>
+			 
+			        <f:facet name="right">
+			        	<p:selectOneMenu value="#{uploadBean.departmentId}"  style="width:15em;" filterMatchMode="contains" filter="true">
+							<f:selectItems value="#{uploadBean.departments}"/>
+							<p:ajax event="change" listener="#{uploadBean.departmentListener}" update="upId"/>
+						</p:selectOneMenu>
+						
+			           <p:fileUpload id="upId" listener="#{uploadBean.uploadFile}" disabled="#{uploadBean.departmentSelected}"
+					         mode="advanced" auto="true" sizeLimit="50000000" label="Upload your excel file here"
+					         update="dataId msg" dragDropSupport="true" 
+					         allowTypes="/(\.|\/)(xls|xlsx)$/" />
+			        </f:facet>
+			 
+			    </p:toolbar>
+			    
+         					    
+			    <p:dataTable id="dataId" value="#{uploadBean.dataList}" var="fld" stickyHeader="false" reflow="true" 
+							rows="100" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} "
+                         rowsPerPageTemplate="100,200,300,400,500,1000"
+                         scrollable="true"  editable="true" selection="#{uploadBean.selectedItems}" rowKey="#{fld.id}" 
+                         draggableColumns="false" draggableRows="false" paginatorPosition="top"
+                         >
+                         
+                         <f:facet name="header">
+            				<p:outputPanel>
+            					<p:selectBooleanCheckbox id="chkId" value="#{uploadBean.checkAll}" itemLabel="Check/Uncheck All">
+						            <p:ajax update="dataId msg" listener="#{uploadBean.checkListener}" />
+						        </p:selectBooleanCheckbox>
+            				</p:outputPanel>
+            			</f:facet>	
+                         	
+            				
+            				<p:columnGroup type="header"> 
+            					<p:row> 
+            						<p:column rowspan="3" headerText="Check"/>
+            						<p:column rowspan="3" headerText="Edit" />
+            						<p:column rowspan="3" headerText="#" />
+            						<p:column rowspan="3" headerText="Description" />
+            						<p:column rowspan="3" headerText="Unit Cost"/>
+            						<p:column colspan="2" headerText=""/>
+            						<p:column rowspan="3" headerText="Total Cost"/>
+            						<p:column colspan="8" headerText="Distribution"/>
+            					</p:row>
+            					
+            					<p:row> 
+            						<p:column colspan="2" headerText="Quantity"/>
+            						<p:column colspan="2" headerText="First"/>
+            						<p:column colspan="2" headerText="Second"/>
+            						<p:column colspan="2" headerText="Third"/>
+            						<p:column colspan="2" headerText="Fourth"/> 
+            					</p:row>
+            					
+            					 <p:row>  
+            						<p:column headerText="No"/>
+            						<p:column headerText="Description"/>
+            						<p:column headerText="Qty"/>
+            						<p:column headerText="Amount"/>
+            						<p:column headerText="Qty"/>
+            						<p:column headerText="Amount"/>
+            						<p:column headerText="Qty"/>
+            						<p:column headerText="Amount"/>
+            						<p:column headerText="Qty"/>
+            						<p:column headerText="Amount"/>
+            						  
+            					</p:row>
+            				</p:columnGroup>
+            				
+            				<p:column selectionMode="multiple" exportable="false" />
+            				
+            				<p:column style="width:35px" exportable="false" >
+					            <p:rowEditor />
+					        </p:column>
+            				
+            				
+            				<p:ajax event="rowEdit" listener="#{uploadBean.onRowEdit}" update="msg" />
+        					<p:ajax event="rowEditCancel" listener="#{uploadBean.onRowCancel}" update="msg" />
+            				
+            				<p:column >
+            						<p:outputLabel value="#{fld.count}"/>
+            				</p:column>
+            				
+            				<p:column >
+            					<p:cellEditor>
+					                <f:facet name="output"><p:outputLabel value="#{fld.description}"/></f:facet>
+					                <f:facet name="input"><p:inputText id="modelInput" value="#{fld.description}" style="width:100%"/></f:facet>
+					            </p:cellEditor>
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+            						<f:facet name="output">
+            						<p:outputLabel value="#{fld.unitCost}">
+            							<f:convertNumber pattern="##,###.00" />
+            						</p:outputLabel>
+            						<f:facet name="input"><p:inputText value="#{fld.unitCost}" style="width:100%"/></f:facet>
+            						</f:facet>
+            					</p:cellEditor>
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+					                <f:facet name="output"><p:outputLabel value="#{fld.quantity}"/></f:facet>
+					                <f:facet name="input"><p:inputText value="#{fld.quantity}" style="width:100%"/></f:facet>
+					            </p:cellEditor>	
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+					                <f:facet name="output"><p:outputLabel value="#{fld.unit}"/></f:facet>
+					                <f:facet name="input"><p:inputText value="#{fld.unit}" style="width:100%"/></f:facet>
+					            </p:cellEditor>	
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+            						<f:facet name="output">
+            						<p:outputLabel value="#{fld.totalCost}">
+            							<f:convertNumber pattern="##,###.00" />
+            						</p:outputLabel>
+            						<f:facet name="input"><p:inputText value="#{fld.totalCost}" style="width:100%"/></f:facet>
+            						</f:facet>
+            					</p:cellEditor>
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+					                <f:facet name="output"><p:outputLabel value="#{fld.firstQtrQty}"/></f:facet>
+					                <f:facet name="input"><p:inputText value="#{fld.firstQtrQty}" style="width:100%"/></f:facet>
+					            </p:cellEditor>	
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+            						<f:facet name="output">
+            						<p:outputLabel value="#{fld.firstQtrAmnt}">
+            							<f:convertNumber pattern="##,###.00" />
+            						</p:outputLabel>
+            						<f:facet name="input"><p:inputText value="#{fld.firstQtrAmnt}" style="width:100%"/></f:facet>
+            						</f:facet>
+            					</p:cellEditor>	
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+					                <f:facet name="output"><p:outputLabel value="#{fld.secondQtrQty}"/></f:facet>
+					                <f:facet name="input"><p:inputText value="#{fld.secondQtrQty}" style="width:100%"/></f:facet>
+					            </p:cellEditor>
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+            						<f:facet name="output">
+            						<p:outputLabel value="#{fld.secondQtrAmnt}">
+            							<f:convertNumber pattern="##,###.00" />
+            						</p:outputLabel>
+            						<f:facet name="input"><p:inputText value="#{fld.secondQtrAmnt}" style="width:100%"/></f:facet>
+            						</f:facet>
+            					</p:cellEditor>	
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+					                <f:facet name="output"><p:outputLabel value="#{fld.thirdQtrQty}"/></f:facet>
+					                <f:facet name="input"><p:inputText value="#{fld.thirdQtrQty}" style="width:100%"/></f:facet>
+					            </p:cellEditor>	
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+            						<f:facet name="output">
+            						<p:outputLabel value="#{fld.thirdQtrAmnt}">
+            							<f:convertNumber pattern="##,###.00" />
+            						</p:outputLabel>
+            						<f:facet name="input"><p:inputText value="#{fld.thirdQtrAmnt}" style="width:100%"/></f:facet>
+            						</f:facet>
+            					</p:cellEditor>
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+					                <f:facet name="output"><p:outputLabel value="#{fld.fourthQtrQty}"/></f:facet>
+					                <f:facet name="input"><p:inputText value="#{fld.fourthQtrQty}" style="width:100%"/></f:facet>
+					            </p:cellEditor>
+            				</p:column>
+            				
+            				<p:column>
+            					<p:cellEditor>
+            						<f:facet name="output">
+            						<p:outputLabel value="#{fld.fourthQtrAmnt}">
+            							<f:convertNumber pattern="##,###.00" />
+            						</p:outputLabel>
+            						<f:facet name="input"><p:inputText value="#{fld.fourthQtrAmnt}" style="width:100%"/></f:facet>
+            						</f:facet>
+            					</p:cellEditor>
+            				</p:column>
+            				
+            				<p:columnGroup type="footer">  
+        						<p:row>
+        							<p:column footerText=""/>
+        							<p:column footerText=""/>
+        							<p:column footerText=""/>
+        							<p:column style="text-align:right" footerText="Totals:Php"/>
+        							<p:column style="text-align:right">
+								      <f:facet name="footer">
+								          <h:outputText value="#{uploadBean.totalUnitCost}">
+								            <f:convertNumber pattern="##,###.00" />
+								        </h:outputText>
+								      </f:facet>
+								    </p:column>
+        							<p:column footerText="#{uploadBean.totalQty}"/>
+        							<p:column footerText=""/>
+        							<p:column style="text-align:right">
+								      <f:facet name="footer">
+								          <h:outputText value="#{uploadBean.grandTotalUnitCost}">
+								            <f:convertNumber pattern="##,###.00" />
+								        </h:outputText>
+								      </f:facet>
+								    </p:column>
+        							<p:column footerText="#{uploadBean.firstQtrTotalQty}"/>
+        							<p:column style="text-align:right">
+								      <f:facet name="footer">
+								          <h:outputText value="#{uploadBean.firstQtrTotalAmnt}">
+								            <f:convertNumber pattern="##,###.00" />
+								        </h:outputText>
+								      </f:facet>
+								    </p:column>
+        							<p:column footerText="#{uploadBean.secondQtrTotalQty}"/>
+        							<p:column style="text-align:right">
+								      <f:facet name="footer">
+								          <h:outputText value="#{uploadBean.secondQtrTotalAmnt}">
+								            <f:convertNumber pattern="##,###.00" />
+								        </h:outputText>
+								      </f:facet>
+								    </p:column>
+        							<p:column footerText="#{uploadBean.thirdQtrTotalQty}"/>
+        							<p:column style="text-align:right">
+								      <f:facet name="footer">
+								          <h:outputText value="#{uploadBean.thirdQtrTotalAmnt}">
+								            <f:convertNumber pattern="##,###.00" />
+								        </h:outputText>
+								      </f:facet>
+								    </p:column>
+        							<p:column footerText="#{uploadBean.fourthQtrTotalQty}"/>
+        							<p:column style="text-align:right">
+								      <f:facet name="footer">
+								          <h:outputText value="#{uploadBean.fourthQtrTotalAmnt}">
+								            <f:convertNumber pattern="##,###.00" />
+								        </h:outputText>
+								      </f:facet>
+								    </p:column> 
+        						</p:row>
+        					</p:columnGroup>	  
+            				
+			    </p:dataTable>	
+		  </div>
+        
+        <!-- /.container-fluid -->
+
+        <!-- Sticky Footer -->
+        <ui:include src="copyright-footer.xhtml" />
+
+      </div>
+      <!-- /.content-wrapper -->
+      </div>
+    <!-- /#wrapper -->
+   	
+   	 <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+
+	
+	<ui:include src="loader.xhtml" />
+</h:form>	
+</h:body>	
+</html>
