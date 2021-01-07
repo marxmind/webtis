@@ -25,5 +25,9 @@ public class WaterRentalsPayment {
 	private String f8;
 	private String f9;
 	private String f10;
-	
+	private String f11;
+	private String f12;
+	private String f13;
+	private String f14;
+	private String f15;
 }

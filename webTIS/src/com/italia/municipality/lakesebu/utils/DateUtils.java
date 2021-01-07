@@ -3,6 +3,7 @@ package com.italia.municipality.lakesebu.utils;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Calendar;
@@ -532,6 +533,70 @@ public class DateUtils {
 		
 		return result;
 	}
+	
+	public static int calculateAge(LocalDate birthDate, LocalDate currentDate) {
+        if ((birthDate != null) && (currentDate != null)) {
+            return Period.between(birthDate, currentDate).getYears();
+        } else {
+            return 0;
+        }
+    }
+	
+	/**
+	 * 
+	 * @param pass birthdate format yyyy-mm-dd
+	 * @return
+	 */
+	public static int calculateAge(String birthdate){
+		//int val = 0;
+		System.out.println("Calculating age");
+		if(birthdate!=null && !birthdate.isEmpty()){
+			int year = Integer.valueOf(birthdate.split("-")[0]);
+			int month = Integer.valueOf(birthdate.split("-")[1]);
+			int day = Integer.valueOf(birthdate.split("-")[2]);
+			int age = DateUtils.getCurrentYear() - year;
+			
+			if(month==DateUtils.getCurrentMonth()){
+				if(day>DateUtils.getCurrentDay()){
+					age -=1;
+				}
+			}else if(month>DateUtils.getCurrentMonth()){
+				age -=1;
+			}
+			
+			
+			return age;
+			
+		}else{
+			return 0;
+		}
+	}
+	
+	
+	/**
+	 * 
+	 * @param pass birthdate format yyyy-mm-dd
+	 * @return
+	 */
+	public static double calculateAgeNow(String birthdate){
+		//int val = 0;
+		
+		if(birthdate!=null && !birthdate.isEmpty()){
+			int year = Integer.valueOf(birthdate.split("-")[0]);
+			int month = Integer.valueOf(birthdate.split("-")[1]);
+			int day = Integer.valueOf(birthdate.split("-")[2]);
+			double age = 0;
+			
+			LocalDate birtdate = LocalDate.of(year, month, day);
+			age = calculateAge(birtdate, LocalDate.of(DateUtils.getCurrentYear(), DateUtils.getCurrentMonth(), DateUtils.getCurrentDay()));
+			
+			return age;
+			
+		}else{
+			return 0;
+		}
+	}
+	
 }
 
 

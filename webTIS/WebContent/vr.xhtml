@@ -91,11 +91,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:outputLabel/>
 				
 				<p:outputLabel value="Date" style="#{skin.textInput}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            		<p:calendar value="#{vrBean.dateCreated}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="color: black;width:12em;"/>
+            		<p:calendar value="#{vrBean.dateCreated}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="color: black;width:12em;">
+            		<p:ajax event="click" listener="#{vrBean.onSeriesChange}" update="seriesId"/>
+            		</p:calendar>
             	</p:outputLabel>
 				
 				<p:outputLabel value="Series Month" style="#{skin.textInput}">
-					<p:selectOneMenu value="#{vrBean.seriesMonthId}" style="width:12em;color: black;" filter="true" filterMatchMode="contains">
+					<p:selectOneMenu id="seriesId" value="#{vrBean.seriesMonthId}" style="width:12em;color: black;" filter="true" filterMatchMode="contains">
 								<f:selectItems value="#{vrBean.seriesMonths}"/>
 					</p:selectOneMenu>
 				</p:outputLabel>
@@ -172,9 +174,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     		<f:facet name="right">
     		<p:selectOneMenu id="mntId" value="#{vrBean.mondId}" style="color: black;width: 9em" filter="true" filterMatchMode="contains">
 	            		<f:selectItems value="#{vrBean.months}"/>
+	            		<p:ajax event="change" listener="#{vrBean.updateMonthSeriesSearch}" update="monthSearchId"/>
 	        </p:selectOneMenu>
 	        <p:selectOneMenu id="yrId" value="#{vrBean.yearId}" style="color: black;width: 6em" filter="true" filterMatchMode="contains">
 	            		<f:selectItems value="#{vrBean.years}"/>
+	            		<p:ajax event="change" listener="#{vrBean.updateMonthSeriesSearch}" update="monthSearchId"/>
 	        </p:selectOneMenu>
 			<p:selectOneMenu id="monthSearchId" value="#{vrBean.seriesMonthIdSearch}" style="width:10em;color: black;" filter="true" filterMatchMode="contains">
     				<f:selectItem itemLabel="All"/>

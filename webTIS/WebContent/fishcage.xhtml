@@ -74,8 +74,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:toolbar id="tbClear" style="#{skin.toolbar};float:bottom; position: fixed;z-index: 1500;">
 		    		<f:facet name="left">
 				        <p:commandButton update="fldId" value="New" icon="fa fa-file-o" actionListener="#{fishcageBean.clear}" title="Click this button to start new information"/>
-		    				<p:commandButton update="fldId" value="Clear" icon="fa fa-trash" actionListener="#{fishcageBean.clear}"  title="Click this button to clear information"/>
-		    				<p:commandButton update="fldId cageData msg" value="Save" actionListener="#{fishcageBean.save}"  icon="fa fa-floppy-o" title="Click this button to save your changes" >
+		    				<p:commandButton update="fldId idSer" value="Clear" icon="fa fa-trash" actionListener="#{fishcageBean.clear}"  title="Click this button to clear information"/>
+		    				<p:commandButton update="fldId cageData idSer tbMotor payFld payData msg" value="Save" actionListener="#{fishcageBean.save}"  icon="fa fa-floppy-o" title="Click this button to save your changes" >
 		        				<p:confirm header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
 		        			</p:commandButton>
 		    		</f:facet>
@@ -157,7 +157,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				
 				<p:toolbar id="tb" style="#{skin.toolbar}">
 			    		<f:facet name="left">
-			        		<p:inputText value="#{fishcageBean.searchName}" placeholder="Searh name..." style="width: 20em">
+			        		<p:inputText id="idSer" value="#{fishcageBean.searchName}" placeholder="Searh name..." style="width: 20em">
 			        			<p:ajax event="keyup" listener="#{fishcageBean.search}" delay="800" update="cageData payFld payData idOwn"/>
 			        		</p:inputText>
 			        		
@@ -242,7 +242,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
      					
      					</p:tab>
      					
-     					<p:tab title="Unpaid Collections">
+     					<p:tab title="Payment Collection Summary">
      						
      						<p:toolbar id="tbCol" style="#{skin.toolbar}">
 						    		<f:facet name="left">
@@ -308,6 +308,25 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						<h:outputText  value="#{rt.f10}"/>
             				</p:column>
      						
+     						<p:column headerText="2021" width="70">
+            						<h:outputText  value="#{rt.f11}"/>
+            				</p:column>
+            				
+            				<p:column headerText="2022" width="70">
+            						<h:outputText  value="#{rt.f12}"/>
+            				</p:column>
+            				
+            				<p:column headerText="2023" width="70">
+            						<h:outputText  value="#{rt.f13}"/>
+            				</p:column>
+            				
+            				<p:column headerText="2024" width="70">
+            						<h:outputText  value="#{rt.f14}"/>
+            				</p:column>
+            				
+            				<p:column headerText="2025" width="70">
+            						<h:outputText  value="#{rt.f15}"/>
+            				</p:column>
      						
      						</p:dataTable>
      						
@@ -321,7 +340,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 </p:layout>
 
 
-<p:dialog header="Payment Details" style="#{skin.dialog}" position="center top" closeOnEscape="true" modal="false" showEffect="clip" hideEffect="clip" widgetVar="paymentDlg" Height="300" width="800" closable="false">
+<p:dialog header="Payment Details" style="#{skin.dialog}" position="center top" closeOnEscape="true" modal="false" showEffect="clip" hideEffect="clip" widgetVar="paymentDlg" Height="300" width="900" closable="false">
 						
 		        <p:toolbar id="tbMotor">
 				    		<f:facet name="left">
@@ -337,13 +356,17 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						</p:toolbar>
 						
 						
-						<p:panelGrid id="payFld" columns="6" layout="grid">
+						<p:panelGrid id="payFld" columns="8" layout="grid">
+								
+								<p:outputLabel  value="For Year"/>
+								<p:inputText value="#{fishcageBean.foryearpaid}" style="width: 11em"/>
+								
+								<p:outputLabel  value="Date"/>
+								<p:calendar  value="#{fishcageBean.paymentDate}" inputStyle="width: 11em;#{skin.textInput}"  required="true" pattern="yyyy-MM-dd" effect="slideDown"/>
 								
 								<p:outputLabel  value="OR Number"/>
 				            	<p:inputText value="#{fishcageBean.orNumber}" placeholder="Official Receipt" style="width: 11em"/>
 								
-								<p:outputLabel  value="Date"/>
-								<p:calendar  value="#{fishcageBean.paymentDate}" inputStyle="width: 11em;#{skin.textInput}"  required="true" pattern="yyyy-MM-dd" effect="slideDown"/>
 								
 				            	<p:outputLabel  value="Amount"/>
 				            	<p:inputNumber value="#{fishcageBean.amountPaid}" placeholder="0.00" inputStyle="width: 11em"/>
@@ -357,7 +380,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				                         paginatorPosition="top" paginatorAlwaysVisible="true"
 				                         >
                          	<f:facet name="{Exporters}">
-			            		<h:commandLink title="Export List in excel format">
+                         			<p:commandLink title="Export Payment History in pdf format" target="_blank" actionListener="#{fishcageBean.printPaymentHistory}" ajax="false" immediate="false">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+            						</p:commandLink>
+			            		    <h:commandLink title="Export List in excel format">
                 						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
                 							<p:dataExporter type="xls" target="payData" fileName="OwnerPaymentHistory" options="#{exporter.excelOpt}"/>
             						</h:commandLink>
@@ -379,7 +405,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 									</p:commandLink>
             				</p:column>
             				
-            				<p:column headerText="Paid" width="50">
+            				<p:column headerText="Paid Date" width="50">
             						<h:outputText  value="#{py.paymentPaid}"/>
             				</p:column>
             				
@@ -387,10 +413,25 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						<h:outputText  value="#{py.orNumber}"/>
             				</p:column>
             				
+            				<p:column headerText="For Year" width="50">
+            						<h:outputText  value="#{py.year}"/>
+            				</p:column>
+            				
             				<p:column headerText="Amount" width="50">
             						<h:outputText  value="#{py.amountPaid}"/>
             				</p:column>
-          				</p:dataTable>      
+          				</p:dataTable>
+          				
+          				<p:panelGrid id="payPlp" columns="4" layout="grid" rendered="#{fishcageBean.displayForMto}">
+          						<p:outputLabel value="Veriefier Name"/>
+								<p:inputText value="#{fishcageBean.clerkName}" style="width: 11em"/>
+								<p:outputLabel value="Noted Person Name"/>
+								<p:inputText value="#{fishcageBean.treasurerName}" style="width: 11em"/>
+								<p:outputLabel value="Veriefier Position"/>
+								<p:inputText value="#{fishcageBean.clerkPosition}" style="width: 11em"/>
+								<p:outputLabel value="Noted Person Position"/>
+								<p:inputText value="#{fishcageBean.treasurerPosition}" style="width: 11em"/>
+						</p:panelGrid>		      
 		
 </p:dialog>	
 	

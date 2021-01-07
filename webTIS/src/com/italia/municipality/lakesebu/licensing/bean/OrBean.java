@@ -75,37 +75,7 @@ public class OrBean implements Serializable{
 	
 	public void loadORs(){
 		orNumbers = Collections.synchronizedList(new ArrayList<ORTransaction>());
-		/*String sql = " AND (clz.clearissueddate>=? AND clz.clearissueddate<=?) AND clz.isactiveclearance=1 AND clz.amountpaid!=0 ";
-		String[] params = new String[2];
-		grandTotal = 0.0d;
-		params[0] = DateUtils.convertDate(getCalendarFrom(), DateFormat.YYYY_MM_DD());
-		params[1] = DateUtils.convertDate(getCalendarTo(), DateFormat.YYYY_MM_DD());
 		
-		if(getSearchName()!=null && !getSearchName().isEmpty()){
-			sql += " AND ( cuz.fullname like '%"+ getSearchName().replace("--", "") +"%'";
-			sql += " OR clz.ornumber like '%"+ getSearchName().replace("--", "") +"%' )";
-		}
-		
-		int cnt = 1;
-		Map<String, Clearance> mapOrs = Collections.synchronizedMap(new HashMap<String, Clearance>());
-		
-		//removing duplicate OR Number
-		for(Clearance cl : Clearance.retrieve(sql, params)){
-			mapOrs.put(cl.getOrNumber(), cl);
-		}
-		Map<String, Clearance> sorted = new TreeMap<String, Clearance>(mapOrs);
-		for(Clearance cl : sorted.values()){
-			ORTransaction tr = new ORTransaction();
-			tr.setCnt(cnt);
-			tr.setId(tr.getId());
-			tr.setDateTrans(cl.getIssuedDate());
-			tr.setOrNumber(cl.getOrNumber());
-			tr.setAmount(cl.getAmountPaid());
-			tr.setCustomer(cl.getTaxPayer());
-			grandTotal += cl.getAmountPaid();
-			orNumbers.add(tr);
-			cnt++;
-		}*/
 		String sql = " AND (orl.ordate>=? AND orl.ordate<=?) AND orl.oractive=1 ";
 		String[] params = new String[2];
 		grandTotal = 0.0d;
@@ -116,6 +86,8 @@ public class OrBean implements Serializable{
 			sql += " AND ( cuz.fullname like '%"+ getSearchName().replace("--", "") +"%'";
 			sql += " OR orl.orno like '%"+ getSearchName().replace("--", "") +"%' )";
 		}
+		
+		sql += " ORDER BY orl.orid DESC";
 		
 		int cnt = 1;
 		for(ORTransaction ort : ORTransaction.retrieve(sql, params)){

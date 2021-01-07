@@ -87,7 +87,7 @@ public class BusinessPermit {
 	}
 	
 	public static String getNewControlNo() {
-		String sql = "SELECT controlno FROM businesspermit WHERE isactivebusiness=1 ORDER BY bid DESC limit 1";
+		String sql = "SELECT controlno FROM businesspermit WHERE isactivebusiness=1 and year="+ DateUtils.getCurrentYear() +" ORDER BY bid DESC limit 1";
 		String controlNo = "0";
 		String year = null;
 		String yearToday = DateUtils.getCurrentYear()+"";

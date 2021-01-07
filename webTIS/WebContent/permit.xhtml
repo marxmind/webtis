@@ -21,8 +21,14 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
-            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            
+            <h:outputScript name="bootstrap/js/bootstrap.bundle.min.js" target="head"/>
+            <h:outputScript name="jquery-easing/jquery.easing.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
+            
+            
+            
+            
     </f:facet>
         
     <f:facet name="last">
@@ -55,8 +61,6 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
 		
-		
-		<p:focus context="tb"/>
 		
 		<p:layout fullPage="true">
 			
@@ -92,7 +96,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:dataTable id="cusId" value="#{businessPermitBean.pmts}" var="ct" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="true" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top"
+                         scrollable="false" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top"
                          >
                          	
                          	<f:facet name="{Exporters}">
@@ -173,7 +177,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:dataTable id="bzId" value="#{businessPermitBean.business}" var="bz" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="true" style="#{skin.table}" 
+                         scrollable="false" style="#{skin.table}" 
                          draggableColumns="true" draggableRows="true" paginatorPosition="top" paginatorAlwaysVisible="false"
                          >
                          	<p:column headerText="View" width="20" exportable="false">
@@ -290,7 +294,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		<p:dataTable id="ownerId" value="#{businessPermitBean.taxpayers}" var="own" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="true" 
+                         scrollable="false" 
                          >
                          
                          <p:column headerText="Action" width="20">

@@ -16,6 +16,9 @@ import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 
  * @author mark italia
@@ -25,6 +28,8 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
 
 @Named
 @ViewScoped
+@Setter
+@Getter
 public class CustomerBean implements Serializable{
 
 	/**
@@ -42,7 +47,9 @@ public class CustomerBean implements Serializable{
 	
 	@PostConstruct
 	public void init() {
-		
+		if(regDate==null) {
+			regDate = DateUtils.getDateToday();
+		}
 		
 	}
 	
@@ -121,54 +128,4 @@ public class CustomerBean implements Serializable{
 		setContactNo(cus.getContactNumber());
 	}
 	
-	public Date getRegDate() {
-		if(regDate==null) {
-			regDate = DateUtils.getDateToday();
-		}
-		return regDate;
-	}
-	public void setRegDate(Date regDate) {
-		this.regDate = regDate;
-	}
-	public String getFullName() {
-		return fullName;
-	}
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	public String getContactNo() {
-		return contactNo;
-	}
-	public void setContactNo(String contactNo) {
-		this.contactNo = contactNo;
-	}
-	public Customer getCustomerSelected() {
-		return customerSelected;
-	}
-	public void setCustomerSelected(Customer customerSelected) {
-		this.customerSelected = customerSelected;
-	}
-
-	public List<Customer> getCustomers() {
-		return customers;
-	}
-
-	public void setCustomers(List<Customer> customers) {
-		this.customers = customers;
-	}
-
-	public String getSearchName() {
-		return searchName;
-	}
-
-	public void setSearchName(String searchName) {
-		this.searchName = searchName;
-	}
-
 }

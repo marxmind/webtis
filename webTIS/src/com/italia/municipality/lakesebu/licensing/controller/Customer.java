@@ -16,7 +16,7 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
 
 /**
- * 
+ * @For licensing customer
  * @author mark italia
  * @since 11/01/2016
  * @version 1.0
@@ -111,7 +111,7 @@ public class Customer {
 		try{id = Integer.valueOf(getLatestCardNo().split(" ")[1]);}catch(Exception e){}
 		String newCardNumber = (id+1) + "";
 		//cardNum = (getLatestId()+1) + DateUtils.getCurrentDateMMDDYYYYPlain() + DateUtils.getCurrentDateMMDDYYYYTIMEPlain();
-		String brgyCode = "PLS ";
+		String brgyCode = "MUN ";
 		int num = newCardNumber.length();
 		
 		switch(num){
@@ -442,7 +442,7 @@ public class Customer {
 		String munTable = "mun";
 		String provTable = "prov";
 		String sql = "SELECT * FROM customer "+ supTable +
-				                 ", userdtls "+ userTable +
+				                 ", webtis.userdtls "+ userTable +
 				                 ", purok "+ purTable +
 				                 ", barangay "+ barTable +
 				                 ", municipality "+ munTable +
@@ -578,7 +578,7 @@ public class Customer {
 		String munTable = "mun";
 		String provTable = "prov";
 		String sql = "SELECT * FROM customer "+ supTable +
-				                 ", userdtls "+ userTable +
+				                 ", webtis.userdtls "+ userTable +
 				                 ", purok "+ purTable +
 				                 ", barangay "+ barTable +
 				                 ", municipality "+ munTable +

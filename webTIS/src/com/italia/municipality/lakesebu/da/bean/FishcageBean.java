@@ -34,6 +34,9 @@ import com.italia.municipality.lakesebu.da.controller.FishCage;
 import com.italia.municipality.lakesebu.da.controller.FishCagePayment;
 import com.italia.municipality.lakesebu.da.controller.WaterRentalsPayment;
 import com.italia.municipality.lakesebu.enm.AppConf;
+import com.italia.municipality.lakesebu.global.GlobalVar;
+import com.italia.municipality.lakesebu.licensing.controller.DocumentFormatter;
+import com.italia.municipality.lakesebu.reports.FishCageORs;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
@@ -47,95 +50,71 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @Named
 @ViewScoped
+@Setter
+@Getter
 public class FishcageBean implements Serializable {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 10008089777L;
 	
-	@Getter @Setter
+	
 	private FishCage fishCageSelected;
-	@Getter @Setter
 	private String ownerName;
-	@Getter @Setter
 	private String tenantOwner;
-	@Getter @Setter
 	private String waterSurveyNo;
-	@Getter @Setter
 	private String fishcageArea;
-	@Getter @Setter
 	private String totalCageArea;
-	@Getter @Setter
 	private String remarks;
-	@Getter @Setter
 	private double amountDue;
-	@Getter @Setter
 	private String searchName;
-	@Getter @Setter
 	private String location;
-	@Getter @Setter
 	private List<FishCage> cages = new ArrayList<FishCage>();
-	@Getter @Setter
 	private Date dateRegister;
-	@Getter @Setter
 	private int orderId;
-	@Getter @Setter
 	private List orders;
-	@Getter @Setter
 	private int yearApplied;
-	@Getter @Setter
 	private int motorizedBoat;
-	@Getter @Setter
 	private int nonMotorizedBoat;
-	@Getter @Setter
 	private String cellphoneNo;
-	@Getter @Setter
 	private int numberOfFishCages;
-	@Getter @Setter
 	private int noOfFunctional;
-	@Getter @Setter
 	private int noOfNonFunctional;
-	@Getter @Setter
 	private String sizeCagePerModule;
-	@Getter @Setter
 	private int noOfAnnualProduction;
-	@Getter @Setter
 	private int noOfTotalStock;
-	
+	private int foryearpaid;
 	 
 	
 	//dialog payment
-	@Getter @Setter
 	private Date paymentDate;
-	@Getter @Setter
 	private String orNumber;
-	@Getter @Setter
 	private double amountPaid;
-	@Getter @Setter
 	private List<FishCagePayment> payments = new ArrayList<FishCagePayment>();
-	@Getter @Setter
 	private FishCagePayment paymentSelected;
-	@Getter @Setter
 	private String selectedOwner;
-	@Getter @Setter
 	private FishCage fishPaymentSelected;
 	
 	//unpaid rentals
-	@Getter @Setter
 	private List<WaterRentalsPayment> payRentals = new ArrayList<WaterRentalsPayment>();
-	@Getter @Setter
 	private String searchInUnpaidName;
 	
 	private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
 	private static final String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
 			AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
-	private static final String REPORT_NAME = "water_rental_certificate";
+	
+	private String clerkName=DocumentFormatter.getTagName("clerk-name");
+	private String clerkPosition=DocumentFormatter.getTagName("clerk-position");
+	private String treasurerName=DocumentFormatter.getTagName("treasurer-name");
+	private String treasurerPosition=DocumentFormatter.getTagName("treasurer-position");
+	private boolean displayForMto=DocumentFormatter.getTagName("mto-fishery-display-person").equalsIgnoreCase("true")? true : false;
+	
 	
 	public void onChange(TabChangeEvent event) {
 		if("Water Rentals".equalsIgnoreCase(event.getTab().getTitle())) {
 			init();
-		}else if("Unpaid Collections".equalsIgnoreCase(event.getTab().getTitle())) {
+		}else if("Payment Collection Summary".equalsIgnoreCase(event.getTab().getTitle())) {
 			loadUnpaidDtls();
 		}
 	}
@@ -225,6 +204,11 @@ public class FishcageBean implements Serializable {
 					case 0: w.setF8(Currency.formatAmount(py.getAmountPaid())); break;
 					case 1: w.setF9(Currency.formatAmount(py.getAmountPaid())); break;
 					case 2: w.setF10(Currency.formatAmount(py.getAmountPaid())); break;
+					case 3: w.setF11(Currency.formatAmount(py.getAmountPaid())); break;
+					case 4: w.setF12(Currency.formatAmount(py.getAmountPaid())); break;
+					case 5: w.setF13(Currency.formatAmount(py.getAmountPaid())); break;
+					case 6: w.setF14(Currency.formatAmount(py.getAmountPaid())); break;
+					case 7: w.setF15(Currency.formatAmount(py.getAmountPaid())); break;
 				}
 				count++;
 			}
@@ -233,10 +217,14 @@ public class FishcageBean implements Serializable {
 				w.setF8("0.00");
 				w.setF9("0.00");
 				w.setF10("0.00");
-				
+				w.setF11("0.00");
+				w.setF12("0.00");
+				w.setF13("0.00");
+				w.setF14("0.00");
+				w.setF15("0.00");
 			}
 			
-			if(count!=3) {//this condition is applicable only for year 2020
+			if(count!=8) {//this condition is applicable only for year 2020
 				payRentals.add(w); 
 				counter++;
 			}
@@ -274,13 +262,14 @@ public class FishcageBean implements Serializable {
 		
 		if(isOk) {
 			py.setPaymentPaid(DateUtils.convertDate(getPaymentDate(), "yyyy-MM-dd"));
-			py.setYear(Integer.valueOf(DateUtils.convertDate(getPaymentDate(), "yyyy-MM-dd").split("-")[0]));
+			//py.setYear(Integer.valueOf(DateUtils.convertDate(getPaymentDate(), "yyyy-MM-dd").split("-")[0]));
+			py.setYear(getForyearpaid());
 			py.setOrNumber(getOrNumber());
 			py.setAmountPaid(getAmountPaid());
 			py.setPayableAmount(getFishPaymentSelected().getAmountDue());
-			if(getAmountPaid()==getFishPaymentSelected().getAmountDue()) {
+			//if(getAmountPaid()==getFishPaymentSelected().getAmountDue()) {
 				py.setFullpaid(1);
-			}
+			//}
 			py.setFishCage(getFishPaymentSelected());
 			py.save();
 			clearPayments();
@@ -292,6 +281,7 @@ public class FishcageBean implements Serializable {
 	public void clearPayments() {
 		setOrNumber(null);
 		setAmountPaid(0);
+		setForyearpaid(DateUtils.getCurrentYear());
 	}
 	
 	public void loadPayments(FishCage cage) {
@@ -300,7 +290,7 @@ public class FishcageBean implements Serializable {
 		setSelectedOwner(cage.getOwnerName());
 		payments = new ArrayList<FishCagePayment>();
 		String sql = " AND py.cid=" + cage.getId();
-		sql += " ORDER BY py.paymentDate DESC";
+		sql += " ORDER BY py.yearPaid DESC";
 		payments = FishCagePayment.retrieve(sql, new String[0]);
 	}
 	
@@ -309,6 +299,7 @@ public class FishcageBean implements Serializable {
 		setPaymentDate(DateUtils.convertDateString(py.getPaymentPaid(), "yyyy-MM-dd"));
 		setOrNumber(py.getOrNumber());
 		setAmountPaid(py.getAmountPaid());
+		setForyearpaid(py.getYear());
 	}
 	
 	public void readExcel() {
@@ -471,6 +462,7 @@ public class FishcageBean implements Serializable {
 	
 	@PostConstruct
 	public void init() {
+		setForyearpaid(DateUtils.getCurrentYear());
 		setPaymentDate(DateUtils.getDateToday());
 		loadOrderList();
 		
@@ -484,7 +476,7 @@ public class FishcageBean implements Serializable {
 		
 		
 		if(getSearchName()!=null && !getSearchName().isBlank()) {
-			sql = "AND owner like '%"+ getSearchName().replace("--", "") +"%'";
+			sql = " AND owner like '%"+ getSearchName().replace("--", "") +"%'";
 		}
 		
 		switch(getOrderId()) {
@@ -649,11 +641,137 @@ public class FishcageBean implements Serializable {
 	
 	
 	
+	public void printPaymentHistory() {
+		
+		String path = REPORT_PATH;// + AppConf.SEPERATOR.getValue();
+		
+		ReportCompiler compiler = new ReportCompiler();
+		String jrxmlFile = compiler.compileReport(GlobalVar.WATER_RENTAL_PAYMENT_HISTORY_RPT, GlobalVar.WATER_RENTAL_PAYMENT_HISTORY_RPT, path);
+		List<FishCageORs> p = new ArrayList<FishCageORs>();
+		for(FishCagePayment pay : getPayments()) {
+			FishCageORs fs = FishCageORs.builder()
+					.f1(pay.getPaymentPaid())
+					.f2(pay.getOrNumber())
+					.f3(pay.getYear()+"")
+					.f4(Currency.formatAmount(pay.getAmountPaid()))
+					.build();
+			p.add(fs);
+		}
+		
+		
+		JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(p);
+		
+		HashMap param = new HashMap();
+		FishCage py = getFishPaymentSelected();
+		try{param.put("PARAM_SURVEY_NO", py.getWaterSurveyNo());}catch(NullPointerException e) {}
+		try{param.put("PARAM_OWNER_NAME", py.getOwnerName());}catch(NullPointerException e) {}
+		try{param.put("PARAM_TENANT_NAME", py.getTenantOwner());}catch(NullPointerException e) {}
+		try{param.put("PARAM_CAGE_LOCATION", py.getLocation());}catch(NullPointerException e) {}
+		try{param.put("PARAM_DATE_ISSUED_CERT", "Issued on : "+DateUtils.getCurrentDateMMMMDDYYYY());}catch(NullPointerException e) {}
+		try{param.put("PARAM_TOTAL_STOCK", py.getNoOfTotalStock()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_ANNUAL_PROD", py.getNoOfAnnualProduction()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_CAGE_MODULE", py.getSizeCagePerModule());}catch(NullPointerException e) {}
+		try{param.put("PARAM_NON_FUNCTIONAL", py.getNoOfNonFunctional()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_FUNCTIONAL", py.getNoOfFunctional()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_NO_CAGES", py.getNumberOfFishCages()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_CAGE_LENTH", py.getCageArea());}catch(NullPointerException e) {}
+		try{param.put("PARAM_WATER_AREA", py.getTotalSquareArea());}catch(NullPointerException e) {}
+		try{param.put("PARAM_CELLPHONE_NO", py.getCellphoneNo());}catch(NullPointerException e) {}
+		try{param.put("PARAM_NON_MOTORIZED", py.getNonMotorizedBoat()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_MOTORIZED", py.getMotorizedBoat()+"");}catch(NullPointerException e) {}
+		param.put("PARAM_BIRTH_DATE", "");
+		param.put("PARAM_SIGNATURE", py.getOwnerName());
+		
+		
+		param.put("PARAM_VERIFIEDBY", getClerkName().toUpperCase());
+		param.put("PARAM_TREASURER", getTreasurerName().toUpperCase());
+		
+		//logo
+				String dalogo = path + "da_logo.png";
+				try{File fil = new File(dalogo);
+				FileInputStream lof = new FileInputStream(fil);
+				param.put("PARAM_DA_LOGO", lof);
+				}catch(Exception e){}
+		
+		//logo
+		String logo = path + "logo.png";
+		try{File file = new File(logo);
+		FileInputStream loff = new FileInputStream(file);
+		param.put("PARAM_LOGO_LAKESEBU", loff);
+		}catch(Exception e){}
+
+		//logo
+		String officialLogo = path + "logotrans.png";
+		try{File file = new File(officialLogo);
+		FileInputStream off = new FileInputStream(file);
+		param.put("PARAM_SEALTRANSPARENT", off);
+		}catch(Exception e){}
+		
+		String backlogo = path + "documentbg-gen.png";
+		try{File file = new File(backlogo);
+		FileInputStream off = new FileInputStream(file);
+		param.put("PARAM_BACKGROUND", off);
+		}catch(Exception e){}
+		
+		try{
+	  		String jrprint = JasperFillManager.fillReportToFile(jrxmlFile, param, beanColl);
+	  	    JasperExportManager.exportReportToPdfFile(jrprint,path+ GlobalVar.WATER_RENTAL_PAYMENT_HISTORY_RPT +".pdf");
+	  		}catch(Exception e){e.printStackTrace();}
+		
+				try{
+					System.out.println("REPORT_PATH:" + path + "REPORT_NAME: " + GlobalVar.WATER_RENTAL_PAYMENT_HISTORY_RPT);
+		  		 File file = new File(path, GlobalVar.WATER_RENTAL_PAYMENT_HISTORY_RPT + ".pdf");
+				 FacesContext faces = FacesContext.getCurrentInstance();
+				 ExternalContext context = faces.getExternalContext();
+				 HttpServletResponse response = (HttpServletResponse)context.getResponse();
+					
+			     BufferedInputStream input = null;
+			     BufferedOutputStream output = null;
+			     
+			     try{
+			    	 
+			    	 // Open file.
+			            input = new BufferedInputStream(new FileInputStream(file), DEFAULT_BUFFER_SIZE);
+
+			            // Init servlet response.
+			            response.reset();
+			            response.setHeader("Content-Type", "application/pdf");
+			            response.setHeader("Content-Length", String.valueOf(file.length()));
+			            response.setHeader("Content-Disposition", "inline; filename=\"" + GlobalVar.WATER_RENTAL_PAYMENT_HISTORY_RPT + ".pdf" + "\"");
+			            output = new BufferedOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE);
+
+			            // Write file contents to response.
+			            byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+			            int length;
+			            while ((length = input.read(buffer)) > 0) {
+			                output.write(buffer, 0, length);
+			            }
+
+			            // Finalize task.
+			            output.flush();
+			    	 
+			     }finally{
+			    	// Gently close streams.
+			            close(output);
+			            close(input);
+			     }
+			     
+			     // Inform JSF that it doesn't need to handle response.
+			        // This is very important, otherwise you will get the following exception in the logs:
+			        // java.lang.IllegalStateException: Cannot forward after response has been committed.
+			        faces.responseComplete();
+			        
+				}catch(Exception ioe){
+					ioe.printStackTrace();
+				}
+		
+	}
+	
 	public void printCertificate(FishCagePayment py) {
 		String path = REPORT_PATH;// + AppConf.SEPERATOR.getValue();
 		
 		ReportCompiler compiler = new ReportCompiler();
-		String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, path);
+		String jrxmlFile = compiler.compileReport(GlobalVar.WATER_RENTAL_CERTIFICATE_RPT, GlobalVar.WATER_RENTAL_CERTIFICATE_RPT, path);
 		List<WaterRentalsPayment> p = new ArrayList<WaterRentalsPayment>();
 		p.add(new WaterRentalsPayment());
 		
@@ -709,14 +827,20 @@ public class FishcageBean implements Serializable {
 		param.put("PARAM_SEALTRANSPARENT", off);
 		}catch(Exception e){}
 		
+		String backlogo = path + "documentbg-gen.png";
+		try{File file = new File(backlogo);
+		FileInputStream off = new FileInputStream(file);
+		param.put("PARAM_BACKGROUND", off);
+		}catch(Exception e){}
+		
 		try{
 	  		String jrprint = JasperFillManager.fillReportToFile(jrxmlFile, param, beanColl);
-	  	    JasperExportManager.exportReportToPdfFile(jrprint,path+ REPORT_NAME +".pdf");
+	  	    JasperExportManager.exportReportToPdfFile(jrprint,path+ GlobalVar.WATER_RENTAL_CERTIFICATE_RPT +".pdf");
 	  		}catch(Exception e){e.printStackTrace();}
 		
 				try{
-					System.out.println("REPORT_PATH:" + path + "REPORT_NAME: " + REPORT_NAME);
-		  		 File file = new File(path, REPORT_NAME + ".pdf");
+					System.out.println("REPORT_PATH:" + path + "REPORT_NAME: " + GlobalVar.WATER_RENTAL_CERTIFICATE_RPT);
+		  		 File file = new File(path, GlobalVar.WATER_RENTAL_CERTIFICATE_RPT + ".pdf");
 				 FacesContext faces = FacesContext.getCurrentInstance();
 				 ExternalContext context = faces.getExternalContext();
 				 HttpServletResponse response = (HttpServletResponse)context.getResponse();
@@ -733,7 +857,7 @@ public class FishcageBean implements Serializable {
 			            response.reset();
 			            response.setHeader("Content-Type", "application/pdf");
 			            response.setHeader("Content-Length", String.valueOf(file.length()));
-			            response.setHeader("Content-Disposition", "inline; filename=\"" + REPORT_NAME + ".pdf" + "\"");
+			            response.setHeader("Content-Disposition", "inline; filename=\"" + GlobalVar.WATER_RENTAL_CERTIFICATE_RPT + ".pdf" + "\"");
 			            output = new BufferedOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE);
 
 			            // Write file contents to response.
@@ -762,7 +886,6 @@ public class FishcageBean implements Serializable {
 				}
 		
 	}
-	
 	
 	
 	private void close(Closeable resource) {

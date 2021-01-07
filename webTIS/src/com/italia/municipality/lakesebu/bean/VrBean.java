@@ -137,8 +137,14 @@ public class VrBean implements Serializable{
 		
 		
 		createReport(VRData.retrieve(sql,params));
-		
+		loadSeries();
 	}
+	
+	private void loadSeries() {
+		updateMonthSeriesSearch();
+		onSeriesChange();
+	}
+	
 	public List<String> autoCode(String query){
 		List<String> result = new ArrayList<>();
 		result = VRData.retrieve(query, "vrcode",10);
@@ -641,11 +647,11 @@ public class VrBean implements Serializable{
 	
 	public void clear() {
 		setVrData(null);
-		setSeriesMonthId(null);
+		//setSeriesMonthId(null);
 		setVoucherNo(null);
 		setAccountNo(0);
 		setCheckNo(null);
-		setDateCreated(null);
+		//setDateCreated(null);
 		setPayee(null);
 		setGrossAmount(0);
 		setNetAmount(0);
@@ -1103,7 +1109,7 @@ public class VrBean implements Serializable{
 	}
 	public List getSeriesMonths() {
 		
-		seriesMonths = new ArrayList<>();
+		/*seriesMonths = new ArrayList<>();
 		for(int month=1; month<=DateUtils.getCurrentMonth(); month++) {
 			
 			String monthTrim = DateUtils.getMonthName(month).toUpperCase().substring(0, 3);
@@ -1116,7 +1122,7 @@ public class VrBean implements Serializable{
 			seriesMonths.add(new SelectItem(ser2, ser2));
 			seriesMonths.add(new SelectItem(ser3, ser3));
 			
-		}
+		}*/
 		
 		return seriesMonths;
 	}
@@ -1274,24 +1280,50 @@ public void printExpense() {
 
 	public List getSeriesMonthsSearch() {
 		
+		return seriesMonthsSearch;
+	}
+	
+	public void updateMonthSeriesSearch() {
 		seriesMonthsSearch = new ArrayList<>();
-		for(int month=1; month<=DateUtils.getCurrentMonth(); month++) {
+		//for(int month=1; month<=DateUtils.getCurrentMonth(); month++) {
+		//for(int month=getMondId(); month<=getMondId(); month++) {
 			
-			String monthTrim = DateUtils.getMonthName(month).toUpperCase().substring(0, 3);
+			String monthTrim = DateUtils.getMonthName(getMondId()).toUpperCase().substring(0, 3);
 			
-			String ser1 = "101-100-17-" + monthTrim + "-" + DateUtils.getCurrentYear();
-			String ser2 = "101-200-18-" + monthTrim + "-" + DateUtils.getCurrentYear();
-			String ser3 = "101-300-17-" + monthTrim + "-" + DateUtils.getCurrentYear();
+			String ser1 = "101-100-17-" + monthTrim + "-" + getYearId();
+			String ser2 = "101-200-18-" + monthTrim + "-" + getYearId();
+			String ser3 = "101-300-17-" + monthTrim + "-" + getYearId();
 			
 			seriesMonthsSearch.add(new SelectItem(ser1, ser1));
 			seriesMonthsSearch.add(new SelectItem(ser2, ser2));
 			seriesMonthsSearch.add(new SelectItem(ser3, ser3));
 			
-		}
-		
-		return seriesMonthsSearch;
+		//}
 	}
-
+	
+	public void onSeriesChange() {
+		System.out.println("updating series....");
+		seriesMonths = new ArrayList<>();
+		String[] dateSer = DateUtils.convertDate(getDateCreated(), "yyyy-MM-dd").split("-");
+		
+		int year=Integer.valueOf(dateSer[0]);
+		int mnth=Integer.valueOf(dateSer[1]);
+		
+		for(int month=mnth; month<=mnth; month++) {
+			
+			String monthTrim = DateUtils.getMonthName(month).toUpperCase().substring(0, 3);
+			
+			String ser1 = "101-100-17-" + monthTrim + "-" + year;
+			String ser2 = "101-200-18-" + monthTrim + "-" + year;
+			String ser3 = "101-300-17-" + monthTrim + "-" + year;
+			System.out.println("series : " + ser1 + "-" + ser2 + "-" + ser3);
+			seriesMonths.add(new SelectItem(ser1, ser1));
+			seriesMonths.add(new SelectItem(ser2, ser2));
+			seriesMonths.add(new SelectItem(ser3, ser3));
+			
+		}
+	}
+	
 	public void setSeriesMonthsSearch(List seriesMonthsSearch) {
 		this.seriesMonthsSearch = seriesMonthsSearch;
 	}

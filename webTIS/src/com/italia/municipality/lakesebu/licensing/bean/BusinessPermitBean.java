@@ -22,12 +22,12 @@ import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 import javax.faces.FacesException;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.imageio.stream.FileImageOutputStream;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -73,7 +73,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  *
  */
 
-@ManagedBean(name="businessPermitBean", eager = true)
+@Named
 @ViewScoped
 public class BusinessPermitBean implements Serializable{
 
@@ -82,7 +82,7 @@ public class BusinessPermitBean implements Serializable{
 	 */
 	private static final long serialVersionUID = 1543678734345454L;
 
-	public List<BusinessPermit> pmts = Collections.synchronizedList(new ArrayList<BusinessPermit>());
+	private List<BusinessPermit> pmts = new ArrayList<BusinessPermit>();
 	
 	private Date issuedDate;
 	private Date calendarFrom;
@@ -91,7 +91,7 @@ public class BusinessPermitBean implements Serializable{
 	private Customer taxPayer;
 	private String customerName;
 	private String searchTaxpayer;
-	private List<Customer> taxpayers = Collections.synchronizedList(new ArrayList<Customer>());
+	private List<Customer> taxpayers = new ArrayList<Customer>();
 	private String photoId="camera";
 	private List<String> shots = new ArrayList<>();
 	
@@ -130,15 +130,15 @@ public class BusinessPermitBean implements Serializable{
 	private String controlNo;
 	private String typeOf;
 	
-	private List<ORTransaction> ors = Collections.synchronizedList(new ArrayList<ORTransaction>());
-	private List<ORTransaction> orsSelected = Collections.synchronizedList(new ArrayList<ORTransaction>());
+	private List<ORTransaction> ors = new ArrayList<ORTransaction>();
+	private List<ORTransaction> orsSelected = new ArrayList<ORTransaction>();
 	
 	private String searchBusinessName;
-	private List<Livelihood> business = Collections.synchronizedList(new ArrayList<Livelihood>());
-	private List<Livelihood> selectedBusiness = Collections.synchronizedList(new ArrayList<Livelihood>());
-	private List<Livelihood> ownerBusiness = Collections.synchronizedList(new ArrayList<Livelihood>());
+	private List<Livelihood> business = new ArrayList<Livelihood>();
+	private List<Livelihood> selectedBusiness = new ArrayList<Livelihood>();
+	private List<Livelihood> ownerBusiness = new ArrayList<Livelihood>();
 	
-	private Map<Integer, BusinessEngaged> EngagedData = Collections.synchronizedMap(new HashMap<Integer, BusinessEngaged>());
+	private Map<Integer, BusinessEngaged> EngagedData = new HashMap<Integer, BusinessEngaged>();
 	
 	private double grossAmount;
 	private String employeeDtls;
@@ -1080,19 +1080,22 @@ public void printPermit(BusinessPermit permit) {
 			
 				if(cnt==size) {
 					eng += " & " + d;
-					System.out.println("cnt == size " + eng);
+					System.out.println("cnt == size " + size + "=" + eng);
 				}else {
 					eng += ", " + d;
-					System.out.println("cnt != size " + eng);
+					System.out.println("cnt != size " + size + "=" + eng);
 				}
 				
 			}
 			cnt++;
 		}
-		
+		int countlent = eng!=null? eng.length() : 0;
 		//do not change location // this code is after OR
-		param.put("PARAM_BUSINESS_TYPE", eng.toUpperCase());
-		
+		if(countlent<=45) {
+			param.put("PARAM_BUSINESS_TYPE", eng.toUpperCase());
+		}else {
+			param.put("PARAM_BUSINESS_TYPE_2", eng.toUpperCase());
+		}
 		param.put("PARAM_OIC", permit.getOic());
 		param.put("PARAM_MAYOR", permit.getMayor());
 		
@@ -1155,7 +1158,7 @@ public void printPermit(BusinessPermit permit) {
 		}catch(Exception e){}
 		
 		//logo
-		String logo = path + "barangaylogotrans.png";
+		String logo = path + "logotrans.png";
 		try{File file = new File(logo);
 		FileInputStream off = new FileInputStream(file);
 		param.put("PARAM_SEALTRANSPARENT", off);
@@ -1456,7 +1459,7 @@ public void printPermit(BusinessPermit permit) {
 				}catch(Exception e){}
 				
 				//logo
-				String logo = path + "barangaylogotrans.png";
+				String logo = path + "logotrans.png";
 				try{File file = new File(logo);
 				FileInputStream off = new FileInputStream(file);
 				param.put("PARAM_LOGO_WATERMARK", off);
