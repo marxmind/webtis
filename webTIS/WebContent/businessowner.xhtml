@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Business Owner</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Business Owner</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Business Owner</title>
+
+</h:head>
+
+<h:body>
+	
+	<h:form prependId="false" id="formId" >
+	
+	 <div class="page-header">
+	 	<a><p:outputLabel value="Business Owner Recording" style="#{skin.pageTitle};"/></a>
+	 	<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+	 </div>
+	 
+	 
+	<p:growl id="msg" showDetail="true"/>
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+	<p:focus context="tb"/>
+    
+		<p:layout fullPage="true">
+			
+			<p:layoutUnit position="east" size="0" visible="false" >
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="north" size="100"  visible="false" >
+				
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="south" size="50" visible="false" >
+				
+		     </p:layoutUnit>
+			
+			<p:layoutUnit position="west" size="630" >
+					<p:toolbar id="tbMember" style="#{skin.toolbar}" >
+    				<f:facet name="left">
+    				</f:facet>
+    				<f:facet name="right">
+    					<p:commandButton value="New" update=":formId:usercusId, :formId:pictureId" actionListener="#{businessOwnerBean.clearFields}"  icon="fa fa-file-o" title="Click this button to start new information"/>
+    					<p:commandButton value="Clear" update="pictureId usercusId" icon="fa fa-trash" actionListener="#{businessOwnerBean.closePopup}" title="Click this button to clear information"/>
+						<p:commandButton value="Save" update="cusId usercusId pictureId msg"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{businessOwnerBean.save}">
+        					<p:confirm header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
+        				</p:commandButton>
+    				</f:facet>
+					</p:toolbar>
+					<br/>
+					
+					<p:panelGrid id="pictureId" columns="2" cellpadding="0" style="#{skin.grid};">
+							
+							<h:outputLabel id="photo">
+        						<p:graphicImage name="images/photocam/#{businessOwnerBean.photoId}.jpg" rendered="#{not empty businessOwnerBean.photoId}" style="width: 100px; height: 100px"/>
+        					</h:outputLabel>
+        		
+        			<p:fileUpload listener="#{businessOwnerBean.fileUploadListener}"
+		                    			mode="advanced" auto="true" sizeLimit="50000000" label="Upload Picture"
+		                    			update="photo" dragDropSupport="true"
+		                    			allowTypes="/(\.|\/)(gif|jpeg|JPEG||JPG|jpg|png|PNG)$/" />
+		                    			
+		                    			
+        			
+					</p:panelGrid>
+					
+					
+					<br/>
+					
+					<p:panelGrid id="usercusId" columns="4" layout="grid">
+				
+						<p:outputLabel for="d1" value="Date:" style="#{skin.label}" />
+						<p:inputText id="d1" value="#{businessOwnerBean.dateregistered}" readonly="true" style="width: 11em;#{skin.textInput}"/>
+						
+						<p:outputLabel for="d2" value="Card Number:" style="#{skin.label}" />
+						<p:inputText id="d2" value="#{businessOwnerBean.cardnumber}" readonly="true" style="width: 11em;#{skin.textInput}"/>
+								
+						<p:outputLabel for="d3" value="First Name:" style="#{skin.label}"/>
+		        		<p:autoComplete id="d3" value="#{businessOwnerBean.firstname}" a:placeholder="First Name" completeMethod="#{businessOwnerBean.autoFirst}" effect="fade" style="width: 11em;#{skin.textInput}"/>
+		        		
+		        		<p:outputLabel for="d4" value="Middle Name:" style="#{skin.label}"/>
+		        		<p:autoComplete id="d4" value="#{businessOwnerBean.middlename}" a:placeholder="Middle Name" completeMethod="#{businessOwnerBean.autoMiddle}" effect="fade" style="width: 11em;#{skin.textInput}"/>
+		        		
+		        		
+		        		<p:outputLabel for="d5" value="Last Name:" style="#{skin.label}"/>
+		        		<p:autoComplete id="d5" value="#{businessOwnerBean.lastname}" a:placeholder="Last Name" completeMethod="#{businessOwnerBean.autoLast}" effect="fade" style="width: 11em;#{skin.textInput}"/>
+		        		
+		        		<p:outputLabel for="d6" value="Civil Status:" style="#{skin.label}"/>
+		            	<p:selectOneMenu id="d6" value="#{businessOwnerBean.clivilId}" style="width: 11em;#{skin.select}" title="Click this to select Civil Status" filterMatchMode="contains" filter="true">
+		                		<f:selectItems value="#{businessOwnerBean.civils}"/>
+		            	</p:selectOneMenu>
+		        		
+		        		<p:outputLabel for="d7" id="birthId" value="Birtdate:" style="#{skin.label}"/>
+		        		<p:calendar id="d7" value="#{businessOwnerBean.birthdate}" pattern="yyyy-MM-dd" effect="slideDown" style="width: 11em;#{skin.calendar}" title="Click this calendar to define person's birthdate">
+		        			<f:ajax event="change" listener="#{businessOwnerBean.calculateAge}" render="idAge"/>
+		        		</p:calendar>
+		        		
+		        		<p:outputLabel for="idAge" value="Age:" style="#{skin.label}"/>
+		        		<p:inputText id="idAge" value="#{businessOwnerBean.age}" a:type="number" style="width: 11em;#{skin.textInput}"/>
+		        		
+		        		<p:outputLabel for="d8" value="Gender: " style="#{skin.label}"/>
+		            	<p:selectOneMenu id="d8" value="#{businessOwnerBean.genderId}" style="width: 11em;#{skin.select}" title="Click this to define gender">
+		                	<f:selectItems value="#{businessOwnerBean.genderList}"/>
+		            	</p:selectOneMenu>
+		        		
+		        		
+		        		
+		        		<p:outputLabel for="d9" value="Province Name:" style="#{skin.label}"/>
+			 			<p:outputLabel id="d9" value="#{businessOwnerBean.provinceSelected.name}" style="#{skin.label}">
+			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:provData" icon="fa fa-search" title="Click this button to select Province name" actionListener="#{businessOwnerBean.loadProvince}" onclick="PF('multiDialogProvince').show();"/>
+			 			</p:outputLabel>
+		        		
+		        		<p:outputLabel for="d10" value="Contact No:" style="#{skin.label}"/>
+		        		<p:inputText id="d10" value="#{businessOwnerBean.contactno}" a:placeholder="+63900 0000 000" style="width: 11em;#{skin.textInput}"/>
+		        		
+		        		<p:outputLabel for="d11" value="Municipality Name:" style="#{skin.label}"/>
+			 			<p:outputLabel id="d11" value="#{businessOwnerBean.municipalSelected.name}" style="#{skin.label}" >
+			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:munData" icon="fa fa-search" title="Click this button to select Municipality name" actionListener="#{businessOwnerBean.loadMunicipal}" onclick="PF('multiDialogMunicipality').show();"/>
+			 			</p:outputLabel>
+		        		
+		        		<p:outputLabel for="d12" value="Contact Person:" style="#{skin.label}"/>
+		        		<p:outputLabel id="d12">
+		            	<p:outputLabel id="emerId" value="#{businessOwnerBean.emergencyContactPersonName}" readonly="true" style="#{skin.label}"/>
+		            	&nbsp;&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update="ownerId" icon="fa fa-search" actionListener="#{businessOwnerBean.loadContactPerson}" title="Click this button to select Contact Person name" onclick="PF('multiDialogContact').show()"/>
+		            	&nbsp;<p:commandButton style="#{skin.button}" update="emerId,relId,msg"  icon="fa fa-trash-o" title="Click this button to remove the attached contact person for this citizen" actionListener="#{businessOwnerBean.removeEmergencyPerson}">
+        				<p:confirm header="Confirmation" message="Are you sure you want to removed contact person for this citizen?." icon="ui-icon-alert" />
+        		</p:commandButton>
+		            	</p:outputLabel>
+		        		
+		        		<p:outputLabel for="d13" value="Barangay Name:" style="#{skin.label}"/>
+			 			<p:outputLabel id="d13" value="#{businessOwnerBean.barangaySelected.name}" style="#{skin.label}">
+			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:barData tb" icon="fa fa-search" title="Click this button to select Barangay name" actionListener="#{businessOwnerBean.loadBarangay}" onclick="PF('multiDialogBarangay').show();"/>
+			 			</p:outputLabel>
+		        		 
+						 <p:outputLabel for="relId" value="Relationship: " style="#{skin.label}"/>
+		            		<p:selectOneMenu id="relId" value="#{businessOwnerBean.relationshipId}" style="width: 11em;#{skin.select}" title="Click this to define relationship" filterMatchMode="contains" filter="true">
+		                		<f:selectItems value="#{businessOwnerBean.relationships}"/>
+		            		</p:selectOneMenu>
+						
+		            	<p:outputLabel for="d14" value="Purok Name:" style="#{skin.label}"/>
+			 			<p:outputLabel id="d14" value="#{businessOwnerBean.purokSelected.purokName}" style="#{skin.label}">
+			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:purData" icon="fa fa-search" title="Click this button to select Purok/Zone/Sitio name" actionListener="#{businessOwnerBean.loadPurok}" onclick="PF('multiDialogPurok').show();"/>
+			 			</p:outputLabel>
+            		   	
+    			 	</p:panelGrid> 
+					
+			</p:layoutUnit>
+			
+			
+			
+			<p:layoutUnit position="center">
+			
+			<p:toolbar id="tb" style="#{skin.toolbar}">
+			    		<f:facet name="left">
+			        		<div class="ui-inputgroup">
+					<p:inputText value="#{businessOwnerBean.searchCustomer}" a:placeholder="Search..." style="width: 20em">
+	    					<f:ajax event="keyup" listener="#{businessOwnerBean.init}" render="cusId usercusId pictureId"/>
+	    			</p:inputText>
+	    			<p:commandButton id="idFind" tabindex="1" update="cusId usercusId pictureId" icon="fa fa-search" actionListener="#{businessOwnerBean.init}"/>
+	    			<p:commandButton id="idLoadAll" update="cusId usercusId pictureId tb" value="Load All" icon="fa fa-search" actionListener="#{businessOwnerBean.loadAll}"/>
+					<p:selectBooleanCheckbox value="#{businessOwnerBean.male}" style="#{skin.checkbox}">
+						<f:ajax event="change" render="cusId" listener="#{businessOwnerBean.loadFilter}"/>
+					</p:selectBooleanCheckbox>
+	    			<p:outputLabel value="Male:" style="#{skin.label}"/>
+					<p:selectBooleanCheckbox value="#{businessOwnerBean.female}" style="#{skin.checkbox}">
+						<f:ajax event="change" render="cusId" listener="#{businessOwnerBean.loadFilter}"/>
+					</p:selectBooleanCheckbox>
+	    			 <p:outputLabel value="Female:" style="#{skin.label}"/>
+					<p:selectBooleanCheckbox value="#{businessOwnerBean.filteredBarangay}" style="#{skin.checkbox}">
+						<f:ajax event="change" render="cusId" listener="#{businessOwnerBean.loadFilter}"/>
+					</p:selectBooleanCheckbox>
+					 <p:outputLabel value="#{businessOwnerBean.barangaySelected.name} Only:" style="#{skin.label}"/>
+	    			 <p:selectOneMenu value="#{businessOwnerBean.purokId}" style="color: black; width: 15em;#{skin.select}">
+			            	<f:selectItems value="#{businessOwnerBean.purokList}"/>
+			            	<f:ajax event="change" render="cusId" listener="#{businessOwnerBean.loadFilter}"/>
+			        </p:selectOneMenu>
+    			</div>
+			        	</f:facet>
+			    		<f:facet name="right">
+							
+						</f:facet>
+				</p:toolbar>
+		
+			<p:dataTable id="cusId" value="#{businessOwnerBean.customers}" var="rpt" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top"
+                         >
+                         	
+                         	<f:facet name="{Exporters}">
+                         			
+                         			<p:commandButton id="toggler" type="button" value="Columns" style="float:right;" icon="fa fa-th-list" title="Click this button to hide and unhide columns"/>
+									<p:columnToggler datasource="cusId" trigger="toggler" />
+                         			
+            						<h:commandLink title="Export Citizen Record in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="cusId" fileName="CitizenRecord" options="#{exporter.excelOpt}"/>
+            						</h:commandLink>
+            						<h:commandLink title="Export Citizen Record in pdf format">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+                							<p:dataExporter type="pdf" target="cusId" fileName="CitizenRecord" preProcessor="#{exporter.preProcessPDF}" options="#{exporter.pdfOpt}"/>
+            						</h:commandLink>
+            				</f:facet>
+                         	
+                         	
+                         	
+          					<p:column headerText="[*]" width="40" exportable="false">
+            					<p:commandButton update="cusId usercusId msg" icon="fa fa-trash-o" title="Click this button to delete this data" actionListener="#{businessOwnerBean.deleteRow(rpt)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+            				
+            				<p:column headerText="View" width="40" exportable="false">
+            					<p:commandButton icon="fa fa-search" title="Click this button to see the additional information" update="usercusId pictureId" actionListener="#{businessOwnerBean.clickItem(rpt)}"/>
+            				</p:column>
+            				
+            				<p:column headerText="BID" width="100" sortable="false" sortBy="#{rpt.cardno}">
+            						<p:outputLabel  value="#{rpt.cardno}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Registered" width="100" sortable="false" sortBy="#{rpt.dateregistered}">
+            						<p:outputLabel  value="#{rpt.dateregistered}"/>
+            				</p:column>
+            				
+                         	<p:column headerText="Name" width="120" sortable="false" sortBy="#{rpt.fullname}">
+            						<p:outputLabel  value="#{rpt.fullname}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Gender" width="50" sortable="false" sortBy="#{rpt.genderName}">
+            						<p:outputLabel  value="#{rpt.genderName}"/>
+            				</p:column> 
+            				
+            				<p:column headerText="Address" width="300" sortable="false" sortBy="#{rpt.completeAddress}">
+            						<p:outputLabel  value="#{rpt.completeAddress}"/>
+            				</p:column>
+            				
+					</p:dataTable>
+					
+					
+					
+			</p:layoutUnit>
+			
+		</p:layout>
+		
+
+<p:dialog header="Name List" responsive="true" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" position="center top" modal="false" widgetVar="multiDialogContact" Height="500" width="700" closable="false">
+		<p:toolbar id="tbTax">
+    		<f:facet name="left">
+        		<p:inputText id="idSearchTax" value="#{businessOwnerBean.searchEmergencyPerson}" a:placeholder="Search Name">
+    					<f:ajax event="keyup" listener="#{businessOwnerBean.loadContactPerson}" render="ownerId"/>
+    			</p:inputText>
+    		</f:facet>
+    			
+    		<f:facet name="right">
+    			<p:commandButton  icon="ui-icon-closethick"  title="Click this button to close the dialog" onclick="PF('multiDialogContact').hide();"/>
+    		</f:facet>
+		</p:toolbar>
+		
+		
+		<p:dataTable id="ownerId" value="#{businessOwnerBean.contactPersons}" var="own" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" 
+                         >
+                         
+                         <p:column headerText="Action" width="30">
+                         	<p:commandButton icon="fa  fa-hand-pointer-o" title="Click this button to select this person" update="emerId" actionListener="#{businessOwnerBean.clickContact(own)}" oncomplete="PF('multiDialogContact').hide()"/>
+                         </p:column>
+                         <p:column headerText="Name" width="120">
+            						<p:outputLabel  value="#{own.fullname}"/>
+            			</p:column>
+                         
+         </p:dataTable>                
+		
+</p:dialog>
+	
+	<p:dialog header="Province" responsive="true" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogProvince" Height="500" width="700">
+		<p:toolbar id="tbProvince">
+    		<f:facet name="left">
+        		<p:inputText value="#{businessOwnerBean.searchProvince}" a:placeholder="Search..." style="width: 30em">
+    					<f:ajax event="keyup" listener="#{businessOwnerBean.loadProvince}" render="provData"/>
+    			</p:inputText>
+    		</f:facet>
+    		<f:facet name="right">
+    			
+    		</f:facet>
+		</p:toolbar>
+		
+		
+		<p:dataTable id="provData" value="#{businessOwnerBean.provinces}" var="rg" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" 
+                         >
+                         
+                         <p:column headerText="Action" width="30">
+                         	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Province" update=":formId:usercusId" actionListener="#{businessOwnerBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogProvince').hide()"/>
+                         </p:column>
+                         
+                         <p:column headerText="Province Name" width="120">
+            						<p:outputLabel  value="#{rg.name}"/>
+            				</p:column>
+                         
+         </p:dataTable>                
+		
+	</p:dialog>	
+	
+	<p:dialog header="Municipality" responsive="true" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogMunicipality" Height="500" width="700">
+		<p:toolbar id="tbMunicipal">
+    		<f:facet name="left">
+        		<p:inputText value="#{businessOwnerBean.searchMunicipal}" a:placeholder="Search..." style="width: 30em">
+    					<f:ajax event="keyup" listener="#{businessOwnerBean.loadMunicipal}" render="munData"/>
+    			</p:inputText>
+    		</f:facet>
+    		<f:facet name="right">
+    			
+    		</f:facet>
+		</p:toolbar>
+		
+		
+		<p:dataTable id="munData" value="#{businessOwnerBean.municipals}" var="rg" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" 
+                         >
+                         
+                         <p:column headerText="Action" width="30">
+                        	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Municipality" update=":formId:usercusId" actionListener="#{businessOwnerBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogMunicipality').hide()"/> 
+                         </p:column>
+                         
+                         <p:column headerText="Municipality Name" width="120">
+            						<p:outputLabel  value="#{rg.name}"/>
+            			</p:column>
+                         
+         </p:dataTable>                
+		
+	</p:dialog>	
+	
+	<p:dialog header="Barangay" responsive="true" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogBarangay" Height="500" width="700">
+		<p:toolbar id="tbBarangay">
+    		<f:facet name="left">
+        		<p:inputText value="#{businessOwnerBean.searchBarangay}" a:placeholder="Search..." style="width: 30em">
+    					<f:ajax event="keyup" listener="#{businessOwnerBean.loadBarangay}" render="barData"/>
+    			</p:inputText>
+    		</f:facet>
+    		<f:facet name="right">
+    			
+    		</f:facet>
+		</p:toolbar>
+		
+		
+		<p:dataTable id="barData" value="#{businessOwnerBean.barangays}" var="rg" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" 
+                         >
+                         <p:column headerText="Action" width="30">
+                         	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Barangay" update=":formId:usercusId tb" actionListener="#{businessOwnerBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogBarangay').hide()"/>
+                         </p:column>
+                         <p:column headerText="Barangay Name" width="120">
+            						<p:outputLabel  value="#{rg.name}" />
+            				</p:column>
+                         
+         </p:dataTable>                
+		
+	</p:dialog>	
+	
+	<p:dialog responsive="true" header="Purok" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogPurok" Height="500" width="700">
+		<p:toolbar id="tbPurok">
+    		<f:facet name="left">
+        		<p:inputText value="#{businessOwnerBean.searchPurok}" a:placeholder="Search..." style="width: 30em">
+    					<f:ajax event="keyup" listener="#{businessOwnerBean.loadPurok}" render="purData"/>
+    			</p:inputText>
+    		</f:facet>
+    		<f:facet name="right">
+    			
+    		</f:facet>
+		</p:toolbar>
+		
+		
+		<p:dataTable id="purData" value="#{businessOwnerBean.puroks}" var="rg" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" 
+                         >
+                         
+                         <p:column headerText="Action" width="30">
+                         	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Purok/Zone/Sitio" update=":formId:usercusId" actionListener="#{businessOwnerBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogPurok').hide()"/>
+                         </p:column>
+                         
+                         <p:column headerText="Barangay Name" width="120">
+            						<p:outputLabel  value="#{rg.purokName}" />
+            				</p:column>
+                         
+         </p:dataTable>                
+		
+	</p:dialog>	
+	
+	
+	<ui:include src="loader.xhtml" />
+	<ui:include src="menulic.xhtml" />
+</h:form>		
+</h:body>
+</html>
+		
