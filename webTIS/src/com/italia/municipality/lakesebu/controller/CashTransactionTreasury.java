@@ -84,7 +84,7 @@ public class CashTransactionTreasury {
 	public static String voucherNumber(int accountId){
 		String voucherNo = "";
 		
-		String sql = "SELECT * FROM cashtransactionstreasury WHERE bank_id=? AND (voucherno!='' OR voucherno is not null) ORDER BY voucherno DESC LIMIT 1";
+		String sql = "SELECT * FROM cashtransactionstreasury WHERE cashisactive=1 AND bank_id=? AND (voucherno!='' OR voucherno is not null) ORDER BY voucherno DESC LIMIT 1";
 		String[] params = new String[1];
 		params[0] = accountId+"";
 		CashTransactionTreasury tran = null;
@@ -149,7 +149,7 @@ public class CashTransactionTreasury {
 	public static String checkNumber(int accountId){
 		int checkNo = 0;
 		String newCheckNo = "";
-		String sql = "SELECT * FROM cashtransactionstreasury WHERE bank_id=? AND (checkno!='' OR checkno is not null) ORDER BY checkno DESC LIMIT 1";
+		String sql = "SELECT * FROM cashtransactionstreasury WHERE cashisactive=1 AND bank_id=? AND (checkno!='' OR checkno is not null) ORDER BY checkno DESC LIMIT 1";
 		String[] params = new String[1];
 		params[0] = accountId+"";
 		CashTransactionTreasury tran = null;

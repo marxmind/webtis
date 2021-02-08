@@ -49,6 +49,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 
 <h:form prependId="false" id="formId" style="background-color: #8fdbf5">
 	<p:growl id="alertId" life="2000" />
+	<p:growl id="msg" showDetail="true" life="2000" />
 	
 	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
         	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
@@ -71,7 +72,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     			<p:selectOneMenu value="#{fundTresBean.accountNameId}"  style="width:150px;">
 						<f:selectItems value="#{fundTresBean.accountNameList}"/>
 						<f:ajax event="change" listener="#{fundTresBean.init}" render="formDataId" />
-				</p:selectOneMenu>	
+				</p:selectOneMenu>
+				<p:selectOneMenu value="#{fundTresBean.searchTransId}"  style="width:150px;">
+						<f:selectItems value="#{fundTresBean.searchTransType}"/>
+						<f:ajax event="change" listener="#{fundTresBean.init}" render="formDataId" />
+				</p:selectOneMenu>		
     		</f:facet>
     		<f:facet name="right">
     							<p:inputText a:placeholder="Search..." value="#{fundTresBean.searchParticulars}" style="width: 20em" a:data-step="2" a:data-intro="This is a search field. You can search Payee">
@@ -82,7 +87,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		    					<p:calendar value="#{fundTresBean.dateTo}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" a:data-step="4" a:data-intro="Date To - you can use this field to retrieve data up to the present"/>
 		        				&nbsp;
 		        				
-		        				<p:commandButton id="findId" update="formDataId"  icon="ui-icon-search" actionListener="#{fundTresBean.init}" a:data-step="5" a:data-intro="Search button - this button use to retrieve data."/>
+		        				<p:commandButton id="findId" update="formDataId"  icon="fa fa-search" actionListener="#{fundTresBean.init}" a:data-step="5" a:data-intro="Search button - this button use to retrieve data."/>
 		        				&nbsp;&nbsp;&nbsp;&nbsp;
 		        <p:commandButton update="formDataId" value="Refresh" icon="ui-icon-document" actionListener="#{fundTresBean.init}" a:data-step="6" a:data-intro="Refresh Button - use to refresh data."/>
 		        <p:commandButton update="formDataId" value="Calculate" icon="ui-icon-document" actionListener="#{fundTresBean.init}" a:data-step="7" a:data-intro="Calculate Button - use to recalculate amount balance."/>				
@@ -92,8 +97,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		</p:toolbar> 
 		<p:sticky target="tb" />
 		
-		<p:dataTable id="formDataId" var="rpt" value="#{fundTresBean.trans}" editable="true" 
-       editMode="cell" widgetVar="cellTrans" rowKey="#{rpt.cnt}" scrollable="true" selection="#{fundTresBean.selectedData}" selectionMode="single" 
+		<p:dataTable id="formDataId" var="rpt" value="#{fundTresBean.trans}" 
+        widgetVar="cellTrans" rowKey="#{rpt.cnt}" scrollable="true" selection="#{fundTresBean.selections}"
        rows="55" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,55,110" style="#{skin.table}" paginatorPosition="top"
        >
@@ -115,122 +120,123 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						
             				</f:facet>
        
-       <p:ajax event="cellEdit"  listener="#{fundTresBean.onCellEdit}" update=":formId:formDataId,debitId,creditId,balId" />
-       
        <p:column headerText="#" width="10">
-       		<h:outputText value="#{rpt.cnt}"/>
+       		<p:outputLabel value="#{rpt.cnt}"/>
        </p:column>
        
+       <p:column headerText="[*]" width="30" exportable="false">
+            					<p:commandButton update="formDataId msg" icon="fa fa-trash" actionListener="#{fundTresBean.deleteRow(rpt)}">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+        </p:column>
+       
+       <p:column selectionMode="multiple" width="15"/>
+       
+       <p:column headerText="Edit" width="20" exportable="false">
+       		<p:commandButton icon="fa fa-search" update="vFld" actionListener="#{fundTresBean.showSelected(rpt)}" oncomplete="PF('voucherDlg').show()"/>
+       </p:column>
+            				
+       
        <p:column headerText="Date" width="80">
-             <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="#{rpt.dateTrans}"/></f:facet>
-                  <f:facet name="input">
-                  <p:inputText id="modelInput" a:placeholder="YYYY" value="#{rpt.dateTrans}" a:type="date" style="width:96%;color:black"/>
-                  </f:facet>
-              </p:cellEditor>
+       		<p:outputLabel value="#{rpt.dateTrans}"/>
        </p:column>
        
        <p:column headerText="Center" width="80">
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="#{rpt.departmentCode}"/></f:facet>
-                  <f:facet name="input">
-                  <h:selectOneMenu  value="#{fundTresBean.departmentId}" style="width:100%;color:black">
-                       <f:selectItem itemLabel="Select..."/>
-                       <f:selectItems value="#{fundTresBean.departments}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-                   </h:selectOneMenu>
-                  </f:facet>
-              </p:cellEditor>
+       		<p:outputLabel value="#{rpt.departmentCode}"/>
        </p:column>
        
        <p:column headerText="Payee" width="150">
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="#{rpt.particulars}"/></f:facet>
-                  <f:facet name="input">
-                  <p:inputText a:placeholder="particulars" value="#{rpt.particulars}" style="width:96%;color:black"/>
-                  </f:facet>
-              </p:cellEditor>
+       		<p:outputLabel value="#{rpt.particulars}"/>
        </p:column>
        
        <p:column headerText="Nature of Payment" width="150">
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="#{rpt.naturePayment}"/></f:facet>
-                  <f:facet name="input">
-                  <p:inputText a:placeholder="particulars" value="#{rpt.naturePayment}" style="width:96%;color:black"/>
-                  </f:facet>
-              </p:cellEditor>
+            <p:outputLabel value="#{rpt.naturePayment}"/>
        </p:column>
        
        <p:column headerText="Voucher" width="100">
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="#{rpt.voucherNo}"/></f:facet>
-                  <f:facet name="input">
-                  <p:inputText a:placeholder="000-00-00-000" value="#{rpt.voucherNo}" style="width:96%;color:black"/>
-                  </f:facet>
-              </p:cellEditor>
+            <p:outputLabel value="#{rpt.voucherNo}"/>
        </p:column>
        
         <p:column headerText="OR No" width="70">
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="#{rpt.orNumber}"/></f:facet>
-                  <f:facet name="input">
-                  <p:inputText a:placeholder="OR No" value="#{rpt.orNumber}" style="width:96%;color:black"/>
-                  </f:facet>
-              </p:cellEditor>
+            <p:outputLabel value="#{rpt.orNumber}"/>
        </p:column>
        
         <p:column headerText="Check No" width="70">
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="#{rpt.checkNo}"/></f:facet>
-                  <f:facet name="input">
-                  <p:inputText a:placeholder="Check No" value="#{rpt.checkNo}" style="width:96%;color:black"/>
-                  </f:facet>
-              </p:cellEditor>
+            <p:outputLabel value="#{rpt.checkNo}"/>
        </p:column>
        
        <p:column headerText="Transaction Type" width="100">
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="#{rpt.transactionName}"/></f:facet>
-                  <f:facet name="input">
-                  <h:selectOneMenu  value="#{fundTresBean.transId}" style="width:100%;color:black">
-                       <f:selectItem itemLabel="Select..."/>
-                       <f:selectItems value="#{fundTresBean.transType}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-                   </h:selectOneMenu>
-                  </f:facet>
-              </p:cellEditor>
+            <p:outputLabel value="#{rpt.transactionName}"/>
        </p:column>
        
-       <p:column width="90">
-       	<f:facet name="header">Debit</f:facet>
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="Php #{rpt.dAmount}"/></f:facet>
-                  <f:facet name="input">
-                  <p:inputText a:placeholder="0.00" value="#{rpt.dAmount}"  style="width:96%;color:black"/>
-                  </f:facet>
-              </p:cellEditor>
-         <f:facet name="footer"><p:outputLabel id="debitId" value="Php #{fundTresBean.debitTotal}"/></f:facet>     
-       </p:column>
+       <p:column headerText="Debit Amount" width="90">
+       		<p:outputLabel value="Php #{rpt.dAmount}"/>
+        </p:column>
        
-        <p:column width="90">
-       	<f:facet name="header">Credit</f:facet>
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="Php #{rpt.cAmount}"/></f:facet>
-                  <f:facet name="input">
-                  <p:inputText a:placeholder="0.00" value="#{rpt.cAmount}"  style="width:96%;color:black"/>
-                  </f:facet>
-              </p:cellEditor>
-              <f:facet name="footer"><p:outputLabel id="creditId" value="Php #{fundTresBean.creditTotal}"/></f:facet>
-       </p:column>
+        <p:column headerText="Credit Amount" width="90">
+       		<p:outputLabel value="Php #{rpt.cAmount}"/>
+        </p:column>
        
-       <p:column width="90">
-       		  <f:facet name="header">Balances</f:facet>	
-       			<h:outputText value="Php #{rpt.bAmount}"/>
-              <f:facet name="footer"><p:outputLabel id="balId" value="Php #{fundTresBean.balanceTotal}"/></f:facet>
-       </p:column>
        
        </p:dataTable>
 			
 			</p:layoutUnit>
 	</p:layout>
+	
+	<p:dialog header="Voucher Details" style="#{skin.dialog}" position="center top" closeOnEscape="true" modal="false" showEffect="clip" hideEffect="clip" widgetVar="voucherDlg" Height="300" width="900" closable="false">
+						
+		        <p:toolbar id="tbMotor">
+				    		<f:facet name="left">
+						        	<p:commandButton update="vFld" value="Clear" icon="fa fa-trash" actionListener="#{fundTresBean.clear}"  title="Click this button to clear information"/>
+				    		</f:facet>
+				    		<f:facet name="right">
+				    			
+		    				<p:commandButton update="vFld formDataId msg" value="Save" actionListener="#{fundTresBean.saveVoucherData}"  icon="fa fa-floppy-o" title="Click this button to save your changes" >
+		        				<p:confirm header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
+		        			</p:commandButton>
+				    			<p:commandButton  value="Close" icon="ui-icon-closethick" actionListener="#{fundTresBean.clear}" update="formDataId vFld" style="width: 10em;" oncomplete="PF('voucherDlg').hide()"/>
+				    		</f:facet>
+						</p:toolbar>
+						
+						
+						<p:panelGrid id="vFld" columns="4" layout="grid">
+						
+						<p:outputLabel value="Transaction Type" style="width: 11em;" />
+			    		<p:selectOneMenu  value="#{fundTresBean.transId}" style="width: 11em;">
+	                       <f:selectItems value="#{fundTresBean.transType}" />
+	                    </p:selectOneMenu>
+						
+						<p:outputLabel value="Date Recorded" style="width: 11em;" />
+			    		<p:calendar  value="#{fundTresBean.dateTrans}" inputStyle="width: 11em;"  pattern="yyyy-MM-dd" effect="slideDown"/>
+			    		
+			    		<p:outputLabel value="Department" style="width: 11em;" />
+			    		<p:selectOneMenu value="#{fundTresBean.departmentId}" style="width: 11em;" filter="true" filterMatchMode="contains">
+			    			<f:selectItems value="#{fundTresBean.departments}"/>
+			    		</p:selectOneMenu>
+			    		
+						<p:outputLabel value="Check no" style="width: 11em;" />
+						<p:inputText value="#{fundTresBean.checkNo}" />
+						
+						<p:outputLabel value="Voucher no" style="width: 11em;" />
+						<p:inputText value="#{fundTresBean.voucherNo}" />
+						
+						<p:outputLabel value="Official Receipt no" style="width: 11em;" />
+						<p:inputText value="#{fundTresBean.orNumber}" />
+						
+						<p:outputLabel value="Particulars" style="width: 11em;" />
+						<p:inputText value="#{fundTresBean.particulars}" />
+						
+						<p:outputLabel value="Nature of Payment" style="width: 11em;" />
+						<p:inputText value="#{fundTresBean.naturePayment}" />
+						
+						<p:outputLabel value="Amount" style="width: 11em;" />
+						<p:inputNumber value="#{fundTresBean.amount}" />
+						
+						</p:panelGrid>
+						
+	</p:dialog>
+	
+						
 	
 <ui:include src="loader.xhtml" />
 <ui:include src="menu.xhtml" /> 	

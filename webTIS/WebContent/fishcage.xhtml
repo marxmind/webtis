@@ -247,12 +247,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
      						<p:toolbar id="tbCol" style="#{skin.toolbar}">
 						    		<f:facet name="left">
 						        		<p:inputText value="#{fishcageBean.searchInUnpaidName}" placeholder="Searh name..." style="width: 20em">
-						        			<p:ajax event="keyup" listener="#{fishcageBean.loadUnpaidDtls}" delay="800" update="rentData"/>
+						        			<p:ajax event="keyup" listener="#{fishcageBean.loadUnpaidAll('limit')}" delay="800" update="rentData"/>
 						        		</p:inputText>
-						        		<p:commandButton actionListener="#{fishcageBean.loadUnpaidAll}" value="Load All" update="rentData"/>
+						        		<p:commandButton actionListener="#{fishcageBean.loadUnpaidAll('all')}" value="Load All" update="rentData"/>
 						        	</f:facet>
 						    		<f:facet name="right">
-						    			
+						    			<p:selectOneMenu  value="#{fishcageBean.yearPaidId}" style="width: 11em;">
+					                       <f:selectItems value="#{fishcageBean.yearPaid}" />
+					                       <p:ajax event="change" listener="#{fishcageBean.loadUnpaidAll('all')}" update="rentData tbAmnt"/>
+					                    </p:selectOneMenu>
 									</f:facet>
 							</p:toolbar>
      						
@@ -296,40 +299,47 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						<h:outputText  value="#{rt.f7}"/>
             				</p:column>
             				
-            				<p:column headerText="2018" width="70">
+            				<p:column headerText="2018" width="70" rendered="#{fishcageBean.enable2018}">
             						<h:outputText  value="#{rt.f8}"/>
             				</p:column>
             				
-            				<p:column headerText="2019" width="70">
+            				<p:column headerText="2019" width="70" rendered="#{fishcageBean.enable2019}">
             						<h:outputText  value="#{rt.f9}"/>
             				</p:column>
             				
-            				<p:column headerText="2020" width="70">
+            				<p:column headerText="2020" width="70" rendered="#{fishcageBean.enable2020}">
             						<h:outputText  value="#{rt.f10}"/>
             				</p:column>
      						
-     						<p:column headerText="2021" width="70">
+     						<p:column headerText="2021" width="70" rendered="#{fishcageBean.enable2021}">
             						<h:outputText  value="#{rt.f11}"/>
             				</p:column>
             				
-            				<p:column headerText="2022" width="70">
+            				<p:column headerText="2022" width="70" rendered="#{fishcageBean.enable2022}">
             						<h:outputText  value="#{rt.f12}"/>
             				</p:column>
             				
-            				<p:column headerText="2023" width="70">
+            				<p:column headerText="2023" width="70" rendered="#{fishcageBean.enable2023}">
             						<h:outputText  value="#{rt.f13}"/>
             				</p:column>
             				
-            				<p:column headerText="2024" width="70">
+            				<p:column headerText="2024" width="70" rendered="#{fishcageBean.enable2024}">
             						<h:outputText  value="#{rt.f14}"/>
             				</p:column>
             				
-            				<p:column headerText="2025" width="70">
+            				<p:column headerText="2025" width="70" rendered="#{fishcageBean.enable2025}">
             						<h:outputText  value="#{rt.f15}"/>
             				</p:column>
      						
      						</p:dataTable>
      						
+     						<p:toolbar id="tbAmnt" style="#{skin.toolbar}">
+						    		<f:facet name="left">
+						        	</f:facet>
+						    		<f:facet name="right">
+						    			<p:outputLabel value="Total: #{fishcageBean.totalAmountYear}"/>
+						    		</f:facet>
+							</p:toolbar>
      					</p:tab>
      					
      					</p:tabView>

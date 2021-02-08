@@ -111,23 +111,130 @@ public class FishcageBean implements Serializable {
 	private boolean displayForMto=DocumentFormatter.getTagName("mto-fishery-display-person").equalsIgnoreCase("true")? true : false;
 	
 	
+	private int yearPaidId;
+	private List yearPaid;
+	
+	private boolean enable2018;
+	private boolean enable2019;
+	private boolean enable2020;
+	private boolean enable2021;
+	private boolean enable2022;
+	private boolean enable2023;
+	private boolean enable2024;
+	private boolean enable2025;
+	private String totalAmountYear;
+	
 	public void onChange(TabChangeEvent event) {
 		if("Water Rentals".equalsIgnoreCase(event.getTab().getTitle())) {
 			init();
 		}else if("Payment Collection Summary".equalsIgnoreCase(event.getTab().getTitle())) {
-			loadUnpaidDtls();
+			enableYear(0);
+			//loadUnpaidDtls();
+			loadUnpaidAll("limit");
 		}
 	}
 	
-	public void loadUnpaidAll() {
+	public void enableYear(int id) {
+		
+		setEnable2018(false);
+		setEnable2019(false);
+		setEnable2020(false);
+		setEnable2021(false);
+		setEnable2022(false);
+		setEnable2023(false);
+		setEnable2024(false);
+		setEnable2025(false);
+		
+		switch(id) {
+		case 0:
+			setEnable2018(true);
+			setEnable2019(true);
+			setEnable2020(true);
+			setEnable2021(true);
+			setEnable2022(true);
+			setEnable2023(true);
+			setEnable2024(true);
+			setEnable2025(true);
+			break;
+		case 2018:
+			setEnable2018(true);
+			break;
+		case 2019:
+			setEnable2019(true);
+			break;
+		case 2020:
+			setEnable2020(true);
+			break;	
+		case 2021:
+			setEnable2021(true);
+			break;	
+		case 2022:
+			setEnable2022(true);
+			break;	
+		case 2023:
+			setEnable2023(true);
+			break;	
+		case 2024:
+			setEnable2024(true);
+			break;	
+		case 2025:
+			setEnable2025(true);
+			break;	
+		}
+			
+	}
+	
+public WaterRentalsPayment yearDtlsAmount(int id, WaterRentalsPayment w, FishCagePayment py) {
+		
+		switch(id) {
+		
+		case 2018:
+			w.setF8(Currency.formatAmount(py.getAmountPaid()));
+			break;
+		case 2019:
+			w.setF9(Currency.formatAmount(py.getAmountPaid()));
+			break;
+		case 2020:
+			w.setF10(Currency.formatAmount(py.getAmountPaid()));
+			break;	
+		case 2021:
+			w.setF11(Currency.formatAmount(py.getAmountPaid()));
+			break;	
+		case 2022:
+			w.setF12(Currency.formatAmount(py.getAmountPaid()));
+			break;	
+		case 2023:
+			w.setF13(Currency.formatAmount(py.getAmountPaid()));
+			break;	
+		case 2024:
+			w.setF14(Currency.formatAmount(py.getAmountPaid()));
+			break;	
+		case 2025:
+			w.setF15(Currency.formatAmount(py.getAmountPaid()));
+			break;	
+		}
+		
+		return w;
+	}
+	
+	public void loadUnpaidAll(String limit) {
 		payRentals = new ArrayList<WaterRentalsPayment>();
 		String sql = "";
 		if(getSearchInUnpaidName()!=null && !getSearchInUnpaidName().isBlank()) {
 			sql += " AND owner like '%"+ getSearchInUnpaidName() +"%'";
+		}else {
+			if(!"all".equalsIgnoreCase(limit)) {
+				sql += " LIMIT 10";
+			}
 		}
+		
 		List<FishCage> rentals = new ArrayList<FishCage>();
 		rentals = FishCage.retrieve(sql, new String[0]);
 		
+		if(getYearPaidId()>0) {
+			enableYear(getYearPaidId());
+		}
+		double amount = 0d;
 		for(FishCage cage : rentals) {
 			WaterRentalsPayment w = new WaterRentalsPayment();
 			
@@ -139,33 +246,40 @@ public class FishcageBean implements Serializable {
 			w.setF6(cage.getRemarks());
 			w.setF7(Currency.formatAmount(cage.getAmountDue()));
 			
-			
 			sql = " AND py.cid=" + cage.getId();
-			sql += " ORDER BY py.paymentDate DESC";
-			boolean noPayments = true;
-			int count = 0;
 			
-			for(FishCagePayment py : FishCagePayment.retrieve(sql, new String[0])) {
-				noPayments = false;
-				switch(count) {
-					case 0: w.setF8(Currency.formatAmount(py.getAmountPaid())); break;
-					case 1: w.setF9(Currency.formatAmount(py.getAmountPaid())); break;
-					case 2: w.setF10(Currency.formatAmount(py.getAmountPaid())); break;
+			if(getYearPaidId()==0) {
+				sql += " ORDER BY py.paymentDate DESC";
+				
+				for(FishCagePayment py : FishCagePayment.retrieve(sql, new String[0])) {
+					switch(py.getYear()) {
+						case 2018: w.setF8(Currency.formatAmount(py.getAmountPaid())); break;
+						case 2019: w.setF9(Currency.formatAmount(py.getAmountPaid())); break;
+						case 2020: w.setF10(Currency.formatAmount(py.getAmountPaid())); break;
+						case 2021: w.setF11(Currency.formatAmount(py.getAmountPaid())); break;
+						case 2022: w.setF12(Currency.formatAmount(py.getAmountPaid())); break;
+						case 2023: w.setF13(Currency.formatAmount(py.getAmountPaid())); break;
+						case 2024: w.setF14(Currency.formatAmount(py.getAmountPaid())); break;
+						case 2025: w.setF15(Currency.formatAmount(py.getAmountPaid())); break;
+					}
 				}
-				count++;
-			}
-			
-			if(noPayments) {
-				w.setF8("0.00");
-				w.setF9("0.00");
-				w.setF10("0.00");
-			}
-			
-			if(count!=3) {//this condition is applicable only for year 2020
 				payRentals.add(w); 
+			
+			}else {
+				
+				sql += " AND py.yearPaid=" + getYearPaidId();
+				sql += " ORDER BY py.paymentDate DESC";
+				
+				for(FishCagePayment py : FishCagePayment.retrieve(sql, new String[0])) {
+					w = yearDtlsAmount(getYearPaidId(), w, py);
+					amount += py.getAmountPaid();
+				}
+				payRentals.add(w); 
+				
 			}
 			
 		}
+		setTotalAmountYear(Currency.formatAmount(amount));
 	}
 	
 	public void loadUnpaidDtls() {
@@ -176,6 +290,7 @@ public class FishcageBean implements Serializable {
 		}else {
 			//sql += " LIMIT 10";
 		}
+		
 		List<FishCage> rentals = new ArrayList<FishCage>();
 		rentals = FishCage.retrieve(sql, new String[0]);
 		int counter = 1;
@@ -194,6 +309,10 @@ public class FishcageBean implements Serializable {
 			
 			
 			sql = " AND py.cid=" + cage.getId();
+			if(getYearPaidId()>0) {
+				
+				sql += " AND py.yearPaid=" + getYearPaidId();
+			}
 			sql += " ORDER BY py.paymentDate DESC";
 			boolean noPayments = true;
 			int count = 0;
@@ -454,6 +573,15 @@ public class FishcageBean implements Serializable {
 		orders.add(new SelectItem(4, "Amount Due"));
 	}
 	
+	private void loadYearPaid() {
+		setYearPaidId(0);
+		yearPaid = new ArrayList<>();
+		yearPaid.add(new SelectItem(0, "Select Year"));
+		for(int y=2018; y<=DateUtils.getCurrentYear(); y++) {
+			yearPaid.add(new SelectItem(y, y+""));
+		}
+	}
+	
 	public void search() {
 		if(getSearchName()!=null && getSearchName().length()>3) {
 			init(); 	
@@ -465,6 +593,7 @@ public class FishcageBean implements Serializable {
 		setForyearpaid(DateUtils.getCurrentYear());
 		setPaymentDate(DateUtils.getDateToday());
 		loadOrderList();
+		loadYearPaid();
 		
 		if(getDateRegister()==null) {
 			setDateRegister(DateUtils.getDateToday());

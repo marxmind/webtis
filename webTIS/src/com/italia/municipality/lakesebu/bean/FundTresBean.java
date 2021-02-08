@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
@@ -22,6 +25,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 
 import com.italia.municipality.lakesebu.controller.BankAccounts;
@@ -33,6 +37,8 @@ import com.italia.municipality.lakesebu.controller.Reports;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.TransactionType;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
+import com.italia.municipality.lakesebu.utils.AppGlobalVar;
+import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.xml.BookCashBook;
@@ -71,6 +77,9 @@ public class FundTresBean implements Serializable{
 	private int transId;
 	private List transType;
 	
+	private int searchTransId;
+	private List searchTransType;
+	
 	private String debitTotal;
 	private String creditTotal;
 	private String balanceTotal;
@@ -80,17 +89,31 @@ public class FundTresBean implements Serializable{
 	private int departmentId;
 	private List departments;
 	
+	private Date dateTrans;
+	private String particulars;
+	private String naturePayment;
+	private String voucherNo;
+	private String orNumber;
+	private String checkNo;
+	private double amount;
+	private List<CashTransactionTreasury> selections;
+	
 	@PostConstruct
 	public void init(){
 		
 		//load backup xml
 		try{BookCashBook.loadXML(new CashTransactionTreasury());}catch(Exception e){}
 		
-		String sql = "SELECT * FROM cashtransactionstreasury WHERE cashDate>=? AND cashDate<=? AND bank_id=? ";
+		String sql = "SELECT * FROM cashtransactionstreasury WHERE cashisactive=1 AND cashDate>=? AND cashDate<=? AND bank_id=? ";
 		String[] params = new String[3]; 
 		if(getSearchParticulars()!=null && !getSearchParticulars().isEmpty()){
 			sql += " AND cashParticulars like '%" + getSearchParticulars().replace("--", "") + "%'";
 		}
+		
+		if(getSearchTransId()>0) {
+			sql += " AND cashtranstype=" + getSearchTransId();
+		}
+		
 		params[0] = DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd");
 		params[1] = DateUtils.convertDate(getDateTo(),"yyyy-MM-dd");
 		params[2] = getAccountNameId()+"";
@@ -128,6 +151,12 @@ public class FundTresBean implements Serializable{
 		setCreditTotal(Currency.formatAmount(creditAmount));
 		balancesAmount = debitAmount - creditAmount;
 		setBalanceTotal(Currency.formatAmount(balancesAmount));
+	}
+	
+	public void deleteRow(CashTransactionTreasury tran) {
+		tran.delete();
+		init();
+		Application.addMessage(1, "Success", "Successfully deleted.");
 	}
 	
 	 public void onCellEdit(CellEditEvent event) {
@@ -173,6 +202,110 @@ public class FundTresBean implements Serializable{
 			 init();
 		 }
 	 }
+	 
+	public void clear() {
+		setSelectedData(null);
+		setDateTrans(DateUtils.getDateToday());
+		setParticulars(null);
+		setNaturePayment(null);
+		setVoucherNo(null);
+		setOrNumber(null);
+		setCheckNo(null);
+		setAmount(0);
+		setDepartmentId(0);
+		setTransId(0);
+	}
+	 
+	public void showSelected(CashTransactionTreasury tran) {
+		
+		if(tran!=null) {
+			setSelectedData(tran);
+			setDateTrans(DateUtils.convertDateString(tran.getDateTrans(), "yyyy-MM-dd"));
+			setParticulars(tran.getParticulars());
+			setNaturePayment(tran.getNaturePayment());
+			setVoucherNo(tran.getVoucherNo());
+			setOrNumber(tran.getOrNumber());
+			setCheckNo(tran.getCheckNo());
+			setTransId(tran.getTransType());
+			setDepartmentId(tran.getDepartment().getDepid());
+			if(TransactionType.COLLECTION.getId()==getTransId() ||
+					//TransactionType.DEPOSIT.getId()==getTransId() ||
+					TransactionType.OTHER_INCOME.getId()==getTransId()) {
+			
+				setAmount(tran.getDebitAmount());
+			}else {
+				setAmount(tran.getCreditAmount());
+			}
+		}
+		
+	}
+	 
+	public void saveVoucherData() {
+		boolean isOk = true;
+		CashTransactionTreasury tran = new CashTransactionTreasury();
+		if(getSelectedData()!=null) {
+			tran = getSelectedData();
+		}else {
+			tran.setIsActive(1);
+		}
+		
+		if(getCheckNo()==null) {
+			isOk = false;
+			Application.addMessage(2, "Warning", "Please provide check no.");
+		}
+		
+		if(getVoucherNo()==null) {
+			isOk = false;
+			Application.addMessage(2, "Warning", "Please provide voucher no");
+		}
+		
+		if(getAmount()<=0) {
+			isOk = false;
+			Application.addMessage(2, "Warning", "Please provide amount");
+		}
+		
+		//if(getDepartmentId()==0) {
+		//	isOk = false;
+		//	Application.addMessage(2, "Warning", "Please provide department");
+		//}
+		
+		if(getTransId()==0) {
+			isOk = false;
+			Application.addMessage(2, "Warning", "Please provide transaction type");
+		}
+		
+		if(isOk) {
+			tran.setDateTrans(DateUtils.convertDate(getDateTrans(), "yyyy-MM-dd"));
+			tran.setTransType(getTransId());
+			tran.setParticulars(getParticulars());
+			tran.setNaturePayment(getNaturePayment());
+			tran.setVoucherNo(getVoucherNo());
+			tran.setOrNumber(getOrNumber());
+			tran.setCheckNo(getCheckNo());
+			if(TransactionType.COLLECTION.getId()==getTransId() ||
+					//TransactionType.DEPOSIT.getId()==getTransId() ||
+					TransactionType.OTHER_INCOME.getId()==getTransId()) {
+				tran.setDebitAmount(getAmount());
+			}else {
+				tran.setCreditAmount(getAmount());
+			}
+			
+			Department department = new Department();
+			department.setDepid(getDepartmentId());
+			tran.setDepartment(department);
+			
+			 BankAccounts accounts = new BankAccounts();
+			 accounts.setBankId(getAccountNameId());
+			 tran.setAccounts(accounts);
+			 tran.setUserDtls(Login.getUserLogin().getUserDtls());
+			 tran.save();
+			 init();
+			 Application.addMessage(1, "Success", "Successfully saved");
+			 PrimeFaces pf = PrimeFaces.current();
+			 pf.executeScript("PF('voucherDlg').hide()");
+			 clear();
+		}
+	}
 	 
 	 private void saveXML(CashTransactionTreasury cash){
 		 
@@ -333,8 +466,9 @@ public class FundTresBean implements Serializable{
 	public Date getDateFrom() {
 		
 		if(dateFrom==null){
-			String date = DateUtils.getFirstDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN); 
-			dateFrom = DateUtils.convertDateString(date, "yyyy-MM-dd");
+			//String date = DateUtils.getFirstDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN); 
+			//dateFrom = DateUtils.convertDateString(date, "yyyy-MM-dd");
+			dateFrom = DateUtils.getDateToday();
 		}
 		
 		return dateFrom;
@@ -349,8 +483,9 @@ public class FundTresBean implements Serializable{
 	public Date getDateTo() {
 		
 		if(dateTo==null){
-			String date = DateUtils.getLastDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN); 
-			dateTo = DateUtils.convertDateString(date, "yyyy-MM-dd");
+			//String date = DateUtils.getLastDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN); 
+			//dateTo = DateUtils.convertDateString(date, "yyyy-MM-dd");
+			dateTo = DateUtils.getDateToday();
 		}
 		
 		return dateTo;
@@ -388,7 +523,10 @@ public class FundTresBean implements Serializable{
 	public List getTransType() {
 		
 		transType = new ArrayList<>();
-		
+		for(TransactionType type : TransactionType.values()) {
+			transType.add(new SelectItem(type.getId(), type.getName()));
+		}
+		/*
 		transType.add(new SelectItem(TransactionType.IRA.getId(), TransactionType.IRA.getName()));
 		transType.add(new SelectItem(TransactionType.DEPOSIT.getId(), TransactionType.DEPOSIT.getName()));
 		transType.add(new SelectItem(TransactionType.LOAN.getId(), TransactionType.LOAN.getName()));
@@ -401,15 +539,15 @@ public class FundTresBean implements Serializable{
 		transType.add(new SelectItem(TransactionType.PAYMENT.getId(), TransactionType.PAYMENT.getName()));
 		transType.add(new SelectItem(TransactionType.CHECK_ISSUED.getId(), TransactionType.CHECK_ISSUED.getName()));
 		transType.add(new SelectItem(TransactionType.CASH_ADVANCE.getId(), TransactionType.CASH_ADVANCE.getName()));
-		
+		*/
 		return transType;
 	}
 	
 	public void print(){ //check issued only
-		if(trans.size()>0){
+		if(getSelections().size()>0){
 			List<Reports> reports = Collections.synchronizedList(new ArrayList<Reports>());
 			double total = 0d;
-			for(CashTransactionTreasury tran : trans){
+			for(CashTransactionTreasury tran : getSelections()){
 				if(tran.getTransType()==TransactionType.CHECK_ISSUED.getId()){
 					Reports rpt = new Reports();
 					rpt.setF1(tran.getDateTrans());
@@ -437,7 +575,7 @@ public class FundTresBean implements Serializable{
 			
 	  		param.put("PARAM_REPORT_TITLE","REPORT OF CHECK ISSUED");
 	  		
-	  		param.put("PARAM_PRINTED_DATE","Printed: "+DateUtils.getCurrentDateMMDDYYYYTIME());
+	  		param.put("PARAM_PRINTED_DATE","Printed: "+DateUtils.getCurrentDateMMMMDDYYYY());
 	  		param.put("PARAM_RANGE_DATE",DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd") + " to " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd"));
 	  		
 	  		BankAccounts accnt = BankAccounts.retrieve("SELECT * FROM tbl_bankaccounts WHERE bank_id=" + getAccountNameId(), new String[0]).get(0);
@@ -507,49 +645,82 @@ public class FundTresBean implements Serializable{
 	}
 	
 	public void printCollection(){ //Deposit and collection only
-		if(trans.size()>0){
+		if(getSelections().size()>0){
 			List<Reports> reports = Collections.synchronizedList(new ArrayList<Reports>());
-			double total = 0d;
-			for(CashTransactionTreasury tran : trans){
-				if(tran.getTransType()==TransactionType.COLLECTION.getId() || tran.getTransType()==TransactionType.DEPOSIT.getId()){
+			//double total = 0d;
+			String dateReport = DateUtils.getCurrentDateMMMMDDYYYY();
+			int cnt=0;
+			
+			Map<String, CashTransactionTreasury> unsorted = new LinkedHashMap<String, CashTransactionTreasury>();
+			for(CashTransactionTreasury tran : getSelections()){
+				unsorted.put(tran.getVoucherNo(), tran);
+			}
+			Map<String, CashTransactionTreasury> sorted = new TreeMap<String, CashTransactionTreasury>(unsorted);
+			for(CashTransactionTreasury tran : sorted.values()){
+				if(tran.getTransType()==TransactionType.COLLECTION.getId() 
+						|| tran.getTransType()==TransactionType.DEPOSIT.getId() 
+						|| tran.getTransType()==TransactionType.IRA.getId()
+						|| tran.getTransType()==TransactionType.LOAN.getId()){
 					Reports rpt = new Reports();
-					rpt.setF1(tran.getDateTrans());
+					if(cnt==0) {
+						dateReport = DateUtils.convertDateToMonthDayYear(tran.getDateTrans());
+						rpt.setF1(tran.getDateTrans());
+					}
+					
 					rpt.setF2(tran.getCheckNo().equalsIgnoreCase("0")? "" : tran.getCheckNo());
 					rpt.setF3(tran.getVoucherNo());
-					rpt.setF4(tran.getDepartmentCode());
+					//rpt.setF4(tran.getDepartmentCode());
 					rpt.setF5(tran.getParticulars());
 					rpt.setF6(tran.getNaturePayment());
 					if(tran.getTransType()==TransactionType.COLLECTION.getId()){
 						rpt.setF7(tran.getdAmount());
 					}
-					if(tran.getTransType()==TransactionType.DEPOSIT.getId()){
+					if(tran.getTransType()==TransactionType.DEPOSIT.getId() 
+							|| tran.getTransType()==TransactionType.IRA.getId()
+							|| tran.getTransType()==TransactionType.LOAN.getId()){
 						rpt.setF7(tran.getcAmount());
 					}
 					reports.add(rpt);
-					total += tran.getDebitAmount();
+					//total += tran.getDebitAmount();
+					
+					cnt++;
 				}
 			}
-			
+			int size = reports.size();
 			//compiling report
-			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
-			String REPORT_NAME =ReadConfig.value(AppConf.CHECK_ISSUED);
+			String REPORT_PATH = AppGlobalVar.REPORT_FOLDER;//AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
+					//AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+			String REPORT_NAME = AppGlobalVar.TREASURER_COLLECTION_DEPOSIT_REPORT;//ReadConfig.value(AppConf.CHECK_ISSUED);
+			
+			
+			/*
+			if(size>30 && size<=32) {
+				REPORT_NAME = AppGlobalVar.TREASURER_COLLECTION_DEPOSIT_OVER_32_REPORT;
+			}
+			if(size>32 && size<=54) {
+				REPORT_NAME = AppGlobalVar.TREASURER_COLLECTION_DEPOSIT_OVER_35_REPORT;
+			}*/
+			
+			
+			
 			System.out.println("Report path " + REPORT_PATH + " name " + REPORT_NAME);
 			ReportCompiler compiler = new ReportCompiler();
 			String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, REPORT_PATH);
+			
+			
 			
 			JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(reports);
 	  		HashMap param = new HashMap();
 			
 	  		param.put("PARAM_REPORT_TITLE","REPORT OF COLLECTION AND DEPOSIT");
 	  		
-	  		param.put("PARAM_PRINTED_DATE","Printed: "+DateUtils.getCurrentDateMMDDYYYYTIME());
-	  		param.put("PARAM_RANGE_DATE",DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd") + " to " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd"));
-	  		
+	  		param.put("PARAM_PRINTED_DATE", dateReport);
+	  		//param.put("PARAM_RANGE_DATE",DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd") + " to " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd"));
+	  		param.put("PARAM_RANGE_DATE",dateReport);
 	  		BankAccounts accnt = BankAccounts.retrieve("SELECT * FROM tbl_bankaccounts WHERE bank_id=" + getAccountNameId(), new String[0]).get(0);
 	  		param.put("PARAM_ACCOUNT_NAME","Bank Name/Account No. "+accnt.getBankAccntNo() + "-" + accnt.getBankAccntBranch());
 			
-	  		param.put("PARAM_SUB_TOTAL",Currency.formatAmount(total));
+	  		//param.put("PARAM_SUB_TOTAL",Currency.formatAmount(total));
 	  		
 	  		if(getAccountNameId()==1){
 	  			param.put("PARAM_RECEIVEDBY","");
@@ -657,7 +828,7 @@ public class FundTresBean implements Serializable{
 			
 	  		param.put("PARAM_TITLE","CASH BOOK IN TREASURY");
 	  		
-	  		param.put("PARAM_PRINTED_DATE","Printed: "+DateUtils.getCurrentDateMMDDYYYYTIME());
+	  		param.put("PARAM_PRINTED_DATE","Printed: "+DateUtils.getCurrentDateMMMMDDYYYY());
 	  		param.put("PARAM_RANGE_DATE",DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd") + " to " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd"));
 	  		
 	  		BankAccounts accnt = BankAccounts.retrieve("SELECT * FROM tbl_bankaccounts WHERE bank_id=" + getAccountNameId(), new String[0]).get(0);
@@ -761,8 +932,9 @@ public class FundTresBean implements Serializable{
 		
 		departments = new ArrayList<>();
 		
-		for(Department dep : Department.retrieve("SELECT * FROM department order by departmentname", new String[0])){
-			departments.add(new SelectItem(dep.getDepid(), dep.getDepartmentName()));
+		for(Department dep : Department.retrieve("SELECT * FROM department order by code", new String[0])){
+			//departments.add(new SelectItem(dep.getDepid(), dep.getDepartmentName()));
+			departments.add(new SelectItem(dep.getDepid(), dep.getCode()));
 		}
 		
 		return departments;
@@ -770,6 +942,94 @@ public class FundTresBean implements Serializable{
 
 	public void setDepartments(List departments) {
 		this.departments = departments;
+	}
+
+	public Date getDateTrans() {
+		if(dateTrans==null) {
+			dateTrans = DateUtils.getDateToday();
+		}
+		return dateTrans;
+	}
+
+	public void setDateTrans(Date dateTrans) {
+		this.dateTrans = dateTrans;
+	}
+
+	public String getParticulars() {
+		return particulars;
+	}
+
+	public void setParticulars(String particulars) {
+		this.particulars = particulars;
+	}
+
+	public String getNaturePayment() {
+		return naturePayment;
+	}
+
+	public void setNaturePayment(String naturePayment) {
+		this.naturePayment = naturePayment;
+	}
+
+	public String getVoucherNo() {
+		return voucherNo;
+	}
+
+	public void setVoucherNo(String voucherNo) {
+		this.voucherNo = voucherNo;
+	}
+
+	public String getOrNumber() {
+		return orNumber;
+	}
+
+	public void setOrNumber(String orNumber) {
+		this.orNumber = orNumber;
+	}
+
+	public String getCheckNo() {
+		return checkNo;
+	}
+
+	public void setCheckNo(String checkNo) {
+		this.checkNo = checkNo;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(double amount) {
+		this.amount = amount;
+	}
+
+	public List<CashTransactionTreasury> getSelections() {
+		return selections;
+	}
+
+	public void setSelections(List<CashTransactionTreasury> selections) {
+		this.selections = selections;
+	}
+
+	public int getSearchTransId() {
+		return searchTransId;
+	}
+
+	public void setSearchTransId(int searchTransId) {
+		this.searchTransId = searchTransId;
+	}
+
+	public List getSearchTransType() {
+		searchTransType = new ArrayList<>();
+		searchTransType.add(new SelectItem(0, "All Types"));
+		for(TransactionType type : TransactionType.values()) {
+			searchTransType.add(new SelectItem(type.getId(), type.getName()));
+		}
+		return searchTransType;
+	}
+
+	public void setSearchTransType(List searchTransType) {
+		this.searchTransType = searchTransType;
 	}
 	
 }
