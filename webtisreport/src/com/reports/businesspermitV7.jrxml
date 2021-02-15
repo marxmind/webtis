@@ -162,7 +162,7 @@
 				<textFieldExpression><![CDATA[$P{PARAM_BUSINESS_NAME}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="0" y="181" width="555" height="20" forecolor="#D40B04" uuid="5661f467-fef2-4444-80a0-d6c249820753">
+				<reportElement x="0" y="167" width="573" height="20" forecolor="#D40B04" uuid="5661f467-fef2-4444-80a0-d6c249820753">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
 				<textElement textAlignment="Center">
@@ -225,7 +225,7 @@
 				<text><![CDATA[(Business Engaged)]]></text>
 			</staticText>
 			<image scaleImage="FillFrame" onErrorType="Blank">
-				<reportElement x="3" y="83" width="129" height="120" uuid="eff2b9ed-8d08-45ca-962a-e0ede4312fec">
+				<reportElement x="3" y="47" width="129" height="120" uuid="eff2b9ed-8d08-45ca-962a-e0ede4312fec">
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
@@ -258,20 +258,11 @@
 				<text><![CDATA[OFFICE OF THE MAYOR]]></text>
 			</staticText>
 			<line>
-				<reportElement x="1" y="60" width="139" height="1" uuid="bd1ce8c1-cdfa-4519-854d-b268ec6b87a1"/>
+				<reportElement x="1" y="32" width="139" height="1" uuid="bd1ce8c1-cdfa-4519-854d-b268ec6b87a1"/>
 				<graphicElement>
 					<pen lineWidth="3.0"/>
 				</graphicElement>
 			</line>
-			<staticText>
-				<reportElement x="0" y="60" width="138" height="16" forecolor="#000203" uuid="aa2b19ec-e91e-4bff-ba6c-8ace059e4ac9">
-					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-				</reportElement>
-				<textElement textAlignment="Center">
-					<font size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Barangay]]></text>
-			</staticText>
 			<rectangle>
 				<reportElement mode="Transparent" x="415" y="380" width="143" height="50" uuid="d38f48b9-6b48-485b-bd23-e30233a0cd37"/>
 			</rectangle>
@@ -448,7 +439,7 @@
 				<text><![CDATA[Municipal Mayor]]></text>
 			</staticText>
 			<image scaleImage="RetainShape" onErrorType="Blank">
-				<reportElement x="1" y="1" width="230" height="20" uuid="8ffc93a9-7485-442c-98c3-153106768780"/>
+				<reportElement x="180" y="1" width="230" height="20" uuid="8ffc93a9-7485-442c-98c3-153106768780"/>
 				<imageExpression><![CDATA[$P{PARAM_BARCODE}]]></imageExpression>
 			</image>
 			<rectangle>
@@ -478,15 +469,15 @@
 				<textFieldExpression><![CDATA[$P{PARAM_TYPE}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="0" y="40" width="138" height="18" forecolor="#D40B04" uuid="e583d271-99a9-443f-95a1-880c6101c1a4"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="0" y="17" width="138" height="16" forecolor="#D40B04" uuid="e583d271-99a9-443f-95a1-880c6101c1a4"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_BARANGAY}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="3" y="207" width="128" height="15" uuid="8e260251-0253-40b4-8026-6e65e9f0dc02"/>
-				<textElement textAlignment="Center">
+				<reportElement x="3" y="34" width="128" height="15" uuid="8e260251-0253-40b4-8026-6e65e9f0dc02"/>
+				<textElement textAlignment="Center" rotation="None">
 					<font size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_CONTROLNO}]]></textFieldExpression>
