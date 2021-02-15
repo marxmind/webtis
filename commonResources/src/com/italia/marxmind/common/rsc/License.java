@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -22,7 +21,6 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 
 import com.italia.marxmind.ConnectDB;
 import com.italia.marxmind.SecureChar;
-import com.italia.marxmind.appUtils.DateUtils;
 /**
  * 
  * @author mark italia

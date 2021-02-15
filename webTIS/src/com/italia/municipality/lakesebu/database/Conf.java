@@ -7,6 +7,9 @@ import java.util.Properties;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.security.SecureChar;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 
  * @author Mark Italia
@@ -14,7 +17,8 @@ import com.italia.municipality.lakesebu.security.SecureChar;
  * @version 1.0
  *
  */
-
+@Setter
+@Getter
 public class Conf {
 
 	private String CONFIG_FILE_NAME = "dbconf.max";
@@ -89,108 +93,6 @@ public class Conf {
 		}
 	}
 
-	public String getDatabasePort() {
-		return databasePort;
-	}
-
-	public void setDatabasePort(String databasePort) {
-		this.databasePort = databasePort;
-	}
-
-	public String getDatabaseUrl() {
-		return databaseUrl;
-	}
-
-	public void setDatabaseUrl(String databaseUrl) {
-		this.databaseUrl = databaseUrl;
-	}
-
-	public String getDatabaseDriver() {
-		return databaseDriver;
-	}
-
-	public void setDatabaseDriver(String databaseDriver) {
-		this.databaseDriver = databaseDriver;
-	}
-
-	public String getDatabaseSSL() {
-		return databaseSSL;
-	}
-
-	public void setDatabaseSSL(String databaseSSL) {
-		this.databaseSSL = databaseSSL;
-	}
-
-	public String getDatabaseUserName() {
-		return databaseUserName;
-	}
-
-	public void setDatabaseUserName(String databaseUserName) {
-		this.databaseUserName = databaseUserName;
-	}
-
-	public String getDatabasePassword() {
-		return databasePassword;
-	}
-
-	public void setDatabasePassword(String databasePassword) {
-		this.databasePassword = databasePassword;
-	}
-
-	public String getDatabaseTimeZone() {
-		return databaseTimeZone;
-	}
-
-	public void setDatabaseTimeZone(String databaseTimeZone) {
-		this.databaseTimeZone = databaseTimeZone;
-	}
-
-	public String getDatabaseBank() {
-		return databaseBank;
-	}
-
-	public void setDatabaseBank(String databaseBank) {
-		this.databaseBank = databaseBank;
-	}
-
-	public String getDatabaseLand() {
-		return databaseLand;
-	}
-
-	public void setDatabaseLand(String databaseLand) {
-		this.databaseLand = databaseLand;
-	}
-
-	public String getDatabaseMain() {
-		return databaseMain;
-	}
-
-	public void setDatabaseMain(String databaseMain) {
-		this.databaseMain = databaseMain;
-	}
-
-	public String getDatabaseLicensing() {
-		return databaseLicensing;
-	}
-
-	public void setDatabaseLicensing(String databaseLicensing) {
-		this.databaseLicensing = databaseLicensing;
-	}
-
-	public String getDatabaseAgriculture() {
-		return databaseAgriculture;
-	}
-
-	public void setDatabaseAgriculture(String databaseAgriculture) {
-		this.databaseAgriculture = databaseAgriculture;
-	}
-
-	public String getDatabaseCashBook() {
-		return databaseCashBook;
-	}
-
-	public void setDatabaseCashBook(String databaseCashBook) {
-		this.databaseCashBook = databaseCashBook;
-	}
+	
 	
 }

@@ -26,7 +26,11 @@ public class LicensingDatabaseConnect {
 			       //port = SecureChar.decode(port);
 			String dbName = conf.getDatabaseLicensing();//ReadConfig.value(AppConf.DB_AGRICULTURE);
 				   //dbName = SecureChar.decode(dbName);
-			String url = db_url + ":" + port + "/" + dbName + "?"+ conf.getDatabaseTimeZone() +"&" +  conf.getDatabaseSSL();//ReadConfig.value(AppConf.DB_SSL);
+			String timezone = "";
+			if(conf.getDatabaseTimeZone()!=null && !conf.getDatabaseTimeZone().isEmpty()) {
+				timezone = conf.getDatabaseTimeZone() +"&";
+			}
+			String url = db_url + ":" + port + "/" + dbName + "?"+ timezone +  conf.getDatabaseSSL();//ReadConfig.value(AppConf.DB_SSL);
 			System.out.println("URL DATA: " + url);
 			String u_name = conf.getDatabaseUserName();
 			String pword = conf.getDatabasePassword();
