@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.italia.municipality.lakesebu.database.BankChequeDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
+import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -54,7 +55,7 @@ public class Chequedtls {
 	private String date_disbursement;
 	private String bankName;
 	private String accntName;
-	private String amount;
+	private double amount;
 	private String payToTheOrderOf;
 	private String amountInWOrds;
 	private int signatory1;
@@ -81,7 +82,7 @@ public class Chequedtls {
 			String date_disbursement,
 			String bankName,
 			String accntName,
-			String amount,
+			double amount,
 			String payToTheOrderOf,
 			String amountInWOrds,
 			int signatory1,
@@ -149,8 +150,7 @@ public class Chequedtls {
 			try{chk.setAccntName(rs.getString("accnt_name"));}catch(NullPointerException e){}
 			try{chk.setBankName(rs.getString("bank_name"));}catch(NullPointerException e){}
 			try{chk.setDate_disbursement(rs.getString("date_disbursement"));}catch(NullPointerException e){}
-			try{String amount = rs.getString("cheque_amount");
-			chk.setAmount(formatAmount(amount.replace(",", "")));}catch(NullPointerException e){}
+			try{chk.setAmount(rs.getDouble("cheque_amount"));}catch(NullPointerException e){}
 			try{chk.setPayToTheOrderOf(rs.getString("pay_to_the_order_of"));}catch(NullPointerException e){}
 			try{chk.setAmountInWOrds(rs.getString("amount_in_words"));}catch(NullPointerException e){}
 			try{chk.setProcessBy(rs.getString("proc_by"));}catch(NullPointerException e){}
@@ -342,7 +342,7 @@ public class Chequedtls {
 		ps.setString(4, chk.getAccntName());
 		ps.setString(5, chk.getBankName());
 		ps.setString(6, chk.getDate_disbursement());
-		ps.setString(7, chk.getAmount());
+		ps.setDouble(7, chk.getAmount());
 		ps.setString(8, chk.getPayToTheOrderOf());
 		ps.setString(9, chk.getAmountInWOrds());
 		ps.setString(10, chk.getProcessBy());
@@ -400,7 +400,7 @@ public class Chequedtls {
 		ps.setString(4, getAccntName());
 		ps.setString(5, getBankName());
 		ps.setString(6, getDate_disbursement());
-		ps.setString(7, getAmount());
+		ps.setDouble(7, getAmount());
 		ps.setString(8, getPayToTheOrderOf());
 		ps.setString(9, getAmountInWOrds());
 		ps.setString(10, getProcessBy());
@@ -446,7 +446,7 @@ public class Chequedtls {
 		ps.setString(3, chk.getAccntName());
 		ps.setString(4, chk.getBankName());
 		ps.setString(5, chk.getDate_disbursement());
-		ps.setString(6, chk.getAmount());
+		ps.setDouble(6, chk.getAmount());
 		ps.setString(7, chk.getPayToTheOrderOf());
 		ps.setString(8, chk.getAmountInWOrds());
 		ps.setString(9, chk.getProcessBy());
@@ -493,7 +493,7 @@ public class Chequedtls {
 		ps.setString(3, getAccntName());
 		ps.setString(4, getBankName());
 		ps.setString(5, getDate_disbursement());
-		ps.setString(6, getAmount());
+		ps.setDouble(6, getAmount());
 		ps.setString(7, getPayToTheOrderOf());
 		ps.setString(8, getAmountInWOrds());
 		ps.setString(9, getProcessBy());
@@ -674,10 +674,10 @@ public class Chequedtls {
 	public void setAccntName(String accntName) {
 		this.accntName = accntName;
 	}
-	public String getAmount() {
+	public double getAmount() {
 		return amount;
 	}
-	public void setAmount(String amount) {
+	public void setAmount(double amount) {
 		this.amount = amount;
 	}
 	public String getPayToTheOrderOf() {
@@ -778,7 +778,7 @@ public class Chequedtls {
 		params.put("PARAM_DATE_DISBURSEMENT", rpt.getDate_disbursement());
 		params.put("PARAM_BANK_NAME", rpt.getBankName().toUpperCase());
 		params.put("PARAM_ACCOUNT_NAME", rpt.getAccntName().toUpperCase());
-		params.put("PARAM_AMOUNT", rpt.getAmount());
+		params.put("PARAM_AMOUNT", Currency.formatAmount(rpt.getAmount()));
 		params.put("PARAM_PAYTOORDEROF", rpt.getPayToTheOrderOf().toUpperCase());
 		params.put("PARAM_AMOUNT_INWORDS", rpt.getAmountInWOrds().toUpperCase());
 		
@@ -878,7 +878,7 @@ public class Chequedtls {
 		chk.setAccntName("TRUST FUND");
 		chk.setBankName("BP Marbel");
 		chk.setDate_disbursement(DateUtils.getCurrentDateMMMMDDYYYY());
-		chk.setAmount("100.00");
+		chk.setAmount(100.00);
 		chk.setPayToTheOrderOf("Sodo");
 		chk.setAmountInWOrds("One Hundred Pesos Only");
 		chk.setProcessBy("Mark");

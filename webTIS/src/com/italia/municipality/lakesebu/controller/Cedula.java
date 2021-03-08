@@ -1,13 +1,17 @@
 package com.italia.municipality.lakesebu.controller;
 
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
+import com.italia.municipality.lakesebu.enm.AppConf;
+import com.italia.municipality.lakesebu.enm.Months;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
 /**
@@ -39,6 +43,22 @@ public class Cedula {
 	private String cedulaStatus;
 	
 	private int cnt;
+	
+	private static final String PROPERTY_FILE = AppConf.PRIMARY_DRIVE.getValue() + AppConf.SEPERATOR.getValue() +
+			AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() +	
+			AppConf.APP_CONFIG_SETTING_FOLDER.getValue() + AppConf.SEPERATOR.getValue() + "ctc-interest-rate.tis";
+
+public static double cedulaPenaltyRate(Months month) {
+	double rate = 0;
+	Properties prop = new Properties();
+	try{
+		System.out.println("month.getName()>> " + month.getName());
+		prop.load(new FileInputStream(PROPERTY_FILE));
+		rate = Double.valueOf(prop.getProperty(month.getName())); 
+	}catch(Exception e) {e.printStackTrace();}	
+	
+	return rate;
+}
 	
 public static String getLastCedulaNo() {
 		

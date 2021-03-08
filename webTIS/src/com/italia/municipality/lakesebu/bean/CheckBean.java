@@ -371,7 +371,7 @@ public class CheckBean implements Serializable{
 			rpt.setId(i++);
 			
 			if(chk.getStatus()==1){
-				amount += Double.valueOf(chk.getAmount().replace(",", ""));
+				amount += chk.getAmount();
 			}
 			
 			rpt.setAccntNumber(bankAccountNum(chk.getAccntNumber()));
@@ -379,7 +379,7 @@ public class CheckBean implements Serializable{
 			rpt.setDate_disbursement(chk.getDate_disbursement());
 			rpt.setBankName(chk.getBankName());
 			rpt.setAccntName(chk.getAccntName());
-			rpt.setAmount(chk.getAmount());
+			rpt.setAmount(Currency.formatAmount(chk.getAmount()));
 			rpt.setPayToTheOrderOf(chk.getPayToTheOrderOf());
 			rpt.setAmountInWOrds(chk.getAmountInWOrds());
 			rpt.setSignatory1(chk.getSignatoryName1());
@@ -721,7 +721,7 @@ public class CheckBean implements Serializable{
 		
 		accountList = new ArrayList<>();
 		for(BankAccounts a : accounts.values()){
-			accountList.add(new SelectItem(a.getBankId(),a.getBankAccntNo()));
+			accountList.add(new SelectItem(a.getBankId(),a.getBankAccntNo() + " " + a.getBankAccntName()));
 		}
 		
 		return accountList;
@@ -761,13 +761,13 @@ public class CheckBean implements Serializable{
 		chk.setAccntName(getBankCheckAccntName());
 		chk.setPayToTheOrderOf(getBankCheckPayTo().toUpperCase());
 		if(getInputAmount()==null){
-			chk.setAmount("0.00");
+			chk.setAmount(0.00);
 			chk.setAmountInWOrds("ZERO PESOS ONLY.");
 		}else if(getInputAmount().isEmpty()){
-			chk.setAmount("0.00");
+			chk.setAmount(0.00);
 			chk.setAmountInWOrds("ZERO PESOS ONLY.");
 		}else{
-			chk.setAmount(getInputAmount());
+			chk.setAmount(Double.valueOf(getInputAmount()));
 			chk.setAmountInWOrds(getNumberInToWords());
 		}
 		
@@ -779,7 +779,7 @@ public class CheckBean implements Serializable{
 		chk.setRemarks(getRemarks()==null? (getStatusId()==2? "CANCELLED CHECK" : "RECEIVED") : getRemarks() );
 		
 		if(getStatusId()==2){
-			chk.setAmount("0.00");
+			chk.setAmount(0.00);
 			setInputAmount("0.00");
 			chk.setAmountInWOrds("ZERO PESOS ONLY.");
 		}
@@ -810,9 +810,15 @@ public class CheckBean implements Serializable{
 		setDateFrom(getDateTime());
 		setDateTo(getDateTime());
 		init();
-		//clearFields();
-		setChequedtlsData(chk);
-		clickItem(chk);
+		clearFields();
+		//setChequedtlsData(chk);
+		//clickItem(chk);
+		
+		setBankCheckName(chk.getBankName());
+		setBankCheckAccntName(chk.getAccntName());
+		setBankCheckAccountNumber(chk.getAccntNumber());
+		loadNewCheckNo();
+		
 		FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Saved.", "");
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 		}else{
@@ -844,7 +850,7 @@ public class CheckBean implements Serializable{
 			voucher.setCheckNo(chk.getCheckNo());
 			voucher.setIsActive(1);
 			voucher.setTransType(TransactionType.CHECK_ISSUED.getId());
-			voucher.setAmount(Double.valueOf(chk.getAmount().replace(",", "")));
+			voucher.setAmount(chk.getAmount());
 			
 			
 			BankAccounts accounts = new BankAccounts();
@@ -870,7 +876,7 @@ public class CheckBean implements Serializable{
 			xml.setDateTrans(chk.getDate_disbursement());
 			xml.setCheckNo(chk.getCheckNo());
 			xml.setIsActive(chk.getIsActive());
-			xml.setCreditAmount(Double.valueOf(chk.getAmount().replace(",", "")));
+			xml.setCreditAmount(chk.getAmount());
 			xml.setUserDtls(Login.getUserLogin().getUserDtls());
 			xml.setTransactionType(TransactionType.CHECK_ISSUED.getId());
 			
@@ -938,7 +944,7 @@ public class CheckBean implements Serializable{
 		setEnableRemarks(false);
 		setDateFrom(DateUtils.getDateToday());
 		setDateTo(DateUtils.getDateToday());
-		loadNewCheckNo();
+		//loadNewCheckNo();
 		setNatureOfPayment(null);
 		setDepartmentId(0);
 	}
@@ -960,7 +966,7 @@ public class CheckBean implements Serializable{
 		double amount = 0d;
 		for(com.italia.municipality.lakesebu.controller.Chequedtls chq : chk.retrieve(sql, params)){
 			if(chq.getStatus()==1){
-				amount += Double.valueOf(chq.getAmount().replace(",", ""));
+				amount += chq.getAmount();
 			}
 			chq.setAccntNumber(bankAccountNum(chq.getAccntNumber()));
 			cheques.add(chq);
@@ -1124,7 +1130,7 @@ public class CheckBean implements Serializable{
 		setBankCheckAccntName(chk.getAccntName());
 		setBankCheckPayTo(chk.getPayToTheOrderOf());
 		//System.out.println("clickItem Input amount : " + chk.getAmount());
-		setInputAmount(chk.getAmount().replace(",", ""));
+		setInputAmount(chk.getAmount()+"");
 		setNumberInToWords(chk.getAmountInWOrds());
 		setSig1(chk.getSignatory1()+"");
 		setSig2(chk.getSignatory2()+"");
@@ -1903,26 +1909,7 @@ public class CheckBean implements Serializable{
 			ioe.printStackTrace();
 		}
 		
-		/*String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
-				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.CHEQUE_REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
-		String REPORT_NAME = AppConf.CHEQUE_REPORT_NAME.getValue();
-		try {
-		FileInputStream fis = new FileInputStream( new File(REPORT_PATH + REPORT_NAME + ".pdf"));
-	    //System.out.println(file.exists() + "!!");
-	    //InputStream in = resource.openStream();
-	    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	    byte[] buf = new byte[1024];
-	    
-	        for (int readNum; (readNum = fis.read(buf)) != -1;) {
-	            bos.write(buf, 0, readNum); //no doubt here is 0
-	            //Writes len bytes from the specified byte array starting at offset off to this byte array output stream.
-	            System.out.println("read " + readNum + " bytes,");
-	        }
-	        this.reportBytesCheque = buf;
-	    }catch(Exception e){}
 		
-		//return "cheque.xhtml";
-		return reportBytesCheque;*/
 	}
 	
 	/**
@@ -2007,7 +1994,7 @@ public class CheckBean implements Serializable{
 	        // java.lang.IllegalStateException: Cannot forward after response has been committed.
 	        faces.responseComplete();
 	    
-	        backupPrint();
+	        //backupPrint();
 	        
 		}catch(Exception ioe){
 			ioe.printStackTrace();
@@ -2301,7 +2288,7 @@ public void find(){
 			double amount = 0d;
 			for(com.italia.municipality.lakesebu.controller.Chequedtls chq : chk.retrieve(sql, params)){
 				if(chq.getStatus()==1){
-					amount += Double.valueOf(chq.getAmount().replace(",", ""));
+					amount += chq.getAmount();
 				}
 				chq.setAccntNumber(bankAccountNum(chq.getAccntNumber()));
 				cheques.add(chq);

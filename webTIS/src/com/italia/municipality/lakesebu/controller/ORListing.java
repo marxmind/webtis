@@ -13,6 +13,12 @@ import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.utils.LogU;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * 
  * @author Mark Italia
@@ -21,6 +27,11 @@ import com.italia.municipality.lakesebu.utils.LogU;
  *
  *
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
 public class ORListing {
 
 	private long id;
@@ -29,6 +40,7 @@ public class ORListing {
 	private int formType;
 	private int isActive;
 	private int status;
+	private String forminfo;
 	
 	private Collector collector;
 	private Customer customer;
@@ -192,6 +204,7 @@ public class ORListing {
 			try{or.setFormName(FormType.nameId(or.getFormType()));}catch(NullPointerException e){}
 			try{or.setStatus(rs.getInt("orstatus"));}catch(NullPointerException e){}
 			try{or.setStatusName(FormStatus.nameId(or.getStatus()));}catch(NullPointerException e){}
+			try{or.setForminfo(rs.getString("forminfo"));}catch(NullPointerException e){}
 			
 			Customer cus = new Customer();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
@@ -326,8 +339,9 @@ public class ORListing {
 				+ "isactiveor,"
 				+ "customerid,"
 				+ "isid,"
-				+ "orstatus)" 
-				+ "values(?,?,?,?,?,?,?,?)";
+				+ "orstatus,"
+				+ "forminfo)" 
+				+ "values(?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -357,6 +371,7 @@ public class ORListing {
 		ps.setLong(cnt++, name.getCustomer()==null? 0 : name.getCustomer().getId());
 		ps.setInt(cnt++, name.getCollector().getId());
 		ps.setInt(cnt++, name.getStatus());
+		ps.setString(cnt++, name.getForminfo());
 		
 		LogU.add(name.getDateTrans());
 		LogU.add(name.getOrNumber());
@@ -365,6 +380,7 @@ public class ORListing {
 		LogU.add(name.getCustomer()==null? 0 : name.getCustomer().getId());
 		LogU.add(name.getCollector().getId());
 		LogU.add(name.getStatus());
+		LogU.add(name.getForminfo());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -388,8 +404,9 @@ public class ORListing {
 				+ "isactiveor,"
 				+ "customerid,"
 				+ "isid,"
-				+ "orstatus)" 
-				+ "values(?,?,?,?,?,?,?,?)";
+				+ "orstatus,"
+				+ "forminfo)" 
+				+ "values(?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -419,6 +436,7 @@ public class ORListing {
 		ps.setLong(cnt++, getCustomer()==null? 0 : getCustomer().getId());
 		ps.setInt(cnt++, getCollector().getId());
 		ps.setInt(cnt++, getStatus());
+		ps.setString(cnt++, getForminfo());
 		
 		LogU.add(getDateTrans());
 		LogU.add(getOrNumber());
@@ -427,6 +445,7 @@ public class ORListing {
 		LogU.add(getCustomer()==null? 0 : getCustomer().getId());
 		LogU.add(getCollector().getId());
 		LogU.add(getStatus());
+		LogU.add(getForminfo());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -448,7 +467,8 @@ public class ORListing {
 				+ "aform=?,"
 				+ "customerid=?,"
 				+ "isid=?,"
-				+ "orstatus=?" 
+				+ "orstatus=?,"
+				+ "forminfo=?" 
 				+ " WHERE orid=?";
 		
 		PreparedStatement ps = null;
@@ -468,6 +488,7 @@ public class ORListing {
 		ps.setLong(cnt++, name.getCustomer()==null? 0 : name.getCustomer().getId());
 		ps.setInt(cnt++, name.getCollector().getId());
 		ps.setInt(cnt++, name.getStatus());
+		ps.setString(cnt++, name.getForminfo());
 		ps.setLong(cnt++, name.getId());
 		
 		LogU.add(name.getDateTrans());
@@ -476,6 +497,7 @@ public class ORListing {
 		LogU.add(name.getCustomer()==null? 0 : name.getCustomer().getId());
 		LogU.add(name.getCollector().getId());
 		LogU.add(name.getStatus());
+		LogU.add(name.getForminfo());
 		LogU.add(name.getId());
 		
 		LogU.add("executing for saving...");
@@ -498,7 +520,8 @@ public class ORListing {
 				+ "aform=?,"
 				+ "customerid=?,"
 				+ "isid=?,"
-				+ "orstatus=?" 
+				+ "orstatus=?,"
+				+ "forminfo=?" 
 				+ " WHERE orid=?";
 		
 		PreparedStatement ps = null;
@@ -519,6 +542,7 @@ public class ORListing {
 		ps.setLong(cnt++, getCustomer()==null? 0 : getCustomer().getId());
 		ps.setInt(cnt++, getCollector().getId());
 		ps.setInt(cnt++, getStatus());
+		ps.setString(cnt++, getForminfo());
 		ps.setLong(cnt++, getId());
 		
 		LogU.add(getDateTrans());
@@ -527,6 +551,7 @@ public class ORListing {
 		LogU.add(getCustomer()==null? 0 : getCustomer().getId());
 		LogU.add(getCollector().getId());
 		LogU.add(getStatus());
+		LogU.add(getForminfo());
 		LogU.add(getId());
 		
 		LogU.add("executing for saving...");
@@ -669,104 +694,6 @@ public class ORListing {
 		
 	}
 
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getDateTrans() {
-		return dateTrans;
-	}
-
-	public void setDateTrans(String dateTrans) {
-		this.dateTrans = dateTrans;
-	}
-
-	public String getOrNumber() {
-		return orNumber;
-	}
-
-	public void setOrNumber(String orNumber) {
-		this.orNumber = orNumber;
-	}
-
-	public int getFormType() {
-		return formType;
-	}
-
-	public void setFormType(int formType) {
-		this.formType = formType;
-	}
-
-	public int getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-
-	public Customer getCustomer() {
-		return customer;
-	}
-
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
-
-	public List<ORNameList> getOrNameList() {
-		return orNameList;
-	}
-
-	public void setOrNameList(List<ORNameList> orNameList) {
-		this.orNameList = orNameList;
-	}
-
-	public double getAmount() {
-		return amount;
-	}
-
-	public void setAmount(double amount) {
-		this.amount = amount;
-	}
-
-	public String getFormName() {
-		return formName;
-	}
-
-	public void setFormName(String formName) {
-		this.formName = formName;
-	}
-
-	public Collector getCollector() {
-		return collector;
-	}
-
-	public void setCollector(Collector collector) {
-		this.collector = collector;
-	}
-
-
-	public int getStatus() {
-		return status;
-	}
-
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-
-	public String getStatusName() {
-		return statusName;
-	}
-
-
-	public void setStatusName(String statusName) {
-		this.statusName = statusName;
-	}
+	
 	
 }

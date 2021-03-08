@@ -49,6 +49,17 @@ public enum Months {
 		return Months.JAN.getName();
 	}
 	
+  public static Months getMonth(int id){
+		
+		for(Months m : Months.values()){
+			if(id==m.getId()){
+				return m;
+			}
+		}
+		
+		return Months.JAN;
+	}
+	
 	public static int getMonthName(String name){
 		
 		for(Months m : Months.values()){

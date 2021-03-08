@@ -299,7 +299,8 @@ public class VoucherBean implements Serializable{
 					Reports rpt = new Reports();
 					rpt.setF1(tran.getDateTrans());
 					rpt.setF2(tran.getCheckNo().equalsIgnoreCase("0")? "" : tran.getCheckNo());
-					rpt.setF4(tran.getDepartmentCode());
+					//rpt.setF4(tran.getDepartmentCode());
+					rpt.setF4(tran.getDepartmentName());
 					rpt.setF5(tran.getPayee());
 					rpt.setF6(tran.getNaturePayment());
 					rpt.setF7(tran.getdAmount());

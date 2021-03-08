@@ -232,7 +232,7 @@ public class MainBean implements Serializable {
 		if(dtls.size()>0){
 			double amount = 0d;
 			for(Chequedtls d : dtls){
-				amount+= Double.valueOf(d.getAmount().replace(",", ""));
+				amount+= d.getAmount();
 			}
 			checkWritingData = "Php " + Currency.formatAmount(amount);
 		}else{
@@ -285,15 +285,15 @@ public class MainBean implements Serializable {
 		for(Chequedtls dtls : Chequedtls.retrieve(sql, params)){
 			
 			if("1".equalsIgnoreCase(dtls.getAccntNumber())){
-				accntSEF += Double.valueOf(dtls.getAmount().replace(",", ""));
+				accntSEF += dtls.getAmount();
 			}else if("2".equalsIgnoreCase(dtls.getAccntNumber())){
-				accntGen += Double.valueOf(dtls.getAmount().replace(",", ""));
+				accntGen += dtls.getAmount();
 			}else if("3".equalsIgnoreCase(dtls.getAccntNumber())){
-				accntTrust1 += Double.valueOf(dtls.getAmount().replace(",", ""));	
+				accntTrust1 += dtls.getAmount();	
 			}else if("4".equalsIgnoreCase(dtls.getAccntNumber())){
-				accntMotor += Double.valueOf(dtls.getAmount().replace(",", ""));
+				accntMotor += dtls.getAmount();
 			}else if("5".equalsIgnoreCase(dtls.getAccntNumber())){
-				accntTrust2 += Double.valueOf(dtls.getAmount().replace(",", ""));
+				accntTrust2 += dtls.getAmount();
 			}	
 		}
 		

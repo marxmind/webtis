@@ -27,9 +27,11 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.TabChangeEvent;
 
+import com.italia.municipality.lakesebu.controller.Cedula;
 import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.Customer;
 import com.italia.municipality.lakesebu.controller.Department;
@@ -43,8 +45,10 @@ import com.italia.municipality.lakesebu.controller.ReportFields;
 import com.italia.municipality.lakesebu.controller.Reports;
 import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.enm.AppConf;
+import com.italia.municipality.lakesebu.enm.CivilStatus;
 import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
+import com.italia.municipality.lakesebu.enm.Months;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
@@ -138,6 +142,37 @@ public class ORListingBean implements Serializable{
 	private List selectOrTypes;
 	
 	private boolean collectorsMode;
+	private String formInfo;
+	
+	//for ctc individual and corporation
+	private double label2;
+	private double label3;
+	private double label4;
+	private double amount1;
+	private double amount2;
+	private double amount3;
+	private double amount4;
+	private double amount5;
+	private double amount6;
+	private double amount7;
+	private String tinNo;
+	private String hieghtDateReg;
+	private String weight;
+	private String customerAddress;
+	//private String civilStatusOrganization;
+	private String professionBusinessNature;
+	private String signatory;
+	private String placeOfBirth;
+	private String citizenshipOrganization;
+	
+	private int civilStatusId;
+	private List civilStatus;
+	
+	private int genderId=1;
+	private List genders;
+	
+	private Date birthdate;
+	private boolean enableBirthday=true;
 	
 	@PostConstruct
 	public void init() {
@@ -836,6 +871,8 @@ public class ORListingBean implements Serializable{
 			}
 			setTotalAmount(Currency.formatAmount(amount));
 			
+			ctcFlds(true);
+			
 		}else if(getSelectOrTypeId()==2) {//new OR
 			setFormTypeId(FormType.AF_51.getId());
 			loadLastORToSuggestForNewReceipt();//suggest last transaction
@@ -960,6 +997,29 @@ public class ORListingBean implements Serializable{
 		setOrnameListData(null);
 		setSelectedPaymentNameMap(null);
 		setSearchPayName(null);
+		setFormInfo(null);
+		
+		setLabel2(0);
+		setLabel3(0);
+		setLabel4(0);
+		setAmount1(0);
+		setAmount2(0);
+		setAmount3(0);
+		setAmount4(0);
+		setAmount5(0);
+		setAmount6(0);
+		setAmount7(0);
+		setGenderId(1);
+		setBirthdate(null);
+		setTinNo(null);
+		setHieghtDateReg(null);
+		setWeight(null);
+		setCustomerAddress(null);
+		//setCivilStatusOrganization(null);
+		setProfessionBusinessNature(null);
+		setSignatory(null);
+		setPlaceOfBirth(null);
+		setCitizenshipOrganization(null);
 		
 		namesDataSelected = new ArrayList<PaymentName>();//Collections.synchronizedList(new ArrayList<PaymentName>());
 		selectedPaymentNameMap = new HashMap<Long, PaymentName>();//Collections.synchronizedMap(new HashMap<Long, PaymentName>());
@@ -1002,6 +1062,35 @@ public class ORListingBean implements Serializable{
 		}
 		
 		if(isOk) {
+			
+			if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
+				String val = "";
+				
+				val = getLabel2() + "<*>";
+				val += getLabel3() + "<*>";
+				val += getLabel4() + "<*>";
+				val += getAmount1() + "<*>";
+				val += getAmount2() + "<*>";
+				val += getAmount3() + "<*>";
+				val += getAmount4() + "<*>";
+				val += getAmount5() + "<*>";
+				val += getAmount6() + "<*>";
+				val += getAmount7() + "<*>";
+				val += getGenderId() + "<*>";
+				val += getBirthdate()==null? "0<*>" : DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd") + "<*>";
+				val += getTinNo().isEmpty()? "0<*>" : getTinNo() + "<*>";
+				val += getHieghtDateReg().isEmpty()? "0<*>" : getHieghtDateReg() + "<*>";
+				val += getWeight().isEmpty()? "0<*>" : getWeight() + "<*>";
+				val += getCustomerAddress().isEmpty()? "0<*>" : getCustomerAddress() + "<*>";
+				val += getCivilStatusId()==0? "0<*>" : getCivilStatusId() + "<*>";
+				val += getProfessionBusinessNature().isEmpty()? "0<*>" : getProfessionBusinessNature() + "<*>";
+				val += getSignatory().isEmpty()? "0<*>" : getSignatory() + "<*>";
+				val += getPlaceOfBirth().isEmpty()? "0<*>" : getPlaceOfBirth() +"<*>";
+				val += getCitizenshipOrganization().isEmpty()? "0" : getCitizenshipOrganization();
+				
+				or.setForminfo(val);
+			}
+			
 			or.setStatus(getStatusId());
 			or.setDateTrans(DateUtils.convertDate(getDateTrans(), "yyyy-MM-dd"));
 			or.setFormType(getFormTypeId());
@@ -1051,14 +1140,25 @@ public class ORListingBean implements Serializable{
 			setCollectorId(or.getCollector().getId());
 			setFormTypeId(or.getFormType());
 			
-			if(getSelectOrTypeId()>0) {
-				namesDataSelected = tmpName;
-				selectedPaymentNameMap = tmpMap;
-			}
+			//if(getSelectOrTypeId()>0) {
+				//namesDataSelected = tmpName;
+				//selectedPaymentNameMap = tmpMap;
+			//}
 			//forSaveOnly();
 			
 			
 			
+		}
+		
+	}
+	
+	private void ctcFlds(boolean enanleCTC) {
+		
+		PrimeFaces pf = PrimeFaces.current();
+		if(enanleCTC) {
+			pf.executeScript("$('#ctid').show()");
+		}else {
+			pf.executeScript("$('#ctid').hide()");
 		}
 		
 	}
@@ -1083,6 +1183,40 @@ public class ORListingBean implements Serializable{
 			amount += on.getAmount();
 		}*/
 		String sql = " AND nameL.isactiveol=1 AND nameL.orid="+or.getId();
+		
+		if(FormType.CTC_INDIVIDUAL.getId()==or.getFormType() || FormType.CTC_CORPORATION.getId()==or.getFormType()) {
+			
+			if(or.getForminfo()!=null && !or.getForminfo().isEmpty()) {
+			String[] val = or.getForminfo().split("<*>");
+			
+			setLabel2(Double.valueOf(val[0]));
+			setLabel3(Double.valueOf(val[1]));
+			setLabel4(Double.valueOf(val[2]));
+			setAmount1(Double.valueOf(val[3]));
+			setAmount2(Double.valueOf(val[4]));
+			setAmount3(Double.valueOf(val[5]));
+			setAmount4(Double.valueOf(val[6]));
+			setAmount5(Double.valueOf(val[7]));
+			setAmount6(Double.valueOf(val[8]));
+			setAmount7(Double.valueOf(val[9]));
+			setGenderId(Integer.valueOf(val[10]));
+			setBirthdate(val[11].equalsIgnoreCase("0")? null : DateUtils.convertDateString(val[11], "yyyy-MM-dd"));
+			setTinNo(val[12].equalsIgnoreCase("0")? "" : val[12]);
+			setHieghtDateReg(val[13].equalsIgnoreCase("0")? "" : val[13]);
+			setWeight(val[14].equalsIgnoreCase("0")? "" : val[14]);
+			setCustomerAddress(val[15].equalsIgnoreCase("0")? "" : val[15]);
+			setCivilStatusId(Integer.valueOf(val[16]));
+			setProfessionBusinessNature(val[17].equalsIgnoreCase("0")? "" : val[17]);
+			setSignatory(val[18].equalsIgnoreCase("0")? "" : val[18]);
+			setPlaceOfBirth(val[19].equalsIgnoreCase("0")? "" : val[19]);
+			setCitizenshipOrganization(val[19].equalsIgnoreCase("0")? "" : val[20]);
+			ctcFlds(true);
+			}
+			
+		}else {
+			ctcFlds(false);
+		}
+		
 		for(ORNameList on : ORNameList.retrieve(sql, new String[0])) {
 			PaymentName name = on.getPaymentName();
 			name.setAmount(on.getAmount());
@@ -1671,15 +1805,46 @@ private void close(Closeable resource) {
 		this.searchPayName = searchPayName;
 	}
 	
+	public void calculateCedula() {
+		
+		double total = getAmount1() + getAmount2() + getAmount3() + getAmount4();
+		setAmount5(total);
+		double rate = Cedula.cedulaPenaltyRate(Months.getMonth(DateUtils.getCurrentMonth()));
+		double interest = 0d;
+		rate = rate/100;
+		if(getAmount2()>0) {
+			interest = rate * getAmount2();
+		}
+		
+		if(getAmount3()>0) {
+			interest = rate * getAmount3();
+		}
+		
+		if(getAmount4()>0) {
+			interest = rate * getAmount4();
+		}
+		
+		setAmount6(interest);
+		setAmount7(total + interest);
+	}
+	
 	public void updateORNumber() {
 		orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
-		
+		ctcFlds(false);
 		if(FormType.CT_2.getId()==getFormTypeId() || FormType.CT_5.getId()==getFormTypeId()) {
 			setPayorName("N/A");
 			setOrNumber("0");
 			setSearchPayName("cash");
-		}else if(FormType.CTC_CORPORATION.getId()==getFormTypeId() || FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {
+		}else if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {
+			setAmount1(5.00);
 			setSearchPayName("ctc");
+			ctcFlds(true);
+			enableBirthday=false;
+		}else if(FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
+			setAmount1(500.00);
+			setSearchPayName("ctc");
+			ctcFlds(true);
+			enableBirthday=true;
 		}else if(FormType.AF_51.getId()==getFormTypeId()) {
 			setSearchPayName("tax");
 		}else if(FormType.AF_52.getId()==getFormTypeId()) {
@@ -1704,9 +1869,9 @@ private void close(Closeable resource) {
 		this.orNumber = orNumber;
 	}
 	public int getFormTypeId() {
-		if(formTypeId==0) {
-			formTypeId=1;
-		}
+		//if(formTypeId==0) {
+			//formTypeId=1;
+		//}
 		return formTypeId;
 	}
 	public void setFormTypeId(int formTypeId) {
@@ -1714,7 +1879,7 @@ private void close(Closeable resource) {
 	}
 	public List getFormTypes() {
 		formTypes = new ArrayList<>();
-		
+		formTypes.add(new SelectItem(0, "Select Forms"));
 		for(FormType form : FormType.values()) {
 			formTypes.add(new SelectItem(form.getId(), form.getName()));
 		}
@@ -2304,6 +2469,223 @@ private void close(Closeable resource) {
 
 	public void setCollectorsMode(boolean collectorsMode) {
 		this.collectorsMode = collectorsMode;
+	}
+
+	public String getFormInfo() {
+		return formInfo;
+	}
+
+	public void setFormInfo(String formInfo) {
+		this.formInfo = formInfo;
+	}
+
+	public double getLabel2() {
+		return label2;
+	}
+
+	public void setLabel2(double label2) {
+		this.label2 = label2;
+	}
+
+	public double getLabel3() {
+		return label3;
+	}
+
+	public void setLabel3(double label3) {
+		this.label3 = label3;
+	}
+
+	public double getLabel4() {
+		return label4;
+	}
+
+	public void setLabel4(double label4) {
+		this.label4 = label4;
+	}
+
+	public double getAmount1() {
+		return amount1;
+	}
+
+	public void setAmount1(double amount1) {
+		this.amount1 = amount1;
+	}
+
+	public double getAmount2() {
+		return amount2;
+	}
+
+	public void setAmount2(double amount2) {
+		this.amount2 = amount2;
+	}
+
+	public double getAmount3() {
+		return amount3;
+	}
+
+	public void setAmount3(double amount3) {
+		this.amount3 = amount3;
+	}
+
+	public double getAmount4() {
+		return amount4;
+	}
+
+	public void setAmount4(double amount4) {
+		this.amount4 = amount4;
+	}
+
+	public double getAmount5() {
+		return amount5;
+	}
+
+	public void setAmount5(double amount5) {
+		this.amount5 = amount5;
+	}
+
+	public double getAmount6() {
+		return amount6;
+	}
+
+	public void setAmount6(double amount6) {
+		this.amount6 = amount6;
+	}
+
+	public double getAmount7() {
+		return amount7;
+	}
+
+	public void setAmount7(double amount7) {
+		this.amount7 = amount7;
+	}
+
+	public Date getBirthdate() {
+		if(birthdate==null) {
+			birthdate = DateUtils.getDateToday();
+		}
+		return birthdate;
+	}
+
+	public void setBirthdate(Date birthdate) {
+		this.birthdate = birthdate;
+	}
+
+	public String getTinNo() {
+		return tinNo;
+	}
+
+	public void setTinNo(String tinNo) {
+		this.tinNo = tinNo;
+	}
+
+	public String getHieghtDateReg() {
+		return hieghtDateReg;
+	}
+
+	public void setHieghtDateReg(String hieghtDateReg) {
+		this.hieghtDateReg = hieghtDateReg;
+	}
+
+	public String getWeight() {
+		return weight;
+	}
+
+	public void setWeight(String weight) {
+		this.weight = weight;
+	}
+
+	public String getCustomerAddress() {
+		return customerAddress;
+	}
+
+	public void setCustomerAddress(String customerAddress) {
+		this.customerAddress = customerAddress;
+	}
+
+	
+
+	public String getProfessionBusinessNature() {
+		return professionBusinessNature;
+	}
+
+	public void setProfessionBusinessNature(String professionBusinessNature) {
+		this.professionBusinessNature = professionBusinessNature;
+	}
+
+	public String getSignatory() {
+		return signatory;
+	}
+
+	public void setSignatory(String signatory) {
+		this.signatory = signatory;
+	}
+
+	public String getPlaceOfBirth() {
+		return placeOfBirth;
+	}
+
+	public void setPlaceOfBirth(String placeOfBirth) {
+		this.placeOfBirth = placeOfBirth;
+	}
+
+	public String getCitizenshipOrganization() {
+		return citizenshipOrganization;
+	}
+
+	public void setCitizenshipOrganization(String citizenship) {
+		this.citizenshipOrganization = citizenship;
+	}
+
+	public int getCivilStatusId() {
+		if(civilStatusId==0) {
+			civilStatusId = 1;
+		}
+		return civilStatusId;
+	}
+
+	public void setCivilStatusId(int civilStatusId) {
+		this.civilStatusId = civilStatusId;
+	}
+
+	public List getCivilStatus() {
+		
+		civilStatus = new ArrayList<>();
+		for(CivilStatus s : CivilStatus.values()) {
+			civilStatus.add(new SelectItem(s.getId(), s.getName()));
+		}
+		
+		return civilStatus;
+	}
+
+	public void setCivilStatus(List civilStatus) {
+		this.civilStatus = civilStatus;
+	}
+
+	public int getGenderId() {
+		return genderId;
+	}
+
+	public void setGenderId(int genderId) {
+		this.genderId = genderId;
+	}
+
+	public List getGenders() {
+		genders = new ArrayList<>();
+		genders.add(new SelectItem(1, "Male"));
+		genders.add(new SelectItem(2, "Female"));
+		return genders;
+	}
+
+	public void setGenders(List genders) {
+		this.genders = genders;
+	}
+
+	public boolean isEnableBirthday() {
+		return enableBirthday;
+	}
+
+	public void setEnableBirthday(boolean enableBirthday) {
+		this.enableBirthday = enableBirthday;
 	}
 		
 }

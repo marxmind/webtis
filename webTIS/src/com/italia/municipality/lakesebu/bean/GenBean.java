@@ -144,9 +144,9 @@ public class GenBean implements Serializable{
 					String accountNo = chk.getAccntNumber();
 					if(accounts.get(date).containsKey(accountNo)){
 						
-						double amount = Double.valueOf(chk.getAmount().replace(",", ""));
-						amount += Double.valueOf(accounts.get(date).get(accountNo).getAmount().replace(",", ""));
-						accounts.get(date).get(accountNo).setAmount(amount+"");
+						double amount = chk.getAmount();
+						amount += accounts.get(date).get(accountNo).getAmount();
+						accounts.get(date).get(accountNo).setAmount(amount);
 					}else{
 						accounts.get(date).put(accountNo, chk);
 					}
@@ -266,13 +266,13 @@ public class GenBean implements Serializable{
         	if(chk!=null){	
         		if(getRangeId()==1){//Day
         			date = date.split("-")[2];
-        			account.set(date, Double.valueOf(chk.getAmount().replace(",", "")));
+        			account.set(date, chk.getAmount());
         		}else if(getRangeId()==3){//year
-        			account.set(date, Double.valueOf(chk.getAmount().replace(",", "")));
+        			account.set(date, chk.getAmount());
         		}else if(getRangeId()==2){//month
         			int dte = Integer.valueOf(date);
         			date = Months.getMonthName(dte);
-        			account.set(date, Double.valueOf(chk.getAmount().replace(",", "")));
+        			account.set(date, chk.getAmount());
         		}
         	}else{
         		if(getRangeId()==1){//Day
@@ -316,31 +316,31 @@ public class GenBean implements Serializable{
 		Chequedtls chk = new Chequedtls();
 		chk.setAccntNumber("1");
 		chk.setDate_disbursement(DateUtils.getCurrentDateYYYYMMDD());
-		chk.setAmount(Currency.formatAmount("10000000"));
+		chk.setAmount(10000000);
 		chks[0] = chk;
 		
 		chk = new Chequedtls();
 		chk.setAccntNumber("2");
 		chk.setDate_disbursement(DateUtils.getCurrentDateYYYYMMDD());
-		chk.setAmount(Currency.formatAmount("27000000"));
+		chk.setAmount(27000000);
 		chks[1] = chk;
 		
 		chk = new Chequedtls();
 		chk.setAccntNumber("3");
 		chk.setDate_disbursement(DateUtils.getCurrentDateYYYYMMDD());
-		chk.setAmount(Currency.formatAmount("15000000"));
+		chk.setAmount(15000000);
 		chks[2] = chk;
 		
 		chk = new Chequedtls();
 		chk.setAccntNumber("4");
 		chk.setDate_disbursement(DateUtils.getCurrentDateYYYYMMDD());
-		chk.setAmount(Currency.formatAmount("5000000"));
+		chk.setAmount(5000000);
 		chks[3] = chk;
 		
 		chk = new Chequedtls();
 		chk.setAccntNumber("5");
 		chk.setDate_disbursement(DateUtils.getCurrentDateYYYYMMDD());
-		chk.setAmount(Currency.formatAmount("20000000"));
+		chk.setAmount(20000000);
 		chks[4] = chk;
 		
 		return chks;

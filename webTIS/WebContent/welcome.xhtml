@@ -81,7 +81,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 			<p:panelGrid id="chequeDataId" layout="grid" columns="3" >
 			
-			<p:outputLabel value="Account No" style="#{skin.textInput}">
+			    <p:outputLabel value="Account No" style="#{skin.textInput}">
         		<p:selectOneMenu value="#{checkBean.bankCheckAccountNumber}"  style="width:15em;" filter="true" filterMatchMode="contains">
 					<f:selectItem itemLabel="#{checkBean.accountLabel}"/>
 					<f:selectItems value="#{checkBean.accountList}"/>
@@ -95,13 +95,6 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             		<p:calendar value="#{checkBean.dateTime}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" style="color: black;width:15em;"/>
             	</p:outputLabel>
 				
-				<p:outputLabel value="Bank Branch" style="#{skin.textInput}">	
-            		<p:inputText value="#{checkBean.bankCheckName}" a:placeholder="Bank Name" readonly="true" style="color: black;width:15em;"/>
-            	</p:outputLabel>
-            	<p:outputLabel value="Account Name" style="#{skin.textInput}">	
-            		<p:inputText value="#{checkBean.bankCheckAccntName}" a:placeholder="Account Name" readonly="true" style="color: black;width:15em;"/>
-            	</p:outputLabel>	
-            	
             	<p:outputLabel value="Pay To The Order Of" style="#{skin.textInput}">
 	            	<p:inputTextarea id="idpayto" completeMethod="#{checkBean.completeBankCheckPayTo}" value="#{checkBean.bankCheckPayTo}" a:placeholder="Pay To The Order Of" queryDelay="750" minQueryLength="4"
 	            		 style="color: black;width: 15em; height: 15px; align-text: left;">
@@ -113,9 +106,22 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						<f:ajax  event="keyup" render="inwordsId" listener="#{checkBean.generateWords}"/>
 					</p:inputText>
 				</p:outputLabel>
+				
+				<p:outputLabel value="Department" style="#{skin.textInput}">
+				<p:selectOneMenu id="departmentId" value="#{checkBean.departmentId}" style="color: black;width: 15em" filter="true" filterMatchMode="contains">
+	            		<f:selectItem itemLabel="Select..."/>
+	            		<f:selectItems value="#{checkBean.department}"/>
+	            </p:selectOneMenu>
+	            </p:outputLabel>
+	            
+				<p:outputLabel value="Nature of Payment" style="#{skin.textInput}">
+					<p:inputText a:placeholder="Nature of Payment" value="#{checkBean.natureOfPayment}" style="color: black;width: 15em"/>
+				</p:outputLabel>
+				
 				<p:outputLabel value="Amount in words" style="#{skin.textInput}">	
             		<p:inputTextarea id="inwordsId" value="#{checkBean.numberInToWords}"  style="color: black; width: 15em;height: 10em" a:placeholder="PESOS ONLY"/>
             	</p:outputLabel>
+            	
             	<p:outputLabel value="Status" style="#{skin.textInput}">	
 	            	<p:selectOneMenu value="#{checkBean.statusId}"  style="width:15em;">
 							<f:selectItem itemLabel="Select"/>
@@ -124,16 +130,6 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					</p:selectOneMenu>
 				</p:outputLabel>
 				
-				
-				<p:outputLabel value="Department" style="#{skin.textInput}">
-				<p:selectOneMenu id="departmentId" value="#{checkBean.departmentId}" style="color: black;width: 15em" filter="true" filterMatchMode="contains">
-	            		<f:selectItem itemLabel="Select..."/>
-	            		<f:selectItems value="#{checkBean.department}"/>
-	            </p:selectOneMenu>
-	            </p:outputLabel>
-				<p:outputLabel value="Nature of Payment" style="#{skin.textInput}">
-					<p:inputText a:placeholder="Nature of Payment" value="#{checkBean.natureOfPayment}" style="color: black;width: 15em"/>
-				</p:outputLabel>
 				
 				<p:outputLabel value="Remarks" style="#{skin.textInput}">
 					<p:inputText id="idRemarks" value="#{checkBean.remarks}" disabled="#{checkBean.enableRemarks}" a:placeholder="REMARKS"  style="color: black;width: 15em"/>
@@ -164,7 +160,29 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 		
 	
-	
+		<p:toolbar id="tb" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    			<p:selectOneMenu value="#{checkBean.searchBankAccountId}"  filter="true" filterMatchMode="contains">
+						<f:selectItem itemLabel="All Accounts"/>
+						<f:selectItems value="#{checkBean.accountNameList}"/>
+				</p:selectOneMenu>	
+    		</f:facet>
+    		<f:facet name="right">
+    							<p:autoComplete a:data-step="2" a:data-intro="This is a search field. You can search STATUS,Check No and Pay To" a:placeholder="Search..." value="#{checkBean.searchPayTo}" completeMethod="#{checkBean.autoPayToName}" effect="fade" maxResults="10">
+    								<f:ajax event="change" listener="#{checkBean.init}" render="dataChkId"/>
+    							</p:autoComplete>
+		        				
+		        				<p:calendar value="#{checkBean.dateFrom}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" a:data-step="3" a:data-intro="Date From - you can use this field to retrieve previous data."/>
+		    					<p:calendar value="#{checkBean.dateTo}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" a:data-step="4" a:data-intro="Date To - you can use this field to retrieve data up to the present"/>
+		        				
+		        				<p:commandButton id="findId" update="dataChkId"  icon="fa fa-search" actionListener="#{checkBean.find}" a:data-step="5" a:data-intro="Search button - this button use to retrieve data."/>
+		        				&nbsp;&nbsp;&nbsp;&nbsp;
+		        <p:commandButton update="dataChkId" value="Refresh" icon="fa fa-refresh" actionListener="#{checkBean.init}" a:data-step="6" a:data-intro="Refresh Button - use to refresh data."/>				
+		        				
+    			<p:commandButton update="formId" value="Budget" icon="fa fa-file-o" action="budget.xhtml" a:data-step="8" a:data-intro="Budget Button - this button will redirect you to Budget page."/>
+    			
+    		</f:facet>
+		</p:toolbar> 
 		<p:dataTable id="dataChkId" value="#{checkBean.cheques}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
@@ -243,33 +261,6 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			</p:layoutUnit>
 			
 </p:layout>	
-	
-				<p:commandButton id="idMenuFilter" onclick="PF('sideBarSearch').show();" icon="fa fa-search" style="#{skin.searchButton}" title="Click this button to view Client Transactions" />
-				<p:sidebar widgetVar="sideBarSearch" fullScreen="false" style="height: 3rem;background: linear-gradient(#0789b2, #086583, #044357);" position="top">
-					<p:toolbar id="tb" style="#{skin.toolbar}">
-    		<f:facet name="left">
-    			<p:selectOneMenu value="#{checkBean.searchBankAccountId}"  filter="true" filterMatchMode="contains">
-						<f:selectItem itemLabel="All Accounts"/>
-						<f:selectItems value="#{checkBean.accountNameList}"/>
-				</p:selectOneMenu>	
-    		</f:facet>
-    		<f:facet name="right">
-    							<p:autoComplete a:data-step="2" a:data-intro="This is a search field. You can search STATUS,Check No and Pay To" a:placeholder="Search..." value="#{checkBean.searchPayTo}" completeMethod="#{checkBean.autoPayToName}" effect="fade" maxResults="10">
-    								<f:ajax event="change" listener="#{checkBean.init}" render="dataChkId"/>
-    							</p:autoComplete>
-		        				
-		        				<p:calendar value="#{checkBean.dateFrom}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" a:data-step="3" a:data-intro="Date From - you can use this field to retrieve previous data."/>
-		    					<p:calendar value="#{checkBean.dateTo}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" a:data-step="4" a:data-intro="Date To - you can use this field to retrieve data up to the present"/>
-		        				
-		        				<p:commandButton id="findId" update="dataChkId"  icon="fa fa-search" actionListener="#{checkBean.find}" a:data-step="5" a:data-intro="Search button - this button use to retrieve data."/>
-		        				&nbsp;&nbsp;&nbsp;&nbsp;
-		        <p:commandButton update="dataChkId" value="Refresh" icon="fa fa-refresh" actionListener="#{checkBean.init}" a:data-step="6" a:data-intro="Refresh Button - use to refresh data."/>				
-		        				
-    			<p:commandButton update="formId" value="Budget" icon="fa fa-file-o" action="budget.xhtml" a:data-step="8" a:data-intro="Budget Button - this button will redirect you to Budget page."/>
-    			
-    		</f:facet>
-		</p:toolbar> 
-				</p:sidebar>
 	
 	<p:defaultCommand target="#{checkBean.keyPress}" />
 	<ui:include src="loader.xhtml" />

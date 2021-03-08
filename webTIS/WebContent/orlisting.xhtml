@@ -65,34 +65,88 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:layoutUnit position="west" size="400" visible="true">
 				
 				<p:panelGrid id="fldId" columns="2" layout="grid">
-					<p:selectOneMenu value="#{oRListingBean.selectOrTypeId}"  filter="true" filterMatchMode="contains" style="width: 12em" styleClass="js-tilt">
+					<p:selectOneMenu value="#{oRListingBean.selectOrTypeId}"  filter="true" filterMatchMode="contains" styleClass="js-tilt" style="width: 15em">
 					      			<f:selectItems value="#{oRListingBean.selectOrTypes}"/>
-					       			<f:ajax event="change" listener="#{oRListingBean.selectedOR}" render="dataSelectedId fldId totalId cid"/>
+					       			<f:ajax event="change" listener="#{oRListingBean.selectedOR}" render="dataSelectedId fldId fldId2 totalId cid"/>
 		      				</p:selectOneMenu>
-					<p:calendar value="#{oRListingBean.dateTrans}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 12em"/>
-					<p:selectOneMenu id="frmstat" value="#{oRListingBean.statusId}" style="width: 12em">
+					<p:calendar value="#{oRListingBean.dateTrans}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
+					<p:selectOneMenu id="frmstat" value="#{oRListingBean.statusId}" style="width: 15em">
 						<f:selectItems value="#{oRListingBean.status}"/>
 					</p:selectOneMenu>
-					<p:selectOneMenu id="frmId" value="#{oRListingBean.formTypeId}" style="width: 12em">
+					<p:selectOneMenu id="frmId" value="#{oRListingBean.formTypeId}" style="width: 15em">
 						<f:selectItems value="#{oRListingBean.formTypes}"/>
-						<p:ajax event="change" listener="#{oRListingBean.updateORNumber}" update="oridd idPayd idSearchPname dataSelectedId totalId cid"/>
+						<p:ajax event="change" listener="#{oRListingBean.updateORNumber}" update="oridd idPayd idSearchPname dataSelectedId totalId cid fldId2"/>
 					</p:selectOneMenu>
-					<p:selectOneMenu id="cid" value="#{oRListingBean.collectorId}" style="width: 12em" filterMatchMode="contains" filter="true">
+					<p:selectOneMenu id="cid" value="#{oRListingBean.collectorId}"  filterMatchMode="contains" filter="true" style="width: 15em">
 								<f:selectItems value="#{oRListingBean.collectors}"/>
 								<p:ajax event="change" listener="#{oRListingBean.updateORNumber}" update="oridd idPayd idSearchPname"/>
 					</p:selectOneMenu>
-					<p:autoComplete id="idPayd" placeholder="Payor Name"  value="#{oRListingBean.payorName}" completeMethod="#{oRListingBean.payorNameSuggested}" queryDelay="800" effect="fade" maxResults="10" inputStyle="width: 12em"/>
-					<p:keyboard id="oridd" value="#{oRListingBean.orNumber}" placeholder="OR No/CTC No" style="width: 12em" layout="custom" layoutTemplate="rocks-close,faces-clear,prime-back" keypadOnly="true"/>
-					<p:inputText placeholder="Address" value="#{oRListingBean.address}" style="width: 12em"/>
+					<p:autoComplete id="idPayd" placeholder="Payor Name"  value="#{oRListingBean.payorName}" completeMethod="#{oRListingBean.payorNameSuggested}" queryDelay="800" effect="fade" maxResults="10" inputStyle="width:15em"/>
+					<p:keyboard id="oridd" value="#{oRListingBean.orNumber}" placeholder="OR No/CTC No" style="width: 15em" layout="custom" layoutTemplate="rocks-close,faces-clear,prime-back" keypadOnly="true"/>
+					<p:inputText placeholder="Address" value="#{oRListingBean.address}" style="width: 15em"/>
 					
 				</p:panelGrid>
+				
+				<div id="ctid" style="display: none">
+					<p:panelGrid id="fldId2" columns="2" layout="grid">
+					
+					<p:selectOneMenu id="genId" value="#{oRListingBean.genderId}" style="width: 15em" disabled="#{oRListingBean.enableBirthday}">
+						<f:selectItems value="#{oRListingBean.genders}"/>
+					</p:selectOneMenu>
+					<p:calendar value="#{oRListingBean.birthdate}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em" disabled="#{oRListingBean.enableBirthday}"/>
+					
+					<p:inputText value="#{oRListingBean.placeOfBirth}" placeholder="Place Of Birth/Organization" style="width: 15em"/>
+					<p:inputText value="#{oRListingBean.tinNo}" placeholder="TIN NO 000-000-000-00000" style="width: 15em"/>
+					
+					<p:inputText value="#{oRListingBean.hieghtDateReg}" placeholder="Height/Date Reg" style="width: 15em"/>
+					<p:inputText value="#{oRListingBean.weight}" placeholder="Weight" style="width: 15em" disabled="#{oRListingBean.enableBirthday}"/>
+					
+					<p:inputText value="#{oRListingBean.customerAddress}" placeholder="Citizen/Company Address" style="width: 15em"/>
+					<p:inputText value="#{oRListingBean.citizenshipOrganization}" placeholder="Citizenship/Kind of Organization" style="width: 15em"/>
+					
+					<p:selectOneMenu id="civilId" value="#{oRListingBean.civilStatusId}" style="width: 15em" disabled="#{oRListingBean.enableBirthday}">
+						<f:selectItems value="#{oRListingBean.civilStatus}"/>
+					</p:selectOneMenu>
+					<p:inputText value="#{oRListingBean.professionBusinessNature}" placeholder="Profession/Business Nature" style="width: 15em"/>
+					
+					
+					<p:outputLabel value="Basic Tax(5/500)"/>
+					<p:inputNumber value="#{oRListingBean.amount1}" inputStyle="width: 15em" readonly="true"/>
+						
+					<p:inputNumber value="#{oRListingBean.label2}" placeholder="Gross/RPTax" style="width: 15em"/>
+					<p:inputNumber value="#{oRListingBean.amount2}" inputStyle="width: 15em">
+						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand"/>
+					</p:inputNumber>
+					
+					<p:inputText value="#{oRListingBean.label3}" placeholder="Salaries/Gross Receipts" style="width: 15em"/>
+					<p:inputNumber value="#{oRListingBean.amount3}" inputStyle="width: 15em">
+						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand"/>
+					</p:inputNumber>
+					
+					
+					<p:inputText value="#{oRListingBean.label4}" placeholder="Income from RPT TAX/CTC" style="width: 15em"/>
+					<p:inputNumber value="#{oRListingBean.amount4}" inputStyle="width: 15em">
+						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand"/>
+					</p:inputNumber>
+					
+					<p:outputLabel  value="Total"/>
+					<p:inputNumber id="idTotal" value="#{oRListingBean.amount5}" inputStyle="width: 15em" readonly="true"/>
+					
+					<p:outputLabel  value="Interest"/>
+					<p:inputNumber id="idInterest" value="#{oRListingBean.amount6}" inputStyle="width: 15em" readonly="true"/>
+					
+					<p:outputLabel  value="Total Paid"/>
+					<p:inputNumber id="idGrand" value="#{oRListingBean.amount7}" inputStyle="width: 15em" readonly="true"/>
+					
+					</p:panelGrid>
+				</div>
 				
 				   <p:dataTable id="dataSelectedId" value="#{oRListingBean.namesDataSelected}" var="rs" stickyHeader="false"
 							rows="100" paginator="false" style="#{skin.table}"
 							editable="true" editMode="cell" rowKey="#{rs.id}"
 							>
                          	
-                         	<p:ajax event="cellEdit"  listener="#{oRListingBean.onCellEditSelected}" update="frmId totalId dataId dataOrId" />
+                         	<p:ajax event="cellEdit"  listener="#{oRListingBean.onCellEditSelected}" update="frmId totalId fldId2 dataId dataOrId" />
                          	
                          	<p:column headerText="[*]" width="20" exportable="false">
             					<p:commandButton update="dataSelectedId dataOrId dtlsId msg" icon="fa fa-trash" actionListener="#{oRListingBean.paynameDelete(rs)}">
@@ -199,7 +253,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							</p:column>
 							
 							<p:column headerText="View" width="20" exportable="false">
-								<p:commandButton icon="fa fa-search" update="dataOrId dataSelectedId fldId totalId" actionListener="#{oRListingBean.clickItem(ors)}"/>
+								<p:commandButton icon="fa fa-search" update="dataOrId dataSelectedId fldId fldId2 totalId" actionListener="#{oRListingBean.clickItem(ors)}"/>
 							</p:column>
 							
 							<p:column headerText="[*]" width="20" exportable="false">
@@ -380,7 +434,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	<p:commandButton title="Payment Name Lookup" icon="fa fa-search" actionListener="#{oRListingBean.loadPaymentNames}" update="dataId idSearchPname dataSugId" oncomplete="PF('selectDialog').show();" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 450px;left: 370px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 	
-	<p:commandButton title="Click to save" update="dataSelectedId dataOrId fldId dtlsId totalId msg"  icon="fa fa-floppy-o" actionListener="#{oRListingBean.saveData}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 500px;left: 370px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
+	<p:commandButton title="Click to save" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId msg"  icon="fa fa-floppy-o" actionListener="#{oRListingBean.saveData}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 500px;left: 370px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
 			<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 	</p:commandButton>
 	
