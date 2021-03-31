@@ -13,6 +13,12 @@ import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.enm.FundType;
 import com.italia.municipality.lakesebu.utils.LogU;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * 
  * @author Mark Italia
@@ -20,6 +26,11 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @version 1.0
  *
  */
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
+@Builder
 public class IssuedForm {
 
 	private long id;
@@ -39,7 +50,7 @@ public class IssuedForm {
 	private String statusName;
 	private String fundName;
 	
-
+	private int newSeries;//use for updating series
 	
 	public static List<IssuedForm> retrieve(String sqlAdd, String[] params){
 		List<IssuedForm> forms = new ArrayList<IssuedForm>();
@@ -719,112 +730,6 @@ public class IssuedForm {
 		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
-	}
-	
-	
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public String getIssuedDate() {
-		return issuedDate;
-	}
-	public void setIssuedDate(String issuedDate) {
-		this.issuedDate = issuedDate;
-	}
-	public int getFormType() {
-		return formType;
-	}
-	public void setFormType(int formType) {
-		this.formType = formType;
-	}
-	public long getBeginningNo() {
-		return beginningNo;
-	}
-	public void setBeginningNo(long beginningNo) {
-		this.beginningNo = beginningNo;
-	}
-	public long getEndingNo() {
-		return endingNo;
-	}
-	public void setEndingNo(long endingNo) {
-		this.endingNo = endingNo;
-	}
-	public int getPcs() {
-		return pcs;
-	}
-	public void setPcs(int pcs) {
-		this.pcs = pcs;
-	}
-	public int getIsActive() {
-		return isActive;
-	}
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-	public Collector getCollector() {
-		return collector;
-	}
-	public void setCollector(Collector collector) {
-		this.collector = collector;
-	}
-
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	public String getFormTypeName() {
-		return formTypeName;
-	}
-
-	public void setFormTypeName(String formTypeName) {
-		this.formTypeName = formTypeName;
-	}
-
-	public String getStatusName() {
-		return statusName;
-	}
-
-	public void setStatusName(String statusName) {
-		this.statusName = statusName;
-	}
-
-	public Stocks getStock() {
-		return stock;
-	}
-
-	public void setStock(Stocks stock) {
-		this.stock = stock;
-	}
-
-	public int getFundId() {
-		return fundId;
-	}
-
-	public void setFundId(int fundId) {
-		this.fundId = fundId;
-	}
-
-	public String getFundName() {
-		return fundName;
-	}
-
-	public void setFundName(String fundName) {
-		this.fundName = fundName;
-	}
-
-	public int getStabNo() {
-		return stabNo;
-	}
-
-	public void setStabNo(int stabNo) {
-		this.stabNo = stabNo;
 	}
 	
 }

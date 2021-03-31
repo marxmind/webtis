@@ -10,6 +10,17 @@ import java.util.List;
 
 import com.italia.municipality.lakesebu.database.BankChequeDatabaseConnect;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class BankAccounts {
 
 	private int bankId;
@@ -60,6 +71,7 @@ public class BankAccounts {
 		return cList;
 	}
 	
+	/*
 	public int getBankId() {
 		return bankId;
 	}
@@ -91,7 +103,7 @@ public class BankAccounts {
 		this.timestamp = timestamp;
 	}
 	
-	
+	*/
 	
 	
 	

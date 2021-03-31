@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -27,6 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -36,6 +38,10 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.primefaces.PrimeFaces;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import com.italia.municipality.lakesebu.controller.BankAccounts;
 import com.italia.municipality.lakesebu.controller.Budget;
@@ -52,10 +58,13 @@ import com.italia.municipality.lakesebu.dao.Chequedtls;
 import com.italia.municipality.lakesebu.database.BankChequeDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.BudgetType;
+import com.italia.municipality.lakesebu.enm.Months;
 import com.italia.municipality.lakesebu.enm.TransactionType;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
+import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
+import com.italia.municipality.lakesebu.utils.Numbers;
 import com.italia.municipality.lakesebu.xml.BookCheck;
 import com.italia.municipality.lakesebu.xml.CheckXML;
 
@@ -129,6 +138,38 @@ public class CheckBean implements Serializable{
 	private int departmentId;
 	private List department;
 	private Map<Integer, Department> departmentData = java.util.Collections.synchronizedMap(new HashMap<Integer, Department>());
+	
+
+	/*
+	 * private List<BankAccounts> banks; private BankAccounts selectedBanks;
+	 * 
+	 * 
+	 * public BankAccounts getSelectedBanks() { return selectedBanks; }
+	 * 
+	 * public void setSelectedBanks(BankAccounts selectedBanks) { this.selectedBanks
+	 * = selectedBanks; }
+	 * 
+	 * public void setBanks(List<BankAccounts> banks) { this.banks = banks; }
+	 * 
+	 * public List<BankAccounts> getBanks(){ banks = new ArrayList<BankAccounts>();
+	 * Connection conn = null; PreparedStatement ps = null; ResultSet rs = null;
+	 * String sql = "SELECT * FROM tbl_bankaccounts"; try{
+	 * 
+	 * conn=BankChequeDatabaseConnect.getConnection(); ps =
+	 * conn.prepareStatement(sql); rs = ps.executeQuery(); while(rs.next()){
+	 * 
+	 * BankAccounts account = new BankAccounts();
+	 * account.setBankId(rs.getInt("bank_id"));
+	 * account.setBankAccntNo(rs.getString("bank_account_no"));
+	 * account.setBankAccntName(rs.getString("bank_account_name"));
+	 * account.setBankAccntBranch(rs.getString("bank_branch"));
+	 * accounts.put(account.getBankId(), account); banks.add(new
+	 * BankAccounts(account.getBankId(), account.getBankAccntNo(),
+	 * account.getBankAccntName(), account.getBankAccntBranch(),
+	 * account.getTimestamp())); } rs.close(); ps.close();
+	 * BankChequeDatabaseConnect.close(conn); }catch(Exception e) {} return banks; }
+	 */
+	
 	
 	public int getDepartmentId() {
 		if(departmentId==0){
@@ -738,6 +779,31 @@ public class CheckBean implements Serializable{
 	
 	
 	public void saveData(){
+		
+		boolean isOk = true;
+		
+		if(getBankCheckAccountNumber()==null || getBankCheckAccountNumber().isEmpty()) {
+			Application.addMessage(3, "Error", "Please select Account No");
+			isOk = false;
+		}
+		
+		if(getBankCheckPayTo()==null || getBankCheckPayTo().isEmpty()) {
+			Application.addMessage(3, "Error", "Please provide Pay To The Order Of");
+			isOk = false;
+		}
+		
+		if(getInputAmount()==null || getInputAmount().isEmpty()) {
+			Application.addMessage(3, "Error", "Please provide amount");
+			isOk = false;
+		}
+		
+		if(getNatureOfPayment()==null || getNatureOfPayment().isEmpty()) {
+			Application.addMessage(3, "Error", "Please provide nature of payment");
+			isOk = false;
+		}
+		
+		if(isOk) {
+		
 		com.italia.municipality.lakesebu.controller.Chequedtls chk = new com.italia.municipality.lakesebu.controller.Chequedtls();
 		if(getChequedtlsData()!=null){
 			chk = getChequedtlsData();
@@ -760,14 +826,22 @@ public class CheckBean implements Serializable{
 		chk.setBankName(getBankCheckName());
 		chk.setAccntName(getBankCheckAccntName());
 		chk.setPayToTheOrderOf(getBankCheckPayTo().toUpperCase());
+		
 		if(getInputAmount()==null){
 			chk.setAmount(0.00);
 			chk.setAmountInWOrds("ZERO PESOS ONLY.");
-		}else if(getInputAmount().isEmpty()){
-			chk.setAmount(0.00);
-			chk.setAmountInWOrds("ZERO PESOS ONLY.");
+		//}else if(getInputAmount()<=0){
+		//	chk.setAmount(0.00);
+		//	chk.setAmountInWOrds("ZERO PESOS ONLY.");
 		}else{
-			chk.setAmount(Double.valueOf(getInputAmount()));
+			
+			chk.setAmount(Double.valueOf(getInputAmount().replace(",", "")));
+			
+			//com.italia.municipality.lakesebu.controller.NumberToWords numberToWords =
+			//		new NumberToWords();
+			//String words = numberToWords.changeToWords(getInputAmount());
+			
+			//chk.setAmountInWOrds(words);
 			chk.setAmountInWOrds(getNumberInToWords());
 		}
 		
@@ -821,9 +895,13 @@ public class CheckBean implements Serializable{
 		
 		FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Saved.", "");
 		FacesContext.getCurrentInstance().addMessage(null, msg);
+		
+		
 		}else{
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Limit amount has been reached.", "");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
+		}
+		
 		}
 	}
 	
@@ -845,7 +923,7 @@ public class CheckBean implements Serializable{
 				voucher = new Voucher();
 				voucher.setPayee(chk.getPayToTheOrderOf());
 			}
-			voucher.setNaturePayment(getNatureOfPayment());
+			voucher.setNaturePayment(getNatureOfPayment()!=null? getNatureOfPayment().toUpperCase() : "");
 			voucher.setDateTrans(chk.getDate_disbursement());
 			voucher.setCheckNo(chk.getCheckNo());
 			voucher.setIsActive(1);
@@ -922,6 +1000,16 @@ public class CheckBean implements Serializable{
 		return results;
 	}
 	
+	
+	public List<String> completeNaturePayment(String query){
+		List<String> results = new ArrayList<String>();
+		
+		String sql = "SELECT DISTINCT naturepayment FROM voucher WHERE naturepayment like '%" + query.replace("--", "") + "%' LIMIT 20";
+		results = Voucher.retrieveNature(sql, new String[0]);
+		
+		return results;
+	}
+	
 	public void createNew(){
 		//loadDepartment();
 		clearFields();
@@ -947,7 +1035,10 @@ public class CheckBean implements Serializable{
 		//loadNewCheckNo();
 		setNatureOfPayment(null);
 		setDepartmentId(0);
+		
+		
 	}
+	
 	
 	@PostConstruct
 	public void init(){
@@ -1130,7 +1221,7 @@ public class CheckBean implements Serializable{
 		setBankCheckAccntName(chk.getAccntName());
 		setBankCheckPayTo(chk.getPayToTheOrderOf());
 		//System.out.println("clickItem Input amount : " + chk.getAmount());
-		setInputAmount(chk.getAmount()+"");
+		setInputAmount(Currency.formatAmount(chk.getAmount()));
 		setNumberInToWords(chk.getAmountInWOrds());
 		setSig1(chk.getSignatory1()+"");
 		setSig2(chk.getSignatory2()+"");
@@ -1410,11 +1501,13 @@ public class CheckBean implements Serializable{
 	public void generateWords(){
 		String result = "";
 		try{
+			inputAmount = inputAmount==null? "0.00" : inputAmount.replace(",", "");
 		com.italia.municipality.lakesebu.controller.NumberToWords numberToWords =
 				new NumberToWords();
-		//System.out.println("check input amount: " + inputAmount);
 		result = numberToWords.changeToWords(inputAmount).toUpperCase();
+		
 		String[] val = new String[2];
+		//if(inputAmount!=null){
 		if(inputAmount!=null){
 			val[0] = inputAmount;
 			val[1] = result;
@@ -1446,7 +1539,7 @@ public class CheckBean implements Serializable{
 	public String saveCheque(){
 		System.out.println("Save");
 		setBankCheckDate(DateUtils.convertDate(dateTime,"yyyy-MM-dd"));
-		setBankCheckAmount(inputAmount);
+		setBankCheckAmount(inputAmount+"");
 		setBankCheckInWords(words);
 		System.out.println(
 				"Account No: " + getBankCheckAccountNumber() +
@@ -1697,13 +1790,14 @@ public class CheckBean implements Serializable{
 			rs = ps.executeQuery();
 			
 			while(rs.next()){
-				String amount = rs.getString("cheque_amount");
+				double amount = rs.getDouble("cheque_amount");
 				setBankCheckAccountNumber(rs.getString("accnt_no"));
 				setBankCheckNo(rs.getString("cheque_no"));
 				setBankCheckAccntName(rs.getString("accnt_name").toUpperCase());
 				setBankCheckName(rs.getString("bank_name").toUpperCase());
 				setDateTime(DateUtils.convertDateString(rs.getString("date_disbursement"),"yyyy-MM-dd"));
-				setInputAmount(formatAmount(amount).replaceAll(",", ""));
+				//setInputAmount(formatAmount(amount).replaceAll(",", ""));
+				setInputAmount(amount+"");
 				setBankCheckPayTo(rs.getString("pay_to_the_order_of").toUpperCase());
 				setNumberInToWords(rs.getString("amount_in_words").toUpperCase());
 				String sig1 = "";
@@ -2110,6 +2204,84 @@ private boolean checkFields(){
 	return isFields;
 }
 
+
+public void monthQuery(String name) {
+	System.out.println("click month : "+name);
+	String dateFrom = "";
+	String dateTo = "";
+	String year = DateUtils.getCurrentYear()+"";
+	switch(name) {
+		case "JANUARY" : 
+			dateFrom = year + "-01-01";
+			dateTo = year + "-01-31";
+			break;
+		case "FEBRUARY" : 
+			dateFrom = year + "-02-01";
+			dateTo = year + "-02-31";
+			break;
+		case "MARCH" : 
+			dateFrom = year + "-03-01";
+			dateTo = year + "-03-31";
+			break;
+		case "APRIL" : 
+			dateFrom = year + "-04-01";
+			dateTo = year + "-04-31";
+			break;
+		case "MAY" : 
+			dateFrom = year + "-05-01";
+			dateTo = year + "-05-31";
+			break;
+		case "JUNE" : 
+			dateFrom = year + "-06-01";
+			dateTo = year + "-06-31";
+			break;
+		case "JULY" : 
+			dateFrom = year + "-07-01";
+			dateTo = year + "-07-31";
+			break;
+		case "AUGUST" : 
+			dateFrom = year + "-08-01";
+			dateTo = year + "-08-31";
+			break;
+		case "SEPTEMBER" : 
+			dateFrom = year + "-09-01";
+			dateTo = year + "-09-31";
+			break;
+		case "OCTOBER" : 
+			dateFrom = year + "-10-01";
+			dateTo = year + "-10-31";
+			break;
+		case "NOVEMBER" : 
+			dateFrom = year + "-11-01";
+			dateTo = year + "-11-31";
+			break;
+		case "DECEMBER" :
+			dateFrom = year + "-12-01";
+			dateTo = year + "-12-31";
+			break;
+	}
+	
+	
+	cheques = java.util.Collections.synchronizedList(new ArrayList<com.italia.municipality.lakesebu.controller.Chequedtls>());
+	com.italia.municipality.lakesebu.controller.Chequedtls chk = new com.italia.municipality.lakesebu.controller.Chequedtls();
+	String sql = "SELECT * FROM tbl_chequedtls WHERE isactive=1 AND (date_disbursement>=? AND date_disbursement<=? ) ORDER BY date_edited";
+	String[] params = new String[2];
+	params[0] = dateFrom;
+	params[1] = dateTo;
+	
+	
+	double amount = 0d;
+	for(com.italia.municipality.lakesebu.controller.Chequedtls chq : chk.retrieve(sql, params)){
+		if(chq.getStatus()==1){
+			amount += chq.getAmount();
+		}
+		chq.setAccntNumber(bankAccountNum(chq.getAccntNumber()));
+		cheques.add(chq);
+	}
+	setGrandTotal(formatAmount(amount+""));
+	
+}
+
 public String userpage(){
 	return "userMaintenance";
 }
@@ -2407,6 +2579,8 @@ public void setEnableRemarks(boolean enableRemarks) {
 public void setNatureOfPayment(String natureOfPayment) {
 	this.natureOfPayment = natureOfPayment;
 }
+
+
 
 	public static void main(String[] args) {
 		

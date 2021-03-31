@@ -96,17 +96,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		<p:ajax event="cellEdit"  listener="#{budgetBean.onCellEdit}" update=":formId:formDataId,:formId:msg" />	
 		
 		 <p:column headerText="Account Name" >
-              <p:cellEditor>
-              	  <f:facet name="output"><p:outputLabel value="#{rpt.accounts.bankAccntName}"/></f:facet>
-                  <f:facet name="input"><p:outputLabel id="modelInput" value="#{rpt.accounts.bankAccntName}"/></f:facet>
-              </p:cellEditor>
+              <p:outputLabel value="#{rpt.accounts.bankAccntName}"/>
          </p:column>
          
          <p:column headerText="Bank Branch" >
-              <p:cellEditor>
-              	  <f:facet name="output"><p:outputLabel value="#{rpt.accounts.bankAccntBranch}"/></f:facet>
-                  <f:facet name="input"><p:outputLabel  value="#{rpt.accounts.bankAccntBranch}"/></f:facet>
-              </p:cellEditor>
+              <p:outputLabel value="#{rpt.accounts.bankAccntBranch}"/>
          </p:column>
 		
 		<p:column headerText="Added Amount">
@@ -118,46 +112,37 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		
 		 <p:column>
 		 	<f:facet name="header">Budget Amount</f:facet>
-              <p:cellEditor>
-                  <f:facet name="output"><p:outputLabel value="Php#{rpt.budgetAmount}"/></f:facet>
-                  <f:facet name="input"><p:outputLabel value="Php#{rpt.budgetAmount}"/></f:facet>
-              </p:cellEditor>
+              <p:outputLabel value="#{rpt.budgetAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
             <f:facet name="footer">Php #{budgetBean.total}</f:facet>  
        </p:column>
        
        <p:column>
        		 <f:facet name="header">Used Amount</f:facet>
-              <p:cellEditor>
-                  <f:facet name="output"><p:outputLabel value="Php#{rpt.usedAmount}"/></f:facet>
-                  <f:facet name="input"><p:outputLabel value="Php#{rpt.usedAmount}"/></f:facet>
-              </p:cellEditor>
+              <p:outputLabel value="#{rpt.usedAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
               <f:facet name="footer">Php #{budgetBean.totalUsed}</f:facet>
        </p:column>
        
        <p:column>
        	      <f:facet name="header">Remaining Amount</f:facet>
-              <p:cellEditor>
-                  <f:facet name="output"><p:outputLabel value="Php#{rpt.remainingAmount}"/></f:facet>
-                  <f:facet name="input"><p:outputLabel value="Php#{rpt.remainingAmount}"/></f:facet>
-              </p:cellEditor>
+              <p:outputLabel value="#{rpt.remainingAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
               <f:facet name="footer">Php #{budgetBean.totalRem}</f:facet>
        </p:column>
 		
 		
 	  <p:column headerText="Limit Amount">
               <p:cellEditor>
-                  <f:facet name="output"><p:outputLabel value="Php#{rpt.limitAmountTmp}" a:placeholder="0.00"/></f:facet>
+                  <f:facet name="output"><p:outputLabel value="#{rpt.limitAmountTmp}" a:placeholder="0.00" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/></f:facet>
                   <f:facet name="input"><p:inputText  value="#{rpt.limitAmount}" a:type="number" a:placeholder="0.00" style="width:96%;"/></f:facet>
               </p:cellEditor>
        </p:column>
        
-       <p:column headerText="Activated">
+       <p:column headerText="Activated" width="50">
                <p:selectBooleanCheckbox value="#{rpt.isActivated}">
                 	<p:ajax update="formDataId,msg" listener="#{budgetBean.limitCheck(rpt)}" />
                </p:selectBooleanCheckbox>
        </p:column>
         
-        <p:column headerText="Cycle Date">
+        <p:column headerText="Cycle Date" width="50">
               <p:cellEditor>
                   <f:facet name="output"><p:outputLabel value="#{rpt.cycleDate}"/></f:facet>
                   <f:facet name="input"><p:inputText  value="#{rpt.cycleDate}" a:type="number" a:placeholder="0.00" style="width:96%;color:black"/></f:facet>

@@ -103,11 +103,16 @@ public class NumberToWords {
 	
 	public String changeToWords(String val){
 		String results = "";
+		
+		System.out.println("changeToWOrds: " + val);
 		try{
 		
 		String a = "";
 		try{
 		a = val.split("\\.")[1];
+		
+		System.out.println("aaaa : " + a);
+		
 		}catch(ArrayIndexOutOfBoundsException e){
 			System.out.println("Index out of bound. Please check pass data.");
 		}

@@ -142,7 +142,7 @@ public class CollectionInfo {
 			}
 			
 		}
-		System.out.println("SQL " + ps.toString());
+		System.out.println("SQL Retrieve: " + ps.toString());
 		rs = ps.executeQuery();
 		
 		while(rs.next()){

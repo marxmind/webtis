@@ -23,6 +23,7 @@ public class Numbers {
 		try{
 		DecimalFormat df = new DecimalFormat("####0.00");
 		value = Double.valueOf(df.format(value));
+		System.out.println("value formatDouble : " + value);
 		}catch(Exception e){System.out.println("Error in formatDouble for value : " + value + " error : " + e.getMessage());}
 		return value;
 	}

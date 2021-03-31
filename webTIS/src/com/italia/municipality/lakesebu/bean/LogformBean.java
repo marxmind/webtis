@@ -29,7 +29,7 @@ import com.italia.municipality.lakesebu.controller.CollectionInfo;
 import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.Form11Report;
 import com.italia.municipality.lakesebu.controller.IssuedForm;
-import com.italia.municipality.lakesebu.controller.ReadConfig;
+import com.italia.municipality.lakesebu.controller.Stocks;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
@@ -140,6 +140,162 @@ public class LogformBean implements Serializable{
 	private List rts;
 	
 	private String totalCashTicket;
+	
+	private boolean enableCalendarPrint=true;
+	
+	private String searchSeries;
+	private List<IssuedForm> issuedForms;
+	private List<CollectionInfo> issuedSeries;
+	private List<CollectionInfo> fixIssuedSeries;
+	private String availableSeries;
+	public void changeBehaviorCalendarDatePrint() {
+		if(isUseModifiedDate()) {
+				setEnableCalendarPrint(false);
+		}else {
+				setEnableCalendarPrint(true);
+		}
+	}
+	
+	public void saveChangeSeries() {
+		if(fixIssuedSeries!=null && fixIssuedSeries.size()>0) {
+			int countTotal = fixIssuedSeries.size();
+			List<CollectionInfo> tmp = fixIssuedSeries;
+			
+			IssuedForm tmpIssued = issuedForms.get(0);
+			Stocks tmpStock = tmpIssued.getStock();
+			
+			int count = 0;
+			for(CollectionInfo c : fixIssuedSeries) {
+				c.save();
+				count++;
+			}
+			
+			if(count!=countTotal) {//rollback changes
+				tmpIssued.save();
+				tmpStock.save();
+				for(CollectionInfo c : tmp) {
+					c.save();
+				}
+			}else {
+				IssuedForm issuedForm = issuedForms.get(0);
+				Stocks stock = issuedForm.getStock();
+				int start = issuedForms.get(0).getNewSeries();
+				int end = issuedForms.get(0).getNewSeries() + (issuedForm.getPcs()-1);
+				
+				issuedForm.setBeginningNo(start);
+				issuedForm.setEndingNo(end);
+				issuedForm.save();
+				
+				String from = DateUtils.numberResult(issuedForm.getFormType(), start);
+				String to = DateUtils.numberResult(issuedForm.getFormType(), end);
+				stock.setSeriesFrom(from);
+				stock.setSeriesTo(to);
+				stock.save();
+			}
+			
+			PrimeFaces pf = PrimeFaces.current();
+			pf.executeScript("$('#issuedId').hide();$('#fixId').hide();");
+			setSearchSeries(fixIssuedSeries.get(0).getBeginningNo()+"");
+			loadSearchSeries();
+		}
+	}
+	
+	public void loadSearchSeries() {
+		String sql = " AND frm.isactivelog=1 ";
+		String[] params = new String[0];
+		issuedForms = new ArrayList<IssuedForm>();
+		if(getSearchSeries()!=null) {
+				sql += "  AND frm.beginningNoLog=" + getSearchSeries();
+		}
+		
+		sql +=" ORDER BY frm.issueddate ASC";
+		
+		issuedForms = IssuedForm.retrieve(sql, params);
+		PrimeFaces pf = PrimeFaces.current();
+		if(issuedForms!=null && issuedForms.size()==1) {
+			loadIssuedSeries(issuedForms.get(0));
+		}else {
+			pf.executeScript("$('#issuedId').hide();$('#fixId').hide()");
+		}
+	}
+	
+	public void loadIssuedSeries(IssuedForm issued) {
+		PrimeFaces pf = PrimeFaces.current();
+		
+		issuedSeries = new ArrayList<CollectionInfo>();
+		issuedSeries = CollectionInfo.retrieve(" AND sud.isactivelog=1 AND sud.logid=" + issued.getId(), new String[0]);
+		if(issuedSeries!=null && issuedSeries.size()>0) {
+			pf.executeScript("$('#issuedId').show()");
+		}else {
+			pf.executeScript("$('#issuedId').hide()");
+		}
+		int cnt = 0;
+		for(CollectionInfo c : issuedSeries) {
+			cnt += c.getPcs();
+		}
+		
+		cnt = issued.getPcs() - cnt;
+		setAvailableSeries("Available remaining form is " + cnt);
+	}
+	
+	public void loadFixIssuedSeries(IssuedForm issued) {
+		PrimeFaces pf = PrimeFaces.current();
+		
+		if(issued.getNewSeries()>0) {
+			
+			fixIssuedSeries = new ArrayList<CollectionInfo>();
+			fixIssuedSeries = CollectionInfo.retrieve(" AND sud.isactivelog=1 AND sud.logid=" + issued.getId(), new String[0]);
+			if(fixIssuedSeries!=null && fixIssuedSeries.size()>0) {
+				
+				
+				List<CollectionInfo> ls = new ArrayList<CollectionInfo>();
+				ls = fixIssuedSeries;
+				fixIssuedSeries = new ArrayList<CollectionInfo>();
+				int start = issued.getNewSeries();
+				int end = 0;
+				
+				int count = 1;
+				for(CollectionInfo s : ls) {
+					if(count==1) {
+						end = (s.getPcs() + start) - 1;
+						s.setBeginningNo(start);
+						s.setEndingNo(end);
+						
+						start = end;
+					}else {
+						
+						end = start + s.getPcs();
+						s.setBeginningNo(start+1);
+						s.setEndingNo(end);
+						
+						start = end;
+					}
+					
+					
+					fixIssuedSeries.add(s);
+					
+					count++;
+				}
+				
+				
+				pf.executeScript("$('#fixId').show()");
+			}else {
+				pf.executeScript("$('#fixId').hide()");
+			}
+		
+		}else {
+			Application.addMessage(2, "Wrong", "PLease provide new series for this accountable form");
+			pf.executeScript("$('#fixId').hide()");
+		}
+	}
+	
+	public void onCellEditSeries(CellEditEvent event) {
+		Object oldValue = event.getOldValue();
+        Object newValue = event.getNewValue();
+        
+        System.out.println("old Value: " + oldValue);
+        System.out.println("new Value: " + newValue);
+	}
 	
 	public void calculateCashTicket() {
 		double puj = getPuj().isEmpty()? 0 : Double.valueOf(getPuj());
@@ -3656,6 +3812,54 @@ public class LogformBean implements Serializable{
 
 	public void setTotalCashTicket(String totalCashTicket) {
 		this.totalCashTicket = totalCashTicket;
+	}
+
+	public boolean isEnableCalendarPrint() {
+		return enableCalendarPrint;
+	}
+
+	public void setEnableCalendarPrint(boolean enableCalendarPrint) {
+		this.enableCalendarPrint = enableCalendarPrint;
+	}
+
+	public String getSearchSeries() {
+		return searchSeries;
+	}
+
+	public void setSearchSeries(String searchSeries) {
+		this.searchSeries = searchSeries;
+	}
+
+	public List<IssuedForm> getIssuedForms() {
+		return issuedForms;
+	}
+
+	public void setIssuedForms(List<IssuedForm> issuedForms) {
+		this.issuedForms = issuedForms;
+	}
+
+	public List<CollectionInfo> getIssuedSeries() {
+		return issuedSeries;
+	}
+
+	public void setIssuedSeries(List<CollectionInfo> issuedSeries) {
+		this.issuedSeries = issuedSeries;
+	}
+
+	public List<CollectionInfo> getFixIssuedSeries() {
+		return fixIssuedSeries;
+	}
+
+	public void setFixIssuedSeries(List<CollectionInfo> fixIssuedSeries) {
+		this.fixIssuedSeries = fixIssuedSeries;
+	}
+
+	public String getAvailableSeries() {
+		return availableSeries;
+	}
+
+	public void setAvailableSeries(String availableSeries) {
+		this.availableSeries = availableSeries;
 	}
 
 

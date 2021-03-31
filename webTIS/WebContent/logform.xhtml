@@ -59,6 +59,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<p:dialog widgetVar="dlgCash" width="500" position="center center" height="300" header="Cash Ticket Details" closeOnEscape="true" closable="false">
 		<p:toolbar id="tbCash" style="#{skin.toolbar}">
     		<f:facet name="left"/>
+    			
     		<f:facet name="right">
     				<p:commandButton value="Save" actionListener="#{logformBean.saveData}" update="gridId listForm reportData colMapId msg" oncomplete="PF('dlgCash').hide()"/>
     				<p:commandButton value="Close" onclick="PF('dlgCash').hide()"/>
@@ -108,7 +109,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 			<p:toolbar id="tbForm" style="#{skin.toolbar}">
     		<f:facet name="left">
-    				
+    				<p:commandButton value="Form Series History" onclick="PF('dlgCSeries').show()"/>
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton update="gridId listForm" value="New" icon="fa fa-file-o" actionListener="#{logformBean.clear}">
@@ -335,13 +336,145 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	<p:dialog widgetVar="dlgPrint">
 		<p:panelGrid id="idPrintDate" columns="1" layout="grid">
+			<p:selectBooleanCheckbox value="#{logformBean.useModifiedDate}" itemLabel="Use below date">
+				<p:ajax event="change" listener="#{logformBean.changeBehaviorCalendarDatePrint}" update="idPrintCal"/>
+			</p:selectBooleanCheckbox>
 			<p:outputLabel value="Date Printed" />
-			<p:calendar value="#{logformBean.perReportDate}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>
-			<p:selectBooleanCheckbox value="#{logformBean.useModifiedDate}" itemLabel="Use above date"/>
+			<p:calendar id="idPrintCal" value="#{logformBean.perReportDate}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em" disabled="#{logformBean.enableCalendarPrint}"/>
 			<p:commandLink id="printId" title="Print in PDF" target="_blank" actionListener="#{logformBean.printChange}" ajax="false" immediate="false">
             		<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
 			</p:commandLink>
 		</p:panelGrid>
+	</p:dialog>
+	
+	<p:dialog widgetVar="dlgCSeries" showHeader="false" width="900" height="850" position="center top">
+		
+			<p:toolbar id="tblFrm" style="#{skin.toolbar}">
+			
+			
+			
+    		<f:facet name="left">
+    				<span class="ui-input-icon-left">
+				        <i class="pi pi-search" />
+				        <p:inputText id="idSearchSeries" value="#{logformBean.searchSeries}" placeholder="Search Started Series">
+				        	<p:ajax event="keyup" listener="#{logformBean.loadSearchSeries}" update="dataSeries dataIssued idAvail"/>
+				        </p:inputText>
+				    </span>
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton oncomplete="PF('dlgCSeries').hide()" value="Close"/>
+    		</f:facet>
+			</p:toolbar>
+			
+			<p:dataTable id="dataSeries" value="#{logformBean.issuedForms}" var="rpt" paginatorAlwaysVisible="false" paginatorPosition="top" rowKey="#{rpt.id}" editable="true"  editMode="cell">
+				
+				<p:ajax event="cellEdit"  listener="#{logformBean.onCellEditSeries}" update="dataSeries" />	
+				
+				<p:column headerText="View" width="20">
+            		<p:commandButton icon="fa fa-search" update="dataIssued" actionListener="#{logformBean.loadIssuedSeries(rpt)}"/>
+            	</p:column>
+				
+				<p:column headerText="Status" width="50">
+            		<p:outputLabel value="#{rpt.statusName}"/>
+            	</p:column>
+				
+				<p:column headerText="Issued" width="50">
+            		<p:outputLabel value="#{rpt.issuedDate}"/>
+            	</p:column>
+            	
+            	<p:column headerText="Qty" width="20">
+            		<p:outputLabel value="#{rpt.pcs}"/>
+            	</p:column>
+            	
+            	<p:column headerText="Form" width="30">
+            		<p:outputLabel value="#{rpt.formTypeName}"/>
+            	</p:column>
+            	
+            	<p:column headerText="Collector" width="100">
+            		<p:outputLabel value="#{rpt.collector.name}"/>
+            	</p:column>
+				
+				<p:column headerText="OLd Series" width="50">
+            		<p:outputLabel value="#{rpt.beginningNo}"/>
+            	</p:column>
+            	
+            	<p:column headerText="New Series" width="50">
+		              <p:cellEditor>
+		              	  <f:facet name="output"><h:outputText value="#{rpt.newSeries}" /></f:facet>
+		                  <f:facet name="input">
+		                  <p:inputNumber  a:placeholder="00000000" value="#{rpt.newSeries}"/>
+		                  </f:facet>
+		              </p:cellEditor>
+		       </p:column>
+            	
+            	
+            	<p:column headerText="View Changes" width="50">
+            		<p:commandButton icon="fa fa-search" update="fixDataIssued msg" actionListener="#{logformBean.loadFixIssuedSeries(rpt)}"/>
+            	</p:column>
+				
+				
+			</p:dataTable>
+			<p:spacer/><p:spacer/>
+			<div id="issuedId" style="display: none">
+			<p:dataTable id="dataIssued" value="#{logformBean.issuedSeries}" var="rt" paginatorAlwaysVisible="false" paginatorPosition="top">
+				<p:column headerText="Rpt#" width="10">
+            		<p:outputLabel value="#{rt.rptGroup}"/>
+            	</p:column>
+				<p:column headerText="Reported" width="50">
+            		<p:outputLabel value="#{rt.receivedDate}"/>
+            	</p:column>
+            	
+            	<p:column headerText="Pcs" width="10">
+            		<p:outputLabel value="#{rt.pcs}"/>
+            	</p:column>
+            	<p:column headerText="From" width="50">
+            		<p:outputLabel value="#{rt.beginningNo}"/>
+            	</p:column>
+            	<p:column headerText="To" width="50">
+            		<p:outputLabel value="#{rt.endingNo}"/>
+            	</p:column>
+            	<p:column headerText="Amount" width="50" style="text-align: right; font-weight: bold;">
+            		<p:outputLabel value="#{rt.amount}">
+            			<f:convertNumber currencySymbol="" type="currency" />
+            		</p:outputLabel>
+            	</p:column>
+			</p:dataTable>
+			<p:outputLabel id="idAvail" value="#{logformBean.availableSeries}" style="font-weight: bold; font-size: 2em"/>
+			</div>
+			
+			<p:spacer/><p:spacer/>
+			<div id="fixId" style="display: none">
+			<p:outputLabel value="Below is/are the change/s" style="font-weight: bold; font-size: 2em"/>
+			<p:dataTable id="fixDataIssued" value="#{logformBean.fixIssuedSeries}" var="ft" paginatorAlwaysVisible="false" paginatorPosition="top">
+				<p:column headerText="Rpt#" width="10">
+            		<p:outputLabel value="#{ft.rptGroup}"/>
+            	</p:column>
+				<p:column headerText="Reported" width="50">
+            		<p:outputLabel value="#{ft.receivedDate}"/>
+            	</p:column>
+            	
+            	<p:column headerText="Pcs" width="10">
+            		<p:outputLabel value="#{ft.pcs}"/>
+            	</p:column>
+            	<p:column headerText="From" width="50">
+            		<p:outputLabel value="#{ft.beginningNo}"/>
+            	</p:column>
+            	<p:column headerText="To" width="50">
+            		<p:outputLabel value="#{ft.endingNo}"/>
+            	</p:column>
+            	<p:column headerText="Amount" width="50" style="text-align: right; font-weight: bold;">
+            		<p:outputLabel value="#{ft.amount}">
+            			<f:convertNumber currencySymbol="" type="currency" />
+            		</p:outputLabel>
+            	</p:column>
+			</p:dataTable>
+			
+				<p:commandButton update="dataSeries dataIssued fixDataIssued idSearchSeries msg" icon="fa fa-floppy-o" action="#{logformBean.saveChangeSeries}">
+    				<p:confirm header="Confirmation" message="Are you sure you want to change on the series?" icon="ui-icon-alert" />
+    			</p:commandButton>
+			
+			</div>
 	</p:dialog>
 	
 	<ui:include src="loader.xhtml" />

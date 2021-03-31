@@ -12,6 +12,12 @@ import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.utils.LogU;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * 
  * @author Mark Italia
@@ -19,6 +25,11 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @version 1.0
  *
  */
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
+@Builder
 public class Stocks {
 
 	private long id;
@@ -37,7 +48,6 @@ public class Stocks {
 	private String formTypeName;
 	
 	private int count;
-	
 	
 	public static boolean isExistedSeries(String seriesFrom, int formType) {
 		
@@ -92,6 +102,65 @@ public class Stocks {
 			}
 			
 		}
+		System.out.println("SQL " + ps.toString());
+		rs = ps.executeQuery();
+		int count = 1;
+		while(rs.next()){
+			
+			Stocks st = new Stocks();
+			st.setId(rs.getLong("stockid"));
+			st.setDateTrans(rs.getString("datetrans"));
+			st.setSeriesFrom(rs.getString("seriesfrom"));
+			st.setSeriesTo(rs.getString("seriesto"));
+			st.setStatus(rs.getInt("statusstock"));
+			st.setIsActive(rs.getInt("isactivestock"));
+			st.setFormType(rs.getInt("formType"));
+			st.setQuantity(rs.getInt("qty"));
+			st.setStabNo(rs.getInt("stabno"));
+			st.setCount(count++);
+			
+			if(rs.getInt("statusstock")==1) {
+				st.setStatusName("NOT ISSUED");
+			}else {
+				st.setStatusName("ISSUED");
+			}
+			
+			st.setFormTypeName(FormType.nameId(rs.getInt("formType")));
+			
+			Collector col = new Collector();
+			try{col.setId(rs.getInt("isid"));}catch(NullPointerException e){}
+			try{col.setName(rs.getString("collectorname"));}catch(NullPointerException e){}
+			try{col.setIsActive(rs.getInt("isactivecollector"));}catch(NullPointerException e){}
+			try{col.setIsResigned(rs.getInt("isresigned"));}catch(NullPointerException e){}
+			st.setCollector(col);
+			
+			stocks.add(st);
+			
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return stocks;
+	}
+	
+	public static List<Stocks> retrieve(long id){
+		List<Stocks> stocks = new ArrayList<Stocks>();
+		
+		String tableStock ="st";
+		String tableCol = "cl";
+		String sql = "SELECT * FROM stockreceipt "+ tableStock +",issuedcollector "+tableCol +"  WHERE "+tableStock+".isactivestock=1 AND "+  
+		tableStock +".isid=" + tableCol + ".isid AND st.stockid="+id;
+				
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
 		System.out.println("SQL " + ps.toString());
 		rs = ps.executeQuery();
 		int count = 1;
@@ -546,119 +615,6 @@ public class Stocks {
 		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
-	}
-	
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getDateTrans() {
-		return dateTrans;
-	}
-
-	public void setDateTrans(String dateTrans) {
-		this.dateTrans = dateTrans;
-	}
-
-	public String getSeriesFrom() {
-		return seriesFrom;
-	}
-
-	public void setSeriesFrom(String seriesFrom) {
-		this.seriesFrom = seriesFrom;
-	}
-
-	public String getSeriesTo() {
-		return seriesTo;
-	}
-
-	public void setSeriesTo(String seriesTo) {
-		this.seriesTo = seriesTo;
-	}
-
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	public int getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-
-	public Timestamp getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public Collector getCollector() {
-		return collector;
-	}
-
-	public void setCollector(Collector collector) {
-		this.collector = collector;
-	}
-
-	public String getStatusName() {
-		return statusName;
-	}
-
-	public void setStatusName(String statusName) {
-		this.statusName = statusName;
-	}
-
-	public int getFormType() {
-		return formType;
-	}
-
-	public void setFormType(int formType) {
-		this.formType = formType;
-	}
-
-	public String getFormTypeName() {
-		return formTypeName;
-	}
-
-	public void setFormTypeName(String formTypeName) {
-		this.formTypeName = formTypeName;
-	}
-
-	public int getCount() {
-		return count;
-	}
-
-	public void setCount(int count) {
-		this.count = count;
-	}
-
-	public int getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
-
-	public int getStabNo() {
-		return stabNo;
-	}
-
-	public void setStabNo(int stabNo) {
-		this.stabNo = stabNo;
 	}
 	
 }

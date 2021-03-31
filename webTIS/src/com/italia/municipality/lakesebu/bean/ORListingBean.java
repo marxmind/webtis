@@ -49,6 +49,7 @@ import com.italia.municipality.lakesebu.enm.CivilStatus;
 import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.enm.Months;
+import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
@@ -832,7 +833,7 @@ public class ORListingBean implements Serializable{
 		String[] params = new String[0];
 		
 		clearFlds();//clearing all fields
-		
+		ctcFlds(false);
 		if (getSelectOrTypeId()==0) {//new
 		 //plain new
 		}else if (getSelectOrTypeId()==1) {//new cedula
@@ -1084,7 +1085,7 @@ public class ORListingBean implements Serializable{
 				val += getCustomerAddress().isEmpty()? "0<*>" : getCustomerAddress() + "<*>";
 				val += getCivilStatusId()==0? "0<*>" : getCivilStatusId() + "<*>";
 				val += getProfessionBusinessNature().isEmpty()? "0<*>" : getProfessionBusinessNature() + "<*>";
-				val += getSignatory().isEmpty()? "0<*>" : getSignatory() + "<*>";
+				val += GlobalVar.MTO_OR_CEDULA_SIGNATORY + "<*>";//signatory
 				val += getPlaceOfBirth().isEmpty()? "0<*>" : getPlaceOfBirth() +"<*>";
 				val += getCitizenshipOrganization().isEmpty()? "0" : getCitizenshipOrganization();
 				
@@ -1183,11 +1184,12 @@ public class ORListingBean implements Serializable{
 			amount += on.getAmount();
 		}*/
 		String sql = " AND nameL.isactiveol=1 AND nameL.orid="+or.getId();
-		
+		ctcFlds(false);
 		if(FormType.CTC_INDIVIDUAL.getId()==or.getFormType() || FormType.CTC_CORPORATION.getId()==or.getFormType()) {
 			
 			if(or.getForminfo()!=null && !or.getForminfo().isEmpty()) {
-			String[] val = or.getForminfo().split("<*>");
+				System.out.println(or.getForminfo());
+			String[] val = or.getForminfo().split("<@>");
 			
 			setLabel2(Double.valueOf(val[0]));
 			setLabel3(Double.valueOf(val[1]));
@@ -1209,7 +1211,7 @@ public class ORListingBean implements Serializable{
 			setProfessionBusinessNature(val[17].equalsIgnoreCase("0")? "" : val[17]);
 			setSignatory(val[18].equalsIgnoreCase("0")? "" : val[18]);
 			setPlaceOfBirth(val[19].equalsIgnoreCase("0")? "" : val[19]);
-			setCitizenshipOrganization(val[19].equalsIgnoreCase("0")? "" : val[20]);
+			setCitizenshipOrganization(val[20].equalsIgnoreCase("0")? "" : val[20]);
 			ctcFlds(true);
 			}
 			
@@ -1278,47 +1280,10 @@ public class ORListingBean implements Serializable{
 			
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
 					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
-			String REPORT_NAME = "OR51";
+			String REPORT_NAME = GlobalVar.OR51_FX2175_PRINT;
 			
 			ReportCompiler compiler = new ReportCompiler();
-			String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, REPORT_PATH);
-	  		
-	  		List<OR51> ors = new ArrayList<OR51>();
-	  		int cnt = 0;
-	  		double amount = 0d;
-	  		for(ORNameList na : py.getOrNameList()) {
-	  			if(na.getAmount()>0) {
-	  				OR51 or = new OR51();
-			  		or.setDescription(na.getPaymentName().getName());
-			  		or.setCode(na.getPaymentName().getAccountingCode());
-			  		or.setAmount(Currency.formatAmount(na.getAmount()));
-		  			ors.add(or);
-		  			cnt++;
-		  			amount += na.getAmount();
-	  			}
-	  		}
-	  		
-	  		if(cnt<12) {
-	  			int addFldSize = 11 - cnt;
-		  		for(int i=1; i<=addFldSize; i++) {
-		  			OR51 or = new OR51();
-			  		or.setDescription("");
-			  		or.setCode("");
-			  		or.setAmount("");
-		  			ors.add(or);
-		  		}
-	  		}
-	  		
-	  		
-	  		//total amount
-	  		OR51 or = new OR51();
-	  		or.setDescription("");
-	  		or.setCode("");
-	  		or.setAmount(Currency.formatAmount(amount));
-  			ors.add(or);
-	  		
-	  		JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(ors);
-	  		HashMap param = new HashMap();
+			HashMap param = new HashMap();
 	  		
 	  		param.put("PARAM_DATE", DateUtils.convertDateToMonthDayYear(py.getDateTrans()));
 	  		param.put("PARAM_PAYOR", py.getCustomer().getFullName());
@@ -1326,6 +1291,108 @@ public class ORListingBean implements Serializable{
 	  		param.put("PARAM_WORDS", numberToWords.changeToWords(py.getAmount()).toUpperCase());
 	  		param.put("PARAM_CASHCHECK", "CASH");
 	  		param.put("PARAM_COLLECTING_OFFICER", "FERDINAND L. LOPEZ");
+			
+	  		List<OR51> ors = new ArrayList<OR51>();
+			if(FormType.CTC_INDIVIDUAL.getId()==py.getFormType() || FormType.CTC_CORPORATION.getId()==py.getFormType()) {
+				REPORT_NAME = GlobalVar.CEDULA_FX2175_PRINT;
+				if(py.getForminfo()!=null && !py.getForminfo().isEmpty()) {
+					
+					String[] dt = py.getDateTrans().split("-");
+					param.put("PARAM_DATE", dt[1] + " " + dt[2] + " " + dt[0]);
+					
+					String[] val = py.getForminfo().split("<@>");
+					
+					setLabel2(Double.valueOf(val[0]));
+					setLabel3(Double.valueOf(val[1]));
+					setLabel4(Double.valueOf(val[2]));
+					setAmount1(Double.valueOf(val[3]));
+					setAmount2(Double.valueOf(val[4]));
+					setAmount3(Double.valueOf(val[5]));
+					setAmount4(Double.valueOf(val[6]));
+					setAmount5(Double.valueOf(val[7]));
+					setAmount6(Double.valueOf(val[8]));
+					setAmount7(Double.valueOf(val[9]));
+					setGenderId(Integer.valueOf(val[10]));
+					setBirthdate(val[11].equalsIgnoreCase("0")? null : DateUtils.convertDateString(val[11], "yyyy-MM-dd"));
+					setTinNo(val[12].equalsIgnoreCase("0")? "" : val[12]);
+					setHieghtDateReg(val[13].equalsIgnoreCase("0")? "" : val[13]);
+					setWeight(val[14].equalsIgnoreCase("0")? "" : val[14]);
+					setCustomerAddress(val[15].equalsIgnoreCase("0")? "" : val[15]);
+					setCivilStatusId(Integer.valueOf(val[16]));
+					setProfessionBusinessNature(val[17].equalsIgnoreCase("0")? "" : val[17]);
+					setSignatory(val[18].equalsIgnoreCase("0")? "" : val[18]);
+					setPlaceOfBirth(val[19].equalsIgnoreCase("0")? "" : val[19]);
+					setCitizenshipOrganization(val[20].equalsIgnoreCase("0")? "" : val[20]);
+					
+					param.put("PARAM_LABEL2", Currency.formatAmount(Double.valueOf(val[0])));
+					param.put("PARAM_LABEL3", Currency.formatAmount(Double.valueOf(val[1])));
+					param.put("PARAM_LABEL4", Currency.formatAmount(Double.valueOf(val[2])));
+					
+					param.put("PARAM_YEAR", py.getDateTrans().split("-")[0]);
+					param.put("PARAM_POI", "MUNICIPALITY OF LAKE SEBU");
+					param.put("PARAM_ADDRESS", py.getCustomer().getAddress());
+					param.put("PARAM_TIN", val[12].equalsIgnoreCase("0")? "" : val[12]);
+					param.put("PARAM_CITIZENSHIP", val[20].equalsIgnoreCase("0")? "" : val[20]);
+					param.put("PARAM_CIVIL", CivilStatus.typeName(Integer.valueOf(val[16])));
+					param.put("PARAM_PROF",val[17].equalsIgnoreCase("0")? "" : val[17]);
+					param.put("PARAM_POB", val[19].equalsIgnoreCase("0")? "" : val[19]);
+					param.put("PARAM_GENDER", Integer.valueOf(val[10])==1? "MALE":"FEMALE");
+					param.put("PARAM_H", val[13].equalsIgnoreCase("0")? "" : val[13]);
+					param.put("PARAM_W", val[14].equalsIgnoreCase("0")? "" : val[14]);
+					param.put("PARAM_ONE", Currency.formatAmount(Double.valueOf(val[3])));
+					param.put("PARAM_TWO", Currency.formatAmount(Double.valueOf(val[4])));
+					param.put("PARAM_THREE", Currency.formatAmount(Double.valueOf(val[5])));
+					param.put("PARAM_FOUR", Currency.formatAmount(Double.valueOf(val[6])));
+					param.put("PARAM_FIVE", Currency.formatAmount(Double.valueOf(val[7])));
+					param.put("PARAM_INTEREST", Currency.formatAmount(Double.valueOf(val[8])));
+					param.put("PARAM_GRAND", Currency.formatAmount(Double.valueOf(val[9])));
+					
+					
+		  			ors.add(new OR51());
+				}
+				
+			}else { //Form51
+			
+				
+		  		
+		  		
+		  		int cnt = 0;
+		  		double amount = 0d;
+		  		for(ORNameList na : py.getOrNameList()) {
+		  			if(na.getAmount()>0) {
+		  				OR51 or = new OR51();
+				  		or.setDescription(na.getPaymentName().getName());
+				  		or.setCode(na.getPaymentName().getAccountingCode());
+				  		or.setAmount(Currency.formatAmount(na.getAmount()));
+			  			ors.add(or);
+			  			cnt++;
+			  			amount += na.getAmount();
+		  			}
+		  		}
+		  		
+		  		if(cnt<12) {
+		  			int addFldSize = 11 - cnt;
+			  		for(int i=1; i<=addFldSize; i++) {
+			  			OR51 or = new OR51();
+				  		or.setDescription("");
+				  		or.setCode("");
+				  		or.setAmount("");
+			  			ors.add(or);
+			  		}
+		  		}
+		  		
+		  		
+		  		//total amount
+		  		OR51 or = new OR51();
+		  		or.setDescription("");
+		  		or.setCode("");
+		  		or.setAmount(Currency.formatAmount(amount));
+	  			ors.add(or);
+	  		
+			}
+			String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, REPORT_PATH);
+	  		JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(ors);
+	  		
 	  		
 	  		String jrprint = JasperFillManager.fillReportToFile(jrxmlFile, param, beanColl);
 	  	    JasperExportManager.exportReportToPdfFile(jrprint,REPORT_PATH+ REPORT_NAME +".pdf");
@@ -1363,7 +1430,7 @@ public class ORListingBean implements Serializable{
 		         close(input);
 		    }	
 	            
-			System.out.println("pdf successfully created...");
+			
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -1835,11 +1902,13 @@ private void close(Closeable resource) {
 			setPayorName("N/A");
 			setOrNumber("0");
 			setSearchPayName("cash");
+			cedulaInterest();
 		}else if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {
 			setAmount1(5.00);
 			setSearchPayName("ctc");
 			ctcFlds(true);
 			enableBirthday=false;
+			cedulaInterest();
 		}else if(FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
 			setAmount1(500.00);
 			setSearchPayName("ctc");
@@ -1856,6 +1925,46 @@ private void close(Closeable resource) {
 		if(getSelectOrTypeId()>0) {//show suggested if not NEW is selected
 			loadLastORToSuggestForNewReceipt();
 		}
+	}
+	
+	
+	private void cedulaInterest() {
+		/**
+		 * 60-CTC Individual
+		 * 65-CTC Interest 
+		 */
+		namesDataSelected = new ArrayList<>();
+		String sql = "";
+		String[] params = new String[0];
+		setFormTypeId(FormType.CTC_INDIVIDUAL.getId());
+		int[] ids = {60};
+		double[] amounts = {0.00};
+		double amount = 0d;
+		
+		try {
+			for(int i=0; i< ids.length; i++) {
+				sql = " AND pyid="+ids[i];
+				PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+				py.setAmount(amounts[i]);
+				amount += amounts[i];
+				namesDataSelected.add(py);
+				getSelectedPaymentNameMap().put(py.getId(), py);
+			}
+		}catch(Exception e) {e.printStackTrace();}
+		
+		
+		
+		if(DateUtils.getCurrentMonth()>=3) {
+			try {
+					sql = " AND pyid=65";
+					PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+					py.setAmount(00.00);
+					amount += 0.00;
+					namesDataSelected.add(py);
+					getSelectedPaymentNameMap().put(py.getId(), py);
+			}catch(Exception e) {}
+		}
+		setTotalAmount(Currency.formatAmount(amount));
 	}
 	
 	public String getOrNumber() {

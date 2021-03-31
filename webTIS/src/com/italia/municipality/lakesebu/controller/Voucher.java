@@ -124,6 +124,40 @@ public class Voucher {
 		return trans;
 	}
 	
+	public static List<String> retrieveNature(String sql, String[] params){
+		
+		List<String> results = new ArrayList<String>();
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = CashBookConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		if(params!=null && params.length>0){
+			
+			for(int i=0; i<params.length; i++){
+				ps.setString(i+1, params[i]);
+			}
+			
+		}
+		
+		//System.out.println("SQL " + ps.toString());
+		
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			results.add(rs.getString("naturepayment"));
+		}
+		rs.close();
+		ps.close();
+		CashBookConnect.close(conn);
+		}catch(SQLException sl){}
+		
+		return results;
+	}
+	
 	public static Voucher save(Voucher tran){
 		if(tran!=null){
 			long id = getInfo(tran.getId()==0? getLatestId()+1 : tran.getId());

@@ -780,6 +780,7 @@ public class Chequedtls {
 		params.put("PARAM_ACCOUNT_NAME", rpt.getAccntName().toUpperCase());
 		params.put("PARAM_AMOUNT", Currency.formatAmount(rpt.getAmount()));
 		params.put("PARAM_PAYTOORDEROF", rpt.getPayToTheOrderOf().toUpperCase());
+		
 		params.put("PARAM_AMOUNT_INWORDS", rpt.getAmountInWOrds().toUpperCase());
 		
 		String sql = "select * from tbl_signatory";

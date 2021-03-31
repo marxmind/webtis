@@ -58,7 +58,13 @@ public class StringUtils {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(convertFirstCharToUpperCase("geeek For The cause"));
+		//System.out.println(convertFirstCharToUpperCase("geeek For The cause"));
+		
+		
+		String val = "50000.0<@>0.0<@>0.0<@>5.0<@>35.0<@>0.0<@>0.0<@>40.0<@>2.1<@>42.1<@>1<@>2021-03-08<@>123-456-789-0000<@>5\"7'<@>75kg<@>filipino<@>1<@>houseman<@>FERDINAND L. LOPEZ<@>lake sebu<@>fils";
+		String[] out = val.split("<@>");
+		System.out.println(out[0]);
+		
 	}
 	
 }

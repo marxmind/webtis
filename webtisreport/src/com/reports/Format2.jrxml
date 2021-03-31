@@ -34,7 +34,7 @@
 				<textFieldExpression><![CDATA[$P{PARAM_AMOUNT}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="269" y="37" width="383" height="17" uuid="73f6ea04-0d27-4437-b0d5-75aea78e6574"/>
+				<reportElement x="275" y="37" width="383" height="17" uuid="73f6ea04-0d27-4437-b0d5-75aea78e6574"/>
 				<textElement>
 					<font fontName="Arial Rounded MT Bold" size="10" isBold="true"/>
 				</textElement>
