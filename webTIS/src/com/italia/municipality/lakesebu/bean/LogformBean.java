@@ -148,6 +148,8 @@ public class LogformBean implements Serializable{
 	private List<CollectionInfo> issuedSeries;
 	private List<CollectionInfo> fixIssuedSeries;
 	private String availableSeries;
+	
+	private String changesNumbers;
 	public void changeBehaviorCalendarDatePrint() {
 		if(isUseModifiedDate()) {
 				setEnableCalendarPrint(false);
@@ -225,9 +227,9 @@ public class LogformBean implements Serializable{
 		issuedSeries = new ArrayList<CollectionInfo>();
 		issuedSeries = CollectionInfo.retrieve(" AND sud.isactivelog=1 AND sud.logid=" + issued.getId(), new String[0]);
 		if(issuedSeries!=null && issuedSeries.size()>0) {
-			pf.executeScript("$('#issuedId').show()");
+			pf.executeScript("$('#issuedId').show();$('#fixId').hide()");
 		}else {
-			pf.executeScript("$('#issuedId').hide()");
+			pf.executeScript("$('#issuedId').hide();$('#fixId').hide()");
 		}
 		int cnt = 0;
 		for(CollectionInfo c : issuedSeries) {
@@ -240,53 +242,62 @@ public class LogformBean implements Serializable{
 	
 	public void loadFixIssuedSeries(IssuedForm issued) {
 		PrimeFaces pf = PrimeFaces.current();
-		
-		if(issued.getNewSeries()>0) {
 			
-			fixIssuedSeries = new ArrayList<CollectionInfo>();
-			fixIssuedSeries = CollectionInfo.retrieve(" AND sud.isactivelog=1 AND sud.logid=" + issued.getId(), new String[0]);
-			if(fixIssuedSeries!=null && fixIssuedSeries.size()>0) {
+			if(issued.getNewSeries()>0) {
 				
 				
-				List<CollectionInfo> ls = new ArrayList<CollectionInfo>();
-				ls = fixIssuedSeries;
+				
 				fixIssuedSeries = new ArrayList<CollectionInfo>();
-				int start = issued.getNewSeries();
-				int end = 0;
-				
-				int count = 1;
-				for(CollectionInfo s : ls) {
-					if(count==1) {
-						end = (s.getPcs() + start) - 1;
-						s.setBeginningNo(start);
-						s.setEndingNo(end);
+				fixIssuedSeries = CollectionInfo.retrieve(" AND sud.isactivelog=1 AND sud.logid=" + issued.getId(), new String[0]);
+				if(fixIssuedSeries!=null && fixIssuedSeries.size()>0) {
+					
+					
+					List<CollectionInfo> ls = new ArrayList<CollectionInfo>();
+					ls = fixIssuedSeries;
+					fixIssuedSeries = new ArrayList<CollectionInfo>();
+					int start = issued.getNewSeries();
+					int end = 0;
+					
+					int count = 1;
+					for(CollectionInfo s : ls) {
+						if(count==1) {
+							end = (s.getPcs() + start) - 1;
+							s.setBeginningNo(start);
+							s.setEndingNo(end);
+							
+							start = end;
+						}else {
+							
+							end = start + s.getPcs();
+							s.setBeginningNo(start+1);
+							s.setEndingNo(end);
+							
+							start = end;
+						}
 						
-						start = end;
-					}else {
 						
-						end = start + s.getPcs();
-						s.setBeginningNo(start+1);
-						s.setEndingNo(end);
+						fixIssuedSeries.add(s);
 						
-						start = end;
+						count++;
 					}
+					count -=1;
+					setChangesNumbers(count>1?  "Below are the number of changes" : "Below is the changes");
 					
-					
-					fixIssuedSeries.add(s);
-					
-					count++;
+					pf.executeScript("$('#fixId').show();$('#issuedId').hide()");
+				}else {
+					pf.executeScript("$('#fixId').hide()");
 				}
-				
-				
-				pf.executeScript("$('#fixId').show()");
+			
 			}else {
+				Application.addMessage(2, "Wrong", "PLease provide new series for this accountable form");
 				pf.executeScript("$('#fixId').hide()");
 			}
 		
-		}else {
-			Application.addMessage(2, "Wrong", "PLease provide new series for this accountable form");
-			pf.executeScript("$('#fixId').hide()");
-		}
+	}
+	
+	public void updateSeriesInfo(CollectionInfo info) {
+		info.save();
+		Application.addMessage(1, "Success", "Successfully saved.");
 	}
 	
 	public void onCellEditSeries(CellEditEvent event) {
@@ -295,6 +306,18 @@ public class LogformBean implements Serializable{
         
         System.out.println("old Value: " + oldValue);
         System.out.println("new Value: " + newValue);
+        
+	}
+	
+	public void onCellIssued(CellEditEvent event) {
+		Object oldValue = event.getOldValue();
+        Object newValue = event.getNewValue();
+        
+        System.out.println("old Value: " + oldValue);
+        System.out.println("new Value: " + newValue);
+        int row = event.getRowIndex();
+        System.out.println("Row>> " + row );
+        
 	}
 	
 	public void calculateCashTicket() {
@@ -723,6 +746,7 @@ public class LogformBean implements Serializable{
 		if(getRtsId()==1) {
 			form.setStatus(FormStatus.RTS.getId());
 			form.setStatusName(FormStatus.RTS.getName());
+			form.setIsRts(1);
 		}
 		
 		
@@ -821,7 +845,7 @@ public class LogformBean implements Serializable{
 					is.save();
 				}else if(FormStatus.RTS.getId()==form.getStatus()) {
 					IssuedForm is = IssuedForm.retrieveId(form.getIssuedForm().getId());
-					is.setStatus(FormStatus.ALL_ISSUED.getId());
+					is.setStatus(FormStatus.RTS.getId());
 					is.setEndingNo(form.getBeginningNo()-1);
 					is.save();
 				}
@@ -3860,6 +3884,14 @@ public class LogformBean implements Serializable{
 
 	public void setAvailableSeries(String availableSeries) {
 		this.availableSeries = availableSeries;
+	}
+
+	public String getChangesNumbers() {
+		return changesNumbers;
+	}
+
+	public void setChangesNumbers(String changesNumbers) {
+		this.changesNumbers = changesNumbers;
 	}
 
 

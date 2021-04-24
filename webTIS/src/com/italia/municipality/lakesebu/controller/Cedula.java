@@ -14,6 +14,12 @@ import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.Months;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 /**
  * 
  * @author Mark Italia
@@ -21,6 +27,11 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @since 02/12/2020
  *
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
 public class Cedula {
 
 	private long id;
@@ -36,6 +47,15 @@ public class Cedula {
 	private int isActive;
 	private String issuedAddress;
 	private int status;
+	
+	private double interestPenalty;
+	private String citizenship;
+	private int civilStatus;
+	private int genderId;
+	private String birthdate;
+	private String birthPlace;
+	private String occupationOrBusinessName;
+	
 	
 	private Customer customer;
 	private UserDtls userDtls;
@@ -727,142 +747,6 @@ public static String getLastCedulaNo() {
 		
 	}
 	
-	
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getDateIssued() {
-		return dateIssued;
-	}
-
-	public void setDateIssued(String dateIssued) {
-		this.dateIssued = dateIssued;
-	}
-
-	public int getCedulaType() {
-		return cedulaType;
-	}
-
-	public void setCedulaType(int cedulaType) {
-		this.cedulaType = cedulaType;
-	}
-
-	public double getBasicTax() {
-		return basicTax;
-	}
-
-	public void setBasicTax(double basicTax) {
-		this.basicTax = basicTax;
-	}
-
-	public double getGrossTax() {
-		return grossTax;
-	}
-
-	public void setGrossTax(double grossTax) {
-		this.grossTax = grossTax;
-	}
-
-	public double getTotalAmount() {
-		return totalAmount;
-	}
-
-	public void setTotalAmount(double totalAmount) {
-		this.totalAmount = totalAmount;
-	}
-
-	public String getTinNumber() {
-		return tinNumber;
-	}
-
-	public void setTinNumber(String tinNumber) {
-		this.tinNumber = tinNumber;
-	}
-
-	public Customer getCustomer() {
-		return customer;
-	}
-
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
-
-	public String getCedulaNo() {
-		return cedulaNo;
-	}
-
-	public void setCedulaNo(String cedulaNo) {
-		this.cedulaNo = cedulaNo;
-	}
-
-	public String getHeight() {
-		return height;
-	}
-
-	public void setHeight(String height) {
-		this.height = height;
-	}
-
-	public String getWeight() {
-		return weight;
-	}
-
-	public void setWeight(String weight) {
-		this.weight = weight;
-	}
-
-	public int getCnt() {
-		return cnt;
-	}
-
-	public void setCnt(int cnt) {
-		this.cnt = cnt;
-	}
-
-	public int getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-
-	public UserDtls getUserDtls() {
-		return userDtls;
-	}
-
-	public void setUserDtls(UserDtls userDtls) {
-		this.userDtls = userDtls;
-	}
-
-	public String getIssuedAddress() {
-		return issuedAddress;
-	}
-
-	public void setIssuedAddress(String issuedAddress) {
-		this.issuedAddress = issuedAddress;
-	}
-
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	public String getCedulaStatus() {
-		return cedulaStatus;
-	}
-
-	public void setCedulaStatus(String cedulaStatus) {
-		this.cedulaStatus = cedulaStatus;
-	}
 	
 	
 	

@@ -17,9 +17,9 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="251" splitType="Stretch">
+		<band height="216" splitType="Stretch">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="112" y="152" width="100" height="14" uuid="f8dfd7af-38fc-4fa7-afdc-352f18908dfb">
+				<reportElement x="112" y="123" width="100" height="14" uuid="f8dfd7af-38fc-4fa7-afdc-352f18908dfb">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center">
@@ -28,7 +28,7 @@
 				<textFieldExpression><![CDATA[$P{PARAM_DATE}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="32" y="199" width="198" height="14" uuid="aee6fbdb-01ca-4aad-bb4e-8329c8974a9f">
+				<reportElement x="32" y="170" width="198" height="14" uuid="aee6fbdb-01ca-4aad-bb4e-8329c8974a9f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
@@ -37,7 +37,7 @@
 				<textFieldExpression><![CDATA[$P{PARAM_PAYOR}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="32" y="174" width="112" height="14" uuid="fa78f26f-ee92-4e17-8612-35857fb5b3e9">
+				<reportElement x="32" y="145" width="112" height="14" uuid="fa78f26f-ee92-4e17-8612-35857fb5b3e9">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
@@ -99,7 +99,7 @@
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="143" splitType="Stretch">
+		<band height="151" splitType="Stretch">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="4" y="16" width="226" height="11" uuid="4f307908-b388-425a-a6b7-5a3c052671db">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -119,11 +119,11 @@
 				<textFieldExpression><![CDATA[$P{PARAM_CASHCHECK}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="73" y="132" width="150" height="11" uuid="5efe44d8-0367-443c-b81d-9722a8142748">
+				<reportElement x="74" y="133" width="150" height="16" uuid="5efe44d8-0367-443c-b81d-9722a8142748">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement>
-					<font size="8"/>
+				<textElement textAlignment="Center">
+					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_COLLECTING_OFFICER}]]></textFieldExpression>
 			</textField>

@@ -189,8 +189,9 @@ public class FormBean implements Serializable{
 				params[1] = DateUtils.getCurrentYear() + "-" + (getMonthId()>=10? getMonthId() : "0"+ getMonthId()) + "-31";
 				params[2] = is.getId()+"";
 				boolean noIssuance = true;
+				long endingNo = FormStatus.RTS.getId()==is.getStatus()? (((is.getPcs() - (is.getEndingNo() - is.getBeginningNo()))-1)+ is.getEndingNo()) : is.getEndingNo();
 				for(CollectionInfo info : CollectionInfo.retrieve(sql, params)) {
-					seriesForm.add(reportCollectionInfo(info));
+					seriesForm.add(reportCollectionInfo(info,endingNo));
 					noIssuance = false;
 				}
 				
@@ -476,11 +477,16 @@ public class FormBean implements Serializable{
 		return rcd;
 	}
 	
-	public Form11Report reportCollectionInfo(CollectionInfo info){
+	public Form11Report reportCollectionInfo(CollectionInfo info, long endingNo){
 		System.out.println("reportCollectionInfo>>>");
+		System.out.println("is RTS? " + (info.getIsRts()==1? "YES" : "NO"));
 		Form11Report rpt = new Form11Report();
 		
 		rpt.setF1(FormType.nameId(info.getFormType()));
+		
+		if(info.getIsRts()==1) {
+			rpt = RTSData(info,rpt);
+		}else {
 		
 		int logmonth = Integer.valueOf(info.getIssuedForm().getIssuedDate().split("-")[1]);
 		int logDay = Integer.valueOf(info.getIssuedForm().getIssuedDate().split("-")[2]);
@@ -494,7 +500,7 @@ public class FormBean implements Serializable{
 		String f12 = "";
 		String f13 = "";
 		
-		if(logmonth==getMonthId() && logDay == DateUtils.getCurrentDay()) {
+		if(logmonth==getMonthId() && logDay == DateUtils.getCurrentDay()) {//current month and current day same
 			//write in receipt
 			rpt.setF2("");
 			rpt.setF3("");
@@ -510,7 +516,7 @@ public class FormBean implements Serializable{
 				f6 = be2==7? "0"+be1 : be1;
 				rpt.setF6(DateUtils.numberResult(info.getFormType(), Long.valueOf(f6)));
 				
-				String en1= info.getIssuedForm().getEndingNo()+"";
+				String en1= endingNo+"";//info.getIssuedForm().getEndingNo()+"";
 				int en2 = en1.length();
 				//rpt.setF7(en2==7? "0"+en1 : en1);
 			
@@ -548,7 +554,7 @@ public class FormBean implements Serializable{
 				rpt.setF3(DateUtils.numberResult(info.getFormType(), Long.valueOf(f6)));
 				rpt.setF6("");
 				
-				String en1= info.getIssuedForm().getEndingNo()+"";
+				String en1= endingNo+"";//info.getIssuedForm().getEndingNo()+"";
 				int en2 = en1.length();
 				f7 = en2==7? "0"+en1 : en1;
 				//temporary removed if qty not equal to 50 place it to beginning
@@ -616,7 +622,7 @@ public class FormBean implements Serializable{
 			}
 			
 			
-			String en1= info.getIssuedForm().getEndingNo()+"";
+			String en1= endingNo+"";//info.getIssuedForm().getEndingNo()+"";
 			int en2 = en1.length();
 			//rpt.setF4(en2==7? "0"+en1 : en1);
 			
@@ -627,6 +633,8 @@ public class FormBean implements Serializable{
 			rpt.setF6("");
 			rpt.setF7("");
 		}
+		
+		
 		//issued
 		rpt.setF8(info.getPcs()+"");
 		
@@ -652,7 +660,28 @@ public class FormBean implements Serializable{
 		if(endingQty==0) {
 			rpt.setF11("");
 			rpt.setF12("All Issued");
+			//remarks
+			rpt.setF14("");
 			rpt.setF13("");
+			if(FormStatus.RTS.getId()==info.getIssuedForm().getStatus()) {
+				endingQty = endingNo - info.getIssuedForm().getEndingNo();
+				rpt.setF11(endingQty+"");
+				long enNumber = info.getEndingNo() + 1;
+				String enbeg1= enNumber+"";
+				int enbeg2 = enbeg1.length();
+				f12 = enbeg2==7? "0"+enbeg1 : enbeg1;
+				rpt.setF12(DateUtils.numberResult(info.getFormType(), Long.valueOf(f12)));
+				
+				String enen1= endingNo+"";
+				int enen2 = enen1.length();
+				f13 = enen2==7? "0"+enen1 : enen1;
+				rpt.setF13(DateUtils.numberResult(info.getFormType(), Long.valueOf(f13)));
+				
+				rpt.setF14("Partial Issued");
+			}
+			
+			
+			
 		}else {
 			rpt.setF11(endingQty+"");
 			long enNumber = info.getEndingNo() + 1;
@@ -663,22 +692,18 @@ public class FormBean implements Serializable{
 			f12 = enbeg2==7? "0"+enbeg1 : enbeg1;
 			rpt.setF12(DateUtils.numberResult(info.getFormType(), Long.valueOf(f12)));
 			
-			String enen1= info.getIssuedForm().getEndingNo()+"";
+			String enen1= endingNo+"";//info.getIssuedForm().getEndingNo()+"";
 			int enen2 = enen1.length();
 			//rpt.setF13(enen2==7? "0"+enen1 : enen1);
 			
 			f13 = enen2==7? "0"+enen1 : enen1;
 			rpt.setF13(DateUtils.numberResult(info.getFormType(), Long.valueOf(f13)));
+			//remarks
+			rpt.setF14("");
 		}
-		//remarks
-		rpt.setF14("");
 		
-		/*Collector col = Collector.retrieve(info.getCollector().getId());
-		if(col.getDepartment().getCode().equalsIgnoreCase("1091")) {
-			rpt.setF15(col.getName());
-		}else {
-			rpt.setF15(col.getDepartment().getDepartmentName());
-		}*/
+		
+		
 		
 		//change the value if the form is Cash ticket
 				if(FormType.CT_2.getId()==info.getFormType() || FormType.CT_5.getId()==info.getFormType()) {
@@ -768,11 +793,60 @@ public class FormBean implements Serializable{
 					rpt.setF15(col.getDepartment().getDepartmentName());
 				}
 		
+		}		
+				
+		return rpt;
+	}
+	
+	private Form11Report RTSData(CollectionInfo info,Form11Report rpt) {
+		String beg="", end="";
+		String be1= info.getBeginningNo()+"";
+		int be2 = be1.length();
+		String f3 = be2==7? "0"+be1 : be1; 
+		beg = DateUtils.numberResult(info.getFormType(), Long.valueOf(f3));
+
+		String en1= info.getEndingNo()+"";
+		int en2 = en1.length();
+		String f4 = en2==7? "0"+en1 : en1;
+		end = DateUtils.numberResult(info.getFormType(), Long.valueOf(f4));
+		
+		
+		
+		//beginning
+		rpt.setF2(info.getPcs()+"");
+		rpt.setF3(beg);
+		rpt.setF4(end);
+		
+		//receipt
+		rpt.setF5("");
+		rpt.setF6("");
+		rpt.setF7("");
+		
+		//issued
+		rpt.setF8("");
+		rpt.setF9("");
+		rpt.setF10("");
+		
+		//ending
+		rpt.setF11(info.getPcs()+"");
+		rpt.setF12(beg);
+		rpt.setF13(end);
+		
+		rpt.setF14("***RTS***");
+		
+		Collector col = Collector.retrieve(info.getCollector().getId());
+		if(col.getDepartment().getCode().equalsIgnoreCase("1091")) {
+			rpt.setF15(col.getName().replace("F.L Lopez-", ""));
+		}else {
+			rpt.setF15(col.getDepartment().getDepartmentName());
+		}
+		
 		return rpt;
 	}
 	
 	public Form11Report reportLastCollectionInfo(CollectionInfo info){
-		System.out.println("reportLastCollectionInfo>>>");
+		System.out.println("reportLastCollectionInfo>>> ");
+		//
 		Form11Report rpt = null;
 		System.out.println("info.getIssuedForm().getEndingNo()=" + info.getIssuedForm().getEndingNo() + " - info.getEndingNo() " + info.getEndingNo());
 		long endingQty = info.getIssuedForm().getEndingNo() - info.getEndingNo();

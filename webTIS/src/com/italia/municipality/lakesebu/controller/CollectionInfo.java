@@ -46,7 +46,9 @@ public class CollectionInfo {
 	
 	private String rptFormat;
 	private String fundName;
-	boolean hasCashTicket;
+	private boolean hasCashTicket;
+	
+	private int isRts;
 	
 	public static int getNewReportGroup(long colloctorId, int fundId) {
 		int rpt=0;
@@ -164,6 +166,7 @@ public class CollectionInfo {
 			
 			try{form.setAmount(rs.getDouble("amount"));}catch(NullPointerException e){}
 			try{form.setRptGroup(rs.getInt("rptgroup"));}catch(NullPointerException e){}
+			try{form.setIsRts(rs.getInt("rts"));}catch(NullPointerException e){}
 			
 			IssuedForm issued = new IssuedForm();
 			try{issued.setId(rs.getLong("logid"));}catch(NullPointerException e){}
@@ -236,6 +239,7 @@ public class CollectionInfo {
 			try{form.setFundName(FundType.typeName(rs.getInt("fundid")));}catch(NullPointerException e){}
 			try{form.setAmount(rs.getDouble("amount"));}catch(NullPointerException e){}
 			try{form.setRptGroup(rs.getInt("rptgroup"));}catch(NullPointerException e){}
+			try{form.setIsRts(rs.getInt("rts"));}catch(NullPointerException e){}
 			
 			IssuedForm issued = new IssuedForm();
 			try{issued.setId(rs.getLong("logid"));}catch(NullPointerException e){}
@@ -321,8 +325,9 @@ public class CollectionInfo {
 				+ "prevPcs,"
 				+ "amount,"
 				+ "rptgroup,"
-				+ "fundid)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "fundid,"
+				+ "rts)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -358,6 +363,7 @@ public class CollectionInfo {
 		ps.setDouble(cnt++, col.getAmount());
 		ps.setInt(cnt++, col.getRptGroup());
 		ps.setInt(cnt++, col.getFundId());
+		ps.setInt(cnt++, col.getIsRts());
 		
 		LogU.add(col.getReceivedDate());
 		LogU.add(col.getFormType());
@@ -372,6 +378,7 @@ public class CollectionInfo {
 		LogU.add(col.getAmount());
 		LogU.add(col.getRptGroup());
 		LogU.add(col.getFundId());
+		LogU.add(col.getIsRts());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -401,8 +408,9 @@ public class CollectionInfo {
 				+ "prevPcs,"
 				+ "amount,"
 				+ "rptgroup,"
-				+ "fundid)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "fundid,"
+				+ "rts)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -438,6 +446,7 @@ public class CollectionInfo {
 		ps.setDouble(cnt++, getAmount());
 		ps.setInt(cnt++, getRptGroup());
 		ps.setInt(cnt++, getFundId());
+		ps.setInt(cnt++, getIsRts());
 		
 		LogU.add(getReceivedDate());
 		LogU.add(getFormType());
@@ -452,6 +461,7 @@ public class CollectionInfo {
 		LogU.add(getAmount());
 		LogU.add(getRptGroup());
 		LogU.add(getFundId());
+		LogU.add(getIsRts());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -479,7 +489,8 @@ public class CollectionInfo {
 				+ "prevPcs=?,"
 				+ "amount=?,"
 				+ "rptgroup=?,"
-				+ "fundid=? " 
+				+ "fundid=?,"
+				+ "rts=? " 
 				+ " WHERE colid=?";
 		
 		PreparedStatement ps = null;
@@ -506,6 +517,7 @@ public class CollectionInfo {
 		ps.setDouble(cnt++, col.getAmount());
 		ps.setInt(cnt++, col.getRptGroup());
 		ps.setInt(cnt++, col.getFundId());
+		ps.setInt(cnt++, col.getIsRts());
 		ps.setLong(cnt++, col.getId());
 		
 		LogU.add(col.getReceivedDate());
@@ -520,6 +532,7 @@ public class CollectionInfo {
 		LogU.add(col.getAmount());
 		LogU.add(col.getRptGroup());
 		LogU.add(col.getFundId());
+		LogU.add(col.getIsRts());
 		LogU.add(col.getId());
 		
 		LogU.add("executing for saving...");
@@ -548,7 +561,8 @@ public class CollectionInfo {
 				+ "prevPcs=?,"
 				+ "amount=?,"
 				+ "rptgroup=?,"
-				+ "fundid=? " 
+				+ "fundid=?,"
+				+ "rts=? " 
 				+ " WHERE colid=?";
 		
 		PreparedStatement ps = null;
@@ -575,6 +589,7 @@ public class CollectionInfo {
 		ps.setDouble(cnt++, getAmount());
 		ps.setInt(cnt++, getRptGroup());
 		ps.setInt(cnt++, getFundId());
+		ps.setInt(cnt++, getIsRts());
 		ps.setLong(cnt++, getId());
 		
 		LogU.add(getReceivedDate());
@@ -589,6 +604,7 @@ public class CollectionInfo {
 		LogU.add(getAmount());
 		LogU.add(getRptGroup());
 		LogU.add(getFundId());
+		LogU.add(getIsRts());
 		LogU.add(getId());
 		
 		LogU.add("executing for saving...");
@@ -882,6 +898,14 @@ public class CollectionInfo {
 
 	public void setFundName(String fundName) {
 		this.fundName = fundName;
+	}
+
+	public int getIsRts() {
+		return isRts;
+	}
+
+	public void setIsRts(int isRts) {
+		this.isRts = isRts;
 	}
 	
 }

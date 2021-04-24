@@ -111,6 +111,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						
 						<p:outputLabel for="d2" value="Card Number:" style="#{skin.label}" />
 						<p:inputText id="d2" value="#{businessOwnerBean.cardnumber}" readonly="true" style="width: 11em;#{skin.textInput}"/>
+						
+						<p:outputLabel for="idqr" value="QRCode" style="#{skin.label}"/>
+		        		<p:inputText id="idqr" value="#{businessOwnerBean.qrCode}"  style="width: 11em;#{skin.textInput}"/>
+		        		
+		        		<p:outputLabel for="idNat" value="National ID" style="#{skin.label}"/>
+		        		<p:inputText id="idNat" value="#{businessOwnerBean.nationalId}"  style="width: 11em;#{skin.textInput}"/>
 								
 						<p:outputLabel for="d3" value="First Name:" style="#{skin.label}"/>
 		        		<p:autoComplete id="d3" value="#{businessOwnerBean.firstname}" a:placeholder="First Name" completeMethod="#{businessOwnerBean.autoFirst}" effect="fade" style="width: 11em;#{skin.textInput}"/>
@@ -134,6 +140,22 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		        		
 		        		<p:outputLabel for="idAge" value="Age:" style="#{skin.label}"/>
 		        		<p:inputText id="idAge" value="#{businessOwnerBean.age}" a:type="number" style="width: 11em;#{skin.textInput}"/>
+		        		
+		        		<p:outputLabel for="idplace" value="Born Place:" style="#{skin.label}"/>
+		        		<p:inputText id="idplace" value="#{businessOwnerBean.bornplace}"  style="width: 11em;#{skin.textInput}"/>
+		        		
+		        		<p:outputLabel for="idw" value="Weight:" style="#{skin.label}"/>
+		        		<p:inputText id="idw" value="#{businessOwnerBean.weight}"  style="width: 11em;#{skin.textInput}"/>
+		        		
+		        		<p:outputLabel for="idh" value="Height:" style="#{skin.label}"/>
+		        		<p:inputText id="idh" value="#{businessOwnerBean.height}"  style="width: 11em;#{skin.textInput}"/>
+		        		
+		        		<p:outputLabel for="idwork" value="Work:" style="#{skin.label}"/>
+		        		<p:inputText id="idwork" value="#{businessOwnerBean.work}"  style="width: 11em;#{skin.textInput}"/>
+		        		
+		        		<p:outputLabel for="idCit" value="Citizenship:" style="#{skin.label}"/>
+		        		<p:inputText id="idCit" value="#{businessOwnerBean.citizenship}"  style="width: 11em;#{skin.textInput}"/>
+		        		
 		        		
 		        		<p:outputLabel for="d8" value="Gender: " style="#{skin.label}"/>
 		            	<p:selectOneMenu id="d8" value="#{businessOwnerBean.genderId}" style="width: 11em;#{skin.select}" title="Click this to define gender">

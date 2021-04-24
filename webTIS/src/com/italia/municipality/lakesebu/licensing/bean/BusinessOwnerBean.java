@@ -1,15 +1,25 @@
 package com.italia.municipality.lakesebu.licensing.bean;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -21,11 +31,16 @@ import javax.faces.view.ViewScoped;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.event.CaptureEvent;
 import org.primefaces.event.FileUploadEvent;
 
+import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.Login;
+import com.italia.municipality.lakesebu.controller.QRCodeCitizen;
+import com.italia.municipality.lakesebu.controller.ReportFields;
+import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.CivilStatus;
 import com.italia.municipality.lakesebu.enm.Relationships;
 import com.italia.municipality.lakesebu.global.GlobalVar;
@@ -34,8 +49,15 @@ import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.licensing.controller.Municipality;
 import com.italia.municipality.lakesebu.licensing.controller.Province;
 import com.italia.municipality.lakesebu.licensing.controller.Purok;
+import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.DateUtils;
+
+import net.glxn.qrgen.QRCode;
+import net.glxn.qrgen.image.ImageType;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @Named
 @ViewScoped
@@ -55,9 +77,9 @@ public class BusinessOwnerBean implements Serializable{
 	private String dateregistered;
 	private String cardnumber;
 	private String genderId;
-	private List genderList = Collections.synchronizedList(new ArrayList<>());
+	private List genderList = new ArrayList<>();
 	
-	private List<Customer> customers = Collections.synchronizedList(new ArrayList<Customer>());
+	private List<Customer> customers =new ArrayList<Customer>();
 	private String searchCustomer;
 	private Customer customer; 
 	
@@ -73,7 +95,7 @@ public class BusinessOwnerBean implements Serializable{
 	private String emergencyContactPersonName;
 	private Customer emergencyContactPerson;
 	private String searchEmergencyPerson;
-	private List<Customer> contactPersons = Collections.synchronizedList(new ArrayList<Customer>());
+	private List<Customer> contactPersons = new ArrayList<Customer>();
 	
 	private String photoId="camera";
 	
@@ -88,10 +110,10 @@ public class BusinessOwnerBean implements Serializable{
 	private String searchBarangay;
 	private String searchPurok;
 	
-	private List<Province> provinces = Collections.synchronizedList(new ArrayList<Province>());
-	private List<Municipality> municipals = Collections.synchronizedList(new ArrayList<Municipality>());
-	private List<Barangay> barangays = Collections.synchronizedList(new ArrayList<Barangay>());
-	private List<Purok> puroks = Collections.synchronizedList(new ArrayList<Purok>());
+	private List<Province> provinces = new ArrayList<Province>();
+	private List<Municipality> municipals = new ArrayList<Municipality>();
+	private List<Barangay> barangays = new ArrayList<Barangay>();
+	private List<Purok> puroks = new ArrayList<Purok>();
 	
 	private Province provinceSelected;
 	private Municipality municipalSelected;
@@ -108,8 +130,37 @@ public class BusinessOwnerBean implements Serializable{
 	
 	private String signature;
 	
+	private String bornplace;
+	private String weight;
+	private String height;
+	private String work;
+	private String citizenship;
+	
+	//QRCOde
+	private String renderMethod;
+    private String text;
+    private String label;
+    private int mode;
+    private int size;
+    private String fillColor;
+    private String qrCode;
+    private String nationalId;
+    
+    private List<Customer> selectedQRCode;
+	
+    
+    
 	@PostConstruct
 	public void init(){
+		
+		
+		//init qrcode
+		renderMethod = "canvas";
+        text = "http://www.facebook.com/marxmind";
+        label = "MARXMIND";
+        mode = 2;
+        fillColor = "7d767d";
+        size = 100;
 		
 		try{
 		String editProfileName = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("editProfile");
@@ -482,7 +533,13 @@ public class BusinessOwnerBean implements Serializable{
 			//Province prov = getProvMap().get(getProvinceId());
 			cus.setProvince(getProvinceSelected());
 			
-			
+			cus.setBornplace(getBornplace());
+			cus.setWeight(getWeight());
+			cus.setHeight(getHeight());
+			cus.setWork(getWork());
+			cus.setCitizenship(getCitizenship());
+			cus.setQrcode(getQrCode());
+			cus.setNationalId(getNationalId());
 			
 			cus = Customer.save(cus);
 			clickItem(cus);
@@ -640,6 +697,262 @@ public class BusinessOwnerBean implements Serializable{
 		
 	}
 	
+	private FileInputStream generateQRCode(Customer cus, String folder) throws IOException {
+		
+		String fileName = cus.getFullname();
+		String val = "";
+		
+		val += "Reg:" + cus.getDateregistered()  + "|";
+		val += "CardNumber:" + cus.getCardno() + "|";
+		val += "FName:" + cus.getFirstname() + "|";
+		val += "MName:" + cus.getMiddlename() + "|";
+		val += "LName:" + cus.getLastname() + "|";
+		val += "CStatus:" + cus.getCivilStatus() + "|";
+		val += "BDate:" + cus.getBirthdate() + "|";
+		val += "Age:" + cus.getAge() + "|";
+		val += "BornPlace:" + cus.getBornplace() + "|";
+		val += "Weight:" + cus.getWeight() + "|";
+		val += "Height:" + cus.getHeight() + "|";
+		val += "Work:" + cus.getWork() + "|";
+		val += "Citizenship:" + cus.getCitizenship() + "|";
+		val += "Gender:" + cus.getGender() + "|";
+		val += "Province:" + cus.getProvince().getName() + "|";
+		val += "Municipality:" + cus.getMunicipality().getName() + "|";
+		val += "Barangay:" + cus.getBarangay().getName() + "|";
+		val += "Purok:" + cus.getPurok().getPurokName() + "|";
+		val += "EmergencyContactPerson:" + cus.getEmergencyContactPerson().getFullname() + "|";
+		val += "ContactNo:" + cus.getContactno() + "|";
+		val += "Relationship:" + cus.getRelationship();
+		
+		//val = cus.getFullname();
+		val = cus.getQrcode()==null? cus.getFullname() : (cus.getQrcode().isEmpty()? cus.getFullname() : cus.getQrcode());
+		OutputStream outputStream;
+		try {
+			
+			outputStream = new FileOutputStream(folder + fileName + ".png");
+			
+			QRCode.from(val).to(ImageType.PNG).withSize(400, 400).writeTo(outputStream);
+			
+			FileInputStream fil = new FileInputStream(new File(folder + fileName + ".png"));
+			
+			outputStream.close();
+			
+			/*
+			File file = QRCode.from(val).to(ImageType.PNG)
+			        .withSize(400, 400)
+			        .file();
+			 
+			String qrcode = folder + fileName + ".png";
+			 
+			Path path = Paths.get(qrcode);
+			if ( Files.exists(path)){
+			    Files.delete(path);
+			}
+			 
+			Files.copy(file.toPath(), path);
+			FileInputStream fil = new FileInputStream(new File(folder + fileName + ".png"));*/
+			
+			return fil;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+		
+	}
+	
+	public void printQRCode() {
+		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+		String qrcodeFolder = REPORT_PATH +  AppConf.SEPERATOR.getValue() + "qrcode" +  AppConf.SEPERATOR.getValue();
+		try {
+			if(getSelectedQRCode()!=null && getSelectedQRCode().size()>0) {
+				
+			List<QRCodeCitizen> rpts = new ArrayList<QRCodeCitizen>(); 
+			
+			int size = getSelectedQRCode().size();
+			QRCodeCitizen qc = new QRCodeCitizen();
+			
+			if(size==1) {
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				rpts.add(qc);
+			}
+			if(size==2) {
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				rpts.add(qc);
+			}
+			if(size==3) {
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+			}
+			if(size==4) {
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+				
+				qc = new QRCodeCitizen();
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				rpts.add(qc);
+			}
+			if(size==5) {
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+				
+				qc = new QRCodeCitizen();
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				rpts.add(qc);
+			}
+			if(size==6) {
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+				
+				qc = new QRCodeCitizen();
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+			}
+			
+			if(size==7) {
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+				
+				qc = new QRCodeCitizen();
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+				
+				qc = new QRCodeCitizen();
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				rpts.add(qc);
+			}
+			
+			if(size==8) {
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+				
+				qc = new QRCodeCitizen();
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+				
+				qc = new QRCodeCitizen();
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				rpts.add(qc);
+			}
+			if(size==9) {
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+				
+				qc = new QRCodeCitizen();
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+				
+				qc = new QRCodeCitizen();
+				qc.setF1(generateQRCode(getSelectedQRCode().get(0),qrcodeFolder));
+				qc.setF2(generateQRCode(getSelectedQRCode().get(1),qrcodeFolder));
+				qc.setF3(generateQRCode(getSelectedQRCode().get(2),qrcodeFolder));
+				rpts.add(qc);
+			}
+			
+			
+			String REPORT_NAME = GlobalVar.QRCODE_CITIZEN;
+			
+			ReportCompiler compiler = new ReportCompiler();
+			String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, REPORT_PATH);
+	  		
+	  		JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(rpts);
+	  		HashMap param = new HashMap();
+	  		
+	  		
+	  		
+	  		String jrprint = JasperFillManager.fillReportToFile(jrxmlFile, param, beanColl);
+	  	    JasperExportManager.exportReportToPdfFile(jrprint,REPORT_PATH+ REPORT_NAME +".pdf");
+			
+			File file = new File(REPORT_PATH, REPORT_NAME + ".pdf");
+			 FacesContext faces = FacesContext.getCurrentInstance();
+			 ExternalContext context = faces.getExternalContext();
+			 HttpServletResponse response = (HttpServletResponse)context.getResponse();
+				
+		     BufferedInputStream input = null;
+		     BufferedOutputStream output = null;
+		     
+		     try{
+		    	 
+		    	 // Open file.
+		            input = new BufferedInputStream(new FileInputStream(file), GlobalVar.DEFAULT_BUFFER_SIZE);
+
+		            // Init servlet response.
+		            response.reset();
+		            response.setHeader("Content-Type", "application/pdf");
+		            response.setHeader("Content-Length", String.valueOf(file.length()));
+		            response.setHeader("Content-Disposition", "inline; filename=\"" + REPORT_NAME + ".pdf" + "\"");
+		            output = new BufferedOutputStream(response.getOutputStream(), GlobalVar.DEFAULT_BUFFER_SIZE);
+
+		            // Write file contents to response.
+		            byte[] buffer = new byte[GlobalVar.DEFAULT_BUFFER_SIZE];
+		            int length;
+		            while ((length = input.read(buffer)) > 0) {
+		                output.write(buffer, 0, length);
+		                //System.out.println("printReportAll read : " + length);
+		            }
+
+		            // Finalize task.
+		            output.flush();
+		    	 
+		     }finally{
+		    	// Gently close streams.
+		            close(output);
+		            close(input);
+		     }
+		     
+		     // Inform JSF that it doesn't need to handle response.
+		        // This is very important, otherwise you will get the following exception in the logs:
+		        // java.lang.IllegalStateException: Cannot forward after response has been committed.
+		        faces.responseComplete();
+		     
+		       // backupPrintDispense();
+			}    
+		        
+		}catch(Exception e){
+			e.printStackTrace();
+		}      
+			
+	}
+
+private void close(Closeable resource) {
+    if (resource != null) {
+        try {
+            resource.close();
+        } catch (IOException e) {
+            // Do your thing with the exception. Print it, log it or mail it. It may be useful to 
+            // know that this will generally only be thrown when the client aborted the download.
+            e.printStackTrace();
+        }
+    }
+}
+	
 	public void clickItem(Customer cus){
 		shots = new ArrayList<>();//clearing picture
 		setCustomer(cus);
@@ -671,6 +984,23 @@ public class BusinessOwnerBean implements Serializable{
 		setMunicipalSelected(cus.getMunicipality());
 		setBarangaySelected(cus.getBarangay());
 		setPurokSelected(cus.getPurok());
+		
+		
+		setBornplace(cus.getBornplace());
+		setWeight(cus.getWeight());
+		setHeight(cus.getHeight());
+		setWork(cus.getWork());
+		setCitizenship(cus.getCitizenship());
+		setQrCode(cus.getQrcode());
+		setNationalId(cus.getNationalId());
+		
+		//init qrcode
+		renderMethod = "canvas";
+		text = "http://www.facebook.com/marxmind";
+		label = cus.getFullname().toUpperCase();
+		mode = 2;
+		fillColor = "7d767d";
+		size = 100;
 		
 	}
 	
@@ -734,6 +1064,22 @@ public class BusinessOwnerBean implements Serializable{
 		setEnableAdditionalButton(true);
 		
 		loadDefaultAddress();
+		
+		setBornplace(null);
+		setWeight(null);
+		setHeight(null);
+		setWork(null);
+		setCitizenship(null);
+		setQrCode(null);
+		setNationalId(null);
+		
+		//init qrcode
+				renderMethod = "canvas";
+				text = "http://www.facebook.com/marxmind";
+				label = "MARXMIND";
+				mode = 2;
+				fillColor = "7d767d";
+				size = 100;
 	}
 	
 	private void loadDefaultAddress(){
@@ -1371,5 +1717,120 @@ public class BusinessOwnerBean implements Serializable{
 
 	public void setSignature(String signature) {
 		this.signature = signature;
+	}
+
+	public String getBornplace() {
+		return bornplace;
+	}
+
+	public void setBornplace(String bornplace) {
+		this.bornplace = bornplace;
+	}
+
+	public String getWeight() {
+		return weight;
+	}
+
+	public void setWeight(String weight) {
+		this.weight = weight;
+	}
+
+	public String getHeight() {
+		return height;
+	}
+
+	public void setHeight(String height) {
+		this.height = height;
+	}
+
+	public String getWork() {
+		return work;
+	}
+
+	public void setWork(String work) {
+		this.work = work;
+	}
+
+	public String getCitizenship() {
+		if(citizenship==null) {
+			citizenship = "Filipino";
+		}
+		return citizenship;
+	}
+
+	public void setCitizenship(String citizenship) {
+		this.citizenship = citizenship;
+	}
+
+	public String getRenderMethod() {
+		return renderMethod;
+	}
+
+	public void setRenderMethod(String renderMethod) {
+		this.renderMethod = renderMethod;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public int getMode() {
+		return mode;
+	}
+
+	public void setMode(int mode) {
+		this.mode = mode;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public String getFillColor() {
+		return fillColor;
+	}
+
+	public void setFillColor(String fillColor) {
+		this.fillColor = fillColor;
+	}
+
+	public List<Customer> getSelectedQRCode() {
+		return selectedQRCode;
+	}
+
+	public void setSelectedQRCode(List<Customer> selectedQRCode) {
+		this.selectedQRCode = selectedQRCode;
+	}
+
+	public String getQrCode() {
+		return qrCode;
+	}
+
+	public void setQrCode(String qrCode) {
+		this.qrCode = qrCode;
+	}
+
+	public String getNationalId() {
+		return nationalId;
+	}
+
+	public void setNationalId(String nationalId) {
+		this.nationalId = nationalId;
 	}
 }

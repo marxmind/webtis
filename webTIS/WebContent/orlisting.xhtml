@@ -23,6 +23,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="intro/themes/introjs.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputScript name="bootstrap/js/bootstrap.js" target="head"/>
+            <h:outputScript name="zxing/zxing.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
     </f:facet>
         
@@ -67,7 +68,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:panelGrid id="fldId" columns="2" layout="grid">
 					<p:selectOneMenu value="#{oRListingBean.selectOrTypeId}"  filter="true" filterMatchMode="contains" styleClass="js-tilt" style="width: 15em">
 					      			<f:selectItems value="#{oRListingBean.selectOrTypes}"/>
-					       			<f:ajax event="change" listener="#{oRListingBean.selectedOR}" render="dataSelectedId fldId fldId2 totalId cid"/>
+					       			<f:ajax event="change" listener="#{oRListingBean.selectedOR}" render="oridd idPayd idSearchPname dataSelectedId fldId fldId2 totalId cid"/>
 		      				</p:selectOneMenu>
 					<p:calendar value="#{oRListingBean.dateTrans}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
 					<p:selectOneMenu id="frmstat" value="#{oRListingBean.statusId}" style="width: 15em">
@@ -75,7 +76,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					</p:selectOneMenu>
 					<p:selectOneMenu id="frmId" value="#{oRListingBean.formTypeId}" style="width: 15em">
 						<f:selectItems value="#{oRListingBean.formTypes}"/>
-						<p:ajax event="change" listener="#{oRListingBean.updateORNumber}" update="oridd idPayd idSearchPname dataSelectedId totalId cid fldId2"/>
+						<p:ajax event="change" listener="#{oRListingBean.updateORNumber}" update="oridd idPayd idSearchPname dataSelectedId totalId cid fldId fldId2"/>
 					</p:selectOneMenu>
 					<p:selectOneMenu id="cid" value="#{oRListingBean.collectorId}"  filterMatchMode="contains" filter="true" style="width: 15em">
 								<f:selectItems value="#{oRListingBean.collectors}"/>
@@ -115,18 +116,18 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						
 					<p:inputNumber value="#{oRListingBean.label2}" placeholder="Gross/RPTax" style="width: 15em"/>
 					<p:inputNumber value="#{oRListingBean.amount2}" inputStyle="width: 15em">
-						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand"/>
+						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand dataSelectedId"/>
 					</p:inputNumber>
 					
 					<p:inputText value="#{oRListingBean.label3}" placeholder="Salaries/Gross Receipts" style="width: 15em"/>
 					<p:inputNumber value="#{oRListingBean.amount3}" inputStyle="width: 15em">
-						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand"/>
+						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand dataSelectedId"/>
 					</p:inputNumber>
 					
 					
 					<p:inputText value="#{oRListingBean.label4}" placeholder="Income from RPT TAX/CTC" style="width: 15em"/>
 					<p:inputNumber value="#{oRListingBean.amount4}" inputStyle="width: 15em">
-						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand"/>
+						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand dataSelectedId"/>
 					</p:inputNumber>
 					
 					<p:outputLabel  value="Total"/>
@@ -149,7 +150,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                          	<p:ajax event="cellEdit"  listener="#{oRListingBean.onCellEditSelected}" update="frmId totalId fldId2 dataId dataOrId" />
                          	
                          	<p:column headerText="[*]" width="20" exportable="false">
-            					<p:commandButton update="dataSelectedId dataOrId dtlsId msg" icon="fa fa-trash" actionListener="#{oRListingBean.paynameDelete(rs)}">
+            					<p:commandButton update="dataSelectedId dataOrId dtlsId totalId msg" icon="fa fa-trash" actionListener="#{oRListingBean.paynameDelete(rs)}">
             						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
             					</p:commandButton>
             				</p:column>
@@ -175,7 +176,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             		</p:dataTable>
 					<p:toolbar id="tbTotal">
 						<f:facet name="left">
-							<p:outputLabel id="totalId"  value="Php#{oRListingBean.totalAmount}"/>
+							<p:outputLabel id="totalId"  value="Php#{oRListingBean.totalAmount}" style="color: red; font-weight: bold; font-size: 2em"/>
 						</f:facet>
 						<f:facet name="right"/>
 					</p:toolbar>
@@ -401,7 +402,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                          	<p:ajax event="cellEdit"  listener="#{oRListingBean.onCellEdit}" update="dataId dataSelectedId totalId" />
                          	
             				<p:column headerText="Name" width="100">
-            						<p:outputLabel value="#{rpt.name}"/>
+            			 			<p:outputLabel value="#{rpt.name}"/>
             				</p:column>
             				<p:column headerText="Amount" width="50">
             						<p:cellEditor>
@@ -432,11 +433,176 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					<p:textEditor id="idContentAnalys" toolbarVisible="false" widgetVar="msgComposeText" value="#{oRListingBean.textContent}" readonly="true"/>
 	</p:dialog>				
 	
+	<p:dialog widgetVar="dlgCedula" position="center center" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" width="500" height="500">
+		<p:panelGrid id="idfldCedulaInfo">
+		
+		</p:panelGrid>
+	</p:dialog>
+	
+	
+	
+	<p:commandButton title="Open Camera" icon="fa fa-camera" id="startButton" oncomplete="PF('dlgCam').show();"  style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 400px;left: 370px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 	<p:commandButton title="Payment Name Lookup" icon="fa fa-search" actionListener="#{oRListingBean.loadPaymentNames}" update="dataId idSearchPname dataSugId" oncomplete="PF('selectDialog').show();" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 450px;left: 370px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 	
 	<p:commandButton title="Click to save" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId msg"  icon="fa fa-floppy-o" actionListener="#{oRListingBean.saveData}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 500px;left: 370px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
 			<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 	</p:commandButton>
+	
+	
+	
+	 <p:dialog widgetVar="dlgCam" visible="false" position="center center" modal="true" draggable="false" closable="false" closeOnEscape="true" resizable="false" showHeader="false" width="700" height="750">
+		
+		
+		<p:panelGrid columns="1" layout="grid">
+	        <p:commandButton value="Close Camera" id="resetButton" oncomplete="PF('dlgCam').hide()"/>
+        </p:panelGrid>
+		
+		<p:separator/>
+		
+		<div id="sourceSelectPanel" style="display:none">
+		
+			<p:panelGrid columns="1" layout="grid">
+		
+				<video id="video" width="600" height="600" style="border: 1px solid gray"/>
+		
+				<label>Change video source:</label>
+        		<select id="sourceSelect" style="max-width:400px"/>
+        
+			</p:panelGrid>
+		</div>
+		
+	</p:dialog>
+	
+	
+	<p:remoteCommand name="loadResult"
+                      action="#{oRListingBean.findQRCode}"
+                      />
+	<h:outputScript>
+	
+	window.addEventListener('load', function () {
+      let selectedDeviceId;
+      const codeReader = new ZXing.BrowserMultiFormatReader()
+      console.log('ZXing code reader initialized')
+      codeReader.listVideoInputDevices()
+        .then((videoInputDevices) => {
+          const sourceSelect = document.getElementById('sourceSelect')
+          selectedDeviceId = videoInputDevices[0].deviceId
+          if (videoInputDevices.length >= 1) {
+            videoInputDevices.forEach((element) => {
+              const sourceOption = document.createElement('option')
+              sourceOption.text = element.label
+              sourceOption.value = element.deviceId
+              sourceSelect.appendChild(sourceOption)
+            })
+
+            sourceSelect.onchange = () => {
+              selectedDeviceId = sourceSelect.value;
+            };
+
+            const sourceSelectPanel = document.getElementById('sourceSelectPanel')
+            sourceSelectPanel.style.display = 'block'
+          }
+
+          document.getElementById('startButton').addEventListener('click', () => {
+            codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+              if (result) {
+                console.log(result)
+                
+                
+                loadResult([{
+			        name: 'qrcode',
+			        value: result.text
+			      }]);
+                
+              }
+              
+            })
+            console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
+          })
+
+          document.getElementById('resetButton').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })
+          
+          document.getElementById('resetButton2').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })
+          
+          document.getElementById('resetButton3').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })
+          
+          document.getElementById('resetButton4').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })
+          
+          document.getElementById('resetButton5').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })
+
+			document.getElementById('resetButton6').addEventListener('click', () => {
+	            codeReader.reset()
+	            document.getElementById('result').textContent = '';
+	            console.log('Reset.')
+	          })	
+			
+			
+		document.getElementById('resetButton7').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })	
+			
+			document.getElementById('resetButton8').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })
+          
+          document.getElementById('resetButton9').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })
+			
+        })
+        .catch((err) => {
+          console.error(err)
+        })
+    })
+	
+	</h:outputScript>
+	
+	
+	<p:dialog widgetVar="dlgSelection" position="center center" modal="true" draggable="false" closable="false" closeOnEscape="true" resizable="false" showHeader="false" width="400" height="500" >
+		
+		<p:panelGrid columns="1" layout="grid">
+	        <p:commandButton value="Close Selection" id="resetButton2" oncomplete="PF('dlgSelection').hide()"/>
+        </p:panelGrid>
+		
+		<p:panelGrid columns="1" layout="grid">
+		<p:outputLabel value="Please select transaction on below selection" />
+	
+		<p:commandButton id="resetButton3" value="Individual Cedula" actionListener="#{oRListingBean.acceptSelection('individual')}" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId"/>
+		<p:commandButton id="resetButton4"  value="Corporation Cedula" actionListener="#{oRListingBean.acceptSelection('corporation')}" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId"/>
+		<p:commandButton id="resetButton5" value="Form 51" actionListener="#{oRListingBean.acceptSelection('51')}" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId"/>
+		<p:commandButton id="resetButton6" value="Form 52" actionListener="#{oRListingBean.acceptSelection('52')}" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId"/>
+		<p:commandButton id="resetButton7" value="Form 53" actionListener="#{oRListingBean.acceptSelection('53')}" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId"/>
+		<p:commandButton id="resetButton8" value="Form 54" actionListener="#{oRListingBean.acceptSelection('54')}" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId"/>
+		<p:commandButton id="resetButton9" value="Form 56" actionListener="#{oRListingBean.acceptSelection('56')}" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId"/>
+		
+		</p:panelGrid>
+	</p:dialog>
 	
 <ui:include src="loader.xhtml" />
 <ui:include src="menu.xhtml" />		

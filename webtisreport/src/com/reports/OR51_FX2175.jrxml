@@ -23,7 +23,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center">
-					<font size="12"/>
+					<font fontName="SansSerif" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_DATE}]]></textFieldExpression>
 			</textField>
@@ -32,7 +32,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font size="12"/>
+					<font fontName="SansSerif" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_PAYOR}]]></textFieldExpression>
 			</textField>
@@ -41,7 +41,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font size="12"/>
+					<font fontName="SansSerif" size="12"/>
 				</textElement>
 				<text><![CDATA[MTO LAKE SEBU]]></text>
 			</staticText>
@@ -62,21 +62,21 @@
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="29" y="0" width="145" height="14" uuid="183ac405-d88d-4da4-9165-9de07e90f290"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="174" y="0" width="31" height="14" uuid="6d46b00c-7faf-4399-9508-a8eacb2ca8b9"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{code}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="205" y="0" width="51" height="14" uuid="255404a7-eb47-4eb9-8666-f34f38c6cb0f"/>
 				<textElement textAlignment="Right">
-					<font size="10"/>
+					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
@@ -93,11 +93,11 @@
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="143" splitType="Stretch">
+		<band height="141" splitType="Stretch">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="30" y="16" width="226" height="14" uuid="4f307908-b388-425a-a6b7-5a3c052671db"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_WORDS}]]></textFieldExpression>
 			</textField>
@@ -106,16 +106,16 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font size="10"/>
+					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_CASHCHECK}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="118" y="127" width="150" height="16" uuid="5efe44d8-0367-443c-b81d-9722a8142748">
+				<reportElement x="118" y="125" width="150" height="16" uuid="5efe44d8-0367-443c-b81d-9722a8142748">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center">
-					<font size="12"/>
+					<font fontName="SansSerif" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_COLLECTING_OFFICER}]]></textFieldExpression>
 			</textField>

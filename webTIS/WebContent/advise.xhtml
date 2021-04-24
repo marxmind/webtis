@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Check Advise Transaction</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="css/growl.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputScript name="bootstrap/js/bootstrap.js" target="head"/>
+            
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Check Advise Transaction</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Check Advise Transaction</title>
+
+</h:head>
+
+<h:body>
+	
+<ui:include src="header.xhtml" />	
+
+<h:form prependId="false" id="formId" style="background-color: #8fdbf5">
+	<p:growl id="msg" life="2000" showDetail="true"/>
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+    	 	 
+	<p:sticky target="idSearch" />
+	
+	<p:layout fullPage="true">
+			<p:layoutUnit position="north" size="50" visible="false"/>
+			<p:layoutUnit position="south" size="100" visible="false">
+				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="east" size="0" visible="false"/>
+			
+			<p:layoutUnit position="west" size="700" visible="true">
+			
+			<p:dataTable id="formSelected" var="sc" value="#{adviceBean.advices}"  rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,55,110" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false" >
+				
+				 <p:column headerText="[*]" width="30" exportable="false">
+            		<p:commandButton update="formSelected formDataId msg" icon="fa fa-trash" actionListener="#{adviceBean.deleteAdvice(sc)}">
+            				<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            		</p:commandButton>
+            	 </p:column>
+				 
+				 <p:column headerText="Date" width="70">
+		       		<p:outputLabel value="#{sc.dateTrans}" />
+		         </p:column>
+		         <p:column headerText="Control No" width="70">
+		       		<p:outputLabel value="#{sc.controlNumber}" />
+		         </p:column>
+		         <p:column headerText="Fund Type" width="70">
+		       		<p:outputLabel value="#{sc.fundTypeName}" />
+		         </p:column>
+				
+			</p:dataTable>
+			
+			
+			</p:layoutUnit>
+			
+			<p:layoutUnit position="center">
+			
+			<p:outputLabel value="Ready For Advice" />
+			<p:toolbar id="tb" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    			
+    			<span class="ui-input-icon-left">
+				        <i class="pi pi-search" />
+				        <p:inputText id="idSearch" value="#{adviceBean.searchName}" placeholder="Search here..." >
+				        	<p:ajax event="keyup" listener="#{adviceBean.loadChecks}" update="formDataId"/>
+				        </p:inputText>
+				    </span>
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton id="createId" update="chkId" value="Create Advice" icon="fa fa-floppy-o"  actionListener="#{adviceBean.loadSelectedChk}"/>
+    		</f:facet>
+    		</p:toolbar>
+			
+			
+			<p:dataTable id="formDataId" var="rpt" value="#{adviceBean.checks}"  rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,55,110" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false" selection="#{adviceBean.selectedCheck}" rowKey="#{rpt.cheque_id}">
+				
+				<p:column selectionMode="multiple" width="15"/>
+				
+				 <p:column headerText="Date" width="70">
+		       		<p:outputLabel value="#{rpt.date_disbursement}" />
+		         </p:column>
+		         <p:column headerText="Status" width="70">
+		       		<p:outputLabel value="#{rpt.statusName}" />
+		         </p:column>
+		         <p:column headerText="Fund Type" width="70">
+		       		<p:outputLabel value="#{rpt.accntName}" />
+		         </p:column>
+				 <p:column headerText="Acount No" width="70">
+		       		<p:outputLabel value="#{rpt.accntNumber}" />
+		         </p:column>
+		         <p:column headerText="Check No" width="70">
+		       		<p:outputLabel value="#{rpt.checkNo}" />
+		         </p:column>
+		         <p:column headerText="Payee" width="100">
+		       		<p:outputLabel value="#{rpt.payToTheOrderOf}" />
+		         </p:column>
+		         <p:column headerText="Amount" width="70" style="text-align: right">
+		       		<p:outputLabel value="#{rpt.amount}">
+		       			<f:convertNumber currencySymbol="" type="currency" />
+		       		</p:outputLabel>
+		         </p:column>
+		         
+						
+				
+			</p:dataTable>
+			
+			</p:layoutUnit>
+	
+	</p:layout>
+	
+	
+	<p:dialog widgetVar="dlgCreate" showHeader="false" width="900" height="850" position="center top">
+		
+			<p:toolbar id="tblFrm" style="#{skin.toolbar}">
+			
+			
+			
+    		<f:facet name="left">
+    				<p:commandButton id="saveNowId" update="chkId formSelected formDataId msg" value="Save Advice" icon="fa fa-floppy-o" actionListener="#{adviceBean.saveAdvice}">
+    					<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    				</p:commandButton>
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton oncomplete="PF('dlgCreate').hide()" value="Close"/>
+    		</f:facet>
+			</p:toolbar>
+			
+			<p:separator/>
+			
+			<p:panelGrid columns="4" layout="grid">
+				<p:outputLabel value="Date" />
+				<p:calendar value="#{adviceBean.dateCreated}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>
+				
+				<p:outputLabel value="Control No" />
+				<p:inputText value="#{adviceBean.controlNumber}" placeholder="fund-year-month-series"/>
+			</p:panelGrid>
+			
+			<p:separator/>
+			
+			<p:dataTable id="chkId" var="cs" value="#{adviceBean.selectedCheck}"  rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,55,110" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false">
+			
+			
+				<p:column headerText="Date" width="70">
+		       		<p:outputLabel value="#{cs.date_disbursement}" />
+		         </p:column>
+		         <p:column headerText="Status" width="70">
+		       		<p:outputLabel value="#{cs.statusName}" />
+		         </p:column>
+		         <p:column headerText="Fund Type" width="70">
+		       		<p:outputLabel value="#{cs.accntName}" />
+		         </p:column>
+				 <p:column headerText="Acount No" width="70">
+		       		<p:outputLabel value="#{cs.accntNumber}" />
+		         </p:column>
+		         <p:column headerText="Check No" width="70">
+		       		<p:outputLabel value="#{cs.checkNo}" />
+		         </p:column>
+		         <p:column headerText="Payee" width="100">
+		       		<p:outputLabel value="#{cs.payToTheOrderOf}" />
+		         </p:column>
+		         <p:column headerText="Amount" width="70" style="text-align: right">
+		       		<p:outputLabel value="#{cs.amount}">
+		       			<f:convertNumber currencySymbol="" type="currency" />
+		       		</p:outputLabel>
+		         </p:column>
+			
+			</p:dataTable>
+	</p:dialog>		
+		
+<ui:include src="loader.xhtml" />
+<ui:include src="menu.xhtml" /> 	
+</h:form>		
+</h:body>
+</html>		
+	
+	

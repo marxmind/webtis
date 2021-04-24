@@ -55,6 +55,16 @@ public class Customer {
 	
 	private String completeAddress;
 	
+	
+	private String bornplace;
+	private String weight;
+	private String height;
+	private String work;
+	private String citizenship;
+	
+	private String qrcode;
+	private String nationalId;
+	
 	public Customer(){}
 	
 	public Customer(
@@ -374,6 +384,15 @@ public class Customer {
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
 			
+			try{cus.setBornplace(rs.getString("bornplace"));}catch(NullPointerException e){}
+			try{cus.setWeight(rs.getString("weight"));}catch(NullPointerException e){}
+			try{cus.setHeight(rs.getString("heigt"));}catch(NullPointerException e){}
+			try{cus.setWork(rs.getString("work"));}catch(NullPointerException e){}
+			try{cus.setCitizenship(rs.getString("citizenship"));}catch(NullPointerException e){}
+			
+			try{cus.setQrcode(rs.getString("qrcode"));}catch(NullPointerException e){}
+			try{cus.setNationalId(rs.getString("nationalid"));}catch(NullPointerException e){}
+			
 			
 			UserDtls user = new UserDtls();
 			try{user.setUserdtlsid(rs.getLong("userdtlsid"));}catch(NullPointerException e){}
@@ -508,6 +527,15 @@ public class Customer {
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
 			
+			try{cus.setBornplace(rs.getString("bornplace"));}catch(NullPointerException e){}
+			try{cus.setWeight(rs.getString("weight"));}catch(NullPointerException e){}
+			try{cus.setHeight(rs.getString("heigt"));}catch(NullPointerException e){}
+			try{cus.setWork(rs.getString("work"));}catch(NullPointerException e){}
+			try{cus.setCitizenship(rs.getString("citizenship"));}catch(NullPointerException e){}
+			
+			try{cus.setQrcode(rs.getString("qrcode"));}catch(NullPointerException e){}
+			try{cus.setNationalId(rs.getString("nationalid"));}catch(NullPointerException e){}
+			
 			UserDtls user = new UserDtls();
 			try{user.setUserdtlsid(rs.getLong("userdtlsid"));}catch(NullPointerException e){}
 			try{user.setFirstname(rs.getString("firstname"));}catch(NullPointerException e){}
@@ -631,6 +659,15 @@ public class Customer {
 			emergency.setCustomerid(rs.getLong("emeperson"));
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
+			
+			try{cus.setBornplace(rs.getString("bornplace"));}catch(NullPointerException e){}
+			try{cus.setWeight(rs.getString("weight"));}catch(NullPointerException e){}
+			try{cus.setHeight(rs.getString("heigt"));}catch(NullPointerException e){}
+			try{cus.setWork(rs.getString("work"));}catch(NullPointerException e){}
+			try{cus.setCitizenship(rs.getString("citizenship"));}catch(NullPointerException e){}
+			
+			try{cus.setQrcode(rs.getString("qrcode"));}catch(NullPointerException e){}
+			try{cus.setNationalId(rs.getString("nationalid"));}catch(NullPointerException e){}
 			
 			UserDtls user = new UserDtls();
 			try{user.setUserdtlsid(rs.getLong("userdtlsid"));}catch(NullPointerException e){}
@@ -772,6 +809,15 @@ public class Customer {
 			emergency.setCustomerid(rs.getLong("emeperson"));
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
+			
+			try{cus.setBornplace(rs.getString("bornplace"));}catch(NullPointerException e){}
+			try{cus.setWeight(rs.getString("weight"));}catch(NullPointerException e){}
+			try{cus.setHeight(rs.getString("heigt"));}catch(NullPointerException e){}
+			try{cus.setWork(rs.getString("work"));}catch(NullPointerException e){}
+			try{cus.setCitizenship(rs.getString("citizenship"));}catch(NullPointerException e){}
+			
+			try{cus.setQrcode(rs.getString("qrcode"));}catch(NullPointerException e){}
+			try{cus.setNationalId(rs.getString("nationalid"));}catch(NullPointerException e){}
 			
 			UserDtls user = new UserDtls();
 			try{user.setUserdtlsid(rs.getLong("userdtlsid"));}catch(NullPointerException e){}
@@ -916,8 +962,15 @@ public class Customer {
 				+ "borndate,"
 				+ "emeperson,"
 				+ "relid,"
-				+ "photoid)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "photoid,"
+				+ "bornplace,"
+				+ "weight,"
+				+ "heigt,"
+				+ "work,"
+				+ "citizenship,"
+				+ "qrcode,"
+				+ "nationalid)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -959,6 +1012,13 @@ public class Customer {
 		ps.setLong(cnt++, cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getCustomerid());
 		ps.setInt(cnt++, cus.getRelationship());
 		ps.setString(cnt++, cus.getPhotoid());
+		ps.setString(cnt++, cus.getBornplace());
+		ps.setString(cnt++, cus.getWeight());
+		ps.setString(cnt++, cus.getHeight());
+		ps.setString(cnt++, cus.getWork());
+		ps.setString(cnt++, cus.getCitizenship());
+		ps.setString(cnt++, cus.getQrcode());
+		ps.setString(cnt++, cus.getNationalId());
 		
 		LogU.add(cus.getFirstname());
 		LogU.add(cus.getMiddlename());
@@ -980,6 +1040,13 @@ public class Customer {
 		LogU.add(cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getCustomerid());
 		LogU.add(cus.getRelationship());
 		LogU.add(cus.getPhotoid());
+		LogU.add(cus.getBornplace());
+		LogU.add(cus.getWeight());
+		LogU.add(cus.getHeight());
+		LogU.add(cus.getWork());
+		LogU.add(cus.getCitizenship());
+		LogU.add(cus.getQrcode());
+		LogU.add(cus.getNationalId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -1016,8 +1083,15 @@ public class Customer {
 				+ "borndate,"
 				+ "emeperson,"
 				+ "relid,"
-				+ "photoid)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "photoid,"
+				+ "bornplace,"
+				+ "weight,"
+				+ "heigt,"
+				+ "work,"
+				+ "citizenship,"
+				+ "qrcode,"
+				+ "nationalid)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -1059,6 +1133,13 @@ public class Customer {
 		ps.setLong(cnt++, getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getCustomerid());
 		ps.setInt(cnt++, getRelationship());
 		ps.setString(cnt++, getPhotoid());
+		ps.setString(cnt++, getBornplace());
+		ps.setString(cnt++, getWeight());
+		ps.setString(cnt++, getHeight());
+		ps.setString(cnt++, getWork());
+		ps.setString(cnt++, getCitizenship());
+		ps.setString(cnt++, getQrcode());
+		ps.setString(cnt++, getNationalId());
 		
 		LogU.add(getFirstname());
 		LogU.add(getMiddlename());
@@ -1080,6 +1161,13 @@ public class Customer {
 		LogU.add(getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getCustomerid());
 		LogU.add(getRelationship());
 		LogU.add(getPhotoid());
+		LogU.add(getBornplace());
+		LogU.add(getWeight());
+		LogU.add(getHeight());
+		LogU.add(getWork());
+		LogU.add(getCitizenship());
+		LogU.add(getQrcode());
+		LogU.add(getNationalId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -1114,7 +1202,14 @@ public class Customer {
 				+ "borndate=?,"
 				+ "emeperson=?,"
 				+ "relid=?,"
-				+ "photoid=? " 
+				+ "photoid=?,"
+				+ "bornplace=?,"
+				+ "weight=?,"
+				+ "heigt=?,"
+				+ "work=?,"
+				+ "citizenship=?,"
+				+ "qrcode=?,"
+				+ "nationalid=? " 
 				+ " WHERE customerid=?";
 		
 		PreparedStatement ps = null;
@@ -1145,6 +1240,13 @@ public class Customer {
 		ps.setLong(cnt++, cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getCustomerid());
 		ps.setInt(cnt++, cus.getRelationship());
 		ps.setString(cnt++, cus.getPhotoid());
+		ps.setString(cnt++, cus.getBornplace());
+		ps.setString(cnt++, cus.getWeight());
+		ps.setString(cnt++, cus.getHeight());
+		ps.setString(cnt++, cus.getWork());
+		ps.setString(cnt++, cus.getCitizenship());
+		ps.setString(cnt++, cus.getQrcode());
+		ps.setString(cnt++, cus.getNationalId());
 		ps.setLong(cnt++, cus.getCustomerid());
 		
 		LogU.add(cus.getFirstname());
@@ -1166,6 +1268,13 @@ public class Customer {
 		LogU.add(cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getCustomerid());
 		LogU.add(cus.getRelationship());
 		LogU.add(cus.getPhotoid());
+		LogU.add(cus.getBornplace());
+		LogU.add(cus.getWeight());
+		LogU.add(cus.getHeight());
+		LogU.add(cus.getWork());
+		LogU.add(cus.getCitizenship());
+		LogU.add(cus.getQrcode());
+		LogU.add(cus.getNationalId());
 		LogU.add(cus.getCustomerid());
 		
 		LogU.add("executing for saving...");
@@ -1201,7 +1310,14 @@ public class Customer {
 				+ "borndate=?,"
 				+ "emeperson=?,"
 				+ "relid=?,"
-				+ "photoid=? " 
+				+ "photoid=?,"
+				+ "bornplace=?,"
+				+ "weight=?,"
+				+ "heigt=?,"
+				+ "work=?,"
+				+ "citizenship=?,"
+				+ "qrcode=?,"
+				+ "nationalid=? " 
 				+ " WHERE customerid=?";
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -1231,6 +1347,13 @@ public class Customer {
 		ps.setLong(cnt++, getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getCustomerid());
 		ps.setInt(cnt++, getRelationship());
 		ps.setString(cnt++, getPhotoid());
+		ps.setString(cnt++, getBornplace());
+		ps.setString(cnt++, getWeight());
+		ps.setString(cnt++, getHeight());
+		ps.setString(cnt++, getWork());
+		ps.setString(cnt++, getCitizenship());
+		ps.setString(cnt++, getQrcode());
+		ps.setString(cnt++, getNationalId());
 		ps.setLong(cnt++, getCustomerid());
 		
 		
@@ -1253,6 +1376,13 @@ public class Customer {
 		LogU.add(getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getCustomerid());
 		LogU.add(getRelationship());
 		LogU.add(getPhotoid());
+		LogU.add(getBornplace());
+		LogU.add(getWeight());
+		LogU.add(getHeight());
+		LogU.add(getWork());
+		LogU.add(getCitizenship());
+		LogU.add(getQrcode());
+		LogU.add(getNationalId());
 		LogU.add(getCustomerid());
 		
 		LogU.add("executing for saving...");
@@ -1642,6 +1772,62 @@ public class Customer {
 
 	public Long getIdentifier() {
 		return this.customerid;
+	}
+
+	public String getBornplace() {
+		return bornplace;
+	}
+
+	public void setBornplace(String bornplace) {
+		this.bornplace = bornplace;
+	}
+
+	public String getWeight() {
+		return weight;
+	}
+
+	public void setWeight(String weight) {
+		this.weight = weight;
+	}
+
+	public String getHeight() {
+		return height;
+	}
+
+	public void setHeight(String height) {
+		this.height = height;
+	}
+
+	public String getWork() {
+		return work;
+	}
+
+	public void setWork(String work) {
+		this.work = work;
+	}
+
+	public String getCitizenship() {
+		return citizenship;
+	}
+
+	public void setCitizenship(String citizenship) {
+		this.citizenship = citizenship;
+	}
+
+	public String getQrcode() {
+		return qrcode;
+	}
+
+	public void setQrcode(String qrcode) {
+		this.qrcode = qrcode;
+	}
+
+	public String getNationalId() {
+		return nationalId;
+	}
+
+	public void setNationalId(String nationalId) {
+		this.nationalId = nationalId;
 	}
 	
 }

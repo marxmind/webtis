@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 		date_edited TIMESTAMP,
 		sig1_id int,
 		sig2_id int
+		this form is not in use
  */
 @Deprecated
 public class Chequedtls implements Serializable {

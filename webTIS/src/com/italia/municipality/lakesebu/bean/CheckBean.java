@@ -802,6 +802,16 @@ public class CheckBean implements Serializable{
 			isOk = false;
 		}
 		
+		if(getBankCheckName()==null || getBankCheckName().isEmpty()) {
+			Application.addMessage(3, "Error", "Please select Account No");
+			isOk = false;
+		}
+		
+		if(getBankCheckAccntName()==null || getBankCheckAccntName().isEmpty()) {
+			Application.addMessage(3, "Error", "Please select Account No");
+			isOk = false;
+		}
+		
 		if(isOk) {
 		
 		com.italia.municipality.lakesebu.controller.Chequedtls chk = new com.italia.municipality.lakesebu.controller.Chequedtls();

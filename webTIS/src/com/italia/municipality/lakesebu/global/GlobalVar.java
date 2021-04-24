@@ -23,8 +23,10 @@ public class GlobalVar {
 	public static final String WATER_RENTAL_CERTIFICATE_RPT="water_rental_certificate";
 	public static final String WATER_RENTAL_PAYMENT_HISTORY_RPT="water_rental_ors";
 	public static final String MTO_OR_CEDULA_SIGNATORY="FERDINAND L. LOPEZ";
-	public static final String CEDULA_LQ310_PRINT="cedula_LQ310";
-	public static final String CEDULA_FX2175_PRINT="cedula_FX2175";
-	public static final String OR51_LQ310_PRINT="OR51_LQ310";
-	public static final String OR51_FX2175_PRINT="OR51_FX2175";
+	//public static final String CEDULA_LQ310_PRINT="cedula_LQ310";
+	//public static final String CEDULA_FX2175_PRINT="cedula_FX2175";
+	//public static final String OR51_LQ310_PRINT="OR51_LQ310";
+	//public static final String OR51_FX2175_PRINT="OR51_FX2175";
+	public static final String QRCODE_CITIZEN = "citizen-qrcode";
+	public static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
 }

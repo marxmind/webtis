@@ -1,10 +1,7 @@
 package com.italia.municipality.lakesebu.controller;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -21,25 +18,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletResponse;
-
 import com.italia.municipality.lakesebu.database.BankChequeDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
-
 import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.GenericElementCsvHandler;
-
 /**
  * 
  * @author mark italia
@@ -66,12 +52,15 @@ public class Chequedtls {
 	private int isActive;
 	private int status;
 	private String remarks;
-	
+	private int hasAdvice;
 	private String signatoryName1;
 	private String signatoryName2;
 	
 	private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
 	private static String grandTotal;
+	
+	private String statusName;
+	private int fundTypeId;
 	
 	public Chequedtls(){}
 	
@@ -119,8 +108,127 @@ public class Chequedtls {
 		return amount;
 	}
 	
+	
+	
+	/*
+	public static Chequedtls retrieveCheck(long id){
+		Chequedtls chk = new Chequedtls();
+		String sql = "SELECT "
+				+ "	d.cheque_id,d.date_disbursement,d.bank_name,d.cheque_no,d.cheque_amount,d.hasadvice,d.chkstatus,d.chkremarks,d.pay_to_the_order_of,"
+				+ "	b.bank_account_name,b.bank_account_no,b.bank_id,"
+				+ "	(SELECT s.sig_name FROM tbl_signatory s WHERE s.sig_id=d.sig1_id) as sig1_id,"
+				+ "	(SELECT s.sig_name FROM tbl_signatory s WHERE s.sig_id=d.sig2_id) as sig2_id "
+				+ "FROM tbl_chequedtls d,tbl_bankaccounts b "
+				+ "	WHERE d.accnt_no=b.bank_id AND d.isactive=1 AND d.cheque_id=" + id;
+		
+		
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = BankChequeDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		
+		
+		System.out.println("CHECK SQL " + ps.toString());
+		
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			
+			try{chk.setDate_disbursement(rs.getString("date_disbursement"));}catch(NullPointerException e){}
+			try{chk.setCheque_id(rs.getLong("cheque_id"));}catch(NullPointerException e){}
+			try{chk.setCheckNo(rs.getString("cheque_no"));}catch(NullPointerException e){}
+			try{chk.setBankName(rs.getString("bank_name"));}catch(NullPointerException e){}
+			try{chk.setAmount(rs.getDouble("cheque_amount"));}catch(NullPointerException e){}
+			try{chk.setPayToTheOrderOf(rs.getString("pay_to_the_order_of"));}catch(NullPointerException e){}
+			try{chk.setHasAdvice(rs.getInt("hasadvice"));}catch(NullPointerException e){}
+			try{chk.setStatus(rs.getInt("chkstatus"));}catch(NullPointerException e){}
+			try{chk.setRemarks(rs.getString("chkremarks"));}catch(NullPointerException e){}
+			try{chk.setAccntNumber(rs.getString("bank_account_no"));}catch(NullPointerException e){}
+			try{chk.setAccntName(rs.getString("bank_account_name"));}catch(NullPointerException e){}
+			try{chk.setSignatoryName1(rs.getString("sig1_id"));}catch(NullPointerException e){}
+			try{chk.setSignatoryName2(rs.getString("sig2_id"));}catch(NullPointerException e){}
+			try{chk.setStatusName(rs.getInt("chkstatus")==1? "FOR ADVICE" : "CANCELLED");}catch(NullPointerException e){}
+			try{chk.setFundTypeId(rs.getInt("bank_id"));}catch(NullPointerException e){}
+			
+			
+		}
+		rs.close();
+		ps.close();
+		BankChequeDatabaseConnect.close(conn);
+		}catch(SQLException sl){sl.getMessage();}
+		
+		return chk;
+	}*/
+	
+	public static List<Chequedtls> retrieveChecks(String sql, String[] params){
+		List<Chequedtls> cList =  new ArrayList<Chequedtls>();
+		
+		
+		String stm = "SELECT "
+				+ "	d.cheque_id,d.date_disbursement,d.bank_name,d.cheque_no,d.cheque_amount,d.hasadvice,d.chkstatus,d.chkremarks,d.pay_to_the_order_of,"
+				+ "	b.bank_account_name,b.bank_account_no,b.bank_id,"
+				+ "	(SELECT s.sig_name FROM tbl_signatory s WHERE s.sig_id=d.sig1_id) as sig1_id,"
+				+ "	(SELECT s.sig_name FROM tbl_signatory s WHERE s.sig_id=d.sig2_id) as sig2_id "
+				+ "FROM tbl_chequedtls d,tbl_bankaccounts b "
+				+ "	WHERE d.accnt_no=b.bank_id AND d.isactive=1 ";
+		
+		sql = stm + sql;
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = BankChequeDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		if(params!=null && params.length>0){
+			
+			for(int i=0; i<params.length; i++){
+				ps.setString(i+1, params[i]);
+			}
+			
+		}
+		
+		System.out.println("CHECK SQL " + ps.toString());
+		
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			Chequedtls chk = new Chequedtls();
+			try{chk.setDate_disbursement(rs.getString("date_disbursement"));}catch(NullPointerException e){}
+			try{chk.setCheque_id(rs.getLong("cheque_id"));}catch(NullPointerException e){}
+			try{chk.setCheckNo(rs.getString("cheque_no"));}catch(NullPointerException e){}
+			try{chk.setBankName(rs.getString("bank_name"));}catch(NullPointerException e){}
+			try{chk.setAmount(rs.getDouble("cheque_amount"));}catch(NullPointerException e){}
+			try{chk.setPayToTheOrderOf(rs.getString("pay_to_the_order_of"));}catch(NullPointerException e){}
+			try{chk.setHasAdvice(rs.getInt("hasadvice"));}catch(NullPointerException e){}
+			try{chk.setStatus(rs.getInt("chkstatus"));}catch(NullPointerException e){}
+			try{chk.setRemarks(rs.getString("chkremarks"));}catch(NullPointerException e){}
+			try{chk.setAccntNumber(rs.getString("bank_account_no"));}catch(NullPointerException e){}
+			try{chk.setAccntName(rs.getString("bank_account_name"));}catch(NullPointerException e){}
+			try{chk.setSignatoryName1(rs.getString("sig1_id"));}catch(NullPointerException e){}
+			try{chk.setSignatoryName2(rs.getString("sig2_id"));}catch(NullPointerException e){}
+			try{chk.setStatusName(rs.getInt("chkstatus")==1? "FOR ADVICE" : "CANCELLED");}catch(NullPointerException e){}
+			try{chk.setFundTypeId(rs.getInt("bank_id"));}catch(NullPointerException e){}
+			
+			cList.add(chk);
+		}
+		rs.close();
+		ps.close();
+		BankChequeDatabaseConnect.close(conn);
+		}catch(SQLException sl){sl.getMessage();}
+		
+		return cList;
+	}
+	
 	public static List<Chequedtls> retrieve(String sql, String[] params){
-		List<Chequedtls> cList =  Collections.synchronizedList(new ArrayList<Chequedtls>());
+		List<Chequedtls> cList =  new ArrayList<Chequedtls>();
 		
 		Connection conn = null;
 		ResultSet rs = null;
@@ -159,6 +267,7 @@ public class Chequedtls {
 			try{chk.setIsActive(rs.getInt("isactive"));}catch(NullPointerException e){}
 			try{chk.setStatus(rs.getInt("chkstatus"));}catch(NullPointerException e){}
 			try{chk.setRemarks(rs.getString("chkremarks"));}catch(NullPointerException e){}
+			try{chk.setHasAdvice(rs.getInt("hasadvice"));}catch(NullPointerException e){}
 			int sig1=0,sig2=0;
 			
 			
@@ -320,8 +429,9 @@ public class Chequedtls {
 				+ "date_edited,"
 				+ "isactive,"
 				+ "chkstatus,"
-				+ "chkremarks) " 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "chkremarks,"
+				+ "hasadvice) " 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -352,6 +462,7 @@ public class Chequedtls {
 		ps.setInt(14, chk.getIsActive());
 		ps.setInt(15, chk.getStatus());
 		ps.setString(16, chk.getRemarks());
+		ps.setInt(17, chk.getHasAdvice());
 		ps.execute();
 		ps.close();
 		BankChequeDatabaseConnect.close(conn);
@@ -378,8 +489,9 @@ public class Chequedtls {
 				+ "date_edited,"
 				+ "isactive,"
 				+ "chkstatus,"
-				+ "chkremarks) " 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "chkremarks,"
+				+ "hasadvice) " 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -410,6 +522,7 @@ public class Chequedtls {
 		ps.setInt(14, getIsActive());
 		ps.setInt(15, getStatus());
 		ps.setString(16, getRemarks());
+		ps.setInt(17, hasAdvice);
 		ps.execute();
 		ps.close();
 		BankChequeDatabaseConnect.close(conn);
@@ -432,7 +545,8 @@ public class Chequedtls {
 				+ "sig1_id=?,"
 				+ "sig2_id=?,"
 				+ "chkstatus=?,"
-				+ "chkremarks=? " 
+				+ "chkremarks=?,"
+				+ "hasadvice=? " 
 				+ " WHERE cheque_id=?";
 		
 		PreparedStatement ps = null;
@@ -454,7 +568,8 @@ public class Chequedtls {
 		ps.setInt(11, chk.getSignatory2());
 		ps.setInt(12, chk.getStatus());
 		ps.setString(13, chk.getRemarks());
-		ps.setLong(14, chk.getCheque_id());
+		ps.setInt(14, chk.getHasAdvice());
+		ps.setLong(15, chk.getCheque_id());
 		
 		ps.executeUpdate();
 		ps.close();
@@ -479,7 +594,8 @@ public class Chequedtls {
 				+ "sig1_id=?,"
 				+ "sig2_id=?,"
 				+ "chkstatus=?,"
-				+ "chkremarks=? " 
+				+ "chkremarks=?,"
+				+ "hasadvice=? " 
 				+ " WHERE cheque_id=?";
 		
 		PreparedStatement ps = null;
@@ -501,7 +617,8 @@ public class Chequedtls {
 		ps.setInt(11, getSignatory2());
 		ps.setInt(12, getStatus());
 		ps.setString(13, getRemarks());
-		ps.setLong(14, getCheque_id());
+		ps.setInt(14, getHasAdvice());
+		ps.setLong(15, getCheque_id());
 		
 		ps.executeUpdate();
 		ps.close();
@@ -897,6 +1014,30 @@ public class Chequedtls {
 			System.out.println(c.getBankName());
 		}
 		
+	}
+
+	public int getHasAdvice() {
+		return hasAdvice;
+	}
+
+	public void setHasAdvice(int hasAdvice) {
+		this.hasAdvice = hasAdvice;
+	}
+
+	public String getStatusName() {
+		return statusName;
+	}
+
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
+
+	public int getFundTypeId() {
+		return fundTypeId;
+	}
+
+	public void setFundTypeId(int fundTypeId) {
+		this.fundTypeId = fundTypeId;
 	}
 
 	

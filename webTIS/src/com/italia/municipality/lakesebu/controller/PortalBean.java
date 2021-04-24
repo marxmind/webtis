@@ -59,7 +59,13 @@ public class PortalBean implements Serializable {
 		return getPortal(Department.GSO);
 	}
 	
+	public String accounting() {
+		return getPortal(Department.ACCOUNTING);
+	}
+	
 	public String dilg() {
 		return "dilg";//getPortal(Department.DILG);
 	}
+	
+	
 }

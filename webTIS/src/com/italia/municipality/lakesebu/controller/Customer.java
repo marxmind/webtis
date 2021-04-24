@@ -30,6 +30,8 @@ public class Customer {
 	private int isActive;
 	private UserDtls userDtls;
 	
+	
+	
 	public static List<String> names(String name){
 		List<String> str = new ArrayList<String>();
 		String sql = "SELECT fullname FROM customer WHERE isactivatecus=1 AND fullname like '%"+ name.replace("--", "") +"%'";

@@ -1,14 +1,17 @@
 package com.italia.municipality.lakesebu.bean;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,13 +27,23 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
+import javax.imageio.ImageIO;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.CaptureEvent;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.TabChangeEvent;
 
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.ReaderException;
+import com.google.zxing.Result;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
 import com.italia.municipality.lakesebu.controller.Cedula;
 import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.Customer;
@@ -50,6 +63,11 @@ import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.enm.Months;
 import com.italia.municipality.lakesebu.global.GlobalVar;
+import com.italia.municipality.lakesebu.licensing.controller.Barangay;
+import com.italia.municipality.lakesebu.licensing.controller.DocumentFormatter;
+import com.italia.municipality.lakesebu.licensing.controller.Municipality;
+import com.italia.municipality.lakesebu.licensing.controller.Province;
+import com.italia.municipality.lakesebu.licensing.controller.Purok;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
@@ -174,6 +192,9 @@ public class ORListingBean implements Serializable{
 	
 	private Date birthdate;
 	private boolean enableBirthday=true;
+	
+	private String qrcodeMsg="Please place the QRCOde on the camera";
+	private String qrCodeData;
 	
 	@PostConstruct
 	public void init() {
@@ -654,6 +675,15 @@ public class ORListingBean implements Serializable{
 		return result;
 	}
 	
+	public void popupData() {
+		
+		if(getPayorName()!=null) {
+			
+		}
+		PrimeFaces pf = PrimeFaces.current();
+		pf.executeScript("PF('dlgCedula').show();");
+	}
+	
 	public void loadPaymentNames() {
 		
 		
@@ -828,7 +858,7 @@ public class ORListingBean implements Serializable{
 	}
 	
 	public void selectedOR() {
-		
+		namesDataSelected = new ArrayList<PaymentName>();
 		String sql = "";
 		String[] params = new String[0];
 		
@@ -837,7 +867,8 @@ public class ORListingBean implements Serializable{
 		if (getSelectOrTypeId()==0) {//new
 		 //plain new
 		}else if (getSelectOrTypeId()==1) {//new cedula
-			
+			setSelectedPaymentNameMap(new HashMap<Long, PaymentName>());
+			if(FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
 			/**
 			 * 60-CTC Individual
 			 * 65-CTC Interest 
@@ -873,6 +904,49 @@ public class ORListingBean implements Serializable{
 			setTotalAmount(Currency.formatAmount(amount));
 			
 			ctcFlds(true);
+			
+			calculateCedula();
+			}
+			
+			if(FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
+				/**63-BIR CTC
+				 * 65-CTC Interest 
+				 */
+				namesDataSelected = new ArrayList<PaymentName>();
+				setSelectedPaymentNameMap(new HashMap<Long, PaymentName>());
+				setFormTypeId(FormType.CTC_CORPORATION.getId());
+				int[] ids = {63};
+				double[] amounts = {0.00};
+				double amount = 0d;
+				
+				try {
+					for(int i=0; i< ids.length; i++) {
+						sql = " AND pyid="+ids[i];
+						PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+						py.setAmount(amounts[i]);
+						amount += amounts[i];
+						namesDataSelected.add(py);
+						getSelectedPaymentNameMap().put(py.getId(), py);
+					}
+				}catch(Exception e) {e.printStackTrace();}
+				
+				
+				
+				if(DateUtils.getCurrentMonth()>=3) {
+					try {
+							sql = " AND pyid=65";
+							PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+							py.setAmount(00.00);
+							amount += 0.00;
+							namesDataSelected.add(py);
+							getSelectedPaymentNameMap().put(py.getId(), py);
+					}catch(Exception e) {}
+				}
+				setTotalAmount(Currency.formatAmount(amount));
+				calculateCedula();
+				ctcFlds(true);
+			}
+			
 			
 		}else if(getSelectOrTypeId()==2) {//new OR
 			setFormTypeId(FormType.AF_51.getId());
@@ -1046,6 +1120,15 @@ public class ORListingBean implements Serializable{
 			UserDtls user = Login.getUserLogin().getUserDtls();
 			customer.setUserDtls(user);
 			customer = Customer.save(customer);
+		}else {
+			customer.setFullName(getPayorName().toUpperCase());
+			customer.setAddress(getAddress());
+			customer.setContactNumber("0");
+			customer.setIsActive(1);
+			customer.setRegistrationDate(DateUtils.getCurrentDateYYYYMMDD());
+			UserDtls user = Login.getUserLogin().getUserDtls();
+			customer.setUserDtls(user);
+			customer = Customer.save(customer);
 		}
 		boolean isOk = true;
 		if(getOrNumber()==null || getOrNumber().isEmpty()) {
@@ -1067,30 +1150,34 @@ public class ORListingBean implements Serializable{
 			if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
 				String val = "";
 				
-				val = getLabel2() + "<*>";
-				val += getLabel3() + "<*>";
-				val += getLabel4() + "<*>";
-				val += getAmount1() + "<*>";
-				val += getAmount2() + "<*>";
-				val += getAmount3() + "<*>";
-				val += getAmount4() + "<*>";
-				val += getAmount5() + "<*>";
-				val += getAmount6() + "<*>";
-				val += getAmount7() + "<*>";
-				val += getGenderId() + "<*>";
-				val += getBirthdate()==null? "0<*>" : DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd") + "<*>";
-				val += getTinNo().isEmpty()? "0<*>" : getTinNo() + "<*>";
-				val += getHieghtDateReg().isEmpty()? "0<*>" : getHieghtDateReg() + "<*>";
-				val += getWeight().isEmpty()? "0<*>" : getWeight() + "<*>";
-				val += getCustomerAddress().isEmpty()? "0<*>" : getCustomerAddress() + "<*>";
-				val += getCivilStatusId()==0? "0<*>" : getCivilStatusId() + "<*>";
-				val += getProfessionBusinessNature().isEmpty()? "0<*>" : getProfessionBusinessNature() + "<*>";
-				val += GlobalVar.MTO_OR_CEDULA_SIGNATORY + "<*>";//signatory
-				val += getPlaceOfBirth().isEmpty()? "0<*>" : getPlaceOfBirth() +"<*>";
+				val = getLabel2() + "<->";
+				val += getLabel3() + "<->";
+				val += getLabel4() + "<->";
+				val += getAmount1() + "<->";
+				val += getAmount2() + "<->";
+				val += getAmount3() + "<->";
+				val += getAmount4() + "<->";
+				val += getAmount5() + "<->";
+				val += getAmount6() + "<->";
+				val += getAmount7() + "<->";
+				val += getGenderId() + "<->";
+				val += getBirthdate()==null? "0<->" : DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd") + "<->";
+				val += getTinNo().isEmpty()? "0<->" : getTinNo() + "<->";
+				val += getHieghtDateReg().isEmpty()? "0<->" : getHieghtDateReg() + "<->";
+				val += getWeight()!=null? getWeight() + "<->" : "0<->";  //   getWeight().isEmpty()? "0<->" : getWeight() + "<->";
+				val += getCustomerAddress().isEmpty()? "0<->" : getCustomerAddress() + "<->";
+				val += getCivilStatusId()==0? "0<->" : getCivilStatusId() + "<->";
+				val += getProfessionBusinessNature().isEmpty()? "0<->" : getProfessionBusinessNature() + "<->";
+				val += GlobalVar.MTO_OR_CEDULA_SIGNATORY + "<->";//signatory
+				val += getPlaceOfBirth().isEmpty()? "0<->" : getPlaceOfBirth() +"<->";
 				val += getCitizenshipOrganization().isEmpty()? "0" : getCitizenshipOrganization();
 				
 				or.setForminfo(val);
 			}
+			
+			
+			
+			
 			
 			or.setStatus(getStatusId());
 			or.setDateTrans(DateUtils.convertDate(getDateTrans(), "yyyy-MM-dd"));
@@ -1128,8 +1215,8 @@ public class ORListingBean implements Serializable{
 				setSearchName(getPayorName());
 			}
 			
-			namesDataSelected = new ArrayList<PaymentName>();//Collections.synchronizedList(new ArrayList<PaymentName>());
-			selectedPaymentNameMap = new HashMap<Long, PaymentName>();//Collections.synchronizedMap(new HashMap<Long, PaymentName>());
+			namesDataSelected = new ArrayList<PaymentName>();
+			selectedPaymentNameMap = new HashMap<Long, PaymentName>();
 			setPayorName(null);
 			setTotalAmount("0.00");
 			setOrRecordData(null);
@@ -1139,7 +1226,7 @@ public class ORListingBean implements Serializable{
 			init(); //do not load data to reduce loading
 			
 			setCollectorId(or.getCollector().getId());
-			setFormTypeId(or.getFormType());
+			
 			
 			//if(getSelectOrTypeId()>0) {
 				//namesDataSelected = tmpName;
@@ -1147,8 +1234,31 @@ public class ORListingBean implements Serializable{
 			//}
 			//forSaveOnly();
 			
+			if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
+				setLabel2(0);
+				setLabel3(0);
+				setLabel4(0);
+				setAmount1(0);
+				setAmount2(0);
+				setAmount3(0);
+				setAmount4(0);
+				setAmount5(0);
+				setAmount6(0);
+				setAmount7(0);
+				setGenderId(1);
+				setBirthdate(null);
+				setTinNo(null);
+				setHieghtDateReg(null);
+				setWeight(null);
+				setCustomerAddress(null);
+				setCivilStatusId(1);
+				setProfessionBusinessNature(null);
+				setPlaceOfBirth(null);
+				setCitizenshipOrganization(null);
+				selectedOR();
+			}
 			
-			
+			setFormTypeId(FormType.AF_51.getId());
 		}
 		
 	}
@@ -1189,7 +1299,7 @@ public class ORListingBean implements Serializable{
 			
 			if(or.getForminfo()!=null && !or.getForminfo().isEmpty()) {
 				System.out.println(or.getForminfo());
-			String[] val = or.getForminfo().split("<@>");
+			String[] val = or.getForminfo().split("<->");
 			
 			setLabel2(Double.valueOf(val[0]));
 			setLabel3(Double.valueOf(val[1]));
@@ -1213,6 +1323,13 @@ public class ORListingBean implements Serializable{
 			setPlaceOfBirth(val[19].equalsIgnoreCase("0")? "" : val[19]);
 			setCitizenshipOrganization(val[20].equalsIgnoreCase("0")? "" : val[20]);
 			ctcFlds(true);
+			
+			if(FormType.CTC_INDIVIDUAL.getId()==or.getFormType()) {
+				setEnableBirthday(false);
+			}else {
+				setEnableBirthday(true);
+			}
+			
 			}
 			
 		}else {
@@ -1280,7 +1397,12 @@ public class ORListingBean implements Serializable{
 			
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
 					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
-			String REPORT_NAME = GlobalVar.OR51_FX2175_PRINT;
+			
+			String REPORT_NAME = "OR51_" + DocumentFormatter.getTagName("printer-type");//GlobalVar.OR51_FX2175_PRINT;
+			
+			//String printFormat = DocumentFormatter.getTagName("printer-type");
+			
+			
 			
 			ReportCompiler compiler = new ReportCompiler();
 			HashMap param = new HashMap();
@@ -1288,20 +1410,24 @@ public class ORListingBean implements Serializable{
 	  		param.put("PARAM_DATE", DateUtils.convertDateToMonthDayYear(py.getDateTrans()));
 	  		param.put("PARAM_PAYOR", py.getCustomer().getFullName());
 	  		com.italia.municipality.lakesebu.controller.NumberToWords numberToWords = new NumberToWords();
-	  		param.put("PARAM_WORDS", numberToWords.changeToWords(py.getAmount()).toUpperCase());
+	  		
+	  		String amnt = Currency.formatAmount(py.getAmount());
+	  		amnt = amnt.replace(",", "");
+	  		param.put("PARAM_WORDS", numberToWords.changeToWords(amnt).toUpperCase().replace("/", " / ") );
 	  		param.put("PARAM_CASHCHECK", "CASH");
 	  		param.put("PARAM_COLLECTING_OFFICER", "FERDINAND L. LOPEZ");
 			
 	  		List<OR51> ors = new ArrayList<OR51>();
 			if(FormType.CTC_INDIVIDUAL.getId()==py.getFormType() || FormType.CTC_CORPORATION.getId()==py.getFormType()) {
-				REPORT_NAME = GlobalVar.CEDULA_FX2175_PRINT;
+				REPORT_NAME = "cedula_" + DocumentFormatter.getTagName("printer-type");//GlobalVar.CEDULA_FX2175_PRINT;
 				if(py.getForminfo()!=null && !py.getForminfo().isEmpty()) {
 					
 					String[] dt = py.getDateTrans().split("-");
 					param.put("PARAM_DATE", dt[1] + " " + dt[2] + " " + dt[0]);
 					
-					String[] val = py.getForminfo().split("<@>");
+					String[] val = py.getForminfo().split("<->");
 					
+					/*
 					setLabel2(Double.valueOf(val[0]));
 					setLabel3(Double.valueOf(val[1]));
 					setLabel4(Double.valueOf(val[2]));
@@ -1323,13 +1449,14 @@ public class ORListingBean implements Serializable{
 					setSignatory(val[18].equalsIgnoreCase("0")? "" : val[18]);
 					setPlaceOfBirth(val[19].equalsIgnoreCase("0")? "" : val[19]);
 					setCitizenshipOrganization(val[20].equalsIgnoreCase("0")? "" : val[20]);
+					*/
 					
 					param.put("PARAM_LABEL2", Currency.formatAmount(Double.valueOf(val[0])));
 					param.put("PARAM_LABEL3", Currency.formatAmount(Double.valueOf(val[1])));
 					param.put("PARAM_LABEL4", Currency.formatAmount(Double.valueOf(val[2])));
 					
 					param.put("PARAM_YEAR", py.getDateTrans().split("-")[0]);
-					param.put("PARAM_POI", "MUNICIPALITY OF LAKE SEBU");
+					param.put("PARAM_POI", "MTO-LAKE SEBU");
 					param.put("PARAM_ADDRESS", py.getCustomer().getAddress());
 					param.put("PARAM_TIN", val[12].equalsIgnoreCase("0")? "" : val[12]);
 					param.put("PARAM_CITIZENSHIP", val[20].equalsIgnoreCase("0")? "" : val[20]);
@@ -1346,7 +1473,7 @@ public class ORListingBean implements Serializable{
 					param.put("PARAM_FIVE", Currency.formatAmount(Double.valueOf(val[7])));
 					param.put("PARAM_INTEREST", Currency.formatAmount(Double.valueOf(val[8])));
 					param.put("PARAM_GRAND", Currency.formatAmount(Double.valueOf(val[9])));
-					
+					param.put("PARAM_BIRTH", val[11]);
 					
 		  			ors.add(new OR51());
 				}
@@ -1879,6 +2006,11 @@ private void close(Closeable resource) {
 		double rate = Cedula.cedulaPenaltyRate(Months.getMonth(DateUtils.getCurrentMonth()));
 		double interest = 0d;
 		rate = rate/100;
+		
+		if(getAmount1()>0) {
+			interest = rate * getAmount1();
+		}
+		
 		if(getAmount2()>0) {
 			interest = rate * getAmount2();
 		}
@@ -1891,8 +2023,29 @@ private void close(Closeable resource) {
 			interest = rate * getAmount4();
 		}
 		
+		
+		
+		setAmount5(total);
+		if(getAmount5()>0) {
+			interest = rate * getAmount5();
+		}
+		
+		
 		setAmount6(interest);
 		setAmount7(total + interest);
+		
+		int index=getNamesDataSelected().size();
+		
+		if(index==2) {
+			getNamesDataSelected().get(0).setDateTrans(DateUtils.getCurrentDateMonthDayYear());
+			getNamesDataSelected().get(0).setAmount(getAmount5());
+			
+			getNamesDataSelected().get(1).setDateTrans(DateUtils.getCurrentDateMonthDayYear());
+			getNamesDataSelected().get(1).setAmount(interest);
+		}else {
+			getNamesDataSelected().get(0).setDateTrans(DateUtils.getCurrentDateMonthDayYear());
+			getNamesDataSelected().get(0).setAmount(getAmount5());
+		}
 	}
 	
 	public void updateORNumber() {
@@ -1914,6 +2067,7 @@ private void close(Closeable resource) {
 			setSearchPayName("ctc");
 			ctcFlds(true);
 			enableBirthday=true;
+			cedulaCorporation();
 		}else if(FormType.AF_51.getId()==getFormTypeId()) {
 			setSearchPayName("tax");
 		}else if(FormType.AF_52.getId()==getFormTypeId()) {
@@ -1925,20 +2079,27 @@ private void close(Closeable resource) {
 		if(getSelectOrTypeId()>0) {//show suggested if not NEW is selected
 			loadLastORToSuggestForNewReceipt();
 		}
+		
 	}
 	
 	
 	private void cedulaInterest() {
+		
+		double rate = Cedula.cedulaPenaltyRate(Months.getMonth(DateUtils.getCurrentMonth()));
+		double interest = 0d;
+		rate = rate/100;
+		
 		/**
 		 * 60-CTC Individual
 		 * 65-CTC Interest 
 		 */
 		namesDataSelected = new ArrayList<>();
+		setSelectedPaymentNameMap(new HashMap<Long, PaymentName>());
 		String sql = "";
 		String[] params = new String[0];
 		setFormTypeId(FormType.CTC_INDIVIDUAL.getId());
 		int[] ids = {60};
-		double[] amounts = {0.00};
+		double[] amounts = {5.00};
 		double amount = 0d;
 		
 		try {
@@ -1956,15 +2117,69 @@ private void close(Closeable resource) {
 		
 		if(DateUtils.getCurrentMonth()>=3) {
 			try {
+					interest = rate * 5.00;
 					sql = " AND pyid=65";
 					PaymentName py =  PaymentName.retrieve(sql, params).get(0);
-					py.setAmount(00.00);
+					py.setAmount(interest);
 					amount += 0.00;
 					namesDataSelected.add(py);
 					getSelectedPaymentNameMap().put(py.getId(), py);
 			}catch(Exception e) {}
 		}
-		setTotalAmount(Currency.formatAmount(amount));
+		setAmount5(5.00);
+		setAmount6(interest);
+		setAmount7(5.00 + interest);
+		
+		setTotalAmount(Currency.formatAmount(500 + interest));
+	}
+	
+	private void cedulaCorporation() {
+		
+		double rate = Cedula.cedulaPenaltyRate(Months.getMonth(DateUtils.getCurrentMonth()));
+		double interest = 0d;
+		rate = rate/100;
+		/**
+		 * 60-CTC Individual
+		 * 65-CTC Interest 
+		 */
+		namesDataSelected = new ArrayList<>();
+		setSelectedPaymentNameMap(new HashMap<Long, PaymentName>());
+		String sql = "";
+		String[] params = new String[0];
+		setFormTypeId(FormType.CTC_CORPORATION.getId());
+		int[] ids = {63};
+		double[] amounts = {500.00};
+		double amount = 0d;
+		
+		try {
+			interest = rate * 500.00;
+			for(int i=0; i< ids.length; i++) {
+				sql = " AND pyid="+ids[i];
+				PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+				py.setAmount(amounts[i]);
+				amount += amounts[i];
+				namesDataSelected.add(py);
+				getSelectedPaymentNameMap().put(py.getId(), py);
+			}
+		}catch(Exception e) {e.printStackTrace();}
+		
+		
+		
+		if(DateUtils.getCurrentMonth()>=3) {
+			try {
+					sql = " AND pyid=62";
+					PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+					py.setAmount(interest);
+					amount += 0.00;
+					namesDataSelected.add(py);
+					getSelectedPaymentNameMap().put(py.getId(), py);
+			}catch(Exception e) {}
+		}
+		setAmount5(500);
+		setAmount6(interest);
+		setAmount7(500 + interest);
+		
+		setTotalAmount(Currency.formatAmount(500 + interest));
 	}
 	
 	public String getOrNumber() {
@@ -2771,6 +2986,9 @@ private void close(Closeable resource) {
 	}
 
 	public int getGenderId() {
+		if(genderId==0) {
+			genderId=1;
+		}
 		return genderId;
 	}
 
@@ -2796,5 +3014,207 @@ private void close(Closeable resource) {
 	public void setEnableBirthday(boolean enableBirthday) {
 		this.enableBirthday = enableBirthday;
 	}
+	
+	public void oncapture(CaptureEvent captureEvent) {
+		System.out.println("=======================================================SCANNING==================================================================");
+        try {
+            if (captureEvent != null) {
+                Result result = null;
+                BufferedImage image = null;
+
+                InputStream in = new ByteArrayInputStream(captureEvent.getData());
+
+                image = ImageIO.read(in);
+
+                LuminanceSource source = new BufferedImageLuminanceSource(image);
+                BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+                result = new MultiFormatReader().decode(bitmap);
+                System.out.println("Scanning the qrcode");
+                if (result != null) {
+                    //setResultText(result.getText());
+                	System.out.println(result.getText());
+                	setQrcodeMsg("QRCode has been read successfully");
+                	setQrCodeData(result.getText());
+                	PrimeFaces pf = PrimeFaces.current();
+                	pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
+                	
+                }
+            }
+        } catch (NotFoundException ex) {
+            // fall thru, it means there is no QR code in image
+        	//setResultText("Image is not readable...");
+        	System.out.println("==============WARNING============ERROR=========");
+        	setQrcodeMsg("Error reading the qrcode....");
+        } catch (ReaderException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+	
+	public void acceptSelection(String sel) {
 		
+		String sql = " AND (cus.qrcode like '%"+ getQrCodeData() +"%' OR ";
+				sql += " cus.fullname like '%"+ getQrCodeData() +"%' ";
+				sql += " )";
+		String[] params = new String[0];
+		
+		List<com.italia.municipality.lakesebu.licensing.controller.Customer> cust = com.italia.municipality.lakesebu.licensing.controller.Customer.retrieve(sql, params);
+		
+		if(cust!=null && cust.size()>0) {
+		
+		com.italia.municipality.lakesebu.licensing.controller.Customer cus = cust.get(0);	
+			
+		/*
+		String[] val = sel.split("|");
+		
+		com.italia.municipality.lakesebu.licensing.controller.Customer cus = new com.italia.municipality.lakesebu.licensing.controller.Customer();
+		int cnt=0;
+		cus.setDateregistered(val[cnt++].replace("Reg:", ""));
+		cus.setCardno(val[cnt++].replace("CardNumber:", ""));
+		cus.setFirstname(val[cnt++].replace("FName:", ""));
+		cus.setMiddlename(val[cnt++].replace("LName:", ""));
+		cus.setCivilStatus(Integer.valueOf(val[cnt++].replace("CStatus:", "")));
+		cus.setBirthdate(val[cnt++].replace("BDate:", ""));
+		cus.setAge(Integer.valueOf(val[cnt++].replace("Age:", "")));
+		cus.setBornplace(val[cnt++].replace("BornPlace:", ""));
+		cus.setWeight(val[cnt++].replace("Weight:", ""));
+		cus.setHeight(val[cnt++].replace("Height:", ""));
+		cus.setWork(val[cnt++].replace("Work:", ""));
+		cus.setCitizenship(val[cnt++].replace("Citizenship:", ""));
+		cus.setGender(val[cnt++].replace("Gender:", ""));
+		
+		Province prov = new Province();
+		prov.setName(val[cnt++].replace("Province:", ""));
+		cus.setProvince(prov);
+		
+		Municipality mun = new Municipality();
+		mun.setName(val[cnt++].replace("Municipality:", ""));
+		cus.setMunicipality(mun);
+		
+		Barangay bar = new Barangay();
+		bar.setName(val[cnt++].replace("Barangay:", ""));
+		cus.setBarangay(bar);
+		
+		Purok pur = new Purok();
+		pur.setPurokName(val[cnt++].replace("Purok:", ""));
+		cus.setPurok(pur);
+		
+		com.italia.municipality.lakesebu.licensing.controller.Customer contact = new com.italia.municipality.lakesebu.licensing.controller.Customer();
+		contact.setFullname(val[cnt++].replace("EmergencyContactPerson:", ""));
+		cus.setEmergencyContactPerson(contact);
+		
+		cus.setContactno(val[cnt++].replace("ContactNo:",""));
+		cus.setRelationship(Integer.valueOf(val[cnt++].replace("Relationship:", "")));
+		
+		*/
+		
+		PrimeFaces pf = PrimeFaces.current();
+		if("individual".equalsIgnoreCase(sel)) {
+			pf.executeScript("PF('dlgSelection').hide();");
+			setFormTypeId(FormType.CTC_INDIVIDUAL.getId());
+		}
+		if("corporation".equalsIgnoreCase(sel)) {
+			pf.executeScript("PF('dlgSelection').hide();");
+			setFormTypeId(FormType.CTC_CORPORATION.getId());
+		}
+		if("51".equalsIgnoreCase(sel)) {
+			pf.executeScript("PF('dlgSelection').hide();");
+			setFormTypeId(FormType.AF_51.getId());
+		}
+		if("52".equalsIgnoreCase(sel)) {
+			pf.executeScript("PF('dlgSelection').hide();");
+			setFormTypeId(FormType.AF_52.getId());
+		}
+		if("53".equalsIgnoreCase(sel)) {
+			pf.executeScript("PF('dlgSelection').hide();");
+			setFormTypeId(FormType.AF_53.getId());
+		}
+		if("54".equalsIgnoreCase(sel)) {
+			pf.executeScript("PF('dlgSelection').hide();");
+			setFormTypeId(FormType.AF_54.getId());
+		}
+		if("56".equalsIgnoreCase(sel)) {
+			pf.executeScript("PF('dlgSelection').hide();");
+			setFormTypeId(FormType.AF_55.getId());
+		}
+		
+		setPayorName(cus.getLastname().toUpperCase() + ", " + cus.getFirstname().toUpperCase() + " " + cus.getMiddlename().substring(0, 1).toUpperCase() + ".");
+		setCustomerAddress(cus.getCompleteAddress());
+		
+		ctcFlds(false);
+		if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
+			
+			
+			setLabel2(0);
+			setLabel3(0);
+			setLabel4(0);
+			setAmount1(5.00);
+			setAmount2(0);
+			setAmount3(0);
+			setAmount4(0);
+			
+			setGenderId(Integer.valueOf(cus.getGender()));
+			setBirthdate(DateUtils.convertDateString(cus.getBirthdate(), "yyyy-MM-dd"));
+			setHieghtDateReg(cus.getHeight());
+			setWeight(cus.getWeight());
+			
+			setCivilStatusId(cus.getCivilStatus());
+			setProfessionBusinessNature(cus.getWork());
+			setPlaceOfBirth(cus.getBornplace());
+			setCitizenshipOrganization(cus.getCitizenship());
+			
+			ctcFlds(true);
+			
+			if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {
+				setEnableBirthday(false);
+				cedulaInterest();
+			}else {
+				setAmount1(500.00);
+				setEnableBirthday(true);
+				cedulaCorporation();
+			}
+			
+			
+			
+		}else {
+			ctcFlds(false);
+		}
+		
+		updateORNumber();
+		
+		}
+	}
+	
+	public void findQRCode() {
+		System.out.println("now looking the qrcode......");
+		final String jsonData = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequestParameterMap()
+                .get("qrcode");
+		
+		System.out.println("jsondata: " + jsonData);
+		
+		setQrCodeData(jsonData);
+    	PrimeFaces pf = PrimeFaces.current();
+    	pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
+		
+	}
+	
+	public String getQrcodeMsg() {
+		return qrcodeMsg;
+	}
+
+	public void setQrcodeMsg(String qrcodeMsg) {
+		this.qrcodeMsg = qrcodeMsg;
+	}
+
+	public String getQrCodeData() {
+		return qrCodeData;
+	}
+
+	public void setQrCodeData(String qrCodeData) {
+		this.qrCodeData = qrCodeData;
+	}
 }
