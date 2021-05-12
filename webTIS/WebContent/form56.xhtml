@@ -64,9 +64,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 			<p:layoutUnit position="west" size="800" visible="true" id="formWidgetId">
 				
-				<p:accordionPanel prependId="false" widgetVar="accWid">
 				
-				<p:tab title="Fill Up Fields">
 				
 				<p:toolbar id="tbDetails" style="#{skin.toolbar}">
 	    		<f:facet name="left">
@@ -111,8 +109,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:outputLabel id="wordId"  value="The Sum of: #{form56Bean.amountInWords}"  
 			            		 style="#{skin.textInput};align-text: left;color:red"/>
 				<br/>
-				</p:tab>
-				<p:tab title="Form 56">
+				
 		        <p:outputLabel value="Special Case" style="#{skin.textInput}"/>&nbsp;&nbsp;
 		        <p:selectBooleanCheckbox id="caseId" value="#{form56Bean.specialCase}" style="#{skin.checkbox}">
 		            		<p:ajax event="change" update="formDataId,caseId,wordId,grandId,msg" listener="#{form56Bean.specialCaseCheck}"/>
@@ -121,88 +118,87 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		        
 				<p:toolbar id="grandM">
 	    		<f:facet name="left">
-	    			<p:outputLabel id="ownerId" value="Land Owner: #{form56Bean.selectedOwner}" style="#{skin.textInput}"/>
+	    			<p:outputLabel id="ownerId" value="Owner: #{form56Bean.selectedOwner}" style="font-size: 20px"/>
 	    		</f:facet>
 	    		<f:facet name="right">
-	    			<p:outputLabel id="grandId" value="Total Php#{form56Bean.grandTotal}"/>
+	    			<p:outputLabel id="grandId" value="Total Php#{form56Bean.grandTotal}" style="font-size: 20px"/>
 	    		</f:facet>
 				</p:toolbar>
 				<p:dataTable id="formDataId" var="rpt" value="#{form56Bean.receipts}" editable="true" style="#{skin.table}"
 			       editMode="cell" widgetVar="cellTrans" rowKey="#{rpt.cnt}" scrollable="true" selection="#{form56Bean.receiptSelected}" selectionMode="single" >
 					
+					
+						<p:columnGroup type="header">
+								<p:row>
+									<p:column rowspan="2" headerText="Find" width="20"/>
+									<p:column rowspan="2" headerText="Value" width="60"/>
+									<p:column colspan="2" headerText="Year" width="60"/>
+									<p:column rowspan="2" headerText="Type" width="30"/>
+									<p:column rowspan="2" headerText="Case" width="30"/>
+									<p:column rowspan="2" headerText="Adj" width="20"/>
+									<p:column rowspan="2" headerText="Fullpayment" width="70"/>
+									<p:column rowspan="2" headerText="Penalty" width="50"/>
+									<p:column rowspan="2" headerText="Total" width="70"/>
+									<p:column rowspan="2" headerText="Remarks" width="70"/>
+								</p:row>
+								<p:row>
+				                    <p:column colspan="1" headerText="From" width="30"/>
+				                    <p:column colspan="1" headerText="To"  width="30"/>
+			                	</p:row>
+							</p:columnGroup>
+					
+					
+					
 					<p:ajax event="cellEdit"  listener="#{form56Bean.onCellEdit}" update="formDataId,msg" />	
 					
-					<p:column headerText="Find" width="20">
+					<p:column headerText="Find">
 						<p:commandButton id="findOwner" update="ownDataId,paySearchId" icon="fa fa-search" oncomplete="PF('ownerDialog').show()" actionListener="#{form56Bean.viewLandOwner(rpt)}"/>
 					</p:column>		  
 					
-					<p:column headerText="Value" width="60">
-						<p:outputLabel value="#{rpt.assValueLand}"/>
+					<p:column headerText="Value">
+						<p:outputLabel value="#{rpt.assValueLand}">
+							<f:convertNumber currencySymbol="" type="currency"/>
+						</p:outputLabel>
 					</p:column>       
        				
-       				<p:column headerText="From Year" width="20">
-		           <p:cellEditor>
-		               <f:facet name="output"><h:outputText value="#{rpt.fromYear}" /></f:facet>
-		               <f:facet name="input">
-		                   <p:selectOneMenu  value="#{form56Bean.idFromYear}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
-		                        <f:selectItems value="#{form56Bean.fromYear}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-		                        <f:ajax event="change" render="formDataId" listener="#{form56Bean.onCellEdit}" />
-		                   </p:selectOneMenu>
-		               </f:facet>
-		           </p:cellEditor>
+       				<p:column headerText="From Year">
+		               <h:outputText value="#{rpt.fromYear}" />
 			       </p:column>
-			       <p:column headerText="To Year" width="20">
-			           <p:cellEditor>
-			               <f:facet name="output"><h:outputText value="#{rpt.toYear}" /></f:facet>
-			               <f:facet name="input">
-			                   <p:selectOneMenu  value="#{form56Bean.idToYear}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
-			                       <f:selectItems value="#{form56Bean.toYear}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-			                       <f:ajax event="change" render="formDataId" listener="#{form56Bean.onCellEdit}"/>
-			                   </p:selectOneMenu>
-			               </f:facet>
-			           </p:cellEditor>
+			       <p:column headerText="To Year">
+						<h:outputText value="#{rpt.toYear}" />
 			       </p:column>
-       			   <p:column headerText="Type" width="30">
-		           <p:cellEditor>
-		               <f:facet name="output"><h:outputText value="#{rpt.installmentType}" /></f:facet>
-		               <f:facet name="input">
-		                   <p:selectOneMenu  value="#{form56Bean.idPaymentType}" style="width:100%;color:black">
-		                       <f:selectItem itemLabel="Select"/>
-		                       <f:selectItems value="#{form56Bean.paymentTypes}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-		                       <f:ajax event="change" render="formDataId" listener="#{form56Bean.onCellEdit}" />
-		                   </p:selectOneMenu>
-		               </f:facet>
-		           </p:cellEditor>
+       			   <p:column headerText="Type">
+						<h:outputText value="#{rpt.installmentType}" />
 		       	   </p:column>
-		       	   <p:column headerText="Case" width="20">
+		       	   <p:column headerText="Case">
                   	<p:selectBooleanCheckbox value="#{rpt.isCase}">
                   		<p:ajax update="formDataId,msg" listener="#{form56Bean.specialCheck(rpt)}" />
                   	</p:selectBooleanCheckbox>
 			       </p:column>
-			       <p:column headerText="Adj." width="20">
+			       <p:column headerText="Adj.">
 			                  	<p:selectBooleanCheckbox value="#{rpt.isAdjust}">
 			                  		<p:ajax update="formDataId,msg" listener="#{form56Bean.adjustmentCheck(rpt)}" />
 			                  	</p:selectBooleanCheckbox>
 			       </p:column>
-			       <p:column headerText="Fullpayment" width="70">
+			       <p:column headerText="Fullpayment">
 			              <p:cellEditor>
-			                  <f:facet name="output"><h:outputText value="#{rpt.fullPayment}"/></f:facet>
+			                  <f:facet name="output"><h:outputText value="#{rpt.fullPayment}"><f:convertNumber currencySymbol="" type="currency"/></h:outputText></f:facet>
 			                  <f:facet name="input"><p:inputText value="#{rpt.fullPayment}" a:type="number" a:placeholder="0.00"  style="color:black" disabled="#{form56Bean.disAbleFullPenalty}"/></f:facet>
 			              </p:cellEditor>
 			       </p:column>
-			       <p:column headerText="Penalty" width="50">
+			       <p:column headerText="Penalty">
 			              <p:cellEditor>
-			                  <f:facet name="output"><h:outputText value="#{rpt.penaltyPercent}"/></f:facet>
+			                  <f:facet name="output"><h:outputText value="#{rpt.penaltyPercent}"><f:convertNumber currencySymbol="" type="currency"/></h:outputText></f:facet>
 			                  <f:facet name="input"><p:inputText value="#{rpt.penaltyPercent}" a:type="number" a:placeholder="0.00"  style="color:black" disabled="#{form56Bean.disAbleFullPenalty}"/></f:facet>
 			              </p:cellEditor>
 			       </p:column>
-			       <p:column headerText="Total" width="70">
+			       <p:column headerText="Total">
 			              <p:cellEditor>
-			                  <f:facet name="output"><h:outputText value="#{rpt.overallTotal}"/></f:facet>
+			                  <f:facet name="output"><h:outputText value="#{rpt.overallTotal}"><f:convertNumber currencySymbol="" type="currency"/></h:outputText> </f:facet>
 			                  <f:facet name="input"><p:inputText value="#{rpt.overallTotal}" a:type="number" a:placeholder="0.00" style="width:96%;color:black"/></f:facet>
 			              </p:cellEditor>
 			       </p:column>
-			       <p:column headerText="Remarks" width="70">
+			       <p:column headerText="Remarks">
 			              <p:cellEditor>
 			                  <f:facet name="output"><h:outputText value="#{rpt.remarks}"/></f:facet>
 			                  <f:facet name="input"><h:inputText value="#{rpt.remarks}" style="width:96%;color:black"></h:inputText></f:facet>
@@ -213,13 +209,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:contextMenu for="formDataId" widgetVar="cMenu">
 		       <p:menuitem value="Add Cell" icon="fa fa-search" actionListener="#{form56Bean.addCell}" onclick="PF('cMenu').hide()" update="formDataId,wordId,grandId"/>
 		       <p:menuitem value="Calculate" icon="fa fa-search" actionListener="#{form56Bean.updateTotal}" onclick="PF('cMenu').hide()" update="formDataId,wordId,grandId"/>
-		       <p:menuitem value="Copy Paste Cell" icon="fa fa-search" actionListener="#{form56Bean.copyPasteCell}" onclick="PF('cMenu').hide()" update="formDataId,wordId,grandId"/>
+		       <p:menuitem value="Copy Paste" onclick="PF('cMenu').hide();PF('dlgCopy').show()" icon="fa fa-search" update="copyId" actionListener="#{form56Bean.updateCopyPaste}"/>
 		       <p:menuitem value="Delete" update="formDataId,wordId,grandId" icon="ui-icon-close" actionListener="#{form56Bean.deleteCell}"/>
 		       <p:menuitem value="Hide Menu" icon="ui-icon-close" onclick="PF('cMenu').hide()"/>  
 		   </p:contextMenu>
 		   
-		   </p:tab>
-		   </p:accordionPanel>
+		  
 		     
 			</p:layoutUnit>
 			<p:layoutUnit position="east" size="0" visible="false"/>
@@ -274,18 +269,18 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 									</p:column>
 									
 									<p:column headerText="View" width="20" exportable="false">
-										<p:commandButton icon="fa fa-search" update="form56Id formDataId ownerId grandId wordId" actionListener="#{form56Bean.clickItem(rpt)}" onclick="PF('accWid').select(1)"/>
+										<p:commandButton icon="fa fa-search" update="form56Id formDataId ownerId grandId wordId" actionListener="#{form56Bean.clickItem(rpt)}"/>
 									</p:column>
 									
-									<p:column headerText="Date Issued" width="60">
+									<p:column headerText="Date Issued" width="30">
             								<p:outputLabel value="#{rpt.transDate}"/>
             						</p:column>
             						
-            						<p:column headerText="OR No" width="50">
+            						<p:column headerText="OR No" width="30">
             								<p:outputLabel value="#{rpt.scNo}"/>
             						</p:column>
             						
-            						<p:column headerText="Status" width="60" exportable="false">
+            						<p:column headerText="Status" width="30" exportable="false">
 		            						<f:view>		
 			            						<my:if condition="#{rpt.status==1}">
 			                         			 	<f:facet name="then">
@@ -298,13 +293,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			            					</f:view>
 			            			</p:column>		
             						
-            						<p:column headerText="Owner/Lot No" width="100">
+            						<p:column headerText="Owner/Lot No" width="200">
             								<p:outputLabel value="#{rpt.landPayor.payor.fullName}/#{rpt.landPayor.lotNo}"/>
             						</p:column>
             						
-            						<p:column width="70">
+            						<p:column width="70" style="font-weight: bold;font-size: 16px;">
             							<f:facet name="header">Amount Paid</f:facet>
-            								<p:outputLabel value="#{rpt.amount}"/>
+            								<p:outputLabel value="#{rpt.amount}" style="font-weight: bold;font-size: 16px;float: right">
+            									<f:convertNumber currencySymbol="" type="currency"/>
+            								</p:outputLabel>
             							<f:facet name="footer">Total Php: #{form56Bean.transAmountGrandTotal}</f:facet>	
             						</p:column>
             						
@@ -401,6 +398,40 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
 	   </p:column>
         
     </p:dataList>    
+</p:dialog>
+
+<p:dialog position="center center" widgetVar="dlgCopy" width="400" height="150" showHeader="false">
+	
+		<p:toolbar id="tbCopy" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    			<p:outputLabel value="Copy and Paste Menu" />
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton value="Copy paste" actionListener="#{form56Bean.copyPasteNewCell}" onclick="PF('dlgCopy').hide()" update="formDataId,wordId,grandId"/>
+				<p:commandButton value="Close"  onclick="PF('dlgCopy').hide()" update="formDataId,wordId,grandId, msg"/>
+			</f:facet>	
+		</p:toolbar>
+		       		<p:panelGrid layout="grid" columns="4" id="copyId">
+		       			<p:outputLabel value="Date From"/>
+		       			<p:selectOneMenu  value="#{form56Bean.idFromYear}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
+		                        <f:selectItems value="#{form56Bean.fromYear}" var="man" itemLabel="#{man}" itemValue="#{man}" />
+		                        <f:ajax event="change" render="formDataId" listener="#{form56Bean.onCellEdit}" />
+		                </p:selectOneMenu>
+		                
+		       			<p:outputLabel value="Date To"/>
+		       			<p:selectOneMenu  value="#{form56Bean.idToYear}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
+			                       <f:selectItems value="#{form56Bean.toYear}" var="man" itemLabel="#{man}" itemValue="#{man}" />
+			            </p:selectOneMenu>
+		       			
+		       			
+		       			<p:outputLabel value="Type"/>
+		       			<p:selectOneMenu  value="#{form56Bean.idPaymentType}" style="width:100%;color:black">
+		                       <f:selectItems value="#{form56Bean.paymentTypes}" var="man" itemLabel="#{man}" itemValue="#{man}" />
+		                </p:selectOneMenu>
+		       			
+	</p:panelGrid>
+	
+		
 </p:dialog>
 	
 <ui:include src="loader.xhtml" />

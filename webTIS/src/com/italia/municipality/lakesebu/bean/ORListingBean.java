@@ -194,7 +194,7 @@ public class ORListingBean implements Serializable{
 	private boolean enableBirthday=true;
 	
 	private String qrcodeMsg="Please place the QRCOde on the camera";
-	private String qrCodeData;
+	private com.italia.municipality.lakesebu.licensing.controller.Customer customerDataSelected;
 	
 	@PostConstruct
 	public void init() {
@@ -667,9 +667,20 @@ public class ORListingBean implements Serializable{
 			if(size>=4) {
 				String sql = " AND cus.fullname like '%"+query+"%'";
 				String[] params = new String[0];
-				for(Customer cz : Customer.retrieve(sql, params)) {
+				/*for(Customer cz : Customer.retrieve(sql, params)) {
 					result.add(cz.getFullName());
+				}*/
+				
+				sql = " AND (cus.cuslastname like '%"+ query +"%' OR ";
+				sql += " cus.fullname like '%"+ query +"%' ";
+				sql += " ) GROUP BY cus.fullname LIMIT 10";
+				params = new String[0];
+				
+				for(com.italia.municipality.lakesebu.licensing.controller.Customer cust : com.italia.municipality.lakesebu.licensing.controller.Customer.retrieve(sql, params)) {
+					result.add(cust.getLastname().toUpperCase() + ", " + cust.getFirstname() + " " + (cust.getMiddlename()!=null? cust.getMiddlename().substring(0, 1).toUpperCase()+"." : "."));
 				}
+				
+			 //result = com.italia.municipality.lakesebu.licensing.controller.Customer.retrieveLFMName(query, "fullname", "10");
 			}
 		}
 		return result;
@@ -3035,7 +3046,7 @@ private void close(Closeable resource) {
                     //setResultText(result.getText());
                 	System.out.println(result.getText());
                 	setQrcodeMsg("QRCode has been read successfully");
-                	setQrCodeData(result.getText());
+                	//setQrCodeData(result.getText());
                 	PrimeFaces pf = PrimeFaces.current();
                 	pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
                 	
@@ -3055,60 +3066,9 @@ private void close(Closeable resource) {
 	
 	public void acceptSelection(String sel) {
 		
-		String sql = " AND (cus.qrcode like '%"+ getQrCodeData() +"%' OR ";
-				sql += " cus.fullname like '%"+ getQrCodeData() +"%' ";
-				sql += " )";
-		String[] params = new String[0];
+		if(getCustomerDataSelected()!=null) {
 		
-		List<com.italia.municipality.lakesebu.licensing.controller.Customer> cust = com.italia.municipality.lakesebu.licensing.controller.Customer.retrieve(sql, params);
-		
-		if(cust!=null && cust.size()>0) {
-		
-		com.italia.municipality.lakesebu.licensing.controller.Customer cus = cust.get(0);	
-			
-		/*
-		String[] val = sel.split("|");
-		
-		com.italia.municipality.lakesebu.licensing.controller.Customer cus = new com.italia.municipality.lakesebu.licensing.controller.Customer();
-		int cnt=0;
-		cus.setDateregistered(val[cnt++].replace("Reg:", ""));
-		cus.setCardno(val[cnt++].replace("CardNumber:", ""));
-		cus.setFirstname(val[cnt++].replace("FName:", ""));
-		cus.setMiddlename(val[cnt++].replace("LName:", ""));
-		cus.setCivilStatus(Integer.valueOf(val[cnt++].replace("CStatus:", "")));
-		cus.setBirthdate(val[cnt++].replace("BDate:", ""));
-		cus.setAge(Integer.valueOf(val[cnt++].replace("Age:", "")));
-		cus.setBornplace(val[cnt++].replace("BornPlace:", ""));
-		cus.setWeight(val[cnt++].replace("Weight:", ""));
-		cus.setHeight(val[cnt++].replace("Height:", ""));
-		cus.setWork(val[cnt++].replace("Work:", ""));
-		cus.setCitizenship(val[cnt++].replace("Citizenship:", ""));
-		cus.setGender(val[cnt++].replace("Gender:", ""));
-		
-		Province prov = new Province();
-		prov.setName(val[cnt++].replace("Province:", ""));
-		cus.setProvince(prov);
-		
-		Municipality mun = new Municipality();
-		mun.setName(val[cnt++].replace("Municipality:", ""));
-		cus.setMunicipality(mun);
-		
-		Barangay bar = new Barangay();
-		bar.setName(val[cnt++].replace("Barangay:", ""));
-		cus.setBarangay(bar);
-		
-		Purok pur = new Purok();
-		pur.setPurokName(val[cnt++].replace("Purok:", ""));
-		cus.setPurok(pur);
-		
-		com.italia.municipality.lakesebu.licensing.controller.Customer contact = new com.italia.municipality.lakesebu.licensing.controller.Customer();
-		contact.setFullname(val[cnt++].replace("EmergencyContactPerson:", ""));
-		cus.setEmergencyContactPerson(contact);
-		
-		cus.setContactno(val[cnt++].replace("ContactNo:",""));
-		cus.setRelationship(Integer.valueOf(val[cnt++].replace("Relationship:", "")));
-		
-		*/
+		com.italia.municipality.lakesebu.licensing.controller.Customer cus = getCustomerDataSelected();	
 		
 		PrimeFaces pf = PrimeFaces.current();
 		if("individual".equalsIgnoreCase(sel)) {
@@ -3196,9 +3156,23 @@ private void close(Closeable resource) {
 		
 		System.out.println("jsondata: " + jsonData);
 		
-		setQrCodeData(jsonData);
-    	PrimeFaces pf = PrimeFaces.current();
-    	pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
+		
+		String sql = " AND (cus.qrcode like '%"+ jsonData +"%' OR ";
+		sql += " cus.fullname like '%"+ jsonData +"%' ";
+		sql += " )";
+		String[] params = new String[0];
+		
+		List<com.italia.municipality.lakesebu.licensing.controller.Customer> cust = com.italia.municipality.lakesebu.licensing.controller.Customer.retrieve(sql, params);
+		PrimeFaces pf = PrimeFaces.current();
+		if(cust!=null && cust.size()>0) {
+			setCustomerDataSelected(cust.get(0));
+	    	pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
+		}else {
+			Application.addMessage(1, "Error", "This QRCode is not yet registered... Please register it first in Citizen Registration Page");
+		}
+		
+		
+		
 		
 	}
 	
@@ -3210,11 +3184,12 @@ private void close(Closeable resource) {
 		this.qrcodeMsg = qrcodeMsg;
 	}
 
-	public String getQrCodeData() {
-		return qrCodeData;
+	public com.italia.municipality.lakesebu.licensing.controller.Customer getCustomerDataSelected() {
+		return customerDataSelected;
 	}
 
-	public void setQrCodeData(String qrCodeData) {
-		this.qrCodeData = qrCodeData;
+	public void setCustomerDataSelected(
+			com.italia.municipality.lakesebu.licensing.controller.Customer customerDataSelected) {
+		this.customerDataSelected = customerDataSelected;
 	}
 }

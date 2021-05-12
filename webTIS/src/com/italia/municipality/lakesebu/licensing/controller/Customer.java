@@ -221,6 +221,31 @@ public class Customer {
 		return false;
 	}
 	
+	public static List<String> retrieveLFMName(String param, String fieldName, String limit){
+		
+		String sql = "SELECT cuslastname,cusfirstname,cusmiddlename " + fieldName + " FROM customer WHERE " + fieldName +" like '" + param + "%' " + limit;
+		List<String> result = new ArrayList<>();
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = LicensingDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		rs = ps.executeQuery();
+		System.out.println("SQL.... " + ps.toString());
+		while(rs.next()){
+			result.add(rs.getString("cuslastname").toUpperCase() + ", " + rs.getString("cusfirstname").toUpperCase() + " " + (rs.getString("cusmiddlename")!=null? rs.getString("cusmiddlename").substring(0, 1).toUpperCase()+"." : "."));
+		}
+		
+		rs.close();
+		ps.close();
+		LicensingDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return result;
+	}
+	
 	public static List<String> retrieve(String param, String fieldName, String limit){
 		
 		String sql = "SELECT DISTINCT " + fieldName + " FROM customer WHERE " + fieldName +" like '" + param + "%' " + limit;

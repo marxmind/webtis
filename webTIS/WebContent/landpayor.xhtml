@@ -197,7 +197,28 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             				</f:facet>
        
        <p:ajax event="cellEdit"  listener="#{payorBean.onCellEditLand}" update=":formId:landDataId" />	   
-       
+       <p:column headerText="Improvement?">
+	       		 <p:cellEditor>
+              	  <f:facet name="output">
+              	  		<f:view>		
+	            			<my:if condition="#{prop.isImprovment==1}">
+	                     		<f:facet name="then">
+	            					<h:outputText  value="Improvement"/>
+	            				</f:facet>
+	            				<f:facet name="else">
+	            					<h:outputText  value="Origin"/>
+	            				</f:facet>
+	            			</my:if>
+	            		</f:view>
+              	  </f:facet>
+                  <f:facet name="input">
+                  <p:selectOneMenu  value="#{payorBean.imrovedId}" style="width:100%;color:black">
+                  	   <f:selectItem itemLabel="Select..."/>
+                       <f:selectItems value="#{payorBean.improves}" var="man" itemLabel="#{man}" itemValue="#{man}" />
+                   </p:selectOneMenu>
+                  </f:facet>
+              </p:cellEditor>
+       </p:column>
        <p:column headerText="Status">
               <p:cellEditor>
               	  <f:facet name="output">

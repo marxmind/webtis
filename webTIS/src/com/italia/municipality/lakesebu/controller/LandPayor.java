@@ -29,7 +29,8 @@ public class LandPayor {
 	private ILandType landType;
 	private UserDtls userDtls;
 	private Timestamp timestamp;
-
+	private int isImprovment;
+	
 	public LandPayor(){}
 	
 	public LandPayor(long id){
@@ -98,6 +99,7 @@ public class LandPayor {
 			try{pay.setIsActive(rs.getInt("isactiveland"));}catch(NullPointerException e){}
 			try{pay.setTimestamp(rs.getTimestamp("timestamp"));}catch(NullPointerException e){}
 			try{pay.setStatus(rs.getInt("landstatus"));}catch(NullPointerException e){}
+			try{pay.setIsImprovment(rs.getInt("isimprov"));}catch(NullPointerException e){}
 			
 			Barangay bar = new Barangay();
 			try{bar.setId(rs.getInt("bgid"));}catch(NullPointerException e){}
@@ -176,6 +178,7 @@ public class LandPayor {
 			try{pay.setIsActive(rs.getInt("isactiveland"));}catch(NullPointerException e){}
 			try{pay.setTimestamp(rs.getTimestamp("timestamp"));}catch(NullPointerException e){}
 			try{pay.setStatus(rs.getInt("landstatus"));}catch(NullPointerException e){}
+			try{pay.setIsImprovment(rs.getInt("isimprov"));}catch(NullPointerException e){}
 			
 			Barangay bar = new Barangay();
 			try{bar.setId(rs.getInt("bgid"));}catch(NullPointerException e){}
@@ -243,6 +246,7 @@ public class LandPayor {
 			try{pay.setIsActive(rs.getInt("isactiveland"));}catch(NullPointerException e){}
 			try{pay.setTimestamp(rs.getTimestamp("timestamp"));}catch(NullPointerException e){}
 			try{pay.setStatus(rs.getInt("landstatus"));}catch(NullPointerException e){}
+			try{pay.setIsImprovment(rs.getInt("isimprov"));}catch(NullPointerException e){}
 			
 			Barangay bar = new Barangay();
 			try{bar.setId(rs.getInt("bgid"));}catch(NullPointerException e){}
@@ -324,8 +328,9 @@ public class LandPayor {
 				+ "payorid,"
 				+ "bgid,"
 				+ "userdtlsid,"
-				+ "landstatus) " 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "landstatus,"
+				+ "isimprov) " 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -355,6 +360,7 @@ public class LandPayor {
 		ps.setInt(10, pay.getBarangay()==null? 1 : pay.getBarangay().getId());
 		ps.setLong(11, pay.getUserDtls()==null? 1 : pay.getUserDtls().getUserdtlsid());
 		ps.setInt(12, pay.getStatus());
+		ps.setInt(13, pay.getIsImprovment());
 		
 		LogU.add(pay.getTaxDeclarionNo());
 		LogU.add(pay.getAddress());
@@ -367,6 +373,7 @@ public class LandPayor {
 		LogU.add(pay.getBarangay()==null? 1 : pay.getBarangay().getId());
 		LogU.add(pay.getUserDtls()==null? 1 : pay.getUserDtls().getUserdtlsid());
 		LogU.add(pay.getStatus());
+		LogU.add(pay.getIsImprovment());
 		
 		ps.execute();
 		ps.close();
@@ -394,8 +401,9 @@ public class LandPayor {
 				+ "payorid,"
 				+ "bgid,"
 				+ "userdtlsid,"
-				+ "landstatus) " 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "landstatus,"
+				+ "isimprov) " 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -425,6 +433,7 @@ public class LandPayor {
 		ps.setInt(10, getBarangay()==null? 1 : getBarangay().getId());
 		ps.setLong(11, getUserDtls()==null? 1 : getUserDtls().getUserdtlsid());
 		ps.setInt(12, getStatus());
+		ps.setInt(13, getIsImprovment());
 		
 		LogU.add(getTaxDeclarionNo());
 		LogU.add(getAddress());
@@ -437,6 +446,7 @@ public class LandPayor {
 		LogU.add(getBarangay()==null? 1 : getBarangay().getId());
 		LogU.add(getUserDtls()==null? 1 : getUserDtls().getUserdtlsid());
 		LogU.add(getStatus());
+		LogU.add(getIsImprovment());
 		
 		ps.execute();
 		ps.close();
@@ -461,7 +471,8 @@ public class LandPayor {
 				+ "payorid=?,"
 				+ "bgid=?,"
 				+ "userdtlsid=?,"
-				+ "landstatus=? " 
+				+ "landstatus=?,"
+				+ "isimprov=? " 
 				+ " WHERE payorlandid=?";
 		
 		PreparedStatement ps = null;
@@ -482,7 +493,8 @@ public class LandPayor {
 		ps.setInt(8, pay.getBarangay()==null? 1 : pay.getBarangay().getId());
 		ps.setLong(9, pay.getUserDtls()==null? 1 : pay.getUserDtls().getUserdtlsid());
 		ps.setInt(10, pay.getStatus());
-		ps.setLong(11, pay.getId());
+		ps.setInt(11, pay.getIsImprovment());
+		ps.setLong(12, pay.getId());
 		
 		LogU.add(pay.getTaxDeclarionNo());
 		LogU.add(pay.getAddress());
@@ -494,6 +506,7 @@ public class LandPayor {
 		LogU.add(pay.getBarangay()==null? 1 : pay.getBarangay().getId());
 		LogU.add(pay.getUserDtls()==null? 1 : pay.getUserDtls().getUserdtlsid());
 		LogU.add(pay.getStatus());
+		LogU.add(pay.getIsImprovment());
 		LogU.add(pay.getId());
 		
 		ps.execute();
@@ -520,7 +533,8 @@ public class LandPayor {
 				+ "payorid=?,"
 				+ "bgid=?,"
 				+ "userdtlsid=?,"
-				+ "landstatus=? " 
+				+ "landstatus=?,"
+				+ "isimprov=? " 
 				+ " WHERE payorlandid=?";
 		
 		PreparedStatement ps = null;
@@ -541,7 +555,8 @@ public class LandPayor {
 		ps.setInt(8, getBarangay()==null? 1 : getBarangay().getId());
 		ps.setLong(9, getUserDtls()==null? 1 : getUserDtls().getUserdtlsid());
 		ps.setInt(10, getStatus());
-		ps.setLong(11, getId());
+		ps.setInt(11, getIsImprovment());
+		ps.setLong(12, getId());
 		
 		LogU.add(getTaxDeclarionNo());
 		LogU.add(getAddress());
@@ -553,6 +568,7 @@ public class LandPayor {
 		LogU.add(getBarangay()==null? 1 : getBarangay().getId());
 		LogU.add(getUserDtls()==null? 1 : getUserDtls().getUserdtlsid());
 		LogU.add(getStatus());
+		LogU.add(getIsImprovment());
 		LogU.add(getId());
 		
 		ps.execute();
@@ -780,7 +796,14 @@ public class LandPayor {
 	public void setStatus(int status) {
 		this.status = status;
 	}
-	
+
+	public int getIsImprovment() {
+		return isImprovment;
+	}
+
+	public void setIsImprovment(int isImprovment) {
+		this.isImprovment = isImprovment;
+	}
 	
 	
 }

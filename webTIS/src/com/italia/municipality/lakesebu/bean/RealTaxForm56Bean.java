@@ -50,6 +50,7 @@ import com.italia.municipality.lakesebu.database.TaxDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.PenalyMonth;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
+import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.Numbers;
@@ -396,10 +397,10 @@ public class RealTaxForm56Bean {
 		}
 		setLandId(0);
 		
-//		RequestContext reqContext = RequestContext.getCurrentInstance();
-//        reqContext.update("formDataId:" + event.getRowIndex() + ":recId");
-//		
+		
         }
+        
+        /*change condition
         try{
         	if(getIdFromYear()!=0){
         		String fromYear = String.valueOf(getIdFromYear());
@@ -421,26 +422,11 @@ public class RealTaxForm56Bean {
 				//setIdPaymentType(null);
 			}
 		}catch(ClassCastException e){}
+        */
         
-        //FacesContext context = FacesContext.getCurrentInstance();
-        /*ITaxPayerReceipt rec = context.getApplication().evaluateExpressionGet(context, "#{rpt}", ITaxPayerReceipt.class);
-        System.out.println("input in location : " + rec.getLocation());*/
-        //System.out.println("input in location new value: " + (String)event.getNewValue());
-        /*RequestContext reqContext = RequestContext.getCurrentInstance();
-        reqContext.update("formDataId:" + event.getRowIndex() + ":recId");*/
-        	
         updateTotal();
         	
-        
-        /*try{
-        String name = receipts.get(event.getRowIndex()).getPayor().getFullName();
-        if(!"Payor Name".equalsIgnoreCase(name)){
-        	if(!retrieveLotNumber(name).isEmpty()){
-			FacesMessage msg = new FacesMessage("Suggested Lot No : " + retrieveLotNumber(name), "");
-	        FacesContext.getCurrentInstance().addMessage(null, msg);
-        	}
-		}
-        }catch(Exception e){}*/
+       
     }
 	
     private ITaxPayerReceipt calculateAdjustment(ITaxPayerReceipt rpt, double overallTotal,double taxDue,  double fullpayment, double penAmount){
@@ -661,10 +647,14 @@ public class RealTaxForm56Bean {
     	List<ITaxPayerReceipt> tmpreceipts = new ArrayList<>();//Collections.synchronizedList(new ArrayList<>()); 
     	setGrandTotal(amnt);
     	double actualTotalAmnt = 0d;
+    	
     	if(receipts.size()>0){
     		for(ITaxPayerReceipt rpt : receipts){
     			
-    			double tmpassTotal = rpt.getAssValueLand() + rpt.getAssValueImprv();
+    			double tmpassTotal = rpt.getAssValueLand();// + rpt.getAssValueImprv();
+    			if(rpt.getAssValueImprv()>0) {
+    				tmpassTotal = rpt.getAssValueImprv();
+    			}
     			rpt.setAssValueTotal(Numbers.formatDouble(tmpassTotal));
     			
     			double taxDue = 0d;//tmpassTotal * 0.01;
@@ -1477,8 +1467,15 @@ public class RealTaxForm56Bean {
 			report.setF2(rpt.getLocation());
 			report.setF3(rpt.getLotBlockNo());
 			report.setF4(rpt.getTaxDecNo());
-			report.setF5(Currency.formatAmount(rpt.getAssValueLand()+""));
-			report.setF6(Currency.formatAmount(rpt.getAssValueImprv()+""));
+			
+			if(rpt.getAssValueImprv()==0) {
+				report.setF5(Currency.formatAmount(rpt.getAssValueLand()+""));
+				report.setF6(Currency.formatAmount("0.00"));
+			}else {
+				report.setF5(Currency.formatAmount("0.00"));
+				report.setF6(Currency.formatAmount(rpt.getAssValueImprv()+""));     //rpt.getAssValueImprv()+""));
+			}
+			
 			report.setF7(Currency.formatAmount(rpt.getAssValueTotal()+""));
 			report.setF8(Currency.formatAmount(rpt.getTaxDue()+""));
 			if(rpt.getFromYear().equalsIgnoreCase(rpt.getToYear())){
@@ -1681,6 +1678,99 @@ private void close(Closeable resource) {
 		return result;
 	}
 	
+	public void updateCopyPaste() {
+		ITaxPayerReceipt pay =  getReceiptSelected();
+		int yearFrom = Integer.valueOf(pay.getFromYear());
+		int yearTo = Integer.valueOf(pay.getToYear());
+		
+		
+		
+		int index = getReceipts().size();
+		
+		switch(index) {
+		case 1: //no movement on the year
+			break;
+		case 2: //adjust date by 1
+			if(yearFrom!=yearTo) {//if not match year get the year to
+				yearFrom = yearTo;
+			}
+			yearFrom +=1;
+			yearTo +=1;
+			break;
+		case 3: //no movement on the year
+			break;	
+		case 4: //adjust date by 1
+			if(yearFrom!=yearTo) {//if not match year get the year to
+				yearFrom = yearTo;
+			}
+			yearFrom +=1;
+			yearTo +=1;
+			break;
+		case 5: //no movement on the year
+			break;
+		case 6: //adjust date by 1
+			if(yearFrom!=yearTo) {//if not match year get the year to
+				yearFrom = yearTo;
+			}
+			yearFrom +=1;
+			yearTo +=1;
+			break;	
+		}
+		
+		
+		setIdFromYear(yearFrom);
+		setIdToYear(yearTo);
+		setIdPaymentType(pay.getInstallmentType().equalsIgnoreCase("BASIC")? "SEF" : "BASIC");
+	}
+	
+	public void copyPasteNewCell(){
+		System.out.println("copyPastecell");
+		
+		//identify installment type
+		
+		
+		int size = receipts.size();
+		if(size<=5){
+			ITaxPayerReceipt copyrec = getReceiptSelected();
+			ITaxPayerReceipt rec = new TaxPayerReceipt();
+			rec.setCnt(size+1);
+			try{rec.setLocation(copyrec.getLocation());}catch(NullPointerException e){}
+			try{rec.setLotBlockNo(copyrec.getLotBlockNo());}catch(NullPointerException e){}
+			try{rec.setTaxDecNo(copyrec.getTaxDecNo());}catch(NullPointerException e){}
+			try{rec.setAssValueLand(copyrec.getAssValueLand());}catch(NullPointerException e){}
+			try{rec.setAssValueImprv(copyrec.getAssValueImprv());}catch(NullPointerException e){}
+			try{rec.setAssValueTotal(copyrec.getAssValueTotal());}catch(NullPointerException e){}
+			try{rec.setTaxDue(copyrec.getTaxDue());}catch(NullPointerException e){}
+			try{rec.setInstallmentRangeAndType(copyrec.getInstallmentRangeAndType());}catch(NullPointerException e){}
+			try{rec.setFullPayment(copyrec.getFullPayment());}catch(NullPointerException e){}
+			try{rec.setPenaltyPercent(copyrec.getPenaltyPercent());}catch(NullPointerException e){}
+			try{rec.setOverallTotal(copyrec.getOverallTotal());}catch(NullPointerException e){}
+			try{rec.setIsActive(1);}catch(NullPointerException e){}
+			try{rec.setLandOwnerName(copyrec.getLandOwnerName());}catch(NullPointerException e){}
+			try{rec.setLandType(copyrec.getLandType());}catch(NullPointerException e){}
+			try{rec.setPayor(copyrec.getPayor());}catch(NullPointerException e){}
+			try{rec.setRemarks(copyrec.getRemarks());}catch(NullPointerException e){}
+			try{rec.setIsAdjust(copyrec.getIsAdjust());}catch(NullPointerException e){}
+			try{rec.setIsCase(copyrec.getIsCase());}catch(NullPointerException e){}
+			
+			try{rec.setFromYear(copyrec.getFromYear());}catch(NullPointerException e){}
+			try{rec.setToYear(copyrec.getToYear());}catch(NullPointerException e){}
+			
+				rec.setInstallmentType(getIdPaymentType());
+				rec.setFromYear(getIdFromYear()+"");
+				rec.setToYear(getIdToYear()+"");
+				rec.setRemarks(copyrec.getRemarks());
+				
+			
+			
+			receipts.add(rec);
+			updateTotal();
+		}else {
+			Application.addMessage(1, "Info", "More six of row is not allowed anymore");
+		}
+	}
+	
+	
 	public void copyPasteCell(){
 		System.out.println("copyPastecell");
 		
@@ -1838,11 +1928,11 @@ private void close(Closeable resource) {
 		land.setLandType("Agricultural");
 		rec.setLandType(land);
 		
-		//rec.setFromYear(DateUtils.getCurrentYear()+"");
-		//rec.setToYear(DateUtils.getCurrentYear()+"");
+		rec.setFromYear(DateUtils.getCurrentYear()+"");
+		rec.setToYear(DateUtils.getCurrentYear()+"");
 		//temp
-		rec.setFromYear("2018");
-		rec.setToYear("2018");
+		//rec.setFromYear("2018");
+		//rec.setToYear("2018");
 		
 		rec.setInstallmentType("BASIC");
 		rec.setIsAdjust(false);
@@ -2133,7 +2223,7 @@ private void close(Closeable resource) {
 
 	public int getIdFromYear() {
 		if(idFromYear==0){
-			idFromYear = 2018;//DateUtils.getCurrentYear();
+			idFromYear = DateUtils.getCurrentYear();
 		}
 		return idFromYear;
 	}
@@ -2157,7 +2247,7 @@ private void close(Closeable resource) {
 
 	public int getIdToYear() {
 		if(idToYear==0){
-			idToYear = 2018;//DateUtils.getCurrentYear();
+			idToYear = DateUtils.getCurrentYear();
 		}
 		return idToYear;
 	}
@@ -2337,12 +2427,17 @@ private void close(Closeable resource) {
 		String[] params = new String[0];
 		
 		if(getSearchParam()==null || getSearchParam().isEmpty()){
-			
 			if(payerReceipt.getPayor()!=null && !"Last Name, First Name".equalsIgnoreCase(payerReceipt.getPayor().getFullName())){
 				setSearchParam(payerReceipt.getPayor().getFullName());
 			}else if(getReceiveFrom()!=null){
 				setSearchParam(getReceiveFrom());
 			}
+		}
+		
+		System.out.println("getSearchParam()>> " + getSearchParam());
+		if(getSearchParam().contains("\'")) {
+			setSearchParam(getSearchParam().replace("\'", "\\'"));
+			System.out.println("contain ' >> " + getSearchParam());
 		}
 		
 		/**
@@ -2436,9 +2531,19 @@ private void close(Closeable resource) {
 		receipts.get(index).setAssValueLand(pay.getLandValue());
 		receipts.get(index).setPayor(pay.getPayor());
 		
+		if(pay.getIsImprovment()==1) {
+			receipts.get(index).setAssValueImprv(pay.getLandValue());
+		}
+		
+		//new two lines added
+		setReceiptSelected(receipts.get(index));
+		copyPasteCell();
+		
 		updateTotal();
 		setSearchParam(null);
 		setSelectedOwner(pay.getPayor().getFullName());
+		
+		
 	}
 	
 	public List getStatusList() {

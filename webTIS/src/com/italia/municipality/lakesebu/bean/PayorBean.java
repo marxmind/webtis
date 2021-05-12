@@ -57,6 +57,9 @@ public class PayorBean implements Serializable{
 	private List landStatus;
 	private int landStatusId;
 	
+	private int imrovedId;
+	private List improves;
+	
 	@PostConstruct
 	public void init(){
 		String dbTax = ReadConfig.value(AppConf.DB_NAME_TAX);
@@ -172,6 +175,11 @@ public class PayorBean implements Serializable{
 	        if(getLandStatusId()!=0){
 	        	lands.get(index).setStatus(getLandStatusId());
 	        	setLandStatusId(0);
+	        }
+	        
+	        if(getImrovedId()!=lands.get(index).getIsImprovment()) {
+	        	lands.get(index).setIsImprovment(getImrovedId());
+	        	setImrovedId(0);
 	        }
 	        
 	        //saving after edit
@@ -303,6 +311,7 @@ public class PayorBean implements Serializable{
 		pay.setStatus(1);
 		pay.setBarangay(getTmpPayorData().getBarangay());
 		pay.setPayor(getTmpPayorData());
+		pay.setIsImprovment(getImrovedId());
 		
 		ILandType land = new LandType();
 		land.setId(1);
@@ -331,6 +340,7 @@ public class PayorBean implements Serializable{
 			pay.setPayor(getTmpPayorData());
 			pay.setLandType(getLandTableData().getLandType());
 			pay.setUserDtls(Login.getUserLogin().getUserDtls());
+			pay.setIsImprovment(getLandTableData().getIsImprovment());
 			pay.save();
 			setLandTableData(null);
 			payorLandClick();
@@ -495,6 +505,25 @@ public class PayorBean implements Serializable{
 
 	public void setLandStatusId(int landStatusId) {
 		this.landStatusId = landStatusId;
+	}
+
+	public int getImrovedId() {
+		return imrovedId;
+	}
+
+	public void setImrovedId(int imrovedId) {
+		this.imrovedId = imrovedId;
+	}
+
+	public List getImproves() {
+		improves = new ArrayList<>();
+		improves.add(new SelectItem(0, "Origin"));
+		improves.add(new SelectItem(1, "Improvement"));
+		return improves;
+	}
+
+	public void setImproves(List improves) {
+		this.improves = improves;
 	}
 	
 }
