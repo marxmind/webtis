@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 <application>
-	<databaseBank>bank_cheque1</databaseBank>
-	<databaseTax>taxation</databaseTax>
+	<databaseBank>bank_cheque</databaseBank>
+	<databaseTax>taxation2</databaseTax>
 	<databaseWebTis>webtis</databaseWebTis>
 	<databaseCash>cashbook</databaseCash>
-	<driver>Y29tLm15c3FsLmpkYmMuRHJpdmVy</driver>
-	<url>amRiYzpteXNxbDovL2xvY2FsaG9zdA==</url>
-	<port>MzMwNg==</port>
+	<licensing>bls</licensing>
+	<da>webtis</da>
+	<driver>org.mariadb.jdbc.Driver</driver>
+	<url>jdbc:mariadb://localhost</url>
+	<port>3306</port>
 	<SSL>useSSL=false</SSL>
 	<username>cm9vdA==</username>
 	<password>bWFya29jdG9iZXIxODE5ODYqaXRhbGlh</password>
@@ -18,7 +20,8 @@
 	<supportNo>09175121252</supportNo>
 	<includeLog>yes</includeLog>
 	<logPath>C:\webtis\log\</logPath>
-	<chequeJrxml>Format1</chequeJrxml>
+	<license-img>C:\webtis\license\img\</license-img>
+	<chequeJrxml>Format2</chequeJrxml>
 	<chequePdfName>BankChequeReport</chequePdfName>
 	<dispenseChequePdfName>Dispense</dispenseChequePdfName>
 	<form56>form56</form56>
@@ -29,4 +32,5 @@
 	<themeStyle>rocket</themeStyle>
 	<dtr>dtr</dtr>
 	<form11>form11</form11>
+	<reports>C:\webtis\reports\</reports>
 </application>

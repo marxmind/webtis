@@ -1,0 +1,472 @@
+Configuration
+Author: Mark Italia
+Date: December 26, 2017
+Revised: July 10, 2018
+
+//activate to display remarks
+activate-case-note=on
+activate-other-legal=on
+activate-motorcycle-loan=on
+activate-multipurpose=on
+activate-all=on
+
+mayor=FLORO S. GANDAM
+oic=ARTHUR S. BAUTISTA
+types=NEW,RENEW,ADDITIONAL
+memotype=ANNUALLY,SEMI-ANNUAL,QUARTERLY
+
+
+BARANGAY TAG LINE
+tagline=KEMDOL LAKE SEBU
+province-line=Province of <province>
+municipality-line=Municipality of <municipality>
+barangay-line=
+BARANGAY <barangay>
+citizenship=FILIPINO
+issued-date-office=\tIssued this <day> Day of <month> <year>  at the Office of the Punong Barangay of <barangayaddress>.\n\n
+issued-date-office-2=\tIssued this <day> Day of <month> <year>  at the Office of the Punong Barangay of <barangayaddress>.
+
+BANK REPORT/PBC
+FILE NAME: bankreport.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\reports.xml
+bank-string-1=This is to certify that hereunder listed checks with details of payee amount date of checks were issued by Barangay 
+bank-recepient=THE MANAGER
+bank-name=LAND BANK OF THE PHILIPPINES
+bank-location=SURALLAH
+bank-province=SOUTH COTABATO
+bank-cedula-cap=18352866
+bank-cedula-issued-cap=2018-01-16
+
+TRANSMITTAL LETTER
+accounting-recepient=EDGAR A. ARTACHO, CPA
+accounting-position=Municipal Accountant
+accounting-municipal=Municipality of Lake Sebu
+accounting-province=South Cotabato
+accounting-sirmadam=SIR:
+accounting-body-letter=\tSubmitted herewith is the original copies of the disbursement vouchers issued by BARANGAY <barangay>, <municipality>, <province> for the Month of <month>, <year> acknowledge by the payee with the supporting documents and copies of the corresponding checks and Punong Barangay's Certification (PBC).
+
+BUSINESS PERMIT MUNICIPAL APPLICATION
+BUSINESS PERMIT MUNICIPAL RENEWAL
+BUSINESS CERTIFICATION
+BUSINESS CERTIFICATION FOR LOAN REQUIREMENT
+RETIREMENT OF BUSINESS
+FILE NAME: bizclearanceV6.jrxml
+FILE NAME: bizclearance-certificateV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+business-1=\tPursuant to the provision of Republic Act No. 7160 (Otherwise known as the Local Government Code of 1991) and Barangay Ordinance No. 01 series of 2013 and subject to compliance with the requirements of other Government Agencies and Instrumentalities.\n\n
+business-2=\tIssued this <day> Day of <month> <year>  at the Office of the Punong Barangay of <barangayaddress>.\n\n
+business-3=\tThis further certifies that the said business is not violating any of the provisions of <barangayname> Ordinances series of 2013.\n\n\tThat the said business will not adversely affect public, health condition, safety, convenience, comfort, interest and the general welfare of the people in the area and law abiding citizen in the locality.\n\n 
+business-4=PURPOSE: <purpose>\nCTC NO: <ctcno>\nISSUED ON: <ctcissueddate>\nISSUED: <ctcissuedaddress> 
+business-5=is issued to
+business-6=Owner/Representative/Branch Manager
+business-7=This is to certify that we interpose no objection to the application of
+business-8=\tThis is to certify further that the owner would like to stop the operation of the said business.\n\n
+business-9=This is to certify that
+
+BUSINESS PERMIT BARANGAY
+FILE NAME: businesspermitV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+business-permit-barangay-string-1=to Operate the following Business
+business-permit-barangay-string-2=PURPOSE: <purpose>\nCTC NO: <ctcno>\nISSUED ON: <ctcissueddate>\nADDRESS: <ctcissuedaddress> 
+
+FISH CAGE PERMIT
+FILE NAME: cageclearanceV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+fish-cage-string-1=\tThis is to CERTIFY that <requestor>, of legal age, Filipino citizen, <civilstatus>, and a bonafide resident of <requestoraddress> 
+fish-cage-string-2=is a fish cage operator of below fish cage area.\n
+fish-cage-string-4=FISH CAGE PERMIT APPLICATION
+fish-cage-string-5=FISH CAGE PERMIT RENEWAL
+fish-cage-string-6=\tPursuant to the provisions of Republic Act No. 7160 (Otherwise known as the Local Government Code of 1991) and Barangay Ordinance No. 01 series of 2013 and subject to compliance with the requirements of other Government Agencies and Instrumentalities.\n\n
+
+REGISTRATION OF DEATH
+LATE REGISTRATION OF DEATH
+FILE NAME: deathdocV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+asstance-death-string-1=\tThis is to CERTIFY that <requestor>, <civilstatus>, is the <relationship> of the late <diedperson>, are known to the undersigned being residents of this Barangay.\n\n
+asstance-death-string-2=\tThis is to CERTIFY that <requestor>, <civilstatus>, and the <relationship> of the late <diedperson>, are known to the undersigned being residents of this Barangay.\n\n
+asstance-death-string-3=\t
+asstance-death-string-4=\n\n\tThis Barangay Certification is being issued upon the request of <requestor> for 
+asstance-death-string-5=SECURING REGISTRATION OF DEATH AND FOR WHATEVER LEGAL PURPOSE THIS MAY SERVE.
+asstance-death-string-6=SECURING DELAYED REGISTRATION OF DEATH AND FOR WHATEVER LEGAL PURPOSE THIS MAY SERVE.
+
+INDIGENT BURIAL ASSISTANCE
+FILE NAME: burialdocV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+asstance-burial-string-1=\tThis is to CERTIFY that <diedperson>, of legal age, Filipino citizen, <civilstatus>, and a bonafide resident of <diedpersonaddress>.\n\n\t 
+asstance-burial-string-2=\n\n\tThis is to Certify further that the above-mentioned name is belongs to the indigent or low income family of this barangay, as such <heshe> is entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.\n\n
+asstance-burial-string-3=\tThis Barangay Certification is being issued upon the request of <requestor> whose picture appear hereon is the <relationship> of the late <diedperson>.
+asstance-burial-string-4=PURPOSE: TO SEEK INDIGENT BURIAL ASSISTANCE
+
+FINANCIAL ASSISTANCE
+FILE NAME: financialdocV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+asstance-financial-string-1=\tThis is to CERTIFY that <patientname>, <age> year old, Filipino citizen, <civilstatus>, and a bonafide resident of <patientaddress>.
+asstance-financial-string-2=\n\n\tThis is to Certify further that the above-mentioned name is belongs to the indigent or low income family of this barangay, as such <heshe> is entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.\n\n
+asstance-financial-string-3=\tThis Barangay Certification is being issued upon the request of <requestor> whose picture appear hereon is the  <relationship> of the above subject name of person in connection to their purpose.
+asstance-financial-string-4=TO SEEK FINANCIAL ASSISTANCE
+
+FINANCIAL/MEDICAL ASSISTANCE
+MEDICAL ASSISTANCE
+FILE NAME: financialdocV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+asstance-medical-string-1=\tThis is to CERTIFY that <patientname>, <age> year old, Filipino citizen, <civilstatus>, and a bonafide resident of <patientaddress> is being confined at <hospital>.
+asstance-medical-string-2=\n\n\tThis BARANGAY <docttype> is being issued upon the request of <requestor> whose picture appear hereon is the <relationship> of the patient in the connection of their purpose.
+asstance-medical-string-3=TO SEEK FINANCIAL/MEDICAL ASSISTANCE
+asstance-medical-string-4=TO SEEK MEDICAL ASSISTANCE
+asstance-medical-string-5=\tCertifying further that the patient is belongs to indigent or low income family of this barangay, as such <heshe> is entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.\n\n
+
+CALAMITY ASSISTANCE
+FILE NAME: financialdocV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+asstance-calamity-string-1=\tThis is to CERTIFY that <requestor>, of legal age, Filipino citizen, <civilstatus>, and a bonafide resident of <requestoraddress>.
+asstance-calamity-string-2=\n\n\tThis BARANGAY <docttype> is being issued upon the request of the above-mentioned name of person in connection to <hisher> purpose.
+asstance-calamity-string-3=TO SEEK : CALAMITY ASSISTANCE
+
+INDIGENT ASSISTANCE
+FILE NAME: financialdocV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+asstance-indigent-string-1=\tThis is to CERTIFY that <patientname>, <age> year old, Filipino citizen, <civilstatus>, and a bonafide resident of <patientaddress> is known to undersigned that <heshe> is belongs to indigent family of this barangay, as such <heshe> is entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.
+asstance-indigent-string-2=\n\n\tThis BARANGAY <docttype> is being issued upon the request of <requestor> whose picture appear hereon is the <relationship> of the patient in the connection of their purpose.
+asstance-indigent-string-3=PURPOSE: MEDICAL/FINANCIAL INDIGENT ASSISTANCE
+
+INDIGENT ATTORNEY ASSISTANCE
+FILE NAME: financialdocV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+asstance-attorney-string-1=\tThis is to CERTIFY that <requestor>, of legal age, Filipino citizen, <civilstatus>, and a bonafide resident of <requestoraddress> is known to undersigned that <heshe> is belongs to indigent family of this barangay, as such <heshe> is entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.
+asstance-attorney-string-2=\n\n\tThis BARANGAY <docttype> is being issued upon request of the above-mentioned name of person in connection to <hisher> purpose.\n
+asstance-attorney-string-3=SEEKING LEGAL ASSISTANCE FROM PAO
+asstance-attorney-string-4=\n\n\nCTC NO: <ctcno>\nISSUED ON: <ctcissueddate>\nADDRESS: <ctcissuedaddress> 
+
+OTHER LEGAL MATTERS
+FILE NAME: assclearanceV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+legal-string-1=\tThis is to certify that person whose name, picture and signature appear hereon has requested a <docttype> from this office.
+legal-string-2=\tCertify further that the above-mentioned name of person is known to the undersigned that <heshe> has no derogatory record on file in this office and a law abiding citizen in our locality.\n\n
+legal-string-3=WHATEVER LEGAL PURPOSE THIS MAY SERVE
+
+INDIGENT HOSPITAL FINANCIAL ASSISTANCE
+FILE NAME: financialdocV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+asstance-hospital-string-1=\tThis is to CERTIFY that <patientname>, <age> year old, Filipino citizen, <civilstatus>, and a bonafide resident of <patientaddress> is being confined at <hospital>.
+asstance-hospital-string-2=\n\n\tCertifying further that the patient is belongs to indigent or low income family of this barangay, as such <heshe> is entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.
+asstance-hospital-string-3=\n\n\tThis BARANGAY <docttype> is being issued upon the request of <requestor> whose picture appear hereon is the <relationship> of the patient in the connection of their purpose.
+asstance-hospital-string-4=PURPOSE: HOSPITAL FINANCIAL ASSISTANCE
+
+
+INDIGENT CERTIFICATION
+EDUCATION/SCHOLARSHIP ASSISTANCE
+SPES REQUIREMENTS
+CHED SCHOLARSHIP
+TESDA REQUIREMENT
+KABUGWASON REQUIREMENT
+SCHOLARSHIP APPLICATION
+CERTIFICATE OF CONFIRMATION APPLICATION
+SCHOLARSHIP REQUIREMENT
+ESC SCHOLARSHIP REQUIREMENT
+SCHOOL REGISTRATION
+FILE NAME: assclearanceV6.jrxml
+FILE NAME: docopentitleV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+asstance-cert-string-1=\tThis is to certify that person whose name, picture and signature appear hereon has requested a <docttype> from this office.
+asstance-cert-string-3=INDIGENT CERTIFICATION
+asstance-cert-string-4=EDUCATION/SCHOLARSHIP ASSISTANCE
+asstance-cert-string-5=FOR EMPLOYMENT
+asstance-cert-string-6=SPES REQUIREMENTS
+asstance-cert-string-7=CHED SCHOLARSHIP
+asstance-cert-string-8=TESDA REQUIREMENT
+asstance-cert-string-9=KABUGWASON REQUIREMENT
+asstance-cert-string-10=SCHOLARSHIP APPLICATION
+asstance-cert-string-11=CERTIFICATE OF CONFIRMATION APPLICATION
+asstance-cert-string-12=ESC SCHOLARSHIP REQUIREMENT
+asstance-cert-string-13=SCHOLARSHIP REQUIREMENTS
+asstance-cert-string-14=SCHOOL REGISTRATION
+asstance-cert-string-15=SCHOOL REQUIREMENT
+asstance-cert-string-16=\tThis is to certify further that this person is the <relationship> of <parents> which is earning an average income, as such <heshe> is entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.\n\n
+asstance-cert-string-17=\tThis is to Certify further that the above-mentioned name is belongs to the low income or indigent family of this barangay, as such <heshe> is entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.\n\n
+asstance-cert-string-18=\tCertify further that the above-mentioned name of person is known to the undersigned that <heshe> has no derogatory record on file in this office and a law abiding citizen in our locality.\n\n
+
+LARGE CATTLE CERTIFICATION
+FILE NAME: largecattleV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+large-cattle-string-1=\tThis is to certify that <requestor> is a bonafide resident of <requestoraddress> and CTC No. <ctcno> issued on <ctcissueddate> at <ctcissuedaddress>  has requested a CERTIFICATION from this office for <hisher> <animal> which specifically describe as below.\n
+large-cattle-string-2=\tCertify further that <requestor> has no derogatory record filed in this office and a law abiding citizen in our locality.\n\n
+
+
+LATE BIRTH REGISTRATION
+FILE NAME: latebirthregV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+late-birth-string-1=delayed registration of Live Birth at the Office of the Municipal Civil Registrar, 
+late-birth-string-2=Live Birth registration at the Office of the Municipal Civil Registrar, 
+
+CERTIFICATE OF RESIDENCY
+POSTAL ID APPLICATION
+FILE NAME: residencyV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+residency-string-1=\tThis is to certify that person whose name, picture and signature appear hereon has requested a <docttype> from this office.
+residency-string-3=\tCertify further that the above-mentioned name of person is known to the undersigned that <heshe> has no derogatory record on file in this office and a law abiding citizen in our locality.\n\n
+residency-string-4=CERTIFICATE OF RESIDENCY
+residency-string-5=POSTAL ID APPLICATION
+residency-string-6=DIRECT SELLER AGENT APPLICATION
+
+CERTIFICATE OF EMPLOYMENT
+FILE NAME: coeV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+employment-string-1=\tThis is to certify that <employee> has been employed on our Barangay Hall from <startdate> to <enddate> whose holding the position of <position>.\n\n
+
+
+4P's CERTIFICATION FOR TRANSFERRED ADDRESS
+FILE NAME: assclearanceV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+4ps-transferred-string-1=\tThis is to certify that person whose name, picture and signature appear hereon has requested a <docttype> from this office.
+4ps-transferred-string-2=\tCERTIFY further that the above-mentioned name is the recepient of Pantawid Pamilyang Pilipino Program (4P's).\n\n
+4ps-transferred-string-3=TO TRANSFER MEMBERSHIP FROM <formeradress> TO THE MUNICIPALITY OF <newaddress>
+
+
+SENIOR CITIZEN AUTHORIZATION LETTER
+4P's AUTHORIZATION LETTER
+FILE NAME: authorizationV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+authorized-string-1=\tI <requestor>, of legal age, Filipino citizen, <civilstatus>, and a bonafide resident of <requestoraddress>, and declared that I am the <relationship> of <beneficiary>, is a resident of <beneficiaryaddress>, and member of <organization> and <heshe> is <reason>, and that I am authorized to claim all the benefits and pension in <hisher> stead.
+authorized-string-2=SENIOR CITIZEN
+authorized-string-3=4P's
+
+MOTORCYCLE/CAR LOAN REQUIREMENT CERTIFICATE
+FILE NAME: assclearanceV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+mocar-string-1=\tThis is to certify that person whose name, picture and signature appear hereon has requested a <docttype> from this office. 
+mocar-string-2=NO UNPAID ACCOUNT ON FILED
+mocar-string-3=\tCertify further that the above-mentioned name has no derogatory record on file in this office and a law abiding citizen in our locality.\n\n
+
+MULTIPLE CLEARANCE CLEARANCE/CERTIFICATE/INDIGENT
+FILE NAME: assclearanceV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+multi-string-1=\tThis is to certify that person whose name, picture and signature appear hereon has requested a <docttype> from this office. 
+multi-string-2=NO CASE REPORTED
+multi-string-3=BELONGS TO LOW INCOME OR INDIGENT FAMILY
+multi-string-4=\tCertifying further that the above-mentioned name has no derogatory record on file in this office and a law abiding citizen in our locality.\n\n
+multi-string-5=\tCertify further that the above-mentioned name is entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.\n\n
+
+MUNICIPAL MOTORCYCLE OPERATOR PERMIT APPLICATION
+MUNICIPAL MOTORCYCLE OPERATOR PERMIT RENEWAL
+FILE NAME: assclearanceV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+motor-permit-string-1=\tThis is to certify that person whose name, picture and signature appear hereon has requested a <docttype> from this office. 
+motor-permit-string-2=NO DEROGATORY RECORD ON FILE and a law abiding citizen in our locality.
+motor-permit-string-3=TO SECURE MUNICIPAL PERMIT APPLICATION
+motor-permit-string-4=TO SECURE MUNICIPAL PERMIT RENEWAL
+
+CERTIFICATE OF LAND OWNERSHIP
+CERTIFICATE OF LAND ASSESSMENT
+FILE NAME: landV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+land-permit-string-1=\tThis is to CERTIFY that <requestor>, of legal age, Filipino citizen, <civilstatus>, and a bonafide resident of <requestoraddress> 
+land-permit-string-2=with Community Tax Certificate No. <ctcno> issued on <ctcissueddate> at <ctcissuedaddress>.
+land-permit-string-3=\n\n\tCertify further that the above-mentioned name is known to the undersigned being the lawful <owntype> of a certain parcel of <landtype> with Lot No. <lotno>, containing an area of <areasqrt> more or less located at Barangay <barangayaddress>, bounded as follows to wit;\n\nBounded on the;\n\tNorth by <north>\n\tEast by <east>\n\tSouth by <south>\n\tWest by <west>
+land-permit-string-4=\n\n\tThis Barangay Certification is being issued upon request of the above-mentioned name for assessment purposes only.
+land-permit-string-5=\n\n\tIssued this <day> Day of <month> <year>  at the Office of the Punong Barangay of <barangayaddress>.\n\nSigned in the presence of:
+
+TREE OWNERHIP
+FILE NAME: assclearanceV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+tree-permit-string-1=\tThis is to certify that person whose name, picture and signature appear hereon has requested a <docttype> from this office. 
+tree-permit-string-2=PROOF OF OWNERSHIP
+
+LOAN REQUIREMENTS
+FILE NAME: assclearanceV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+loan-string-1=\tThis is to certify that person whose name, picture and signature appear hereon has requested a <docttype> from this office. 
+loan-string-2=NO UNPAID ACCOUNT REPORTED.
+loan-string-3=BELONGS TO LOW INCOME OR INDIGENT FAMILY
+loan-string-4=LOAN REQUIREMENTS FOR 
+loan-string-5=\tCertifying further that the above-mentioned name has no derogatory record on file in this office and a law abiding citizen in our locality.\n\n
+loan-string-6=\tCertify further that the above-mentioned name is entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.\n\n
+
+OTHER CLEARANCE/CERTIFICATE
+FILE NAME: assclearanceV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+other-string-1=\tThis is to certify that person whose name, picture and signature appear hereon has requested a <docttype> from this office. 
+other-string-2=\tCertifying further that the above-mentioned name has no derogatory record on file in this office and a law abiding citizen in our locality.\n\n
+other-string-3=\tCertify further that the above-mentioned name is entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.\n\n
+other-string-4=NO DEROGATORY RECORD ON FILE.
+other-string-5=BELONGS TO LOW INCOME OR INDIGENT FAMILY
+
+CASE NOTICE
+FILE NAME: casenotice.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\reports.xml
+case-note-string1=\tYou are hereby summoned to appear before me in person, together with your witness on <monthdayyear> at <time> at the Office of the Lupong Tagapamayapa for mediation/conciliation of your dispute with the complainant.
+case-note-string2=\n\n\tYou are hereby warned that if you refuse or willfully fail to appear in obediance to this summons, you may be barred from filing any counterclaim arising from said complaint.
+case-note-string3=\n\n\tFAIL NOT OR ELSE face punishment as for contempt of court.
+case-note-string4=\n\n\tDone this <date> day of <month> <year>.
+
+
+CASE ENDORSEMENT
+FILE NAME: endorsementcase.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\reports.xml
+case-endorsement-string1=. There has been a personal confrontation between the parties before the Lupong Tagapamayapa;\n
+case-endorsement-string2=. There has no personal confrontation between the parties before the Lupong Tagapamayapa;\n
+case-endorsement-string3=. Mediation Failed.\n
+case-endorsement-string4=. The Complainant wants this matter to reach the HIGHER COURT;\n
+case-endorsement-string5=. Therefore, the corresponding complaint for the dispute may now be filed in court / government office / any concerned agency.
+case-endorsement-string6=\n\n\tDone this <date> day of <month> <year>.
+
+SOLO PARENT
+FILE NAME: assclearanceV6.jrxml
+LOCATION: C:\bris\reports\<BARANGAY NAME>
+FILE CONFIG: C:\bris\conf\documentFormatter.bris
+solo-string-1=\tThis is to certify that person whose name, picture and signature appear hereon has requested a <docttype> from this office. 
+solo-string-2=Certify further that the above-mentioned name is known to undersigned that <heshe> is a single parent of 2 children for almost 2 years 
+solo-string-3=and entitled to any assistance extended by any government agency and private service provider for which <heshe> is rightly entitled to.\n\n
+solo-string-4=PROOF THAT <heshe> IS A SOLO PARENT
+
+KP FORM 7 Complainant's Form
+kp-form7-1=COMPLAINT
+kp-form7-2=\tI/WE hereby complain against above named respondent/s for violating my/our rights and interests in the following manner:\n\n\t
+kp-form7-3=\tTHEREFORE, I/WE pray that the following relief/s be granted to me/us in accordance with law and/or equity:\n\n\t
+kp-form7-4=\tMade this <day> day of <month>, <year>.
+kp-form7-5=\tReceived and filed this <day> day of <month>, <year>.
+
+KP FORM 8 Complainant's Form - Notice of Hearing (Mediation Proceedings)
+kp-form8-1=NOTICE OF HEARING\n(MEDIATION PROCEEDINGS)
+kp-form8-2=\tYou are hereby required to appear before me on <monthdayyear> at <time> for the hearing of your complaint.
+kp-form8-3=\tDone this <day> day of <month>, <year>.
+kp-form8-4=\tNotified this ________ day of _________________, <year>.
+
+KP FORM 9 Summon for Respondents
+kp-form9-1=\tYou are hereby required to appear before me on <monthdayyear> at <time>, then and there to answer to a complaint made before me, copy of which is attached hereto, for mediation/conciliation of your dispute with the complainant/s.
+kp-form9-2=\n\n\tYou are hereby warned that if you refuse or willfully fail to appear in obedience to this summons, you may be barred from filing any counterclaim arising from said complaint.
+kp-form9-3=\n\n\tFAIL NOT or else face punishment as for contempt of court.
+kp-form9-4=\n\n\tDone this <date> day of <month> <year>.
+
+KP FORM 10 Notice of Constitution of Pangkat
+kp-form10-1=NOTICE FOR CONSTITUTION OF PANGKAT
+kp-form10-2=\tYou are hereby required to appear before me on <monthdayyear> at <time>, for the constitution of the Pangkat ng Tagapagkasundo which shall conciliate your dispute. Should you fail to agree on the Pangkat membership or to appear on the aforesaid date for the constitution of the Pangkat, I shall determine the membership thereof by drawing lots.
+kp-form10-3=\tDone this <day> day of <month>, <year>.
+kp-form10-4=\tNotified this ________ day of _________________, <year>.
+
+KP FORM 12 Notice of hearing
+kp-form12-1=NOTICE OF HEARING\n(CONCILIATION PROCEEDINGS)
+kp-form12-2=\tYou are hereby required to appear before the Pangkat on <monthdayyear> at <time>, for a hearing of the above-entitled case.
+kp-form12-3=\tDone this <day> day of <month>, <year>.
+kp-form12-4=\tNotified this ________ day of _________________, <year>.
+
+KP FORM 13 Subpoena
+kp-form13-1=SUBPOENA
+kp-form13-2=\tYou are hereby commanded to appear before me on <monthdayyear> at <time>, then and there to testify in the hearing of the above-captioned case.
+kp-form13-3=\tDone this <day> day of <month>, <year>.
+
+KP FORM 14 Agreement for Arbitration
+kp-form14-1=AGREEMENT FOR ARBITRATION
+kp-form14-2=\tWe hereby agree to submit our dispute for arbitration to the Punong Barangay/Pangkat ng Tagapagkasundo (Please cross out whichever is not applicable) and bind ourselves to comply with the award that may be rendered thereon. We have made this agreement freely with a full understanding of its nature and consequences.
+kp-form14-3=\tEntered into this <day> day of <month>, <year>.
+kp-form14-4=ATTESTATION \n\n\tI hereby certify that the foregoing Agreement for Arbitration was entered into by the parties freely and voluntarily, after I had explained to them the nature and the consequences of such agreement.
+
+KP FORM 15 Arbitration Award
+kp-form15-1=ARBITRATION AWARD
+kp-form15-2=\tAfter hearing the testimonies given and careful examination of the evidence presented in this case, award is hereby made as follows:
+kp-form15-3=\tMade this <day> day of <month>, <year> at Barangay Lupon office.
+kp-form15-4=*\tTo be signed by either, whoever made the arbitration award.\n**\tTo be signed by the Punong Barangay if the award is made by the Pangkat Chairman, and by the Lupon Secretary\n\t if the award is made by the Punong Barangay.
+
+KP FORM 16 Amicable Settlement
+kp-form16-1=AMICABLE SETTLEMENT
+kp-form16-2=\tWe, complainant/s and respondent/s in the above-captioned case, do hereby agree to settle our dispute as follows:
+kp-form16-3=and bind ourselves to comply honestly and faithfully with the above terms of settlement.\n\n\tMade this <day> day of <month>, <year>.
+kp-form16-4=ATTESTATION \n\n\tI hereby certify that the foregoing amicable settlement was entered into by the parties freely and voluntarily, after I had explained to them the nature and consequence of such settlement.
+
+KP FORM 17 Repudiation
+kp-form17-1=REPUDIATION
+kp-form17-2=\tI/WE hereby repudiate the settlement/agreement for arbitration on the ground that my/our consent was vitiated by:
+kp-form17-3=\tMade this <day> day of <month>, <year>.
+kp-form17-4=\tSUBSCRIBED AND SWORN TO before me this <day> day of <month>, <year> at Barangay Lupon Office.
+kp-form17-5=\tReceived and filed * this <day> day of <month>, <year>.
+kp-form17-6=* Failure to repudiate the settlement or the arbitration agreement within the time limits respectively set (ten [10] days from the date of settlement and five[5] days from the date of arbitration agreement) shall be deemed a waiver of the right to challenge on said grounds.
+
+KP FORM 18 Summon complainant
+kp-form18-1=NOTICE OF HEARING \n(RE: Failure to Appear)
+kp-form18-2=\tYou are hereby required to appear before me on <monthdayyear> at <time> to explain why you failed to appear for mediation/conciliation scheduled on <lastmonthdayyear> and why your complaint should not be dismissed, a certificate to bar the filing of your action on court/government office should not be issued, and contempt proceedings should not be initiated in court for willful failure or refusal to appear before the Punong Barangay/Pangkat ng Tagapagkasundo.
+kp-form18-3=\tDone this <day> day of <month>, <year>.
+kp-form18-4=\tNotified this ________ day of _________________, <year>.
+
+KP FORM 19 Summon respondent
+kp-form19-1=NOTICE OF HEARING \n(RE: Failure to Appear)
+kp-form19-2=\tYou are hereby required to appear before me on <monthdayyear> at <time> to explain why you failed to appear for mediation/conciliation scheduled on <lastmonthdayyear> and why your complaint should not be dismissed, a certificate to bar the filing of your action on court/government office should not be issued, and contempt proceedings should not be initiated in court for willful failure or refusal to appear before the Punong Barangay/Pangkat ng Tagapagkasundo.
+kp-form19-3=\tDone this <day> day of <month>, <year>.
+kp-form19-4=\tNotified this ________ day of _________________, <year>.
+
+KP FORM 20 CASE ENDORSEMENT LUPON SECRETARY
+kp-form20-1=CERTIFICATION TO FILE ACTION
+kp-form20-2=1. There has been a personal confrontation between the parties before the Punong Barangay/Pangkat ng Tagapagkasundo;\n2. A settlement was reached;\n3. The settlement has been repudiated in a statement sworn to before the Punong Barangay by __________________________________ on ground of ________________________________; and\n4. Therefore, the corresponding complaint for the dispute may now be filed in court/government office.
+kp-form20-3=\n\tThis <day> day of <month>, <year>.
+
+KP FORM 20-A CASE ENDORSEMENT PANGKAT SECRETARY
+kp-form20-A-1=CERTIFICATION TO FILE ACTION
+kp-form20-A-2=1. There has been a personal confrontation between the parties before the Punong Barangay but mediation failed;\n2. The Pangkat ng Tagapagkasundo was constituted but the personal confrontation before the Pangkat likewise did not result into a settlement; and\n3. Therefore, the corresponding complaint for the dispute may now be filed in court/government office.
+kp-form20-A-3=\n\tThis <day> day of <month>, <year>.
+
+KP FORM 20-B CASE ENDORSEMENT PANGKAT SECRETARY
+kp-form20-B-1=CERTIFICATION TO FILE ACTION
+kp-form20-B-2=1. There has been a personal confrontation between the parties before the Punong Barangay but mediation failed;\n2. The Punong Barangay set the meeting of the parties for the constitution of the Pangkat;\n3. The respondent witfully failed or refused to appear without justifiable reason at the conciliation proceedings before the Pangkat; and\n4. Therefore, the corresponding complaint for the dispute may now be filed in court/government office.
+kp-form20-B-3=\n\tThis <day> day of <month>, <year>.
+
+KP FORM 21 CERTIFICATION TO BAR ACTION - COMPLAINANTS
+kp-form21-1=CERTIFICATION TO BAR ACTION
+kp-form21-2=\tThis is to certify that the above-captioned case was dismissed pursuant to the Order dated <monthdayyear>, for complainant/s <complainants> and willful failure or refusal to appear for hearing before the Punong Barangay/Pangkat ng Tagapagkasundo and therefore complainant/s is/are barred from filing an action in court/government office.
+kp-form21-3=\n\tThis <day> day of <month>, <year>.
+kp-form21-4=IMPORTANT: If Lupon Secretary makes the certification, the Lupon Chairman attests. If the Pangkat Secretary makes the certification, the Pangkat Chairman attests.
+
+KP FORM 22 CERTIFICATION TO BAR ACTION - RESPONDENTS
+kp-form22-1=CERTIFICATION TO BAR COUNTERCLAIM
+kp-form22-2=\tThis is to certify that after prior notice and hearing, the respondent/s <respondents> have been found to have willfully failed or refused to appear without justifiable reason before the Punong Barangay/Pangkat ng Tagapagkasundo and therefore respondent/s is/are barred from filing his/their counterclaim (if any) arising from the complaint in court/government office.
+kp-form22-3=\n\tThis <day> day of <month>, <year>.
+kp-form22-4=IMPORTANT: If Lupon Secretary makes the certification, the Lupon Chairman attests. If the Pangkat Secretary makes the certification, the Pangkat Chairman attests.
+
+KP FORM 23 MOTION FOR EXECUTION
+kp-form23-1=MOTION FOR EXECUTION
+kp-form23-2=Complainant/s/Respondent/s state as follows:\n1. On <monthdayyear> the parties in this case signed an amicable settlement/received the arbitration award rendered by the Lupon/Chairman/ Pangkat ng Tagapagkasundo;\n2. The period of ten (10) days from the above-stated date has expired without any of the parties filing a sworn statement of repudiation of the settlement before the Lupon Chairman a petition for nullification of the arbitration award in court; and\n3. The amicable settlement/arbitration award is now final and executory. WHEREFORE, Complainant/s/Respondent/s request that the corresponding writ of execution be issued by the Lupon Chairman in this case.
+kp-form23-3=\n\tThis <day> day of <month>, <year>.
+
+KP FORM 24 NOTICE OF HEARING(RE: MOTION FOR EXECUTION)
+kp-form24-1=NOTICE OF HEARING\n(RE: MOTION FOR EXECUTION)
+kp-form24-2=You are hereby required to appear before me on <monthdayyear> at <time> for the hearing of the motion for execution, copy of which is attached hereto, filed by <filedperson> (Name of complainant/s/ respondent/s).
+kp-form24-3=\n\tThis <day> day of <month>, <year>.
+kp-form24-4=\tNotified this ________ day of _________________, <year>.
+
+KP FORM 25 NOTICE OF EXECUTION
+kp-form25-1=NOTICE OF EXECUTION
+kp-form25-2=WHEREAS, on <monthdayyear>, an amicable settlement was signed by the parties in the above-entitled case [or an arbitration award was rendered by the Punong Barangay/Pangkat ng Tagapagkasundo]; WHEREAS, the terms and conditions of the settlement, the dispositive portion of the award. read:
+kp-form25-3=The said settlement/award is now final and executory;\n\nWHEREAS, the party obliged _________________________ (name) has not complied voluntarily with the aforestated amicable settlement/arbitration award, within the period of five (5) days from the date of hearing on the motion for execution;\n\nNOW, THEREFORE, in behalf of the Lupong Tagapamayapa and by virtue of the powers vested in me and the Lupon by the Katarungang Pambarangay Law and Rules, I shall cause to be realized from the goods and personal property of __________________ (name of partyobliged) the sum of _________________ (state amount of settlementor award) upon in the said amicable settlement [or adjudged in the said arbitration award], unless voluntary compliance of said settlement or award shall have been made upon receipt hereof.
+kp-form25-4=Signed this <day> day of <month>, <year>.
+kp-form25-5=\tNotified this ________ day of _________________, <year>.
+
+Invitation Form
+invitation-1=INVITATION
+invitation-2=You are hereby invited on <monthdayyear> at <time>, at the Office of the Lupong Tagapamaya for clarification of the above-captioned case.\n\nPlease come on time so that this inconvenience will be settled for good.\n\nMay I inform you that failure to comply the said request may rise to file for complaint against you.\n\nYour Cooperation is needed.
+invitation-3=\n\n\nFor Compliance.\n\n\n\n\n\n\n\n\n\n\n\nReceived by:_________________________       Date:_________________________\n(Signature over printed name)
