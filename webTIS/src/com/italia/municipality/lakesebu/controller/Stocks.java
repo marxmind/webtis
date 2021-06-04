@@ -125,7 +125,8 @@ public class Stocks {
 				st.setStatusName("ISSUED");
 			}
 			
-			st.setFormTypeName(FormType.nameId(rs.getInt("formType")));
+			//st.setFormTypeName(FormType.nameId(rs.getInt("formType")));
+			st.setFormTypeName(FormType.val(rs.getInt("formType")).getDescription());
 			
 			Collector col = new Collector();
 			try{col.setId(rs.getInt("isid"));}catch(NullPointerException e){}

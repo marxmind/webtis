@@ -192,11 +192,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:dataTable id="listForm" value="#{logformBean.newForms}" var="rp" stickyHeader="false"
 							rows="13" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="26,50,100"
-                         scrollable="true" style="#{skin.table}" paginatorPosition="top" editable="#{logformBean.currentDate}" editMode="cell">
+                         scrollable="true" style="#{skin.table}" paginatorPosition="top" editable="#{logformBean.currentDate}" editMode="cell" reflow="true">
                          	
                          	<p:ajax event="cellEdit"  listener="#{logformBean.onCellEdit}" update="listForm,reportData,tbFormGen,msg" />
                          	
-                         	<p:column headerText="[*]" width="30" exportable="false">
+                         	<p:column headerText="[*]" width="20" exportable="false">
             					<p:commandButton update="tbFormNew listForm gridId reportData msg" icon="fa fa-trash" actionListener="#{logformBean.deleteRow(rp)}">
             						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
             					</p:commandButton>
@@ -208,19 +208,19 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							</p:column>
 							 -->
                          	
-                         	<p:column headerText="Form" width="70">
+                         	<p:column headerText="AF Form" width="100">
             						<p:outputLabel value="#{rp.formTypeName}"/>
             				</p:column>
             				
-            				<p:column headerText="From Serial" width="70">
+            				<p:column headerText="From Serial" width="50">
             						<p:outputLabel value="#{rp.startNo}"/>
             				</p:column>
             				
-            				<p:column headerText="To Serial" width="70">
+            				<p:column headerText="To Serial" width="50">
             						<p:outputLabel value="#{rp.endNo}"/>
             				</p:column>
             				
-            				<p:column headerText="Qty" width="30">
+            				<p:column headerText="Qty" width="20">
             						<p:outputLabel value="#{rp.pcs}"/>
             				</p:column>
             				

@@ -20,8 +20,9 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @since 06/15/2018
  * @version 1.0
  */
-public class Customer {
+public class Customer2 {
 	
+	/*
 	private long id;
 	private String registrationDate;
 	private String fullName;
@@ -704,5 +705,5 @@ public class Customer {
 	public void setUserDtls(UserDtls userDtls) {
 		this.userDtls = userDtls;
 	}
-	
+	*/
 }

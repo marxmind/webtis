@@ -25,8 +25,9 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @version 1.0
  * @since 07/05/2017
  *
+ *not in user
  */
-
+@Deprecated
 public class Clearance {
 
 	private long id;
@@ -181,7 +182,7 @@ public class Clearance {
 			cl.setEmployee(emp);
 			
 			Customer cus = new Customer();
-			try{cus.setCustomerid(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
 			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
 			try{cus.setLastname(rs.getString("cuslastname"));}catch(NullPointerException e){}
@@ -205,7 +206,7 @@ public class Clearance {
 			
 			try{cus.setBirthdate(rs.getString("borndate"));}catch(NullPointerException e){}
 			try{Customer emergency = new Customer();
-			emergency.setCustomerid(rs.getLong("emeperson"));
+			emergency.setId(rs.getLong("emeperson"));
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
 			cl.setTaxPayer(cus);
@@ -336,7 +337,7 @@ public class Clearance {
 		ps.setInt(cnt++, cl.getClearanceType());
 		ps.setInt(cnt++, cl.getIsActive());
 		ps.setLong(cnt++, cl.getEmployee()==null? 0 : cl.getEmployee().getId());
-		ps.setLong(cnt++, cl.getTaxPayer()==null? 0 : cl.getTaxPayer().getCustomerid());
+		ps.setLong(cnt++, cl.getTaxPayer()==null? 0 : cl.getTaxPayer().getId());
 		ps.setLong(cnt++, cl.getUserDtls()==null? 0 : cl.getUserDtls().getUserdtlsid());
 		ps.setInt(cnt++, cl.getDocumentType());
 		ps.setInt(cnt++, cl.getDocumentValidity());
@@ -355,7 +356,7 @@ public class Clearance {
 		LogU.add(cl.getClearanceType());
 		LogU.add(cl.getIsActive());
 		LogU.add(cl.getEmployee()==null? 0 : cl.getEmployee().getId());
-		LogU.add(cl.getTaxPayer()==null? 0 : cl.getTaxPayer().getCustomerid());
+		LogU.add(cl.getTaxPayer()==null? 0 : cl.getTaxPayer().getId());
 		LogU.add(cl.getUserDtls()==null? 0 : cl.getUserDtls().getUserdtlsid());
 		LogU.add(cl.getDocumentType());
 		LogU.add(cl.getDocumentValidity());
@@ -431,7 +432,7 @@ public class Clearance {
 		ps.setInt(cnt++, getClearanceType());
 		ps.setInt(cnt++, getIsActive());
 		ps.setLong(cnt++, getEmployee()==null? 0 : getEmployee().getId());
-		ps.setLong(cnt++, getTaxPayer()==null? 0 : getTaxPayer().getCustomerid());
+		ps.setLong(cnt++, getTaxPayer()==null? 0 : getTaxPayer().getId());
 		ps.setLong(cnt++, getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		ps.setInt(cnt++, getDocumentType());
 		ps.setInt(cnt++, getDocumentValidity());
@@ -450,7 +451,7 @@ public class Clearance {
 		LogU.add(getClearanceType());
 		LogU.add(getIsActive());
 		LogU.add(getEmployee()==null? 0 : getEmployee().getId());
-		LogU.add(getTaxPayer()==null? 0 : getTaxPayer().getCustomerid());
+		LogU.add(getTaxPayer()==null? 0 : getTaxPayer().getId());
 		LogU.add(getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		LogU.add(getDocumentType());
 		LogU.add(getDocumentValidity());
@@ -514,7 +515,7 @@ public class Clearance {
 		ps.setInt(cnt++, cl.getIsPayable());
 		ps.setInt(cnt++, cl.getClearanceType());
 		ps.setLong(cnt++, cl.getEmployee()==null? 0 : cl.getEmployee().getId());
-		ps.setLong(cnt++, cl.getTaxPayer()==null? 0 : cl.getTaxPayer().getCustomerid());
+		ps.setLong(cnt++, cl.getTaxPayer()==null? 0 : cl.getTaxPayer().getId());
 		ps.setLong(cnt++, cl.getUserDtls()==null? 0 : cl.getUserDtls().getUserdtlsid());
 		ps.setInt(cnt++, cl.getDocumentType());
 		ps.setInt(cnt++, cl.getDocumentValidity());
@@ -533,7 +534,7 @@ public class Clearance {
 		LogU.add(cl.getIsPayable());
 		LogU.add(cl.getClearanceType());
 		LogU.add(cl.getEmployee()==null? 0 : cl.getEmployee().getId());
-		LogU.add(cl.getTaxPayer()==null? 0 : cl.getTaxPayer().getCustomerid());
+		LogU.add(cl.getTaxPayer()==null? 0 : cl.getTaxPayer().getId());
 		LogU.add(cl.getUserDtls()==null? 0 : cl.getUserDtls().getUserdtlsid());
 		LogU.add(cl.getDocumentType());
 		LogU.add(cl.getDocumentValidity());
@@ -598,7 +599,7 @@ public class Clearance {
 		ps.setInt(cnt++, getIsPayable());
 		ps.setInt(cnt++, getClearanceType());
 		ps.setLong(cnt++, getEmployee()==null? 0 : getEmployee().getId());
-		ps.setLong(cnt++, getTaxPayer()==null? 0 : getTaxPayer().getCustomerid());
+		ps.setLong(cnt++, getTaxPayer()==null? 0 : getTaxPayer().getId());
 		ps.setLong(cnt++, getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		ps.setInt(cnt++, getDocumentType());
 		ps.setInt(cnt++, getDocumentValidity());
@@ -617,7 +618,7 @@ public class Clearance {
 		LogU.add(getIsPayable());
 		LogU.add(getClearanceType());
 		LogU.add(getEmployee()==null? 0 : getEmployee().getId());
-		LogU.add(getTaxPayer()==null? 0 : getTaxPayer().getCustomerid());
+		LogU.add(getTaxPayer()==null? 0 : getTaxPayer().getId());
 		LogU.add(getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		LogU.add(getDocumentType());
 		LogU.add(getDocumentValidity());
@@ -944,7 +945,7 @@ public class Clearance {
 		cl.setEmployee(e);
 		
 		Customer c = new Customer();
-		c.setCustomerid(2);
+		c.setId(2);
 		cl.setTaxPayer(c);
 		
 		UserDtls u = new UserDtls();

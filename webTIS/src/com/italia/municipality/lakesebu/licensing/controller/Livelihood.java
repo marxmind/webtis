@@ -9,10 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.italia.municipality.lakesebu.controller.UserDtls;
-import com.italia.municipality.lakesebu.database.LicensingDatabaseConnect;
+import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.Database;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * 
@@ -21,7 +27,11 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @since 07/05/2017
  *
  */
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
 public class Livelihood {
 
 	private long id;
@@ -55,7 +65,7 @@ public class Livelihood {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -81,7 +91,7 @@ public class Livelihood {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return result;
@@ -109,7 +119,7 @@ public class Livelihood {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		System.out.println("SQL " + ps.toString());
 		if(params!=null && params.length>0){
@@ -138,7 +148,7 @@ public class Livelihood {
 			try{live.setTimestamp(rs.getTimestamp("timestamplive"));}catch(NullPointerException e){}
 			
 			Customer cus = new Customer();
-			try{cus.setCustomerid(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
 			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
 			try{cus.setLastname(rs.getString("cuslastname"));}catch(NullPointerException e){}
@@ -192,7 +202,7 @@ public class Livelihood {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return lives;
@@ -258,7 +268,7 @@ public class Livelihood {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		long id =1;
 		int cnt = 1;
@@ -287,7 +297,7 @@ public class Livelihood {
 		ps.setInt(cnt++, live.getMunicipality()==null? 1 : live.getMunicipality().getId());
 		ps.setInt(cnt++, live.getProvince()==null? 1 : live.getProvince().getId());
 		ps.setInt(cnt++, live.getIsActive());
-		ps.setLong(cnt++, live.getTaxPayer()==null? 0 : live.getTaxPayer().getCustomerid());
+		ps.setLong(cnt++, live.getTaxPayer()==null? 0 : live.getTaxPayer().getId());
 		ps.setLong(cnt++, live.getUserDtls()==null? 0 : live.getUserDtls().getUserdtlsid());
 		
 		LogU.add(live.getDateRegistered());
@@ -302,7 +312,7 @@ public class Livelihood {
 		LogU.add(live.getMunicipality()==null? 1 : live.getMunicipality().getId());
 		LogU.add(live.getProvince()==null? 1 : live.getProvince().getId());
 		LogU.add(live.getIsActive());
-		LogU.add(live.getTaxPayer()==null? 0 : live.getTaxPayer().getCustomerid());
+		LogU.add(live.getTaxPayer()==null? 0 : live.getTaxPayer().getId());
 		LogU.add(live.getUserDtls()==null? 0 : live.getUserDtls().getUserdtlsid());
 		
 		
@@ -310,7 +320,7 @@ public class Livelihood {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to livelihood : " + s.getMessage());
@@ -342,7 +352,7 @@ public class Livelihood {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		long id =1;
 		int cnt = 1;
@@ -371,7 +381,7 @@ public class Livelihood {
 		ps.setInt(cnt++, getMunicipality()==null? 1 : getMunicipality().getId());
 		ps.setInt(cnt++, getProvince()==null? 1 : getProvince().getId());
 		ps.setInt(cnt++, getIsActive());
-		ps.setLong(cnt++, getTaxPayer()==null? 0 : getTaxPayer().getCustomerid());
+		ps.setLong(cnt++, getTaxPayer()==null? 0 : getTaxPayer().getId());
 		ps.setLong(cnt++, getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		
 		LogU.add(getDateRegistered());
@@ -386,7 +396,7 @@ public class Livelihood {
 		LogU.add(getMunicipality()==null? 1 : getMunicipality().getId());
 		LogU.add(getProvince()==null? 1 : getProvince().getId());
 		LogU.add(getIsActive());
-		LogU.add(getTaxPayer()==null? 0 : getTaxPayer().getCustomerid());
+		LogU.add(getTaxPayer()==null? 0 : getTaxPayer().getId());
 		LogU.add(getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		
 		
@@ -394,7 +404,7 @@ public class Livelihood {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to livelihood : " + s.getMessage());
@@ -424,7 +434,7 @@ public class Livelihood {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
@@ -443,7 +453,7 @@ public class Livelihood {
 		ps.setInt(cnt++, live.getBarangay()==null? 1 : live.getBarangay().getId());
 		ps.setInt(cnt++, live.getMunicipality()==null? 1 : live.getMunicipality().getId());
 		ps.setInt(cnt++, live.getProvince()==null? 1 : live.getProvince().getId());
-		ps.setLong(cnt++, live.getTaxPayer()==null? 0 : live.getTaxPayer().getCustomerid());
+		ps.setLong(cnt++, live.getTaxPayer()==null? 0 : live.getTaxPayer().getId());
 		ps.setLong(cnt++, live.getUserDtls()==null? 0 : live.getUserDtls().getUserdtlsid());
 		ps.setLong(cnt++, live.getId());
 		
@@ -458,7 +468,7 @@ public class Livelihood {
 		LogU.add(live.getBarangay()==null? 1 : live.getBarangay().getId());
 		LogU.add(live.getMunicipality()==null? 1 : live.getMunicipality().getId());
 		LogU.add(live.getProvince()==null? 1 : live.getProvince().getId());
-		LogU.add(live.getTaxPayer()==null? 0 : live.getTaxPayer().getCustomerid());
+		LogU.add(live.getTaxPayer()==null? 0 : live.getTaxPayer().getId());
 		LogU.add(live.getUserDtls()==null? 0 : live.getUserDtls().getUserdtlsid());
 		LogU.add(live.getId());
 		
@@ -466,7 +476,7 @@ public class Livelihood {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to livelihood : " + s.getMessage());
@@ -496,7 +506,7 @@ public class Livelihood {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
@@ -515,7 +525,7 @@ public class Livelihood {
 		ps.setInt(cnt++, getBarangay()==null? 1 : getBarangay().getId());
 		ps.setInt(cnt++, getMunicipality()==null? 1 : getMunicipality().getId());
 		ps.setInt(cnt++, getProvince()==null? 1 : getProvince().getId());
-		ps.setLong(cnt++, getTaxPayer()==null? 0 : getTaxPayer().getCustomerid());
+		ps.setLong(cnt++, getTaxPayer()==null? 0 : getTaxPayer().getId());
 		ps.setLong(cnt++, getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		ps.setLong(cnt++, getId());
 		
@@ -530,7 +540,7 @@ public class Livelihood {
 		LogU.add(getBarangay()==null? 1 : getBarangay().getId());
 		LogU.add(getMunicipality()==null? 1 : getMunicipality().getId());
 		LogU.add(getProvince()==null? 1 : getProvince().getId());
-		LogU.add(getTaxPayer()==null? 0 : getTaxPayer().getCustomerid());
+		LogU.add(getTaxPayer()==null? 0 : getTaxPayer().getId());
 		LogU.add(getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		LogU.add(getId());
 		
@@ -538,7 +548,7 @@ public class Livelihood {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to livelihood : " + s.getMessage());
@@ -555,7 +565,7 @@ public class Livelihood {
 		String sql = "";
 		try{
 		sql="SELECT livelihoodid FROM livelihood  ORDER BY livelihoodid DESC LIMIT 1";	
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
@@ -565,7 +575,7 @@ public class Livelihood {
 		
 		rs.close();
 		prep.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -606,7 +616,7 @@ public class Livelihood {
 		Connection conn = null;
 		boolean result = false;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement("SELECT livelihoodid FROM livelihood WHERE livelihoodid=?");
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
@@ -617,7 +627,7 @@ public class Livelihood {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -629,7 +639,7 @@ public class Livelihood {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -642,7 +652,7 @@ public class Livelihood {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
@@ -656,7 +666,7 @@ public class Livelihood {
 		String[] params = new String[1];
 		params[0] = getId()+"";
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -669,159 +679,8 @@ public class Livelihood {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
-		
-	}
-	
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public String getDateRegistered() {
-		return dateRegistered;
-	}
-	public void setDateRegistered(String dateRegistered) {
-		this.dateRegistered = dateRegistered;
-	}
-	public String getDateRetired() {
-		return dateRetired;
-	}
-	public void setDateRetired(String dateRetired) {
-		this.dateRetired = dateRetired;
-	}
-	public String getBusinessName() {
-		return businessName;
-	}
-	public void setBusinessName(String businessName) {
-		this.businessName = businessName;
-	}
-	public String getPurokName() {
-		return purokName;
-	}
-	public void setPurokName(String purokName) {
-		this.purokName = purokName;
-	}
-	public String getAreaMeter() {
-		return areaMeter;
-	}
-	public void setAreaMeter(String areaMeter) {
-		this.areaMeter = areaMeter;
-	}
-	public String getSupportingDetails() {
-		return supportingDetails;
-	}
-	public void setSupportingDetails(String supportingDetails) {
-		this.supportingDetails = supportingDetails;
-	}
-	public int getTypeLine() {
-		return typeLine;
-	}
-	public void setTypeLine(int typeLine) {
-		this.typeLine = typeLine;
-	}
-	public int getStatus() {
-		return status;
-	}
-	public void setStatus(int status) {
-		this.status = status;
-	}
-	public int getIsActive() {
-		return isActive;
-	}
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-	public Timestamp getTimestamp() {
-		return timestamp;
-	}
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
-	}
-	public Barangay getBarangay() {
-		return barangay;
-	}
-	public void setBarangay(Barangay barangay) {
-		this.barangay = barangay;
-	}
-	public Municipality getMunicipality() {
-		return municipality;
-	}
-	public void setMunicipality(Municipality municipality) {
-		this.municipality = municipality;
-	}
-	public Province getProvince() {
-		return province;
-	}
-	public void setProvince(Province province) {
-		this.province = province;
-	}
-	public Customer getTaxPayer() {
-		return taxPayer;
-	}
-	public void setTaxPayer(Customer taxPayer) {
-		this.taxPayer = taxPayer;
-	}
-	public UserDtls getUserDtls() {
-		return userDtls;
-	}
-	public void setUserDtls(UserDtls userDtls) {
-		this.userDtls = userDtls;
-	}
-	
-	public Purok getPurok() {
-		return purok;
-	}
-
-	public void setPurok(Purok purok) {
-		this.purok = purok;
-	}
-
-	public String getBusinessLabel() {
-		return businessLabel;
-	}
-
-	public void setBusinessLabel(String businessLabel) {
-		this.businessLabel = businessLabel;
-	}
-
-	public static void main(String[] args) {
-		
-		Livelihood liv = new Livelihood();
-		liv.setId(1);
-		liv.setDateRegistered(DateUtils.getCurrentDateYYYYMMDD());
-		liv.setDateRetired(DateUtils.getCurrentDateYYYYMMDD());
-		liv.setBusinessName("Test again");
-		liv.setPurokName("Pur again");
-		liv.setAreaMeter("area again");
-		liv.setSupportingDetails("support again");
-		liv.setTypeLine(1);
-		liv.setStatus(1);
-		liv.setIsActive(1);
-		
-		Barangay bg = new Barangay();
-		bg.setId(1);
-		liv.setBarangay(bg);
-		
-		Municipality mun = new Municipality();
-		mun.setId(1);
-		liv.setMunicipality(mun);
-		
-		Province prov = new Province();
-		prov.setId(1);
-		liv.setProvince(prov);
-		
-		Customer cus = new Customer();
-		cus.setCustomerid(1);
-		liv.setTaxPayer(cus);
-		
-		UserDtls user = new UserDtls();
-		user.setUserdtlsid(1l);
-		liv.setUserDtls(user);
-		
-		liv.save();
 		
 	}
 	

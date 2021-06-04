@@ -68,11 +68,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				
 				<p:toolbar id="tbDetails" style="#{skin.toolbar}">
 	    		<f:facet name="left">
-	    				<p:commandButton update="ownerId,formDataId,recFromId,wordId,scId,statId,payId,caseId,grandId,form56Id,payorSearchId,paySearchId" value="New" icon="ui-icon-document" actionListener="#{form56Bean.newForm}" a:data-step="6" a:data-intro="New Button - use to add new data."/>
+	    				<p:commandButton update="ownerId,formDataId,recFromId,wordId,scId,statId,payId,caseId,grandId,form56Id,payorSearchId,paySearchId,yearSelId" value="New" icon="ui-icon-document" actionListener="#{form56Bean.newForm}" a:data-step="6" a:data-intro="New Button - use to add new data."/>
 	    		</f:facet>
 	    		<f:facet name="right">
 	    			<p:commandButton update="formDataId,form56Id,grandId,wordId" value="Calculate" icon="ui-icon-note"  action="#{form56Bean.updateTotal}"/>
-	    			<p:commandButton update="formDataId,form56Id,dataTransId,wordId,paySearchId,msg" value="Save" icon="ui-icon-note" actionListener="#{form56Bean.saveData}" >
+	    			<p:commandButton update="formDataId,form56Id,dataTransId,wordId,paySearchId,yearSelId,caseId,msg" value="Save" icon="ui-icon-note" actionListener="#{form56Bean.saveData}" >
 	    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 	    			</p:commandButton>
 	    		</f:facet>
@@ -152,7 +152,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					<p:ajax event="cellEdit"  listener="#{form56Bean.onCellEdit}" update="formDataId,msg" />	
 					
 					<p:column headerText="Find">
-						<p:commandButton id="findOwner" update="ownDataId,paySearchId" icon="fa fa-search" oncomplete="PF('ownerDialog').show()" actionListener="#{form56Bean.viewLandOwner(rpt)}"/>
+						<p:commandButton id="findOwner" update="ownDataId,paySearchId,yearSelId" icon="fa fa-search" oncomplete="PF('ownerDialog').show()" actionListener="#{form56Bean.viewLandOwner(rpt)}"/>
 					</p:column>		  
 					
 					<p:column headerText="Value">
@@ -207,7 +207,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
        			</p:dataTable>
 				
 			<p:contextMenu for="formDataId" widgetVar="cMenu">
-		       <p:menuitem value="Add Cell" icon="fa fa-search" actionListener="#{form56Bean.addCell}" onclick="PF('cMenu').hide()" update="formDataId,wordId,grandId"/>
+		       <p:menuitem value="Add Cell" icon="fa fa-search" actionListener="#{form56Bean.addCell}" onclick="PF('cMenu').hide()" update="formDataId,wordId,grandId,yearSelId"/>
 		       <p:menuitem value="Calculate" icon="fa fa-search" actionListener="#{form56Bean.updateTotal}" onclick="PF('cMenu').hide()" update="formDataId,wordId,grandId"/>
 		       <p:menuitem value="Copy Paste" onclick="PF('cMenu').hide();PF('dlgCopy').show()" icon="fa fa-search" update="copyId" actionListener="#{form56Bean.updateCopyPaste}"/>
 		       <p:menuitem value="Delete" update="formDataId,wordId,grandId" icon="ui-icon-close" actionListener="#{form56Bean.deleteCell}"/>
@@ -347,7 +347,7 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
                          >
        
        <p:column headerText="Action" width="60">
-				<p:commandButton value="Selected" update="formDataId,wordId,grandId,ownerId" actionListener="#{form56Bean.landSelected(prop)}" oncomplete="PF('ownerDialog').hide()"/>
+				<p:commandButton value="Selected" update="yearSelId" actionListener="#{form56Bean.passLandData(prop)}" oncomplete="PF('dlgYear').show()"/>
 	   </p:column>
        
        <p:column headerText="TD No" width="70">
@@ -433,6 +433,34 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
 	
 		
 </p:dialog>
+	
+<p:dialog position="center center" widgetVar="dlgYear" modal="true" width="400" height="155" showHeader="false">
+	<p:toolbar id="tbYear" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    			<p:commandButton value="Add" actionListener="#{form56Bean.selectedLand}" onclick="PF('ownerDialog').hide();PF('dlgYear').hide()" update="formDataId,wordId,grandId,ownerId"/>
+    		</f:facet>
+    		<f:facet name="right">
+				<p:commandButton value="Close"  onclick="PF('dlgYear').hide()"/>
+			</f:facet>
+		</p:toolbar>
+		<p:panelGrid layout="grid" columns="4" id="yearSelId">
+		       			<p:outputLabel value="Date From"/>
+		       			<p:selectOneMenu  value="#{form56Bean.yearSelectedFromId}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
+		                        <f:selectItems value="#{form56Bean.yearSelectedFroms}" var="man" itemLabel="#{man}" itemValue="#{man}" />
+		                </p:selectOneMenu>
+		                
+		       			<p:outputLabel value="Date To"/>
+		       			<p:selectOneMenu  value="#{form56Bean.yearSelectedToId}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
+			                       <f:selectItems value="#{form56Bean.yearSelectedTos}" var="man" itemLabel="#{man}" itemValue="#{man}" />
+			            </p:selectOneMenu>
+		       			
+		       			<p:outputLabel value="Adjust Penalty and Fullpayment?" style="#{skin.textInput}"/>
+				        <p:selectBooleanCheckbox id="caseSelId" value="#{form56Bean.specialCase}" style="#{skin.checkbox}">
+				            		<p:ajax event="change" update="formDataId,caseId,wordId,grandId,msg" listener="#{form56Bean.specialCaseCheck}"/>
+				        </p:selectBooleanCheckbox>
+		       			
+				</p:panelGrid>
+</p:dialog>	
 	
 <ui:include src="loader.xhtml" />
 <ui:include src="menu.xhtml" /> 	 

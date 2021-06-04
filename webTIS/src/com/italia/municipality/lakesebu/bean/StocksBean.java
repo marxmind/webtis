@@ -345,7 +345,7 @@ public class StocksBean implements Serializable{
 		formType = new ArrayList<>();
 		
 		for(FormType form : FormType.values()) {
-			formType.add(new SelectItem(form.getId(), form.getName()));
+			formType.add(new SelectItem(form.getId(), form.getName() + " " + form.getDescription()));
 		}
 		
 		return formType;
@@ -379,7 +379,7 @@ public class StocksBean implements Serializable{
 		formTypeSearch = new ArrayList<>();
 		formTypeSearch.add(new SelectItem(0, "All Forms"));
 		for(FormType form : FormType.values()) {
-			formTypeSearch.add(new SelectItem(form.getId(), form.getName()));
+			formTypeSearch.add(new SelectItem(form.getId(), form.getName() + " " + form.getDescription()));
 		}
 		
 		return formTypeSearch;

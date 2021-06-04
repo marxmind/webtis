@@ -91,7 +91,8 @@ public class IssuedForm {
 			try{form.setPcs(rs.getInt("logpcs"));}catch(NullPointerException e){}
 			try{form.setIsActive(rs.getInt("isactivelog"));}catch(NullPointerException e){}
 			try{form.setStatus(rs.getInt("formstatus"));}catch(NullPointerException e){}
-			try{form.setFormTypeName(FormType.nameId(rs.getInt("formtypelog")));}catch(NullPointerException e){}
+			//try{form.setFormTypeName(FormType.nameId(rs.getInt("formtypelog")));}catch(NullPointerException e){}
+			try{form.setFormTypeName(FormType.val(rs.getInt("formtypelog")).getDescription());}catch(NullPointerException e){}
 			try{form.setStatusName(FormStatus.nameId(rs.getInt("formstatus")));}catch(NullPointerException e){}
 			try{form.setFundId(rs.getInt("fundid"));}catch(NullPointerException e){}
 			try{form.setFundName(FundType.typeName(rs.getInt("fundid")));}catch(NullPointerException e){}
@@ -124,6 +125,7 @@ public class IssuedForm {
 			
 			try{
 			st.setFormTypeName(FormType.nameId(rs.getInt("formType")));
+			//	st.setFormTypeName(FormType.val(rs.getInt("formType")).getDescription());
 			form.setStock(st);
 			}catch(NullPointerException e){}
 			

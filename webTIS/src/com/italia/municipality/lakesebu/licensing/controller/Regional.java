@@ -7,8 +7,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.italia.municipality.lakesebu.database.LicensingDatabaseConnect;
+import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 /**
  * 
  * @author mark italia
@@ -16,22 +22,15 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @version 1.0
  *
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
 public class Regional {
 	private int id;
 	private String name;
 	private int isActive;
-	
-	public Regional(){}
-	
-	public Regional(
-			int id,
-			String name,
-			int isActive
-			){
-		this.id = id;
-		this.name = name;
-		this.isActive = isActive;
-	}
 	
 	public static String regionalSQL(String tablename,Municipality bg){
 		String sql= " AND "+ tablename +".isactivereg=" + bg.getIsActive();
@@ -57,7 +56,7 @@ public class Regional {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -80,7 +79,7 @@ public class Regional {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return regs;
@@ -134,7 +133,7 @@ public class Regional {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		int id =1;
 		int cnt = 1;
@@ -163,7 +162,7 @@ public class Regional {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to regional : " + s.getMessage());
@@ -183,7 +182,7 @@ public class Regional {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		int id =1;
 		int cnt = 1;
@@ -212,7 +211,7 @@ public class Regional {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to regional : " + s.getMessage());
@@ -230,7 +229,7 @@ public class Regional {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
@@ -249,7 +248,7 @@ public class Regional {
 		ps.executeUpdate();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to regional : " + s.getMessage());
@@ -267,7 +266,7 @@ public class Regional {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
@@ -286,7 +285,7 @@ public class Regional {
 		ps.executeUpdate();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to regional : " + s.getMessage());
@@ -303,7 +302,7 @@ public class Regional {
 		String sql = "";
 		try{
 		sql="SELECT regid FROM regional  ORDER BY regid DESC LIMIT 1";	
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
@@ -313,7 +312,7 @@ public class Regional {
 		
 		rs.close();
 		prep.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -354,7 +353,7 @@ public class Regional {
 		Connection conn = null;
 		boolean result = false;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement("SELECT regid FROM regional WHERE regid=?");
 		ps.setInt(1, id);
 		rs = ps.executeQuery();
@@ -365,7 +364,7 @@ public class Regional {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -377,7 +376,7 @@ public class Regional {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -390,7 +389,7 @@ public class Regional {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
@@ -404,7 +403,7 @@ public class Regional {
 		String[] params = new String[1];
 		params[0] = getId()+"";
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -417,30 +416,10 @@ public class Regional {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
-	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public int getIsActive() {
-		return isActive;
-	}
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-	
 	
 }
 

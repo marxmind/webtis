@@ -60,7 +60,7 @@ public static Map<Integer, Object> printDocumentV6(Clearance clr) {
 		String PROVINCE = "South Cotabato";
 		
 		HashMap param = new HashMap();
-		Customer taxpayer =Customer.retrieve(clr.getTaxPayer().getCustomerid());
+		Customer taxpayer =Customer.retrieve(clr.getTaxPayer().getId());
 		clr.setTaxPayer(taxpayer);
 		
 		Employee employee = Employee.retrieve(clr.getEmployee().getId());//officer of the Day

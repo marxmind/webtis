@@ -85,7 +85,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:calendar value="#{stocksBean.recordedDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 12em"/>
 				
 				<p:outputLabel value="Form Type"/>	
-			    <p:selectOneMenu id="frmId" value="#{stocksBean.formTypeId}" style="width: 12em">
+			    <p:selectOneMenu id="frmId" value="#{stocksBean.formTypeId}" style="width: 12em" filterMatchMode="contains" filter="true">
 						<f:selectItems value="#{stocksBean.formType}"/>
 						<p:ajax event="change" listener="#{stocksBean.generateSeries}" update="fromId toId msg"/>
 				</p:selectOneMenu>
@@ -114,7 +114,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				
 			<p:toolbar id="tbFormSearch" style="#{skin.toolbar}">
     		<f:facet name="left">	
-				    <p:selectOneMenu id="frmIdSearch" value="#{stocksBean.formTypeIdSearch}" style="width: 12em">
+				    <p:selectOneMenu id="frmIdSearch" value="#{stocksBean.formTypeIdSearch}" style="width: 12em" filterMatchMode="contains" filter="true">
 							<f:selectItems value="#{stocksBean.formTypeSearch}"/>
 							<p:ajax event="change" listener="#{stocksBean.init}" update="dataForm" />
 					</p:selectOneMenu>
@@ -127,7 +127,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:dataTable id="dataForm" value="#{stocksBean.stocks}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="true" style="#{skin.table}" paginatorPosition="top"
+                         scrollable="true" style="#{skin.table}" paginatorPosition="top" reflow="true"
                          
                          >
                          
@@ -164,7 +164,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						<p:outputLabel value="#{rpt.stabNo}"/>
             				</p:column>
             				
-            				<p:column headerText="Form Type" width="70">
+            				<p:column headerText="AF Form Type" width="100">
             						<p:outputLabel value="#{rpt.formTypeName}"/>
             				</p:column>
             				

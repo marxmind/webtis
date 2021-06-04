@@ -158,7 +158,8 @@ public class CollectionInfo {
 			try{form.setPcs(rs.getInt("colpcs"));}catch(NullPointerException e){}
 			try{form.setIsActive(rs.getInt("isactivecol"));}catch(NullPointerException e){}
 			try{form.setStatus(rs.getInt("colstatus"));}catch(NullPointerException e){}
-			try{form.setFormTypeName(FormType.nameId(rs.getInt("formtypecol")));}catch(NullPointerException e){}
+			//try{form.setFormTypeName(FormType.nameId(rs.getInt("formtypecol")));}catch(NullPointerException e){}
+			try{form.setFormTypeName(FormType.val(rs.getInt("formtypecol")).getDescription());}catch(NullPointerException e){}
 			try{form.setStatusName(FormStatus.nameId(rs.getInt("colstatus")));}catch(NullPointerException e){}
 			try{form.setPrevPcs(rs.getInt("prevPcs"));}catch(NullPointerException e){}
 			try{form.setFundId(rs.getInt("fundid"));}catch(NullPointerException e){}

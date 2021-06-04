@@ -17,6 +17,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import com.italia.municipality.lakesebu.enm.AppConf;
+import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 
 /**
@@ -113,6 +114,41 @@ public class RCDReader {
 		
 	}
 	
+
+	public static void saveCollectorMode(String value) {
+		try {
+		File dir = new File(GlobalVar.APP_CONF_DIR);
+		dir.mkdir();
+		String counterMsg = "collector-mode="+value;
+		
+		File counterFile = new File(GlobalVar.APP_CONF_DIR + GlobalVar.COLLECTOR_MODE_FILE);
+		PrintWriter pw = new PrintWriter(new FileWriter(counterFile));
+		pw.println(counterMsg);
+		pw.flush();
+		pw.close();
+		}catch(Exception e) {}
+	}
+	
+	public static String readCollectorMode() {
+		try {
+		Properties prop = new Properties();
+		File dirProp = new File(GlobalVar.APP_CONF_DIR + GlobalVar.COLLECTOR_MODE_FILE);
+		if(dirProp.exists()) {
+			prop.load(new FileInputStream(dirProp));
+			return prop.getProperty("collector-mode");
+		}else {
+			String counter = DateUtils.getCurrentYear() + "-" + (DateUtils.getCurrentMonth()<10? "0"+DateUtils.getCurrentMonth() : DateUtils.getCurrentMonth()) + "-#001";
+			saveSummaryCounterSeries(counter);
+			dirProp = new File(GlobalVar.APP_CONF_DIR + GlobalVar.COLLECTOR_MODE_FILE);
+			prop.load(new FileInputStream(dirProp));
+			return prop.getProperty("collector-mode");
+		}
+			
+		}catch(Exception e) {}
+		
+		return "ON";
+	}
+	
 	public static void saveSummaryCounterSeries(String value) {
 		try {
 		File dir = new File(xmlFolder);
@@ -122,8 +158,8 @@ public class RCDReader {
 		//}
 		String counterMsg = "counter="+value;
 		
-		System.out.println("saveSummaryCounterSeries "+ xmlFolder +"counter_report.tis");
-		File counterFile = new File(xmlFolder + "counter_report.tis");
+		//System.out.println("saveSummaryCounterSeries "+ xmlFolder + GlobalVar.COUNTER_REPORT_FILE); //"counter_report.tis");
+		File counterFile = new File(xmlFolder + GlobalVar.COUNTER_REPORT_FILE);
 		PrintWriter pw = new PrintWriter(new FileWriter(counterFile));
 		pw.println(counterMsg);
 		pw.flush();
@@ -133,15 +169,15 @@ public class RCDReader {
 	public static String readCounterReportSeries() {
 		try {
 		Properties prop = new Properties();
-		File dirProp = new File(xmlFolder + "counter_report.tis");
-		System.out.println("readCounterReportSeries "+ xmlFolder +"counter_report.tis");
+		File dirProp = new File(xmlFolder + GlobalVar.COUNTER_REPORT_FILE);
+		//System.out.println("readCounterReportSeries "+ xmlFolder + GlobalVar.COUNTER_REPORT_FILE);//"counter_report.tis");
 		if(dirProp.exists()) {
 			prop.load(new FileInputStream(dirProp));
 			return prop.getProperty("counter");
 		}else {
 			String counter = DateUtils.getCurrentYear() + "-" + (DateUtils.getCurrentMonth()<10? "0"+DateUtils.getCurrentMonth() : DateUtils.getCurrentMonth()) + "-#001";
 			saveSummaryCounterSeries(counter);
-			dirProp = new File(xmlFolder + "counter_report.tis");
+			dirProp = new File(xmlFolder + GlobalVar.COUNTER_REPORT_FILE);
 			prop.load(new FileInputStream(dirProp));
 			return prop.getProperty("counter");
 		}

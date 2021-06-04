@@ -24,7 +24,7 @@ import com.italia.municipality.lakesebu.enm.DateFormat;
 import com.italia.municipality.lakesebu.enm.EmailType;
 import com.italia.municipality.lakesebu.enm.Job;
 import com.italia.municipality.lakesebu.licensing.controller.Customer;
-import com.italia.municipality.lakesebu.licensing.controller.ORTransaction;
+import com.italia.municipality.lakesebu.licensing.controller.BusinessORTransaction;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 
@@ -40,7 +40,7 @@ public class OrBean implements Serializable{
 	private String searchName;
 	private Date calendarFrom;
 	private Date calendarTo;
-	private List<ORTransaction> orNumbers = Collections.synchronizedList(new ArrayList<ORTransaction>());
+	private List<BusinessORTransaction> orNumbers = Collections.synchronizedList(new ArrayList<BusinessORTransaction>());
 	private double grandTotal;
 	
 	private Date issuedDate;
@@ -59,7 +59,7 @@ public class OrBean implements Serializable{
 	private List<Customer> taxpayers = Collections.synchronizedList(new ArrayList<Customer>());
 	private String searchTaxpayerName;
 	
-	private ORTransaction orData;
+	private BusinessORTransaction orData;
 	
 	private int statId;
 	private List stats;
@@ -74,7 +74,7 @@ public class OrBean implements Serializable{
 	}
 	
 	public void loadORs(){
-		orNumbers = Collections.synchronizedList(new ArrayList<ORTransaction>());
+		orNumbers = Collections.synchronizedList(new ArrayList<BusinessORTransaction>());
 		
 		String sql = " AND (orl.ordate>=? AND orl.ordate<=?) AND orl.oractive=1 ";
 		String[] params = new String[2];
@@ -90,13 +90,13 @@ public class OrBean implements Serializable{
 		sql += " ORDER BY orl.orid DESC";
 		
 		int cnt = 1;
-		for(ORTransaction ort : ORTransaction.retrieve(sql, params)){
+		for(BusinessORTransaction ort : BusinessORTransaction.retrieve(sql, params)){
 			ort.setCnt(cnt++);
 			orNumbers.add(ort);
 			grandTotal += ort.getAmount();
 		}
 		
-		ORTransaction tr = new ORTransaction();
+		BusinessORTransaction tr = new BusinessORTransaction();
 		
 		tr.setId(0);
 		tr.setCnt(cnt++);
@@ -134,7 +134,7 @@ public class OrBean implements Serializable{
 	}
 	
 	public void saveOR(){
-		ORTransaction or = new ORTransaction();
+		BusinessORTransaction or = new BusinessORTransaction();
 		boolean isOk = true;
 		if(getOrData()!=null){
 			or = getOrData();
@@ -324,14 +324,14 @@ public class OrBean implements Serializable{
 		
 	}
 	
-	public void deleteRow(ORTransaction or){
+	public void deleteRow(BusinessORTransaction or){
 		or.delete();
 		Application.addMessage(1, "Success", "Successfully deleted");
 		clearFlds();
 		init();
 	}
 	
-	public void clickItem(ORTransaction or){
+	public void clickItem(BusinessORTransaction or){
 		
 		setOrData(or);
 		setOrNumber(or.getOrNumber());
@@ -397,11 +397,11 @@ public class OrBean implements Serializable{
 		this.calendarTo = calendarTo;
 	}
 
-	public List<ORTransaction> getOrNumbers() {
+	public List<BusinessORTransaction> getOrNumbers() {
 		return orNumbers;
 	}
 
-	public void setOrNumbers(List<ORTransaction> orNumbers) {
+	public void setOrNumbers(List<BusinessORTransaction> orNumbers) {
 		this.orNumbers = orNumbers;
 	}
 
@@ -450,7 +450,7 @@ public class OrBean implements Serializable{
 
 	public String getOrNumber() {
 		if(orNumber==null) {
-			String orNo =  ORTransaction.getLastORNumber();
+			String orNo =  BusinessORTransaction.getLastORNumber();
 			
 			int incNo = Integer.valueOf(orNo);
 			incNo += 1;
@@ -517,11 +517,11 @@ public class OrBean implements Serializable{
 		this.searchTaxpayerName = searchTaxpayerName;
 	}
 
-	public ORTransaction getOrData() {
+	public BusinessORTransaction getOrData() {
 		return orData;
 	}
 
-	public void setOrData(ORTransaction orData) {
+	public void setOrData(BusinessORTransaction orData) {
 		this.orData = orData;
 	}
 

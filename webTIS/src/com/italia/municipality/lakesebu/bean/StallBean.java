@@ -10,9 +10,10 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.BuildingStall;
-import com.italia.municipality.lakesebu.controller.Customer;
+import com.italia.municipality.lakesebu.controller.Customer2;
 import com.italia.municipality.lakesebu.controller.MarketBuilding;
 import com.italia.municipality.lakesebu.enm.StallType;
+import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.utils.Application;
 
 /**
@@ -147,7 +148,7 @@ public class StallBean implements Serializable{
 		customers = new ArrayList<>();
 		customers.add(new SelectItem(0, "Select..."));
 		for(Customer cus : Customer.retrieve("", new String[0])) {
-			customers.add(new SelectItem(cus.getId(), cus.getFullName()));
+			customers.add(new SelectItem(cus.getId(), cus.getFullname()));
 		}
 		
 		return customers;

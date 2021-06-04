@@ -39,6 +39,7 @@ public class Login {
 	private String clientip;
 	private String clientbrowser;
 	private int isActive;
+	private int collectorId;
 	
 	public Login(){}
 	
@@ -160,7 +161,7 @@ public class Login {
 			try{in.setClientip(rs.getString("clientip"));}catch(NullPointerException e){}
 			try{in.setClientbrowser(rs.getString("clientbrowser"));}catch(NullPointerException e){}
 			try{in.setIsActive(rs.getInt("isactive"));}catch(NullPointerException e){}
-			
+			try{in.setCollectorId(rs.getInt("collectorid"));}catch(NullPointerException e){}
 			
 			UserAccessLevel level = new UserAccessLevel();
 			try{level.setUseraccesslevelid(rs.getInt("useraccesslevelid"));}catch(NullPointerException e){}
@@ -212,7 +213,7 @@ public class Login {
 			
 		}
 		
-		//System.out.println("SQL " + ps.toString());
+		System.out.println("SQL " + ps.toString());
 		
 		rs = ps.executeQuery();
 		
@@ -225,6 +226,7 @@ public class Login {
 			try{in.setLastlogin(rs.getString("lastlogin"));}catch(NullPointerException e){}
 			try{in.setAccessLevel(UserAccessLevel.userAccessLevel(rs.getString("useraccesslevelid")));}catch(NullPointerException e){}
 			try{in.setIsOnline(rs.getInt("isOnline"));}catch(NullPointerException e){}
+			try{in.setCollectorId(rs.getInt("collectorid"));}catch(NullPointerException e){}
 			try{UserDtls user = new UserDtls();
 			user.setUserdtlsid(rs.getLong("userdtlsid"));
 			in.setUserDtls(user);}catch(NullPointerException e){}
@@ -360,8 +362,9 @@ public class Login {
 				+ "logintime,"
 				+ "clientip,"
 				+ "clientbrowser,"
-				+ "isactive)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?)";
+				+ "isactive,"
+				+ "collectorid)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -393,6 +396,7 @@ public class Login {
 		ps.setString(9, in.getClientip());
 		ps.setString(10, in.getClientbrowser());
 		ps.setInt(11, in.getIsActive());
+		ps.setInt(12, in.getCollectorId());
 		
 		LogU.add(in.getUsername());
 		LogU.add(in.getPassword());
@@ -404,6 +408,7 @@ public class Login {
 		LogU.add(in.getClientip());
 		LogU.add(in.getClientbrowser());
 		LogU.add(in.getIsActive());
+		LogU.add(in.getCollectorId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -430,8 +435,9 @@ public class Login {
 				+ "logintime,"
 				+ "clientip,"
 				+ "clientbrowser,"
-				+ "isactive)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?)";
+				+ "isactive,"
+				+ "collectorid)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -463,6 +469,7 @@ public class Login {
 		ps.setString(9, getClientip());
 		ps.setString(10, getClientbrowser());
 		ps.setInt(11, getIsActive());
+		ps.setInt(12, getCollectorId());
 		
 		LogU.add(getUsername());
 		LogU.add(getPassword());
@@ -474,6 +481,7 @@ public class Login {
 		LogU.add(getClientip());
 		LogU.add(getClientbrowser());
 		LogU.add(getIsActive());
+		LogU.add(getCollectorId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -498,7 +506,8 @@ public class Login {
 				+ "logintime=?,"
 				+ "clientip=?,"
 				+ "clientbrowser=?,"
-				+ "isactive=?" 
+				+ "isactive=?,"
+				+ "collectorid=?" 
 				+ " WHERE logid=?";
 		
 		PreparedStatement ps = null;
@@ -520,7 +529,8 @@ public class Login {
 		ps.setString(8, in.getClientip());
 		ps.setString(9, in.getClientbrowser());
 		ps.setInt(10, in.getIsActive());
-		ps.setLong(11, in.getLogid());
+		ps.setInt(11, in.getCollectorId());
+		ps.setLong(12, in.getLogid());
 		 
 		LogU.add(in.getUsername());
 		LogU.add(in.getPassword());
@@ -530,6 +540,7 @@ public class Login {
 		LogU.add(in.getUserDtls().getUserdtlsid());
 		LogU.add(in.getLogintime());
 		LogU.add(in.getClientip());
+		LogU.add(in.getCollectorId());
 		LogU.add(in.getClientbrowser());
 		
 		LogU.add("executing for saving...");
@@ -556,7 +567,8 @@ public class Login {
 				+ "logintime=?,"
 				+ "clientip=?,"
 				+ "clientbrowser=?,"
-				+ "isactive=?" 
+				+ "isactive=?,"
+				+ "collectorid=?" 
 				+ " WHERE logid=?";
 		
 		PreparedStatement ps = null;
@@ -578,7 +590,8 @@ public class Login {
 		ps.setString(8,getClientip());
 		ps.setString(9,getClientbrowser());
 		ps.setInt(10, getIsActive());
-		ps.setLong(11, getLogid());
+		ps.setInt(11, getCollectorId());
+		ps.setLong(12, getLogid());
 		
 		LogU.add(getUsername());
 		LogU.add(getPassword());
@@ -589,6 +602,7 @@ public class Login {
 		LogU.add(getLogintime());
 		LogU.add(getClientip());
 		LogU.add(getClientbrowser());
+		LogU.add(getCollectorId());
 		LogU.add(getLogid());
 		
 		LogU.add("executing for saving...");
@@ -875,6 +889,14 @@ public class Login {
 
 	public void setIsActive(int isActive) {
 		this.isActive = isActive;
+	}
+
+	public int getCollectorId() {
+		return collectorId;
+	}
+
+	public void setCollectorId(int collectorId) {
+		this.collectorId = collectorId;
 	}
 	
 }

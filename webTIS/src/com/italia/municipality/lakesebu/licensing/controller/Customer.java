@@ -11,9 +11,15 @@ import java.util.List;
 
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.UserDtls;
-import com.italia.municipality.lakesebu.database.LicensingDatabaseConnect;
+import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @For licensing customer
@@ -22,17 +28,20 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @version 1.0
  */
 
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
 public class Customer {
 
-	private long customerid;
+	private long id;
 	private String firstname;
 	private String middlename;
 	private String lastname;
 	private String fullname;
 	private String gender;
 	private int age;
-	//private String address; 
 	private String contactno;
 	private String dateregistered;
 	private String cardno; 
@@ -65,7 +74,64 @@ public class Customer {
 	private String qrcode;
 	private String nationalId;
 	
-	public Customer(){}
+	public static boolean validateNameEntry(String name){
+		String sql = "SELECT fullname FROM customer WHERE cusisactive=1 AND fullname=?";
+		String[] params = new String[1];
+		params[0] = name;
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		if(params!=null && params.length>0){
+			
+			for(int i=0; i<params.length; i++){
+				ps.setString(i+1, params[i]);
+			}
+			
+		}
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			return true;
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return false;
+	}
+	
+	public static List<String> names(String name){
+		List<String> str = new ArrayList<String>();
+		String sql = "SELECT fullname FROM customer WHERE cusisactive=1 AND fullname like '%"+ name.replace("--", "") +"%'";
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			str.add(rs.getString("fullname"));
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return str;
+	}
 	
 	public Customer(
 			long customerid,
@@ -91,7 +157,7 @@ public class Customer {
 			String photoid
 			){
 		
-		this.customerid = customerid;
+		this.id = customerid;
 		this.firstname = firstname;
 		this.middlename = middlename;
 		this.lastname = lastname;
@@ -143,7 +209,7 @@ public class Customer {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -154,7 +220,7 @@ public class Customer {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return 0;
@@ -168,7 +234,7 @@ public class Customer {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -179,7 +245,7 @@ public class Customer {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return false;
@@ -196,7 +262,7 @@ public class Customer {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -215,7 +281,7 @@ public class Customer {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return false;
@@ -229,7 +295,7 @@ public class Customer {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -240,7 +306,7 @@ public class Customer {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return result;
@@ -254,7 +320,7 @@ public class Customer {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -265,7 +331,7 @@ public class Customer {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return result;
@@ -275,8 +341,8 @@ public class Customer {
 		String sql= " AND "+ tablename +".cusisactive=" + cus.getIsactive();
 		if(cus!=null){
 			
-			if(cus.getCustomerid()!=0){
-				sql += " AND "+ tablename +".customerid=" + cus.getCustomerid();
+			if(cus.getId()!=0){
+				sql += " AND "+ tablename +".customerid=" + cus.getId();
 			}/*else{
 				sql += " AND "+ tablename +".customerid=" + cus.getCustomerid();
 			}*/
@@ -373,7 +439,7 @@ public class Customer {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -381,7 +447,7 @@ public class Customer {
 		while(rs.next()){
 			
 			Customer cus = new Customer();
-			try{cus.setCustomerid(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
 			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
 			try{cus.setLastname(rs.getString("cuslastname"));}catch(NullPointerException e){}
@@ -405,7 +471,7 @@ public class Customer {
 			
 			try{cus.setBirthdate(rs.getString("borndate"));}catch(NullPointerException e){}
 			try{Customer emergency = new Customer();
-			emergency.setCustomerid(rs.getLong("emeperson"));
+			emergency.setId(rs.getLong("emeperson"));
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
 			
@@ -471,7 +537,7 @@ public class Customer {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return cuss;
@@ -508,7 +574,7 @@ public class Customer {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -524,7 +590,7 @@ public class Customer {
 		while(rs.next()){
 			
 			Customer cus = new Customer();
-			try{cus.setCustomerid(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
 			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
 			try{cus.setLastname(rs.getString("cuslastname"));}catch(NullPointerException e){}
@@ -548,7 +614,7 @@ public class Customer {
 			
 			try{cus.setBirthdate(rs.getString("borndate"));}catch(NullPointerException e){}
 			try{Customer emergency = new Customer();
-			emergency.setCustomerid(rs.getLong("emeperson"));
+			emergency.setId(rs.getLong("emeperson"));
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
 			
@@ -613,7 +679,7 @@ public class Customer {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return cuss;
@@ -649,7 +715,7 @@ public class Customer {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -657,7 +723,7 @@ public class Customer {
 		while(rs.next()){
 			
 			
-			try{cus.setCustomerid(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
 			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
 			try{cus.setLastname(rs.getString("cuslastname"));}catch(NullPointerException e){}
@@ -681,7 +747,7 @@ public class Customer {
 			
 			try{cus.setBirthdate(rs.getString("borndate"));}catch(NullPointerException e){}
 			try{Customer emergency = new Customer();
-			emergency.setCustomerid(rs.getLong("emeperson"));
+			emergency.setId(rs.getLong("emeperson"));
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
 			
@@ -745,7 +811,7 @@ public class Customer {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return cus;
@@ -800,14 +866,14 @@ public class Customer {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
 		
 		while(rs.next()){
 			
-			try{cus.setCustomerid(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
 			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
 			try{cus.setLastname(rs.getString("cuslastname"));}catch(NullPointerException e){}
@@ -831,7 +897,7 @@ public class Customer {
 			
 			try{cus.setBirthdate(rs.getString("borndate"));}catch(NullPointerException e){}
 			try{Customer emergency = new Customer();
-			emergency.setCustomerid(rs.getLong("emeperson"));
+			emergency.setId(rs.getLong("emeperson"));
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
 			
@@ -895,7 +961,7 @@ public class Customer {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return cus;
@@ -906,7 +972,7 @@ public class Customer {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -922,7 +988,7 @@ public class Customer {
 		ps.execute();
 		
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){}
 		
@@ -931,7 +997,7 @@ public class Customer {
 	public static Customer save(Customer cus){
 		if(cus!=null){
 			
-			long id = Customer.getInfo(cus.getCustomerid() ==0? Customer.getLatestId()+1 : cus.getCustomerid());
+			long id = Customer.getInfo(cus.getId() ==0? Customer.getLatestId()+1 : cus.getId());
 			LogU.add("checking for new added data");
 			if(id==1){
 				LogU.add("insert new Data ");
@@ -950,7 +1016,7 @@ public class Customer {
 	
 	public void save(){
 			
-			long id = getInfo(getCustomerid() ==0? getLatestId()+1 : getCustomerid());
+			long id = getInfo(getId() ==0? getLatestId()+1 : getId());
 			LogU.add("checking for new added data");
 			if(id==1){
 				LogU.add("insert new Data ");
@@ -1001,7 +1067,7 @@ public class Customer {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		long id =1;
 		int cnt=1;
@@ -1009,12 +1075,12 @@ public class Customer {
 		LogU.add("inserting data into table customer");
 		if("1".equalsIgnoreCase(type)){
 			ps.setLong(cnt++, id);
-			cus.setCustomerid(id);
+			cus.setId(id);
 			LogU.add("id: 1");
 		}else if("3".equalsIgnoreCase(type)){
 			id=getLatestId()+1;
 			ps.setLong(cnt++, id);
-			cus.setCustomerid(id);
+			cus.setId(id);
 			LogU.add("id: " + id);
 		}
 		ps.setString(cnt++, cus.getFirstname());
@@ -1034,7 +1100,7 @@ public class Customer {
 		ps.setInt(cnt++, cus.getProvince()==null? 0 : cus.getProvince().getId());
 		ps.setInt(cnt++, cus.getCivilStatus());
 		ps.setString(cnt++, cus.getBirthdate());
-		ps.setLong(cnt++, cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getCustomerid());
+		ps.setLong(cnt++, cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getId());
 		ps.setInt(cnt++, cus.getRelationship());
 		ps.setString(cnt++, cus.getPhotoid());
 		ps.setString(cnt++, cus.getBornplace());
@@ -1062,7 +1128,7 @@ public class Customer {
 		LogU.add(cus.getProvince()==null? 0 : cus.getProvince().getId());
 		LogU.add(cus.getCivilStatus());
 		LogU.add(cus.getBirthdate());
-		LogU.add(cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getCustomerid());
+		LogU.add(cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getId());
 		LogU.add(cus.getRelationship());
 		LogU.add(cus.getPhotoid());
 		LogU.add(cus.getBornplace());
@@ -1077,7 +1143,7 @@ public class Customer {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to customer : " + s.getMessage());
@@ -1122,7 +1188,7 @@ public class Customer {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		long id =1;
 		int cnt =1;
@@ -1130,12 +1196,12 @@ public class Customer {
 		LogU.add("inserting data into table customer");
 		if("1".equalsIgnoreCase(type)){
 			ps.setLong(cnt++, id);
-			setCustomerid(id);
+			setId(id);
 			LogU.add("id: 1");
 		}else if("3".equalsIgnoreCase(type)){
 			id=getLatestId()+1;
 			ps.setLong(cnt++, id);
-			setCustomerid(id);
+			setId(id);
 			LogU.add("id: " + id);
 		}
 		ps.setString(cnt++, getFirstname());
@@ -1155,7 +1221,7 @@ public class Customer {
 		ps.setInt(cnt++, getProvince()==null? 0 : getProvince().getId());
 		ps.setInt(cnt++, getCivilStatus());
 		ps.setString(cnt++, getBirthdate());
-		ps.setLong(cnt++, getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getCustomerid());
+		ps.setLong(cnt++, getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getId());
 		ps.setInt(cnt++, getRelationship());
 		ps.setString(cnt++, getPhotoid());
 		ps.setString(cnt++, getBornplace());
@@ -1183,7 +1249,7 @@ public class Customer {
 		LogU.add(getProvince()==null? 0 : getProvince().getId());
 		LogU.add(getCivilStatus());
 		LogU.add(getBirthdate());
-		LogU.add(getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getCustomerid());
+		LogU.add(getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getId());
 		LogU.add(getRelationship());
 		LogU.add(getPhotoid());
 		LogU.add(getBornplace());
@@ -1198,7 +1264,7 @@ public class Customer {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to customer : " + s.getMessage());
@@ -1241,7 +1307,7 @@ public class Customer {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		LogU.add("===========================START=========================");
 		LogU.add("updating data into table customer");
@@ -1262,7 +1328,7 @@ public class Customer {
 		ps.setInt(cnt++, cus.getProvince()==null? 0 : cus.getProvince().getId());
 		ps.setInt(cnt++, cus.getCivilStatus());
 		ps.setString(cnt++, cus.getBirthdate());
-		ps.setLong(cnt++, cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getCustomerid());
+		ps.setLong(cnt++, cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getId());
 		ps.setInt(cnt++, cus.getRelationship());
 		ps.setString(cnt++, cus.getPhotoid());
 		ps.setString(cnt++, cus.getBornplace());
@@ -1272,7 +1338,7 @@ public class Customer {
 		ps.setString(cnt++, cus.getCitizenship());
 		ps.setString(cnt++, cus.getQrcode());
 		ps.setString(cnt++, cus.getNationalId());
-		ps.setLong(cnt++, cus.getCustomerid());
+		ps.setLong(cnt++, cus.getId());
 		
 		LogU.add(cus.getFirstname());
 		LogU.add(cus.getMiddlename());
@@ -1290,7 +1356,7 @@ public class Customer {
 		LogU.add(cus.getProvince()==null? 0 : cus.getProvince().getId());
 		LogU.add(cus.getCivilStatus());
 		LogU.add(cus.getBirthdate());
-		LogU.add(cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getCustomerid());
+		LogU.add(cus.getEmergencyContactPerson()==null? 0l : cus.getEmergencyContactPerson().getId());
 		LogU.add(cus.getRelationship());
 		LogU.add(cus.getPhotoid());
 		LogU.add(cus.getBornplace());
@@ -1300,13 +1366,13 @@ public class Customer {
 		LogU.add(cus.getCitizenship());
 		LogU.add(cus.getQrcode());
 		LogU.add(cus.getNationalId());
-		LogU.add(cus.getCustomerid());
+		LogU.add(cus.getId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to customer : " + s.getMessage());
@@ -1348,7 +1414,7 @@ public class Customer {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		LogU.add("===========================START=========================");
 		LogU.add("updating data into table customer");
@@ -1369,7 +1435,7 @@ public class Customer {
 		ps.setInt(cnt++, getProvince()==null? 0 : getProvince().getId());
 		ps.setInt(cnt++, getCivilStatus());
 		ps.setString(cnt++, getBirthdate());
-		ps.setLong(cnt++, getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getCustomerid());
+		ps.setLong(cnt++, getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getId());
 		ps.setInt(cnt++, getRelationship());
 		ps.setString(cnt++, getPhotoid());
 		ps.setString(cnt++, getBornplace());
@@ -1379,7 +1445,7 @@ public class Customer {
 		ps.setString(cnt++, getCitizenship());
 		ps.setString(cnt++, getQrcode());
 		ps.setString(cnt++, getNationalId());
-		ps.setLong(cnt++, getCustomerid());
+		ps.setLong(cnt++, getId());
 		
 		
 		LogU.add(getFirstname());
@@ -1398,7 +1464,7 @@ public class Customer {
 		LogU.add(getProvince()==null? 0 : getProvince().getId());
 		LogU.add(getCivilStatus());
 		LogU.add(getBirthdate());
-		LogU.add(getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getCustomerid());
+		LogU.add(getEmergencyContactPerson()==null? 0l : getEmergencyContactPerson().getId());
 		LogU.add(getRelationship());
 		LogU.add(getPhotoid());
 		LogU.add(getBornplace());
@@ -1408,13 +1474,13 @@ public class Customer {
 		LogU.add(getCitizenship());
 		LogU.add(getQrcode());
 		LogU.add(getNationalId());
-		LogU.add(getCustomerid());
+		LogU.add(getId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to customer : " + s.getMessage());
@@ -1430,7 +1496,7 @@ public class Customer {
 		String sql = "";
 		try{
 		sql="SELECT customerid FROM customer  ORDER BY customerid DESC LIMIT 1";	
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
@@ -1440,7 +1506,7 @@ public class Customer {
 		
 		rs.close();
 		prep.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -1456,7 +1522,7 @@ public class Customer {
 		String sql = "";
 		try{
 		sql="SELECT cuscardno FROM customer WHERE cusisactive=1 ORDER BY customerid DESC LIMIT 1";	
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
@@ -1466,7 +1532,7 @@ public class Customer {
 		
 		rs.close();
 		prep.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -1507,7 +1573,7 @@ public class Customer {
 		Connection conn = null;
 		boolean result = false;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement("SELECT customerid FROM customer WHERE customerid=?");
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
@@ -1518,7 +1584,7 @@ public class Customer {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -1530,7 +1596,7 @@ public class Customer {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -1543,7 +1609,7 @@ public class Customer {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
@@ -1555,9 +1621,9 @@ public class Customer {
 		String sql = "UPDATE customer set cusisactive=0,userdtlsid="+ getUserDtls().getUserdtlsid() +" WHERE customerid=?";
 		
 		String[] params = new String[1];
-		params[0] = getCustomerid()+"";
+		params[0] = getId()+"";
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -1570,16 +1636,17 @@ public class Customer {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
 	
-	public long getCustomerid() {
-		return customerid;
+	/*
+	public long getId() {
+		return id;
 	}
-	public void setCustomerid(long customerid) {
-		this.customerid = customerid;
+	public void setId(long customerid) {
+		this.id = customerid;
 	}
 	public String getFirstname() {
 		return firstname;
@@ -1599,12 +1666,7 @@ public class Customer {
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
 	}
-	/*public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
-	}*/
+	
 	public String getContactno() {
 		if(contactno==null) {
 			contactno = "";
@@ -1769,34 +1831,8 @@ public class Customer {
 		this.completeAddress = completeAddress;
 	}
 
-	public static void main(String[] args) {
-		
-		System.out.println(Customer.cardNumber());
-		
-		/*Customer c = new Customer();
-		//c.setCustomerid(1);
-		c.setFirstname("Markos");
-		c.setMiddlename("M");
-		c.setLastname("L");
-		c.setGender("Male");
-		c.setAge(1);
-		c.setAddress("Add");
-		c.setContactno("1211");
-		c.setDateregistered(DateUtils.getCurrentDateMMDDYYYY());
-		c.setCardno("45247");
-		c.setIsactive(1);
-		UserDtls u = new UserDtls();
-		u.setUserdtlsid(1l);
-		c.setUserDtls(u);
-		c.save();
-		c.setIsactive(1);
-		for(Customer cx :  Customer.retrieve(c)){
-			System.out.println("name : " + cx.getFirstname());
-		}*/
-	}
-
 	public Long getIdentifier() {
-		return this.customerid;
+		return this.id;
 	}
 
 	public String getBornplace() {
@@ -1853,7 +1889,7 @@ public class Customer {
 
 	public void setNationalId(String nationalId) {
 		this.nationalId = nationalId;
-	}
+	}*/
 	
 }
 

@@ -730,7 +730,8 @@ public class LogformBean implements Serializable{
 			form.setStatusName(FormStatus.NOT_ALL_ISSUED.getName());
 		}
 		
-		try{form.setFormTypeName(FormType.nameId(getFormTypeId()));}catch(NullPointerException e){}
+		//try{form.setFormTypeName(FormType.nameId(getFormTypeId()));}catch(NullPointerException e){}
+		try{form.setFormTypeName(FormType.val(getFormTypeId()).getDescription());}catch(NullPointerException e){}
 		
 		//cash ticket
 		if(FormType.CT_2.getId()==getFormTypeId() || FormType.CT_5.getId()==getFormTypeId()) {
@@ -3334,7 +3335,7 @@ public class LogformBean implements Serializable{
 		formTypes = new ArrayList<>();
 		
 		for(FormType form : FormType.values()) {
-			formTypes.add(new SelectItem(form.getId(), form.getName()));
+			formTypes.add(new SelectItem(form.getId(), form.getName() + " " + form.getDescription()));
 		}
 		
 		return formTypes;

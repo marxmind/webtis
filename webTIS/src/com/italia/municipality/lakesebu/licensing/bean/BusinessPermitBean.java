@@ -54,7 +54,7 @@ import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.licensing.controller.DocumentFormatter;
 import com.italia.municipality.lakesebu.licensing.controller.DocumentPrinting;
 import com.italia.municipality.lakesebu.licensing.controller.Livelihood;
-import com.italia.municipality.lakesebu.licensing.controller.ORTransaction;
+import com.italia.municipality.lakesebu.licensing.controller.BusinessORTransaction;
 import com.italia.municipality.lakesebu.licensing.controller.Words;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
@@ -130,8 +130,8 @@ public class BusinessPermitBean implements Serializable{
 	private String controlNo;
 	private String typeOf;
 	
-	private List<ORTransaction> ors = new ArrayList<ORTransaction>();
-	private List<ORTransaction> orsSelected = new ArrayList<ORTransaction>();
+	private List<BusinessORTransaction> ors = new ArrayList<BusinessORTransaction>();
+	private List<BusinessORTransaction> orsSelected = new ArrayList<BusinessORTransaction>();
 	
 	private String searchBusinessName;
 	private List<Livelihood> business = new ArrayList<Livelihood>();
@@ -209,9 +209,9 @@ public class BusinessPermitBean implements Serializable{
 		
 		String sql = " AND orl.oractive=1 AND cuz.customerid=? ORDER BY orl.orid DESC";
 		String[] params = new String[1];
-		params[0] = cuz.getCustomerid()+"";
+		params[0] = cuz.getId()+"";
 		
-		ors = ORTransaction.retrieve(sql, params);
+		ors = BusinessORTransaction.retrieve(sql, params);
 		
 		loadBusiness();
 	}
@@ -229,8 +229,8 @@ public class BusinessPermitBean implements Serializable{
 		
 		sql = " AND orl.oractive=1 AND cuz.customerid=? ORDER BY orl.orid DESC";
 		params = new String[1];
-		params[0] = cuz.getCustomerid()+"";
-		ors = ORTransaction.retrieve(sql, params);
+		params[0] = cuz.getId()+"";
+		ors = BusinessORTransaction.retrieve(sql, params);
 		
 		if(permit.getOrs().contains("/")) {
 			String[] ors = permit.getOrs().split("/");
@@ -239,17 +239,17 @@ public class BusinessPermitBean implements Serializable{
 				
 				sql = " AND orl.oractive=1 AND cuz.customerid=? AND orl.orno=? ORDER BY orl.orid DESC";
 				params = new String[2];
-				params[0] = cuz.getCustomerid()+"";
+				params[0] = cuz.getId()+"";
 				params[1] = or;
-				ORTransaction o = ORTransaction.retrieve(sql, params).get(0);
+				BusinessORTransaction o = BusinessORTransaction.retrieve(sql, params).get(0);
 				orsSelected.add(o);
 			}
 		}else {
 			sql = " AND orl.oractive=1 AND cuz.customerid=? AND orl.orno=? ORDER BY orl.orid DESC";
 			params = new String[2];
-			params[0] = cuz.getCustomerid()+"";
+			params[0] = cuz.getId()+"";
 			params[1] = permit.getOrs();
-			ORTransaction o = ORTransaction.retrieve(sql, params).get(0);
+			BusinessORTransaction o = BusinessORTransaction.retrieve(sql, params).get(0);
 			orsSelected.add(o);
 		}
 		
@@ -455,8 +455,8 @@ public class BusinessPermitBean implements Serializable{
 		setEmployeeDtls(null);
 		setGrossAmount(0.00);
 		
-		ors = Collections.synchronizedList(new ArrayList<ORTransaction>());
-		orsSelected = Collections.synchronizedList(new ArrayList<ORTransaction>());
+		ors = Collections.synchronizedList(new ArrayList<BusinessORTransaction>());
+		orsSelected = Collections.synchronizedList(new ArrayList<BusinessORTransaction>());
 		business = Collections.synchronizedList(new ArrayList<Livelihood>());
 		selectedBusiness = Collections.synchronizedList(new ArrayList<Livelihood>());
 		
@@ -506,7 +506,7 @@ public class BusinessPermitBean implements Serializable{
 		
 		String ors = "";
 		int i=1;
-		for(ORTransaction o : getOrsSelected()) {
+		for(BusinessORTransaction o : getOrsSelected()) {
 			
 			if(i==1) {
 				ors = o.getOrNumber();
@@ -725,7 +725,7 @@ public class BusinessPermitBean implements Serializable{
 				business.setYear(DateUtils.getCurrentYear()+"");
 				
 			//}else {
-				List<ORTransaction> names = readXLSFileOR(file,1);
+				List<BusinessORTransaction> names = readXLSFileOR(file,1);
 				int size = names.size();
 				String ors = "";
 				for(int i=0; i<size; i++) {
@@ -826,7 +826,7 @@ private static BusinessPermit readXLSFile(File file,int sheetNo) {
 			
 	}
 	
-private static List<ORTransaction> readXLSFileOR(File file,int sheetNo) {
+private static List<BusinessORTransaction> readXLSFileOR(File file,int sheetNo) {
 	
 	try {
 		FileInputStream fin = new FileInputStream(file);
@@ -836,14 +836,14 @@ private static List<ORTransaction> readXLSFileOR(File file,int sheetNo) {
 		HSSFRow row;
 		HSSFCell cell;
 			
-			List<ORTransaction> atts = Collections.synchronizedList(new ArrayList<ORTransaction>());
+			List<BusinessORTransaction> atts = Collections.synchronizedList(new ArrayList<BusinessORTransaction>());
 			Iterator rows = sheet.rowIterator();
 			int startRow=1;
 		    while (rows.hasNext()){
 	            row=(HSSFRow) rows.next();
 	            Iterator cells = row.cellIterator();
 	            int countRow = 1;
-	            ORTransaction att = new ORTransaction();
+	            BusinessORTransaction att = new BusinessORTransaction();
 	            if(startRow>1) {
 	            	
 		            while (cells.hasNext()){
@@ -877,7 +877,7 @@ private static List<ORTransaction> readXLSFileOR(File file,int sheetNo) {
 	            startRow++;
 		    }
 		    
-    	   for(ORTransaction or : atts) {
+    	   for(BusinessORTransaction or : atts) {
 			   //if(or.getAmount()!=0) {
 				   System.out.println("OR" + or.getOrNumber() + " Date: " + or.getDateTrans() + " amount " + or.getAmount());
 			   //}
@@ -945,17 +945,17 @@ public void printPermit(BusinessPermit permit) {
 		String sql = " AND orl.oractive=1 AND orl.orno=? AND cuz.customerid=? ";
 		String[] params = new String[0];
 		
-		ORTransaction ors = null;
+		BusinessORTransaction ors = null;
 		
 		String[] sp = permit.getOrs().split("/");
 		//Map<Double, ORTransaction> unSort = Collections.synchronizedMap(new HashMap<Double, ORTransaction>());
-		Map<String, ORTransaction> unSort = Collections.synchronizedMap(new HashMap<String, ORTransaction>());
+		Map<String, BusinessORTransaction> unSort = Collections.synchronizedMap(new HashMap<String, BusinessORTransaction>());
 		for(int i=0; i<sp.length; i++) {
 			sql = " AND orl.oractive=1 AND orl.orno=? AND cuz.customerid=? ";
 			params = new String[2];
 			params[0] = sp[i];
-			params[1] = permit.getCustomer().getCustomerid()+"";
-			try{ors = ORTransaction.retrieve(sql, params).get(0);}catch(Exception e) {}
+			params[1] = permit.getCustomer().getId()+"";
+			try{ors = BusinessORTransaction.retrieve(sql, params).get(0);}catch(Exception e) {}
 			
 			if(ors!=null) {
 				//unSort.put(ors.getAmount()+"-"+ors.getPurpose(), ors);
@@ -964,15 +964,15 @@ public void printPermit(BusinessPermit permit) {
 			}
 		}
 		//Map<Double, ORTransaction> sortedOR = new TreeMap<Double, ORTransaction>(unSort);
-		Map<String, ORTransaction> sortedOR = new TreeMap<String, ORTransaction>(unSort);
+		Map<String, BusinessORTransaction> sortedOR = new TreeMap<String, BusinessORTransaction>(unSort);
 		//int i=sortedOR.size();
 		int i = 1;
 		int count = sortedOR.size();
 		
-		ORTransaction fireData = new ORTransaction();
+		BusinessORTransaction fireData = new BusinessORTransaction();
 		List<String> lData = Collections.synchronizedList(new ArrayList<String>());
 		boolean hasFire=false;
-		for(ORTransaction or : sortedOR.values()) {
+		for(BusinessORTransaction or : sortedOR.values()) {
 			String fire = or.getPurpose().toLowerCase().trim();
 			System.out.println("Start Check " + or.getPurpose() + " php " + or.getAmount());
 			if(!"fire".equalsIgnoreCase(fire.trim())) {//do not include fire
@@ -1270,21 +1270,21 @@ public void printPermit(BusinessPermit permit) {
 			r.setF5(p.getBusinessAddress());
 			
 			String[] sp = p.getOrs().split("/");
-			Map<String, ORTransaction> unSort = Collections.synchronizedMap(new HashMap<String, ORTransaction>());
-			ORTransaction ors = null;
+			Map<String, BusinessORTransaction> unSort = Collections.synchronizedMap(new HashMap<String, BusinessORTransaction>());
+			BusinessORTransaction ors = null;
 			for(int i=0; i<sp.length; i++) {
 				String sql = " AND orl.oractive=1 AND orl.orno=? AND cuz.customerid=? ";
 				String[]params = new String[2];
 				params[0] = sp[i];
-				params[1] = p.getCustomer().getCustomerid()+"";
-				try{ors = ORTransaction.retrieve(sql, params).get(0);}catch(Exception e) {}
+				params[1] = p.getCustomer().getId()+"";
+				try{ors = BusinessORTransaction.retrieve(sql, params).get(0);}catch(Exception e) {}
 				
 				if(ors!=null) {
 					//unSort.put(ors.getAmount()+"-"+ors.getPurpose(), ors);
 					unSort.put(""+i, ors);
 				}
 			}
-			Map<String, ORTransaction> sortedOR = new TreeMap<String, ORTransaction>(unSort);
+			Map<String, BusinessORTransaction> sortedOR = new TreeMap<String, BusinessORTransaction>(unSort);
 			int i = 1;
 			
 			String type = p.getType().substring(0, 1);
@@ -1306,8 +1306,8 @@ public void printPermit(BusinessPermit permit) {
 				annually +=1;
 			}
 			
-			ORTransaction forFire = null;
-			for(ORTransaction or : sortedOR.values()) {
+			BusinessORTransaction forFire = null;
+			for(BusinessORTransaction or : sortedOR.values()) {
 				String fire = or.getPurpose().toLowerCase().trim();
 				if(!"fire".equalsIgnoreCase(fire)) {
 					if(i==1) {
@@ -1657,19 +1657,19 @@ public void printPermit(BusinessPermit permit) {
 		this.typeOf = typeOf;
 	}
 
-	public List<ORTransaction> getOrs() {
+	public List<BusinessORTransaction> getOrs() {
 		return ors;
 	}
 
-	public void setOrs(List<ORTransaction> ors) {
+	public void setOrs(List<BusinessORTransaction> ors) {
 		this.ors = ors;
 	}
 
-	public List<ORTransaction> getOrsSelected() {
+	public List<BusinessORTransaction> getOrsSelected() {
 		return orsSelected;
 	}
 
-	public void setOrsSelected(List<ORTransaction> orsSelected) {
+	public void setOrsSelected(List<BusinessORTransaction> orsSelected) {
 		this.orsSelected = orsSelected;
 	}
 	
@@ -1682,7 +1682,7 @@ public void printPermit(BusinessPermit permit) {
 			params = new String[1];
 			
 			sql += " AND live.livelihoodtype!=1 AND cuz.customerid=?";
-			params[0] = getTaxPayer().getCustomerid()+"";
+			params[0] = getTaxPayer().getId()+"";
 			
 			List<Livelihood> lvs = Livelihood.retrieve(sql, params); 
 			if(lvs!=null && lvs.size()>1) {

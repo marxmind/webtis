@@ -7,6 +7,7 @@ package com.italia.municipality.lakesebu.global;
  *
  */
 public class GlobalVar {
+	public static final String APP_CONF_DIR = "C:\\webtis\\conf\\";
 	public static final String APP_DATABASE_CONF = "C:\\webtis\\conf\\dbconf.max";
 	public static final String LOG_FOLDER = "C:\\webtis\\log\\";
 	public static final boolean LOG_ENABLE = true;
@@ -29,4 +30,7 @@ public class GlobalVar {
 	//public static final String OR51_FX2175_PRINT="OR51_FX2175";
 	public static final String QRCODE_CITIZEN = "citizen-qrcode";
 	public static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
+	public static final String COUNTER_REPORT_FILE = "counter_report.tis";
+	public static final String COLLECTOR_MODE_FILE="collector-mode.tis";
+	
 }

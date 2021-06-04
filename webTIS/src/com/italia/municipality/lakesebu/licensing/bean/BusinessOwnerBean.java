@@ -148,8 +148,6 @@ public class BusinessOwnerBean implements Serializable{
     
     private List<Customer> selectedQRCode;
 	
-    
-    
 	@PostConstruct
 	public void init(){
 		
@@ -473,7 +471,7 @@ public class BusinessOwnerBean implements Serializable{
 				isOk= false;
 			}
 			
-			if(getEmergencyContactPerson()!=null && getEmergencyContactPerson().getCustomerid()!=0){
+			if(getEmergencyContactPerson()!=null && getEmergencyContactPerson().getId()!=0){
 				if(getRelationshipId()==0){
 					Application.addMessage(3, "Please provide relationship.", "");
 					isOk= false;
@@ -969,7 +967,7 @@ private void close(Closeable resource) {
 		setBirthdate(DateUtils.convertDateString(cus.getBirthdate(),"yyyy-MM-dd"));
 		setEmergencyContactPerson(cus.getEmergencyContactPerson());
 		if(cus.getEmergencyContactPerson()!=null){
-		Customer person = Customer.customer(cus.getEmergencyContactPerson().getCustomerid());	
+		Customer person = Customer.customer(cus.getEmergencyContactPerson().getId());	
 		setEmergencyContactPersonName(person.getFullname());
 		setRelationshipId(cus.getRelationship());
 		}else{

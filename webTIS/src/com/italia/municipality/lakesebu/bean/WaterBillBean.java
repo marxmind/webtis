@@ -11,7 +11,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import com.italia.municipality.lakesebu.controller.Customer;
+import com.italia.municipality.lakesebu.controller.Customer2;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.controller.WaterAccnt;
@@ -19,6 +19,7 @@ import com.italia.municipality.lakesebu.controller.WaterBill;
 import com.italia.municipality.lakesebu.controller.WaterMeter;
 import com.italia.municipality.lakesebu.controller.WaterReadingMeter;
 import com.italia.municipality.lakesebu.enm.WaterBillStatus;
+import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 
@@ -93,7 +94,7 @@ public class WaterBillBean implements Serializable{
 				String sql = " AND acc.isactiveacc=1 AND cuz.fullname like '%"+query+"%'";
 				String[] params = new String[0];
 				for(WaterAccnt cz : WaterAccnt.retrieve(sql, params)) {
-					result.add(cz.getCustomer().getFullName());
+					result.add(cz.getCustomer().getFullname());
 				}
 			}
 		}
@@ -202,11 +203,11 @@ public class WaterBillBean implements Serializable{
 			//adding user if not exist
 			if(customer==null && getOwnerName()!=null) {
 				customer = new Customer();
-				customer.setFullName(getOwnerName().toUpperCase());
-				customer.setAddress(getLocation());
-				customer.setContactNumber("0");
-				customer.setIsActive(1);
-				customer.setRegistrationDate(DateUtils.getCurrentDateYYYYMMDD());
+				customer.setFullname(getOwnerName().toUpperCase());
+				//customer.setAddress(getLocation());
+				customer.setContactno("0");
+				customer.setIsactive(1);
+				customer.setDateregistered(DateUtils.getCurrentDateYYYYMMDD());
 				UserDtls user = Login.getUserLogin().getUserDtls();
 				customer.setUserDtls(user);
 				customer = Customer.save(customer);
@@ -281,7 +282,7 @@ public class WaterBillBean implements Serializable{
 		setAccountSelected(acc);
 		setAccountNumber(WaterAccnt.accountNumber(acc.getId()));
 		setLocation(acc.getLocation());
-		setOwnerName(acc.getCustomer().getFullName());
+		setOwnerName(acc.getCustomer().getFullname());
 		setMeterNo(acc.getMeter().getMeterNo());
 	}
 	
@@ -299,7 +300,7 @@ public class WaterBillBean implements Serializable{
 		Customer cz = null;
 		try{cz = Customer.retrieve(sql, params).get(0);}catch(IndexOutOfBoundsException e) {}
 		if(cz!=null) {
-			setLocation(cz.getAddress());
+			setLocation(cz.getCompleteAddress());
 			return cz;
 		}
 		
@@ -323,7 +324,7 @@ public class WaterBillBean implements Serializable{
 				String sql = " AND cus.fullname like '%"+query+"%'";
 				String[] params = new String[0];
 				for(Customer cz : Customer.retrieve(sql, params)) {
-					result.add(cz.getFullName());
+					result.add(cz.getFullname());
 				}
 			}
 		}

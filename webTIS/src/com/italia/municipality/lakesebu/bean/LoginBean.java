@@ -128,6 +128,8 @@ public class LoginBean implements Serializable{
 					case 11: result="mainlic.xhtml"; break;
 					case 12: result="maingso.xhtml"; break;
 					case 13: result="mainacc.xhtml"; break;
+					case 14: result="orlisting.xhtml"; break;
+					case 15: result="form56.xhtml"; break;
 				}
 				
 			}
@@ -175,7 +177,7 @@ private String assignModule() {
 		case 12 : return Pages.CollectorRecording.getName();
 		case 13 : return Pages.ReportGraph.getName();
 		case 14 : return Pages.Orlisting.getName();
-		case 15 : return "main";
+		case 15 : return Pages.LandTax.getName();
 		case 16 : return Pages.UploadRcd.getName();
 		case 17 : return Pages.VoucherExpense.getName();
 		case 18 : return Pages.WaterBilling.getName();

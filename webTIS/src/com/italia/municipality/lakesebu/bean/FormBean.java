@@ -1575,7 +1575,7 @@ public class FormBean implements Serializable{
 		formTypeSearch = new ArrayList<>();
 		formTypeSearch.add(new SelectItem(0, "All Forms"));
 		for(FormType form : FormType.values()) {
-			formTypeSearch.add(new SelectItem(form.getId(), form.getName()));
+			formTypeSearch.add(new SelectItem(form.getId(), form.getName() + " " + form.getDescription()));
 		}
 		
 		return formTypeSearch;

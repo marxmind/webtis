@@ -6,6 +6,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,12 +19,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.event.CellEditEvent;
@@ -67,9 +68,14 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  * @version 1.0
  *
  */
-@ManagedBean(name="form56Bean", eager=true)
+@Named
 @SessionScoped
-public class RealTaxForm56Bean {
+public class Form56Bean implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 154654676443L;
 
 	private List<ITaxPayorTrans> trans = new ArrayList<ITaxPayorTrans>();//Collections.synchronizedList(new ArrayList<ITaxPayorTrans>());
 	
@@ -131,6 +137,12 @@ public class RealTaxForm56Bean {
 	private List<Boolean> listColumns;
 	
 	private String selectedOwner;
+	
+	private int yearSelectedFromId;
+	private List yearSelectedFroms;
+	private int yearSelectedToId;
+	private List yearSelectedTos;
+	private LandPayor landForPaymentData;
 	
 	public void onToggle(ToggleEvent e){
 		int id = (Integer) e.getData();
@@ -1612,7 +1624,7 @@ private void close(Closeable resource) {
 	public void addCell(){
 		System.out.println("Add cell");
 		int size = receipts.size();
-		
+		int year = Integer.valueOf(receipts.get(size-1).getToYear());
 		//identify installment type
 		int i=0;
 		for(ITaxPayerReceipt chk : receipts){
@@ -1626,6 +1638,13 @@ private void close(Closeable resource) {
 			}else{
 				rec.setInstallmentType("SEF");
 			}
+			year +=1;
+			rec.setFromYear(year+"");
+			rec.setToYear(year+"");
+			
+			setYearSelectedFromId(year);
+			setYearSelectedToId(year);
+			
 			rec.setCnt(size+1);
 			receipts.add(rec);
 			updateTotal();
@@ -2517,6 +2536,11 @@ private void close(Closeable resource) {
 		lands = LandPayor.retrieve(sql, params);
 	}
 	
+	/**
+	 * 
+	 * @param change by selectedLand()
+	 */
+	@Deprecated
 	public void landSelected(LandPayor pay){
 		System.out.println("selected land");
 		int index = receipts.indexOf(getPayerReceipt());
@@ -2544,6 +2568,59 @@ private void close(Closeable resource) {
 		setSelectedOwner(pay.getPayor().getFullName());
 		
 		
+	}
+	
+	
+	
+	public void passLandData(LandPayor pay) {
+		setLandForPaymentData(pay);
+	}
+	
+	public void selectedLand() {
+		System.out.println("check selected Land method : " + getLandForPaymentData()==null? " is null" : " not null");
+		if(getLandForPaymentData()!=null) {
+			LandPayor pay = getLandForPaymentData();
+			System.out.println("selected land");
+			int index = receipts.indexOf(getPayerReceipt());
+			
+			receipts.get(index).setFromYear(getYearSelectedFromId()+"");
+			receipts.get(index).setToYear(getYearSelectedToId()+"");
+			
+			receipts.get(index).setLandOwnerName(pay.getPayor().getFullName());
+			receipts.get(index).setLocation(pay.getBarangay().getName());
+			
+			String tdno = pay.getTaxDeclarionNo();
+			int size = tdno.length();
+			receipts.get(index).setLotBlockNo(pay.getLotNo());
+			try{receipts.get(index).setTaxDecNo(tdno.substring(0, 1) + "-" + tdno.substring(5,size));}catch(Exception e){receipts.get(index).setTaxDecNo(tdno);}
+			receipts.get(index).setLandType(pay.getLandType());
+			receipts.get(index).setAssValueLand(pay.getLandValue());
+			receipts.get(index).setPayor(pay.getPayor());
+			
+			if(getSpecialCase()) {//partial amount
+				double fullpayment = pay.getLandValue() * 0.01;
+				//receipts.get(index).setFullPayment(fullpayment);
+				
+				int years = getYearSelectedToId() - getYearSelectedFromId();
+				years += 1;
+				double amount = years*fullpayment;
+				System.out.println("caculated: " + amount + " for total number of year is " + years);
+				receipts.get(index).setFullPayment(Numbers.formatDouble(amount));
+				
+			}
+			
+			if(pay.getIsImprovment()==1) {
+				receipts.get(index).setAssValueImprv(pay.getLandValue());
+			}
+			
+			//new two lines added
+			setReceiptSelected(receipts.get(index));
+			copyPasteCell();
+			
+			updateTotal();
+			setSearchParam(null);
+			setSelectedOwner(pay.getPayor().getFullName());
+		}
 	}
 	
 	public List getStatusList() {
@@ -2730,6 +2807,60 @@ private void close(Closeable resource) {
 
 	public void setSelectedOwner(String selectedOwner) {
 		this.selectedOwner = selectedOwner;
+	}
+
+	public LandPayor getLandForPaymentData() {
+		return landForPaymentData;
+	}
+
+	public void setLandForPaymentData(LandPayor landForPaymentData) {
+		this.landForPaymentData = landForPaymentData;
+	}
+
+	public int getYearSelectedFromId() {
+		if(yearSelectedFromId==0) {
+			yearSelectedFromId = DateUtils.getCurrentYear();
+		}
+		return yearSelectedFromId;
+	}
+
+	public void setYearSelectedFromId(int yearSelectedFromId) {
+		this.yearSelectedFromId = yearSelectedFromId;
+	}
+
+	public List getYearSelectedFroms() {
+		yearSelectedFroms = new ArrayList<>();
+		for(int year=1985; year<=DateUtils.getCurrentYear(); year++) {
+			yearSelectedFroms.add(new SelectItem(year, year+""));
+		}
+		return yearSelectedFroms;
+	}
+
+	public void setYearSelectedFroms(List yearSelectedFroms) {
+		this.yearSelectedFroms = yearSelectedFroms;
+	}
+
+	public int getYearSelectedToId() {
+		if(yearSelectedToId==0) {
+			yearSelectedToId = DateUtils.getCurrentYear();
+		}
+		return yearSelectedToId;
+	}
+
+	public void setYearSelectedToId(int yearSelectedToId) {
+		this.yearSelectedToId = yearSelectedToId;
+	}
+
+	public List getYearSelectedTos() {
+		yearSelectedTos = new ArrayList<>();
+		for(int year=1985; year<=DateUtils.getCurrentYear(); year++) {
+			yearSelectedTos.add(new SelectItem(year, year+""));
+		}
+		return yearSelectedTos;
+	}
+
+	public void setYearSelectedTos(List yearSelectedTos) {
+		this.yearSelectedTos = yearSelectedTos;
 	}
 		
 }

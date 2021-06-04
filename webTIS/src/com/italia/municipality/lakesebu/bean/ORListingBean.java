@@ -46,7 +46,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.italia.municipality.lakesebu.controller.Cedula;
 import com.italia.municipality.lakesebu.controller.Collector;
-import com.italia.municipality.lakesebu.controller.Customer;
+import com.italia.municipality.lakesebu.controller.Customer2;
 import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.NumberToWords;
@@ -72,6 +72,7 @@ import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
+import com.italia.municipality.lakesebu.xml.RCDReader;
 
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -196,6 +197,9 @@ public class ORListingBean implements Serializable{
 	private String qrcodeMsg="Please place the QRCOde on the camera";
 	private com.italia.municipality.lakesebu.licensing.controller.Customer customerDataSelected;
 	
+	private boolean alreadyRetrieve=false;
+	private int issuedCollectorId;
+	
 	@PostConstruct
 	public void init() {
 		if(monthId==0) {
@@ -207,10 +211,16 @@ public class ORListingBean implements Serializable{
 		load();
 		
 		suggestedInfo();
+		
+		if(!alreadyRetrieve) {
+			issuedCollectorId = Login.getUserLogin().getCollectorId();
+			alreadyRetrieve=true;
+		}
 	}
 	
 	public void modeMsg() {
 		Application.addMessage(1, "Collector's Mode", "You have " + (isCollectorsMode()==true? "activated the collector's mode" : "deactivated the collector's mode"));
+		RCDReader.saveCollectorMode(isCollectorsMode()==true? "ON" : "OFF");
 	}
 	
 	public void reloadInit() {
@@ -424,7 +434,7 @@ public class ORListingBean implements Serializable{
 			rpt.setF8(or.getStatusName());
 			rpt.setF1(or.getDateTrans());
 			rpt.setF2(or.getOrNumber());
-			rpt.setF3(or.getCustomer().getFullName());
+			rpt.setF3(or.getCustomer().getFullname());
 			rpt.setF4(or.getFormName());
 			rpt.setF5("");
 			rpt.setF6("");
@@ -772,10 +782,20 @@ public class ORListingBean implements Serializable{
 		
 	}
 	
-	private Customer selectedCustomer() {
+	
+	/*private Customer selectedCustomer() {
 		String sql = " AND cus.fullname like '%"+getPayorName()+"%'";
 		String[] params = new String[0];
 		for(Customer cz : Customer.retrieve(sql, params)) {
+			return cz;
+		}
+		return null;
+	}*/
+	
+	private com.italia.municipality.lakesebu.licensing.controller.Customer selectedCustomer(){
+		String sql = " AND cus.fullname like '%"+getPayorName()+"%'";
+		String[] params = new String[0];
+		for(com.italia.municipality.lakesebu.licensing.controller.Customer cz : com.italia.municipality.lakesebu.licensing.controller.Customer.retrieve(sql, params)) {
 			return cz;
 		}
 		return null;
@@ -1111,7 +1131,7 @@ public class ORListingBean implements Serializable{
 		selectedPaymentNameMap = new HashMap<Long, PaymentName>();//Collections.synchronizedMap(new HashMap<Long, PaymentName>());
 	}
 	
-	public void saveData() {
+	/*public void saveData() {
 		Customer customer = selectedCustomer();
 		ORListing or = new ORListing();
 		
@@ -1272,6 +1292,159 @@ public class ORListingBean implements Serializable{
 			setFormTypeId(FormType.AF_51.getId());
 		}
 		
+	}*/
+	
+	
+	public void saveData() {
+		com.italia.municipality.lakesebu.licensing.controller.Customer customer = selectedCustomer();
+		ORListing or = new ORListing();
+		
+		if(getOrRecordData()!=null) {
+			or = getOrRecordData();
+		}else {
+			or.setIsActive(1);
+		}
+		
+		if(customer==null) {
+			customer = new com.italia.municipality.lakesebu.licensing.controller.Customer();
+			
+		}else {
+			
+			UserDtls user = Login.getUserLogin().getUserDtls();
+			customer.setUserDtls(user);
+			
+		}
+		boolean isOk = true;
+		if(getOrNumber()==null || getOrNumber().isEmpty()) {
+			isOk = false;
+			Application.addMessage(3, "Error", "Please provide official receipt");
+		}
+		if(getPayorName()==null || getPayorName().isEmpty()) {
+			isOk = false;
+			Application.addMessage(3, "Error", "Please provide payor name");
+		}
+		
+		if(getSelectedPaymentNameMap()==null) {
+			isOk = false;
+			Application.addMessage(3, "Error", "Please provide payment name");
+		}
+		
+		if(isOk) {
+			
+			if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
+				String val = "";
+				
+				val = getLabel2() + "<->";
+				val += getLabel3() + "<->";
+				val += getLabel4() + "<->";
+				val += getAmount1() + "<->";
+				val += getAmount2() + "<->";
+				val += getAmount3() + "<->";
+				val += getAmount4() + "<->";
+				val += getAmount5() + "<->";
+				val += getAmount6() + "<->";
+				val += getAmount7() + "<->";
+				val += getGenderId() + "<->";
+				val += getBirthdate()==null? "0<->" : DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd") + "<->";
+				val += getTinNo().isEmpty()? "0<->" : getTinNo() + "<->";
+				val += getHieghtDateReg().isEmpty()? "0<->" : getHieghtDateReg() + "<->";
+				val += getWeight()!=null? getWeight() + "<->" : "0<->";  //   getWeight().isEmpty()? "0<->" : getWeight() + "<->";
+				val += getCustomerAddress().isEmpty()? "0<->" : getCustomerAddress() + "<->";
+				val += getCivilStatusId()==0? "0<->" : getCivilStatusId() + "<->";
+				val += getProfessionBusinessNature().isEmpty()? "0<->" : getProfessionBusinessNature() + "<->";
+				val += GlobalVar.MTO_OR_CEDULA_SIGNATORY + "<->";//signatory
+				val += getPlaceOfBirth().isEmpty()? "0<->" : getPlaceOfBirth() +"<->";
+				val += getCitizenshipOrganization().isEmpty()? "0" : getCitizenshipOrganization();
+				
+				or.setForminfo(val);
+			}
+			
+			
+			
+			
+			
+			or.setStatus(getStatusId());
+			or.setDateTrans(DateUtils.convertDate(getDateTrans(), "yyyy-MM-dd"));
+			or.setFormType(getFormTypeId());
+			or.setCustomer(customer);
+			try{or.setOrNumber(getOrNumber().trim());}catch(Exception e){}
+			Collector col = new Collector();
+			col.setId(getCollectorId());
+			or.setCollector(col);
+			or = ORListing.save(or);
+			
+			//delete first paynames attached in orlisting table
+			//this will ensure for duplication of data
+			ORNameList.delete("DELETE FROM ornamelist WHERE orid=" + or.getId(), new String[0]);
+			
+			List<PaymentName> tmpName = new ArrayList<PaymentName>();
+			Map<Long, PaymentName> tmpMap = new HashMap<Long, PaymentName>();
+			for(PaymentName name : getSelectedPaymentNameMap().values()) {
+				if(name.getAmount()>0) {
+					ORNameList o = new ORNameList();
+					o.setAmount(name.getAmount());
+					o.setOrList(or);
+					o.setCustomer(customer);
+					o.setIsActive(1);
+					o.setPaymentName(name);
+					o.save();
+					
+					name.setAmount(0);
+					tmpName.add(name);
+					tmpMap.put(name.getId(), name);
+				}
+			}
+			Application.addMessage(1, "Success", "Successfully saved.");
+			if(isCollectorsMode()) {
+				setSearchName(getPayorName());
+			}
+			
+			namesDataSelected = new ArrayList<PaymentName>();
+			selectedPaymentNameMap = new HashMap<Long, PaymentName>();
+			setPayorName(null);
+			setTotalAmount("0.00");
+			setOrRecordData(null);
+			setOrnameListData(null);
+			setSelectedPaymentNameMap(null);
+			setOrNumber(null);
+			init(); //do not load data to reduce loading
+			
+			setCollectorId(or.getCollector().getId());
+			
+			
+			//if(getSelectOrTypeId()>0) {
+				//namesDataSelected = tmpName;
+				//selectedPaymentNameMap = tmpMap;
+			//}
+			//forSaveOnly();
+			
+			if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
+				setLabel2(0);
+				setLabel3(0);
+				setLabel4(0);
+				setAmount1(0);
+				setAmount2(0);
+				setAmount3(0);
+				setAmount4(0);
+				setAmount5(0);
+				setAmount6(0);
+				setAmount7(0);
+				setGenderId(1);
+				setBirthdate(null);
+				setTinNo(null);
+				setHieghtDateReg(null);
+				setWeight(null);
+				setCustomerAddress(null);
+				setCivilStatusId(1);
+				setProfessionBusinessNature(null);
+				setPlaceOfBirth(null);
+				setCitizenshipOrganization(null);
+				selectedOR();
+			}
+			
+			setFormTypeId(FormType.AF_51.getId());
+		}
+		
 	}
 	
 	private void ctcFlds(boolean enanleCTC) {
@@ -1293,8 +1466,8 @@ public class ORListingBean implements Serializable{
 		setDateTrans(DateUtils.convertDateString(or.getDateTrans(), "yyyy-MM-dd"));
 		setOrNumber(or.getOrNumber());
 		setFormTypeId(or.getFormType());
-		setPayorName(or.getCustomer().getFullName());
-		setAddress(or.getCustomer().getAddress());
+		setPayorName(or.getCustomer().getFullname());
+		setAddress(or.getCustomer().getCompleteAddress());
 		setCollectorId(or.getCollector().getId());
 		namesDataSelected = new ArrayList<PaymentName>();//Collections.synchronizedList(new ArrayList<PaymentName>());
 		double amount = 0d;
@@ -1419,7 +1592,7 @@ public class ORListingBean implements Serializable{
 			HashMap param = new HashMap();
 	  		
 	  		param.put("PARAM_DATE", DateUtils.convertDateToMonthDayYear(py.getDateTrans()));
-	  		param.put("PARAM_PAYOR", py.getCustomer().getFullName());
+	  		param.put("PARAM_PAYOR", py.getCustomer().getFullname());
 	  		com.italia.municipality.lakesebu.controller.NumberToWords numberToWords = new NumberToWords();
 	  		
 	  		String amnt = Currency.formatAmount(py.getAmount());
@@ -1468,7 +1641,7 @@ public class ORListingBean implements Serializable{
 					
 					param.put("PARAM_YEAR", py.getDateTrans().split("-")[0]);
 					param.put("PARAM_POI", "MTO-LAKE SEBU");
-					param.put("PARAM_ADDRESS", py.getCustomer().getAddress());
+					param.put("PARAM_ADDRESS", py.getCustomer().getCompleteAddress());
 					param.put("PARAM_TIN", val[12].equalsIgnoreCase("0")? "" : val[12]);
 					param.put("PARAM_CITIZENSHIP", val[20].equalsIgnoreCase("0")? "" : val[20]);
 					param.put("PARAM_CIVIL", CivilStatus.typeName(Integer.valueOf(val[16])));
@@ -2083,7 +2256,7 @@ private void close(Closeable resource) {
 			setSearchPayName("tax");
 		}else if(FormType.AF_52.getId()==getFormTypeId()) {
 			setSearchPayName("cattle");
-		}else if(FormType.AF_47.getId()==getFormTypeId()) {
+		}else if(FormType.AF_58.getId()==getFormTypeId()) {
 			setSearchPayName("Death/Burial Income");
 		}
 		
@@ -2216,7 +2389,7 @@ private void close(Closeable resource) {
 		formTypes = new ArrayList<>();
 		formTypes.add(new SelectItem(0, "Select Forms"));
 		for(FormType form : FormType.values()) {
-			formTypes.add(new SelectItem(form.getId(), form.getName()));
+			formTypes.add(new SelectItem(form.getId(), form.getName() + " " + form.getDescription()));
 		}
 		
 		return formTypes;
@@ -2235,7 +2408,7 @@ private void close(Closeable resource) {
 
 	public String getAddress() {
 		if(address==null) {
-			address = "Lake Sebu, South Cotabato";
+			address = "Lake Sebu, So. Cot.";
 		}
 		return address;
 	}
@@ -2382,9 +2555,13 @@ private void close(Closeable resource) {
 	}
 
 	public List getCollectors() {
+		String sql = " ORDER BY cl.collectorname";
 		
+		if(getIssuedCollectorId()>0) {
+			sql = " AND cl.isid="+ getIssuedCollectorId();
+		}
 		collectors = new ArrayList<>();
-		for(Collector c : Collector.retrieve(" ORDER BY cl.collectorname", new String[0])) {
+		for(Collector c : Collector.retrieve(sql, new String[0])) {
 			if(c.getId()>0) {
 				collectors.add(new SelectItem(c.getId(), c.getName()));
 			}
@@ -2411,7 +2588,13 @@ private void close(Closeable resource) {
 	public List getCollectorsSearch() {
 		
 		collectorsSearch = new ArrayList<>();
-		for(Collector c : Collector.retrieve(" ORDER BY cl.collectorname", new String[0])) {
+		String sql = " ORDER BY cl.collectorname";
+		
+		if(getIssuedCollectorId()>0) {
+			sql = " AND cl.isid="+ getIssuedCollectorId();
+		}
+		
+		for(Collector c : Collector.retrieve(sql, new String[0])) {
 			if(c.getId()==0) {
 				collectorsSearch.add(new SelectItem(0, "All Collector"));
 			}else {
@@ -2799,6 +2982,13 @@ private void close(Closeable resource) {
 	}
 
 	public boolean isCollectorsMode() {
+		
+		if(collectorsMode==false) {
+			if("ON".equalsIgnoreCase(RCDReader.readCollectorMode())){
+				collectorsMode = true;
+			}
+		}
+		
 		return collectorsMode;
 	}
 
@@ -3097,7 +3287,7 @@ private void close(Closeable resource) {
 		}
 		if("56".equalsIgnoreCase(sel)) {
 			pf.executeScript("PF('dlgSelection').hide();");
-			setFormTypeId(FormType.AF_55.getId());
+			setFormTypeId(FormType.AF_56.getId());
 		}
 		
 		setPayorName(cus.getLastname().toUpperCase() + ", " + cus.getFirstname().toUpperCase() + " " + cus.getMiddlename().substring(0, 1).toUpperCase() + ".");
@@ -3191,5 +3381,21 @@ private void close(Closeable resource) {
 	public void setCustomerDataSelected(
 			com.italia.municipality.lakesebu.licensing.controller.Customer customerDataSelected) {
 		this.customerDataSelected = customerDataSelected;
+	}
+
+	public boolean isAlreadyRetrieve() {
+		return alreadyRetrieve;
+	}
+
+	public void setAlreadyRetrieve(boolean alreadyRetrieve) {
+		this.alreadyRetrieve = alreadyRetrieve;
+	}
+
+	public int getIssuedCollectorId() {
+		return issuedCollectorId;
+	}
+
+	public void setIssuedCollectorId(int issuedCollectorId) {
+		this.issuedCollectorId = issuedCollectorId;
 	}
 }

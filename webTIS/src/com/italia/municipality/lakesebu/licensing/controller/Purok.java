@@ -8,8 +8,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.italia.municipality.lakesebu.database.LicensingDatabaseConnect;
+import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * 
@@ -19,6 +25,11 @@ import com.italia.municipality.lakesebu.utils.LogU;
  *
  */
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
 public class Purok {
 
 	private long id;
@@ -66,7 +77,7 @@ public class Purok {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -76,7 +87,7 @@ public class Purok {
 			}
 			
 		}
-		
+		System.out.println("SQL : " + ps.toString());
 		rs = ps.executeQuery();
 		
 		while(rs.next()){
@@ -106,7 +117,7 @@ public class Purok {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return purs;
@@ -129,7 +140,7 @@ public class Purok {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -158,7 +169,7 @@ public class Purok {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return pur;
@@ -215,7 +226,7 @@ public class Purok {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		long id =1;
 		int cnt = 1;
@@ -248,7 +259,7 @@ public class Purok {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to purok : " + s.getMessage());
@@ -271,7 +282,7 @@ public class Purok {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		long id =1;
 		int cnt = 1;
@@ -304,7 +315,7 @@ public class Purok {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to purok : " + s.getMessage());
@@ -325,7 +336,7 @@ public class Purok {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
@@ -349,7 +360,7 @@ public class Purok {
 		ps.executeUpdate();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to purok : " + s.getMessage());
@@ -370,7 +381,7 @@ public class Purok {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
@@ -394,7 +405,7 @@ public class Purok {
 		ps.executeUpdate();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to purok : " + s.getMessage());
@@ -411,7 +422,7 @@ public class Purok {
 		String sql = "";
 		try{
 		sql="SELECT purid FROM purok  ORDER BY purid DESC LIMIT 1";	
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
@@ -421,7 +432,7 @@ public class Purok {
 		
 		rs.close();
 		prep.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -462,7 +473,7 @@ public class Purok {
 		Connection conn = null;
 		boolean result = false;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement("SELECT purid FROM purok WHERE purid=?");
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
@@ -473,7 +484,7 @@ public class Purok {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -485,7 +496,7 @@ public class Purok {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -498,7 +509,7 @@ public class Purok {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
@@ -512,7 +523,7 @@ public class Purok {
 		String[] params = new String[1];
 		params[0] = getId()+"";
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -525,55 +536,8 @@ public class Purok {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
-	
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public String getDateTrans() {
-		return dateTrans;
-	}
-	public void setDateTrans(String dateTrans) {
-		this.dateTrans = dateTrans;
-	}
-	public String getPurokName() {
-		return purokName;
-	}
-	public void setPurokName(String purokName) {
-		this.purokName = purokName;
-	}
-	public int getIsActive() {
-		return isActive;
-	}
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-	public Timestamp getTimestamp() {
-		return timestamp;
-	}
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
-	}
-	public Barangay getBarangay() {
-		return barangay;
-	}
-	public void setBarangay(Barangay barangay) {
-		this.barangay = barangay;
-	}
-	public Municipality getMunicipality() {
-		return municipality;
-	}
-	public void setMunicipality(Municipality municipality) {
-		this.municipality = municipality;
-	}
-	
-	
-	
-	
 }

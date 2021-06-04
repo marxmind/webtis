@@ -103,7 +103,7 @@ public class MultiLivelihood {
 			try{live.setTimestamp(rs.getTimestamp("timestamplive"));}catch(NullPointerException e){}
 			
 			com.italia.municipality.lakesebu.licensing.controller.Customer cus = new com.italia.municipality.lakesebu.licensing.controller.Customer();
-			try{cus.setCustomerid(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			live.setTaxPayer(cus);
 			
 			li.setLivelihood(live);

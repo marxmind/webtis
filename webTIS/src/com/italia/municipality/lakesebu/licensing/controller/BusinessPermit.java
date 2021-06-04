@@ -7,10 +7,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.italia.municipality.lakesebu.database.LicensingDatabaseConnect;
+import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * 
@@ -19,6 +25,11 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @since 02/08/2019
  *
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
 public class BusinessPermit {
 
 	private long id;
@@ -55,7 +66,7 @@ public class BusinessPermit {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -80,7 +91,7 @@ public class BusinessPermit {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return result;
@@ -96,7 +107,7 @@ public class BusinessPermit {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -125,7 +136,7 @@ public class BusinessPermit {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return result;
@@ -147,7 +158,7 @@ public class BusinessPermit {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -195,7 +206,7 @@ public class BusinessPermit {
 			
 			
 			Customer cus = new Customer();
-			try{cus.setCustomerid(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
 			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
 			try{cus.setLastname(rs.getString("cuslastname"));}catch(NullPointerException e){}
@@ -219,7 +230,7 @@ public class BusinessPermit {
 			
 			try{cus.setBirthdate(rs.getString("borndate"));}catch(NullPointerException e){}
 			try{Customer emergency = new Customer();
-			emergency.setCustomerid(rs.getLong("emeperson"));
+			emergency.setId(rs.getLong("emeperson"));
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
 			
@@ -247,7 +258,7 @@ public class BusinessPermit {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return coms;
@@ -318,7 +329,7 @@ public class BusinessPermit {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		long id =1;
 		int cnt = 1;
@@ -335,7 +346,7 @@ public class BusinessPermit {
 			LogU.add("id: " + id);
 		}
 		
-		ps.setLong(cnt++, na.getCustomer()==null? 0 : na.getCustomer().getCustomerid());
+		ps.setLong(cnt++, na.getCustomer()==null? 0 : na.getCustomer().getId());
 		ps.setString(cnt++, na.getDateTrans());
 		ps.setString(cnt++, na.getBusinessName());
 		ps.setString(cnt++, na.getBusinessEngage());
@@ -355,7 +366,7 @@ public class BusinessPermit {
 		ps.setString(cnt++, na.getEmpdtls());
 		ps.setDouble(cnt++, na.getGrossAmount());
 		
-		LogU.add(na.getCustomer()==null? 0 : na.getCustomer().getCustomerid());
+		LogU.add(na.getCustomer()==null? 0 : na.getCustomer().getId());
 		LogU.add(na.getDateTrans());
 		LogU.add(na.getBusinessName());
 		LogU.add(na.getBusinessEngage());
@@ -379,7 +390,7 @@ public class BusinessPermit {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to businesspermit : " + s.getMessage());
@@ -416,7 +427,7 @@ public class BusinessPermit {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		long id =1;
 		int cnt = 1;
@@ -433,7 +444,7 @@ public class BusinessPermit {
 			LogU.add("id: " + id);
 		}
 		
-		ps.setLong(cnt++, getCustomer()==null? 0 : getCustomer().getCustomerid());
+		ps.setLong(cnt++, getCustomer()==null? 0 : getCustomer().getId());
 		ps.setString(cnt++, getDateTrans());
 		ps.setString(cnt++, getBusinessName());
 		ps.setString(cnt++, getBusinessEngage());
@@ -453,7 +464,7 @@ public class BusinessPermit {
 		ps.setString(cnt++, getEmpdtls());
 		ps.setDouble(cnt++, getGrossAmount());
 		
-		LogU.add(getCustomer()==null? 0 : getCustomer().getCustomerid());
+		LogU.add(getCustomer()==null? 0 : getCustomer().getId());
 		LogU.add(getDateTrans());
 		LogU.add(getBusinessName());
 		LogU.add(getBusinessEngage());
@@ -477,7 +488,7 @@ public class BusinessPermit {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to businesspermit : " + s.getMessage());
@@ -512,14 +523,14 @@ public class BusinessPermit {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
 		LogU.add("===========================START=========================");
 		LogU.add("updating data into table businesspermit");
 		
-		ps.setLong(cnt++, na.getCustomer()==null? 0 : na.getCustomer().getCustomerid());
+		ps.setLong(cnt++, na.getCustomer()==null? 0 : na.getCustomer().getId());
 		ps.setString(cnt++, na.getDateTrans());
 		ps.setString(cnt++, na.getBusinessName());
 		ps.setString(cnt++, na.getBusinessEngage());
@@ -540,7 +551,7 @@ public class BusinessPermit {
 		ps.setLong(cnt++, na.getId());
 		
 		
-		LogU.add(na.getCustomer()==null? 0 : na.getCustomer().getCustomerid());
+		LogU.add(na.getCustomer()==null? 0 : na.getCustomer().getId());
 		LogU.add(na.getDateTrans());
 		LogU.add(na.getBusinessName());
 		LogU.add(na.getBusinessEngage());
@@ -564,7 +575,7 @@ public class BusinessPermit {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to businesspermit : " + s.getMessage());
@@ -599,14 +610,14 @@ public class BusinessPermit {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
 		LogU.add("===========================START=========================");
 		LogU.add("updating data into table businesspermit");
 		
-		ps.setLong(cnt++, getCustomer()==null? 0 : getCustomer().getCustomerid());
+		ps.setLong(cnt++, getCustomer()==null? 0 : getCustomer().getId());
 		ps.setString(cnt++, getDateTrans());
 		ps.setString(cnt++, getBusinessName());
 		ps.setString(cnt++, getBusinessEngage());
@@ -626,7 +637,7 @@ public class BusinessPermit {
 		ps.setDouble(cnt++, getGrossAmount());
 		ps.setLong(cnt++, getId());
 		
-		LogU.add(getCustomer()==null? 0 : getCustomer().getCustomerid());
+		LogU.add(getCustomer()==null? 0 : getCustomer().getId());
 		LogU.add(getDateTrans());
 		LogU.add(getBusinessName());
 		LogU.add(getBusinessEngage());
@@ -650,7 +661,7 @@ public class BusinessPermit {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to businesspermit : " + s.getMessage());
@@ -667,7 +678,7 @@ public class BusinessPermit {
 		String sql = "";
 		try{
 		sql="SELECT bid FROM businesspermit  ORDER BY bid DESC LIMIT 1";	
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
@@ -677,7 +688,7 @@ public class BusinessPermit {
 		
 		rs.close();
 		prep.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -721,7 +732,7 @@ public class BusinessPermit {
 		Connection conn = null;
 		boolean result = false;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement("SELECT bid FROM businesspermit WHERE bid=?");
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
@@ -732,7 +743,7 @@ public class BusinessPermit {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -744,7 +755,7 @@ public class BusinessPermit {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -757,7 +768,7 @@ public class BusinessPermit {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
@@ -771,7 +782,7 @@ public class BusinessPermit {
 		String[] params = new String[1];
 		params[0] = getId()+"";
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -784,187 +795,9 @@ public class BusinessPermit {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
-	}
-	
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getDateTrans() {
-		return dateTrans;
-	}
-
-	public void setDateTrans(String dateTrans) {
-		this.dateTrans = dateTrans;
-	}
-
-	public String getBusinessName() {
-		return businessName;
-	}
-
-	public void setBusinessName(String businessName) {
-		this.businessName = businessName;
-	}
-
-	public String getBusinessEngage() {
-		return businessEngage;
-	}
-
-	public void setBusinessEngage(String businessEngage) {
-		this.businessEngage = businessEngage;
-	}
-
-	public String getBusinessAddress() {
-		return businessAddress;
-	}
-
-	public void setBusinessAddress(String businessAddress) {
-		this.businessAddress = businessAddress;
-	}
-
-	public String getBarangay() {
-		return barangay;
-	}
-
-	public void setBarangay(String barangay) {
-		this.barangay = barangay;
-	}
-
-	public String getMemoType() {
-		return memoType;
-	}
-
-	public void setMemoType(String memoType) {
-		this.memoType = memoType;
-	}
-
-	public String getPlateNo() {
-		return plateNo;
-	}
-
-	public void setPlateNo(String plateNo) {
-		this.plateNo = plateNo;
-	}
-
-	public String getIssuedOn() {
-		return issuedOn;
-	}
-
-	public void setIssuedOn(String issuedOn) {
-		this.issuedOn = issuedOn;
-	}
-
-	public String getValidUntil() {
-		return validUntil;
-	}
-
-	public void setValidUntil(String validUntil) {
-		this.validUntil = validUntil;
-	}
-
-	public String getYear() {
-		return year;
-	}
-
-	public void setYear(String year) {
-		this.year = year;
-	}
-
-	public String getOic() {
-		return oic;
-	}
-
-	public void setOic(String oic) {
-		this.oic = oic;
-	}
-
-	public String getMayor() {
-		return mayor;
-	}
-
-	public void setMayor(String mayor) {
-		this.mayor = mayor;
-	}
-
-	public String getOrs() {
-		return ors;
-	}
-
-	public void setOrs(String ors) {
-		this.ors = ors;
-	}
-
-	public int getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-
-	public Customer getCustomer() {
-		return customer;
-	}
-
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
-
-
-	public String getControlNo() {
-		return controlNo;
-	}
-
-
-	public void setControlNo(String controlNo) {
-		this.controlNo = controlNo;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public double getGrossAmount() {
-		return grossAmount;
-	}
-
-	public void setGrossAmount(double grossAmount) {
-		this.grossAmount = grossAmount;
-	}
-
-	public String getCapital() {
-		return capital;
-	}
-
-	public void setCapital(String capital) {
-		this.capital = capital;
-	}
-
-	public String getGross() {
-		return gross;
-	}
-
-	public void setGross(String gross) {
-		this.gross = gross;
-	}
-
-	public String getEmpdtls() {
-		return empdtls;
-	}
-
-	public void setEmpdtls(String empdtls) {
-		this.empdtls = empdtls;
 	}
 	
 }

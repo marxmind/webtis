@@ -8,7 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.italia.municipality.lakesebu.database.LicensingDatabaseConnect;
+import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 
@@ -21,6 +28,11 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @version 1.0
  *
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
 public class Barangay {
 
 	private int id;
@@ -30,17 +42,6 @@ public class Barangay {
 	private Province province;
 	private Municipality municipality;
 	private Regional regional;
-	
-	public Barangay(){}
-	public Barangay(
-			int id,
-			String name,
-			int isActive
-			){
-		this.id = id;
-		this.name = name;
-		this.isActive = isActive;
-	}
 	
 	public static String barangaySQL(String tablename,Barangay bg){
 		String sql= " AND "+ tablename +".bgisactive=" + bg.getIsActive();
@@ -67,7 +68,7 @@ public class Barangay {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -78,7 +79,7 @@ public class Barangay {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return result;
@@ -103,7 +104,7 @@ public class Barangay {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -145,7 +146,7 @@ public class Barangay {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return bars;
@@ -169,7 +170,7 @@ public class Barangay {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -202,7 +203,7 @@ public class Barangay {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return bar;
@@ -259,7 +260,7 @@ public class Barangay {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		int id =1;
 		int cnt = 1;
@@ -292,7 +293,7 @@ public class Barangay {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to barangay : " + s.getMessage());
@@ -315,7 +316,7 @@ public class Barangay {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		int id =1;
 		int cnt = 1;
@@ -348,7 +349,7 @@ public class Barangay {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to barangay : " + s.getMessage());
@@ -369,7 +370,7 @@ public class Barangay {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
@@ -393,7 +394,7 @@ public class Barangay {
 		ps.executeUpdate();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to barangay : " + s.getMessage());
@@ -413,7 +414,7 @@ public class Barangay {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
@@ -437,7 +438,7 @@ public class Barangay {
 		ps.executeUpdate();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to barangay : " + s.getMessage());
@@ -454,7 +455,7 @@ public class Barangay {
 		String sql = "";
 		try{
 		sql="SELECT bgid FROM barangay  ORDER BY bgid DESC LIMIT 1";	
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
@@ -464,7 +465,7 @@ public class Barangay {
 		
 		rs.close();
 		prep.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -505,7 +506,7 @@ public class Barangay {
 		Connection conn = null;
 		boolean result = false;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement("SELECT bgid FROM barangay WHERE bgid=?");
 		ps.setInt(1, id);
 		rs = ps.executeQuery();
@@ -516,7 +517,7 @@ public class Barangay {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -528,7 +529,7 @@ public class Barangay {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -541,7 +542,7 @@ public class Barangay {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
@@ -555,7 +556,7 @@ public class Barangay {
 		String[] params = new String[1];
 		params[0] = getId()+"";
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -568,47 +569,12 @@ public class Barangay {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public int getIsActive() {
-		return isActive;
-	}
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-	public Province getProvince() {
-		return province;
-	}
-	public void setProvince(Province province) {
-		this.province = province;
-	}
-	public Municipality getMunicipality() {
-		return municipality;
-	}
-	public void setMunicipality(Municipality municipality) {
-		this.municipality = municipality;
-	}
-	public Regional getRegional() {
-		return regional;
-	}
-	public void setRegional(Regional regional) {
-		this.regional = regional;
-	}
+	
 	
 	
 }

@@ -259,7 +259,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 			<p:dataTable id="cusId" value="#{businessOwnerBean.customers}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="true" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top" selection="#{businessOwnerBean.selectedQRCode}" rowKey="#{rpt.customerid}"
+                         scrollable="true" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top" selection="#{businessOwnerBean.selectedQRCode}" rowKey="#{rpt.id}"
                          >
                          	
                          	<f:facet name="{Exporters}">

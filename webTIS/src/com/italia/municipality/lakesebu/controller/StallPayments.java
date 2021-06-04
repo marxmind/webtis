@@ -2,6 +2,8 @@ package com.italia.municipality.lakesebu.controller;
 
 import java.util.List;
 
+import com.italia.municipality.lakesebu.licensing.controller.Customer;
+
 /**
  * 
  * @author mark italia

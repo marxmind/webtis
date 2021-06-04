@@ -16,7 +16,6 @@ import javax.inject.Named;
 import com.italia.municipality.lakesebu.controller.BuildingOwnerHistory;
 import com.italia.municipality.lakesebu.controller.BuildingPaymentTrans;
 import com.italia.municipality.lakesebu.controller.BuildingStall;
-import com.italia.municipality.lakesebu.controller.Customer;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.MarketReports;
 import com.italia.municipality.lakesebu.controller.MonthTrans;
@@ -25,6 +24,7 @@ import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.enm.BuildingType;
 import com.italia.municipality.lakesebu.enm.Months;
 import com.italia.municipality.lakesebu.enm.PaymentType;
+import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
@@ -705,7 +705,7 @@ public class MarketBean implements Serializable{
 			
 			String str = "";
 			if(paidAmount==0 && unpaidAmount>0) {
-				str="<p>Unfortunately, <strong>"+customer.getFullName()+"</strong> has a remaining payable amount of <a style=\"color:red\">Php"+Currency.formatAmount(unpaidAmount)+"</a></p>";
+				str="<p>Unfortunately, <strong>"+customer.getFullname()+"</strong> has a remaining payable amount of <a style=\"color:red\">Php"+Currency.formatAmount(unpaidAmount)+"</a></p>";
 				//notes += "<p><strong>Remaining Payable Amount is <a style=\"color:red\">Php"+Currency.formatAmount(unpaidAmount)+"</a></strong></p>";
 				str +="<br/><p><strong>TIP:</strong><a style=\"color:orange;\">If you are ok with below information. Please proceed to click </a><a style=\"color:green;\">SAVE BUTTON.</a></p>";
 				str += "<br/><p><strong>Please see below detailed information</strong></p>";
@@ -714,14 +714,14 @@ public class MarketBean implements Serializable{
 			}
 			
 			if(paidAmount>0 && unpaidAmount==0) {
-				str = "<p>Awesome! The excess for the paid amount by <strong>"+customer.getFullName()+"</strong> has been carried over for the future payment which is <a style=\"color:blue\">Php"+Currency.formatAmount(paidAmount)+"</a></p>";
+				str = "<p>Awesome! The excess for the paid amount by <strong>"+customer.getFullname()+"</strong> has been carried over for the future payment which is <a style=\"color:blue\">Php"+Currency.formatAmount(paidAmount)+"</a></p>";
 				str +="<br/><p><strong>TIP:</strong><a style=\"color:orange;\">If you are ok with below information. Please proceed to click </a><a style=\"color:green;\">SAVE BUTTON.</a></p>";
 				str += "<br/><p><strong>Please see below detailed information</strong></p>";
 				notes = str + notes;
 			}
 		
 			if(paidAmount==0 && unpaidAmount==0) {
-				str = "<p>This is good, "+ getUser().getFirstname() +"! <strong>"+customer.getFullName()+"</strong> has making a good record to us. Keep this owner watch out.</p>";
+				str = "<p>This is good, "+ getUser().getFirstname() +"! <strong>"+customer.getFullname()+"</strong> has making a good record to us. Keep this owner watch out.</p>";
 				str +="<br/><p><strong>TIP:</strong><a style=\"color:orange;\">If you are ok with below information. Please proceed to click </a><a style=\"color:green;\">SAVE BUTTON.</a></p>";
 				str += "<br/><p><strong>Please see below detailed information</strong></p>";
 				notes = str + notes;
@@ -890,7 +890,7 @@ public class MarketBean implements Serializable{
 		Customer customer = Customer.customer(getCustomerId());
 		String user = Login.getUserLogin().getUserDtls().getFirstname();
 		String startSentence = "<p><strong>Hi " + user + ",</strong></p>";
-		startSentence += "<br/><p>Please see below gathered information for owner " + customer.getFullName() + ".</p>";
+		startSentence += "<br/><p>Please see below gathered information for owner " + customer.getFullname() + ".</p>";
 		//String infoStall = "";
 		String infoPayments = "";
 			
@@ -1151,20 +1151,20 @@ public class MarketBean implements Serializable{
 		  " AND cuz.customerid=? AND own.ownerdatestart is not null AND own.iscurrentowner=1"
 		  ; params = new String[1]; params[0] = cz.getId()+"";
 		  
-		  System.out.println("customer >> " + cz.getFullName()); int cntStall = 1;
+		  System.out.println("customer >> " + cz.getFullname()); int cntStall = 1;
 		  for(BuildingOwnerHistory his : BuildingOwnerHistory.retrieve(sql, params)) {
 		  
-		  System.out.println("history customer >> " + his.getCustomer().getFullName());
+		  System.out.println("history customer >> " + his.getCustomer().getFullname());
 		  sql = " AND cuz.customerid=? AND st.isoccupied=1 AND st.stallid=?"; params =
 		  new String[2]; params[0] = his.getCustomer().getId()+""; params[1] =
 		  his.getStall().getId()+"";
 		  
 		  MarketReports rpt = new MarketReports(); rpt.setObj(his); if(cntStall==1) {
-		  rpt.setCount(count++); rpt.setF1(cz.getFullName()); }else {
+		  rpt.setCount(count++); rpt.setF1(cz.getFullname()); }else {
 		  rpt.setCount(count); rpt.setF1(""); } cntStall++;
 		  
 		  for(BuildingStall stall : BuildingStall.retrieve(sql, params)) {
-		  System.out.println("stall customer >> " + stall.getCustomer().getFullName());
+		  System.out.println("stall customer >> " + stall.getCustomer().getFullname());
 		  
 		  
 		  rpt.setF14(stall.getBuilding().getName()); rpt.setF15(stall.getName());
@@ -1293,7 +1293,7 @@ public class MarketBean implements Serializable{
 		customers = new ArrayList<>();
 		customers.add(new SelectItem(0, "Select..."));
 		for(Customer cus : Customer.retrieve("", new String[0])) {
-			customers.add(new SelectItem(cus.getId(), cus.getFullName()));
+			customers.add(new SelectItem(cus.getId(), cus.getFullname()));
 		}
 		
 		return customers;

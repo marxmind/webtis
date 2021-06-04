@@ -10,9 +10,10 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import com.italia.municipality.lakesebu.controller.Customer;
+import com.italia.municipality.lakesebu.controller.Customer2;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.UserDtls;
+import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 
@@ -73,7 +74,7 @@ public class CustomerBean implements Serializable{
 		if(getCustomerSelected()!=null) {
 			customer = getCustomerSelected();
 		}else {
-			customer.setIsActive(1);
+			customer.setIsactive(1);
 		}
 		
 		if(getFullName()==null || getFullName().isEmpty()) {
@@ -92,10 +93,10 @@ public class CustomerBean implements Serializable{
 		
 		if(isOk) {
 			UserDtls user = Login.getUserLogin().getUserDtls();
-			customer.setRegistrationDate(DateUtils.convertDate(getRegDate(),"yyyy-MM-dd"));
-			customer.setFullName(getFullName().trim().toUpperCase());
-			customer.setAddress(getAddress().trim().toUpperCase());
-			customer.setContactNumber(getContactNo());
+			customer.setDateregistered(DateUtils.convertDate(getRegDate(),"yyyy-MM-dd"));
+			customer.setFullname(getFullName().trim().toUpperCase());
+			//customer.setAddress(getAddress().trim().toUpperCase());
+			customer.setContactno(getContactNo());
 			customer.setUserDtls(user);
 			customer.save();
 			loadCustomer();
@@ -122,10 +123,10 @@ public class CustomerBean implements Serializable{
 	
 	public void clickItem(Customer cus) {
 		setCustomerSelected(cus);
-		setRegDate(DateUtils.convertDateString(cus.getRegistrationDate(), "yyyy-MM-dd"));
-		setFullName(cus.getFullName());
-		setAddress(cus.getAddress());
-		setContactNo(cus.getContactNumber());
+		setRegDate(DateUtils.convertDateString(cus.getDateregistered(), "yyyy-MM-dd"));
+		setFullName(cus.getFullname());
+		setAddress(cus.getCompleteAddress());
+		setContactNo(cus.getContactno());
 	}
 	
 }

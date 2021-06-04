@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
+import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.utils.LogU;
 
 /**
@@ -76,11 +77,11 @@ public class ORNameList {
 			
 			Customer cus = new Customer();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
-			try{cus.setRegistrationDate(rs.getString("regdate"));}catch(NullPointerException e){}
-			try{cus.setFullName(rs.getString("fullname"));}catch(NullPointerException e){}
-			try{cus.setAddress(rs.getString("address"));}catch(NullPointerException e){}
-			try{cus.setContactNumber(rs.getString("contactno"));}catch(NullPointerException e){}
-			try{cus.setIsActive(rs.getInt("isactivatecus"));}catch(NullPointerException e){}
+			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
+			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
+			try{cus.setLastname(rs.getString("cuslastname"));}catch(NullPointerException e){}
+			try{cus.setFullname(rs.getString("fullname"));}catch(NullPointerException e){}
+			try{cus.setGender(rs.getString("cusgender"));}catch(NullPointerException e){}
 			
 			UserDtls user = new UserDtls();
 			try{user.setUserdtlsid(rs.getLong("userdtlsid"));}catch(NullPointerException e){}

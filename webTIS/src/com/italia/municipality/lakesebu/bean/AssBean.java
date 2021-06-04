@@ -13,10 +13,10 @@ import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.BuildingOwnerHistory;
 import com.italia.municipality.lakesebu.controller.BuildingStall;
-import com.italia.municipality.lakesebu.controller.Customer;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.MarketBuilding;
 import com.italia.municipality.lakesebu.controller.UserDtls;
+import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 
@@ -161,7 +161,7 @@ public class AssBean implements Serializable{
 		customers = new ArrayList<>();
 		customers.add(new SelectItem(0, "Select..."));
 		for(Customer cus : Customer.retrieve("", new String[0])) {
-			customers.add(new SelectItem(cus.getId(), cus.getFullName()));
+			customers.add(new SelectItem(cus.getId(), cus.getFullname()));
 		}
 		
 		return customers;

@@ -130,7 +130,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:layoutUnit position="center">
 				<p:toolbar id="tbTool" style="#{skin.toolbar}">
 	    		<f:facet name="left">
-	    					<p:selectOneMenu id="fundSerId" value="#{formBean.fundSearchId}" style="width: 12em" disabled="false">
+	    					<p:selectOneMenu id="fundSerId" value="#{formBean.fundSearchId}" style="width: 12em" disabled="false" filterMatchMode="contains" filter="true">
 								<f:selectItems value="#{formBean.fundsSearch}"/>
 								<p:ajax event="change" listener="#{formBean.loadData}" update="dataForm dataFormSeries"/>
 							</p:selectOneMenu>
@@ -151,7 +151,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					<p:dataTable id="dataForm" value="#{formBean.forms}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="false" style="#{skin.table}" paginatorPosition="top"
+                         scrollable="false" style="#{skin.table}" paginatorPosition="top" reflow="true"
                          
                          >
                          
@@ -170,10 +170,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 								<p:row>
 									<p:column rowspan="2" headerText="[*]" width="10"/>
 									<p:column rowspan="2" headerText="View" width="10"/>
-									<p:column rowspan="2" headerText="Stab#" width="20"/>
-									<p:column rowspan="2" headerText="Issued" width="50"/>
+									<p:column rowspan="2" headerText="Stab#" width="10"/>
+									<p:column rowspan="2" headerText="Issued" width="20"/>
 									<p:column rowspan="2" headerText="Fund" width="50"/>
-									<p:column rowspan="2" headerText="Form" width="50"/>
+									<p:column rowspan="2" headerText="Form" width="100"/>
 									<p:column rowspan="2" headerText="Status" width="50"/>
 									<p:column colspan="3" headerText="Series" width="150"/>
 									<p:column rowspan="2" headerText="Collector" width="100"/>
@@ -361,7 +361,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<p:dialog position="center top" width="600" height="600" widgetVar="formsDialog" responsive="true" header="Series Lookup" modal="false" showEffect="clip" hideEffect="clip" resizable="false">
 	<p:toolbar id="tbpay">
     		<f:facet name="left">
-    				<p:selectOneMenu id="frmIdSearch" value="#{formBean.formTypeIdSearch}" style="width: 12em">
+    				<p:selectOneMenu id="frmIdSearch" value="#{formBean.formTypeIdSearch}" style="width: 12em" filterMatchMode="contains" filter="true">
 							<f:selectItems value="#{formBean.formTypeSearch}"/>
 							<p:ajax event="change" listener="#{formBean.loadForms}" update="formsData" />
 					</p:selectOneMenu>
@@ -375,19 +375,19 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<p:dataTable value="#{formBean.stocks}" id="formsData" var="fm" type="ordered" itemType="none" style="#{skin.table}"
 	paginator="true" rows="10" paginatorPosition="top" paginatorAlwaysVisible="false">
 	
-		<p:column headerText="Action" width="60">
+		<p:column headerText="Action" width="30">
 				<p:commandButton value="Select" update="gridId" actionListener="#{formBean.stocksSelected(fm)}" oncomplete="PF('formsDialog').hide()"/>
 	    </p:column>
         
-        <p:column headerText="Stab#" width="30">
+        <p:column headerText="Stab#" width="20">
             <p:outputLabel value="#{fm.stabNo}"/>
         </p:column>
         
-        <p:column headerText="Form Type" width="70">
+        <p:column headerText="AF Form" width="100">
             <p:outputLabel value="#{fm.formTypeName}"/>
         </p:column>
         
-        <p:column headerText="Quantity" width="70">
+        <p:column headerText="Quantity" width="30">
         	<p:outputLabel value="#{fm.quantity}"/>
         </p:column>
         

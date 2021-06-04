@@ -8,12 +8,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.italia.municipality.lakesebu.controller.UserDtls;
-import com.italia.municipality.lakesebu.database.LicensingDatabaseConnect;
+import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.Database;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
 
-public class ORTransaction {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
+@Builder
+public class BusinessORTransaction {
 
 	private long id;
 	private String dateTrans;
@@ -33,16 +44,14 @@ public class ORTransaction {
 	private String purpose;
 	private int iscapital;
 	
-	private static final String WEBTIS = Database.WEBTIS.getName();
-	
 	public static String getLastORNumber() {
-		String sql = "SELECT orno FROM orlisting WHERE oractive=1 ORDER BY orid DESC LIMIT 1";
+		String sql = "SELECT orno FROM businessorlisting WHERE oractive=1 ORDER BY orid DESC LIMIT 1";
 			
 		Connection conn = null;
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -53,34 +62,34 @@ public class ORTransaction {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		
 		return "0";
 	}
 	
-	public static ORTransaction loadORIfExist(Customer cus){
-		ORTransaction ort = null;
-		String sql = " AND orl.ordate=? AND orl.oractive=1 AND orl.orstatus=1 AND cuz.customerid=" + cus.getCustomerid();
+	public static BusinessORTransaction loadORIfExist(Customer cus){
+		BusinessORTransaction ort = null;
+		String sql = " AND orl.ordate=? AND orl.oractive=1 AND orl.orstatus=1 AND cuz.customerid=" + cus.getId();
 		String[] params = new String[1];
 		params[0] = DateUtils.getCurrentDateYYYYMMDD();
 		sql += " ORDER BY orl.orid DESC limit 1";
 		try{
-			ort = ORTransaction.retrieve(sql, params).get(0);
+			ort = BusinessORTransaction.retrieve(sql, params).get(0);
 		}catch(Exception e){}
 		
 		return ort;
 	}
 	
-	public static ORTransaction retrieveOROnlyInfo(String orNumber) {
-		String sql = "SELECT * FROM orlisting WHERE oractive=1 AND orno=" + orNumber;
-		ORTransaction ort = new ORTransaction();
+	public static BusinessORTransaction retrieveOROnlyInfo(String orNumber) {
+		String sql = "SELECT * FROM businessorlisting WHERE oractive=1 AND orno=" + orNumber;
+		BusinessORTransaction ort = new BusinessORTransaction();
 		Connection conn = null;
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		rs = ps.executeQuery();
@@ -100,7 +109,7 @@ public class ORTransaction {
 			
 			try{ort.setOrStatus(ort.getStatus()==1? "Delivered" : "Cancelled");}catch(NullPointerException e){}
 			Customer cus = new Customer();
-			try{cus.setCustomerid(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			ort.setCustomer(cus);
 			
 			UserDtls user = new UserDtls();
@@ -110,20 +119,20 @@ public class ORTransaction {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return ort;
 	}
 	
-	public static List<ORTransaction> retrieve(String sqlAdd, String[] params){
-		List<ORTransaction> orls = new ArrayList<>();
+	public static List<BusinessORTransaction> retrieve(String sqlAdd, String[] params){
+		List<BusinessORTransaction> orls = new ArrayList<>();
 		
 		String tableOR = "orl";
 		String tableCus = "cuz";
 		String tableUser = "usr";
 		
-		String sql = "SELECT * FROM orlisting " + tableOR + ", customer " + tableCus + ", "+WEBTIS+".userdtls " + tableUser + " WHERE " +
+		String sql = "SELECT * FROM businessorlisting " + tableOR + ", customer " + tableCus + ", userdtls " + tableUser + " WHERE " +
 				tableOR + ".customerid=" + tableCus + ".customerid AND " +
 				tableOR + ".userdtlsid=" + tableUser + ".userdtlsid ";
 		sql = sql + sqlAdd;		
@@ -132,7 +141,7 @@ public class ORTransaction {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -149,7 +158,7 @@ public class ORTransaction {
 		
 		while(rs.next()){
 			
-			ORTransaction ort = new ORTransaction();
+			BusinessORTransaction ort = new BusinessORTransaction();
 			try{ort.setId(rs.getLong("orid"));}catch(NullPointerException e){}
 			try{ort.setDateTrans(rs.getString("ordate"));}catch(NullPointerException e){}
 			try{ort.setOrNumber(rs.getString("orno"));}catch(NullPointerException e){}
@@ -163,7 +172,7 @@ public class ORTransaction {
 			try{ort.setIscapital(rs.getInt("iscapital"));}catch(NullPointerException e){}
 			
 			Customer cus = new Customer();
-			try{cus.setCustomerid(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
 			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
 			try{cus.setLastname(rs.getString("cuslastname"));}catch(NullPointerException e){}
@@ -187,7 +196,7 @@ public class ORTransaction {
 			
 			try{cus.setBirthdate(rs.getString("borndate"));}catch(NullPointerException e){}
 			try{Customer emergency = new Customer();
-			emergency.setCustomerid(rs.getLong("emeperson"));
+			emergency.setId(rs.getLong("emeperson"));
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
 			ort.setCustomer(cus);
@@ -212,26 +221,26 @@ public class ORTransaction {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return orls;
 	}
 	
-	public static ORTransaction save(ORTransaction or){
+	public static BusinessORTransaction save(BusinessORTransaction or){
 		if(or!=null){
 			
-			long id = ORTransaction.getInfo(or.getId() ==0? ORTransaction.getLatestId()+1 : or.getId());
+			long id = BusinessORTransaction.getInfo(or.getId() ==0? BusinessORTransaction.getLatestId()+1 : or.getId());
 			LogU.add("checking for new added data");
 			if(id==1){
 				LogU.add("insert new Data ");
-				or = ORTransaction.insertData(or, "1");
+				or = BusinessORTransaction.insertData(or, "1");
 			}else if(id==2){
 				LogU.add("update Data ");
-				or = ORTransaction.updateData(or);
+				or = BusinessORTransaction.updateData(or);
 			}else if(id==3){
 				LogU.add("added new Data ");
-				or = ORTransaction.insertData(or, "3");
+				or = BusinessORTransaction.insertData(or, "3");
 			}
 			
 		}
@@ -255,8 +264,8 @@ public class ORTransaction {
 			
 	}
 	
-	public static ORTransaction insertData(ORTransaction or, String type){
-		String sql = "INSERT INTO orlisting ("
+	public static BusinessORTransaction insertData(BusinessORTransaction or, String type){
+		String sql = "INSERT INTO businessorlisting ("
 				+ "orid,"
 				+ "ordate,"
 				+ "orno,"
@@ -275,12 +284,12 @@ public class ORTransaction {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		long id =1;
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table orlisting");
+		LogU.add("inserting data into table businessorlisting");
 		if("1".equalsIgnoreCase(type)){
 			ps.setLong(cnt++, id);
 			or.setId(id);
@@ -298,7 +307,7 @@ public class ORTransaction {
 		ps.setString(cnt++, or.getPurpose());
 		ps.setString(cnt++, or.getAddress());
 		ps.setInt(cnt++, or.getIsActive());
-		ps.setLong(cnt++, or.getCustomer()==null? 0 : or.getCustomer().getCustomerid());
+		ps.setLong(cnt++, or.getCustomer()==null? 0 : or.getCustomer().getId());
 		ps.setLong(cnt++, or.getUserDtls()==null? 0 : or.getUserDtls().getUserdtlsid());
 		ps.setInt(cnt++, or.getStatus());
 		ps.setDouble(cnt++, or.getGrossAmount());
@@ -310,7 +319,7 @@ public class ORTransaction {
 		LogU.add(or.getPurpose());
 		LogU.add(or.getAddress());
 		LogU.add(or.getIsActive());
-		LogU.add(or.getCustomer()==null? 0 : or.getCustomer().getCustomerid());
+		LogU.add(or.getCustomer()==null? 0 : or.getCustomer().getId());
 		LogU.add(or.getUserDtls()==null? 0 : or.getUserDtls().getUserdtlsid());
 		LogU.add(or.getStatus());
 		LogU.add(or.getGrossAmount());
@@ -320,17 +329,17 @@ public class ORTransaction {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error inserting data to orlisting : " + s.getMessage());
+			LogU.add("error inserting data to businessorlisting : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		return or;
 	}
 	
 	public void insertData(String type){
-		String sql = "INSERT INTO orlisting ("
+		String sql = "INSERT INTO businessorlisting ("
 				+ "orid,"
 				+ "ordate,"
 				+ "orno,"
@@ -349,12 +358,12 @@ public class ORTransaction {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		long id =1;
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table orlisting");
+		LogU.add("inserting data into table businessorlisting");
 		if("1".equalsIgnoreCase(type)){
 			ps.setLong(cnt++, id);
 			setId(id);
@@ -372,7 +381,7 @@ public class ORTransaction {
 		ps.setString(cnt++, getPurpose());
 		ps.setString(cnt++, getAddress());
 		ps.setInt(cnt++, getIsActive());
-		ps.setLong(cnt++, getCustomer()==null? 0 : getCustomer().getCustomerid());
+		ps.setLong(cnt++, getCustomer()==null? 0 : getCustomer().getId());
 		ps.setLong(cnt++, getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		ps.setInt(cnt++, getStatus());
 		ps.setDouble(cnt++, getGrossAmount());
@@ -384,7 +393,7 @@ public class ORTransaction {
 		LogU.add(getPurpose());
 		LogU.add(getAddress());
 		LogU.add(getIsActive());
-		LogU.add(getCustomer()==null? 0 : getCustomer().getCustomerid());
+		LogU.add(getCustomer()==null? 0 : getCustomer().getId());
 		LogU.add(getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		LogU.add(getStatus());		
 		LogU.add(getGrossAmount());
@@ -394,17 +403,17 @@ public class ORTransaction {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error inserting data to orlisting : " + s.getMessage());
+			LogU.add("error inserting data to businessorlisting : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		
 	}
 	
-	public static ORTransaction updateData(ORTransaction or){
-		String sql = "UPDATE orlisting SET "
+	public static BusinessORTransaction updateData(BusinessORTransaction or){
+		String sql = "UPDATE businessorlisting SET "
 				+ "ordate=?,"
 				+ "orno=?,"
 				+ "oramount=?,"
@@ -421,19 +430,19 @@ public class ORTransaction {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("updating data into table orlisting");
+		LogU.add("updating data into table businessorlisting");
 		
 		ps.setString(cnt++, or.getDateTrans());
 		ps.setString(cnt++, or.getOrNumber());
 		ps.setDouble(cnt++, or.getAmount());
 		ps.setString(cnt++, or.getPurpose());
 		ps.setString(cnt++, or.getAddress());
-		ps.setLong(cnt++, or.getCustomer()==null? 0 : or.getCustomer().getCustomerid());
+		ps.setLong(cnt++, or.getCustomer()==null? 0 : or.getCustomer().getId());
 		ps.setLong(cnt++, or.getUserDtls()==null? 0 : or.getUserDtls().getUserdtlsid());
 		ps.setInt(cnt++, or.getStatus());
 		ps.setDouble(cnt++, or.getGrossAmount());
@@ -445,7 +454,7 @@ public class ORTransaction {
 		LogU.add(or.getAmount());
 		LogU.add(or.getPurpose());
 		LogU.add(or.getAddress());
-		LogU.add(or.getCustomer()==null? 0 : or.getCustomer().getCustomerid());
+		LogU.add(or.getCustomer()==null? 0 : or.getCustomer().getId());
 		LogU.add(or.getUserDtls()==null? 0 : or.getUserDtls().getUserdtlsid());
 		LogU.add(or.getStatus());
 		LogU.add(or.getGrossAmount());
@@ -456,17 +465,17 @@ public class ORTransaction {
 		ps.executeUpdate();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error updating data to orlisting : " + s.getMessage());
+			LogU.add("error updating data to businessorlisting : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		return or;
 	}
 	
 	public void updateData(){
-		String sql = "UPDATE orlisting SET "
+		String sql = "UPDATE businessorlisting SET "
 				+ "ordate=?,"
 				+ "orno=?,"
 				+ "oramount=?,"
@@ -483,19 +492,19 @@ public class ORTransaction {
 		Connection conn = null;
 		
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("updating data into table orlisting");
+		LogU.add("updating data into table businessorlisting");
 		
 		ps.setString(cnt++, getDateTrans());
 		ps.setString(cnt++, getOrNumber());
 		ps.setDouble(cnt++, getAmount());
 		ps.setString(cnt++, getPurpose());
 		ps.setString(cnt++, getAddress());
-		ps.setLong(cnt++, getCustomer()==null? 0 : getCustomer().getCustomerid());
+		ps.setLong(cnt++, getCustomer()==null? 0 : getCustomer().getId());
 		ps.setLong(cnt++, getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		ps.setInt(cnt++, getStatus());
 		ps.setDouble(cnt++, getGrossAmount());
@@ -507,7 +516,7 @@ public class ORTransaction {
 		LogU.add(getAmount());
 		LogU.add(getPurpose());
 		LogU.add(getAddress());
-		LogU.add(getCustomer()==null? 0 : getCustomer().getCustomerid());
+		LogU.add(getCustomer()==null? 0 : getCustomer().getId());
 		LogU.add(getUserDtls()==null? 0 : getUserDtls().getUserdtlsid());
 		LogU.add(getStatus());
 		LogU.add(getGrossAmount());
@@ -518,10 +527,10 @@ public class ORTransaction {
 		ps.executeUpdate();
 		LogU.add("closing...");
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error updating data to orlisting : " + s.getMessage());
+			LogU.add("error updating data to businessorlisting : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		
@@ -534,8 +543,8 @@ public class ORTransaction {
 		ResultSet rs = null;
 		String sql = "";
 		try{
-		sql="SELECT orid FROM orlisting  ORDER BY orid DESC LIMIT 1";	
-		conn = LicensingDatabaseConnect.getConnection();
+		sql="SELECT orid FROM businessorlisting  ORDER BY orid DESC LIMIT 1";	
+		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
@@ -545,7 +554,7 @@ public class ORTransaction {
 		
 		rs.close();
 		prep.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -586,8 +595,8 @@ public class ORTransaction {
 		Connection conn = null;
 		boolean result = false;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
-		ps = conn.prepareStatement("SELECT orid FROM orlisting WHERE orid=?");
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement("SELECT orid FROM businessorlisting WHERE orid=?");
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
 		
@@ -597,7 +606,7 @@ public class ORTransaction {
 		
 		rs.close();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -609,7 +618,7 @@ public class ORTransaction {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -622,7 +631,7 @@ public class ORTransaction {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
@@ -631,12 +640,12 @@ public class ORTransaction {
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
-		String sql = "UPDATE orlisting set oractive=0,userdtlsid="+ getUserDtls().getUserdtlsid() +" WHERE orid=?";
+		String sql = "UPDATE businessorlisting set oractive=0,userdtlsid="+ getUserDtls().getUserdtlsid() +" WHERE orid=?";
 		
 		String[] params = new String[1];
 		params[0] = getId()+"";
 		try{
-		conn = LicensingDatabaseConnect.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -649,110 +658,9 @@ public class ORTransaction {
 		
 		ps.executeUpdate();
 		ps.close();
-		LicensingDatabaseConnect.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
-	}
-	
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public String getDateTrans() {
-		return dateTrans;
-	}
-	public void setDateTrans(String dateTrans) {
-		this.dateTrans = dateTrans;
-	}
-	public String getOrNumber() {
-		return orNumber;
-	}
-	public void setOrNumber(String orNumber) {
-		this.orNumber = orNumber;
-	}
-	public double getAmount() {
-		return amount;
-	}
-	public void setAmount(double amount) {
-		this.amount = amount;
-	}
-	public int getCnt() {
-		return cnt;
-	}
-	public void setCnt(int cnt) {
-		this.cnt = cnt;
-	}
-	public Customer getCustomer() {
-		return customer;
-	}
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
-
-	public int getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-
-	public UserDtls getUserDtls() {
-		return userDtls;
-	}
-
-	public void setUserDtls(UserDtls userDtls) {
-		this.userDtls = userDtls;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getPurpose() {
-		return purpose;
-	}
-
-	public void setPurpose(String purpose) {
-		this.purpose = purpose;
-	}
-
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	public String getOrStatus() {
-		return orStatus;
-	}
-
-	public void setOrStatus(String orStatus) {
-		this.orStatus = orStatus;
-	}
-
-	public double getGrossAmount() {
-		return grossAmount;
-	}
-
-	public void setGrossAmount(double grossAmount) {
-		this.grossAmount = grossAmount;
-	}
-
-	public int getIscapital() {
-		return iscapital;
-	}
-
-	public void setIscapital(int iscapital) {
-		this.iscapital = iscapital;
 	}
 	
 }
