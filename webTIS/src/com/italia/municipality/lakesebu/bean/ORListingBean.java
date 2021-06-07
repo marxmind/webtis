@@ -1417,7 +1417,7 @@ public class ORListingBean implements Serializable{
 				//selectedPaymentNameMap = tmpMap;
 			//}
 			//forSaveOnly();
-			
+			 
 			if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
 				setLabel2(0);
 				setLabel3(0);
