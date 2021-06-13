@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.2.0.final using JasperReports Library version 6.2.0  -->
+<!-- 2016-02-11T16:10:25 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DispenseChequeReport" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="baa74599-c97a-44d8-b738-41e2808f4629">
+	<parameter name="PARAM_ACCOUNT_NO" class="java.lang.String"/>
+	<parameter name="PARAM_CHECK_NO" class="java.lang.String"/>
+	<parameter name="PARAM_ACCOUNT_NAME" class="java.lang.String"/>
+	<parameter name="PARAM_BANK_NAME" class="java.lang.String"/>
+	<parameter name="PARAM_DATE_DISBURSEMENT" class="java.lang.String"/>
+	<parameter name="PARAM_AMOUNT" class="java.lang.String"/>
+	<parameter name="PARAM_ORDEROF" class="java.lang.String"/>
+	<parameter name="PARAM_PROCESSED_BY" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="34" splitType="Stretch">
+			<staticText>
+				<reportElement x="81" y="12" width="71" height="21" uuid="572d19a0-ec71-431b-99ce-1cab7ffe554c"/>
+				<text><![CDATA[Check No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="13" width="71" height="21" uuid="cd19b0a4-b50f-4648-9a60-4d7a93288eb6"/>
+				<text><![CDATA[Account No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="12" width="71" height="21" uuid="71b3a184-630a-40c0-a39e-00a3409c7cf4"/>
+				<text><![CDATA[Bank Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="12" width="100" height="21" uuid="c4c5b865-5404-4684-bef0-e3c2c09542f4"/>
+				<text><![CDATA[Date Disbursement]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="480" y="12" width="71" height="21" uuid="d299e655-d871-4213-8a8d-609296cb2b32"/>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="580" y="13" width="100" height="21" uuid="7ebf84cb-9930-4adb-868d-4692a849b539"/>
+				<text><![CDATA[Pay To The Order Of]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="680" y="12" width="71" height="21" uuid="7a7327fb-6d43-4eb6-98e7-a099ff4a1b9f"/>
+				<text><![CDATA[Processed By]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="33" splitType="Stretch">
+			<staticText>
+				<reportElement x="181" y="-21" width="71" height="21" uuid="6cc316bc-30f9-4faf-832f-d26ec9728f14"/>
+				<text><![CDATA[Account Name]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="80" height="30" uuid="ea012213-20cb-4018-9ff5-615e70ed2541"/>
+				<textFieldExpression><![CDATA[$P{PARAM_ACCOUNT_NO}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="81" y="1" width="100" height="30" uuid="e4e5790f-4838-4778-809d-763c2cdbb2ce"/>
+				<textFieldExpression><![CDATA[$P{PARAM_CHECK_NO}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="181" y="1" width="100" height="30" uuid="72a2b998-5431-4549-a942-a97399ba54ef"/>
+				<textFieldExpression><![CDATA[$P{PARAM_ACCOUNT_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="280" y="1" width="100" height="30" uuid="3d932d5a-d919-4dd4-8644-f769b2374dd5"/>
+				<textFieldExpression><![CDATA[$P{PARAM_BANK_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="381" y="1" width="100" height="30" uuid="13c95d64-f11a-4556-ab22-7ccd21d5901d"/>
+				<textFieldExpression><![CDATA[$P{PARAM_DATE_DISBURSEMENT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="483" y="1" width="97" height="30" uuid="315444b8-72f2-4a2b-9641-15f9a625dcdf"/>
+				<textFieldExpression><![CDATA[$P{PARAM_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="582" y="1" width="98" height="30" uuid="3c8738fe-12d2-4188-b5f9-cb00ad7ba5be"/>
+				<textFieldExpression><![CDATA[$P{PARAM_ORDEROF}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="682" y="1" width="100" height="30" uuid="85faad76-1f07-4025-9d34-a833390ce386"/>
+				<textFieldExpression><![CDATA[$P{PARAM_PROCESSED_BY}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
