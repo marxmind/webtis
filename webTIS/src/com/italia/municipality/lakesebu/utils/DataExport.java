@@ -1,41 +1,36 @@
 package com.italia.municipality.lakesebu.utils;
 
-import java.io.IOException;
 import java.io.Serializable;
-
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.primefaces.component.export.ExcelOptions;
-import org.primefaces.component.export.PDFOptions;
+import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.export.Exporter;
 
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.PageSize;
-
+import lombok.Getter;
+import lombok.Setter;
 /**
  * 
  * @author Mark Italia
  * @Version 1.0
  * @since 02/13/2020
+ * 
+ * @version 2.0
+ * @since 06/13/2021
  *
  */
 @Named
 @ViewScoped
+@Setter
+@Getter
 public class DataExport implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5467685644547571L;
 	
-	private ExcelOptions excelOpt;
+	private Exporter<DataTable> textExporter;
+	/*private ExcelOptions excelOpt;
 	private PDFOptions pdfOpt;
 	
 	public ExcelOptions getExcelOpt() {
@@ -84,4 +79,5 @@ public class DataExport implements Serializable{
 		pdf.addTitle("Record Details");
 		
 	}
+	*/
 }

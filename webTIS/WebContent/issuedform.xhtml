@@ -21,6 +21,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
     </f:facet>
@@ -57,29 +59,19 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	
 	
-	<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="50" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			<p:layoutUnit position="west" size="300" visible="true">
-			
-			<p:toolbar id="tbForm" style="#{skin.toolbar}">
-    		<f:facet name="left">
-    				
-    		</f:facet>
-    		<f:facet name="right">
-    			<p:commandButton update="gridId dataForm" value="New" icon="fa fa-file-o" actionListener="#{formBean.createNew}"/>
-    			<p:commandButton update="gridId dataForm" value="Clear" icon="fa fa-trash" action="#{formBean.createNew}"/>
-    			<p:commandButton update="gridId dataForm msg" value="Save" icon="fa fa-floppy-o" actionListener="#{formBean.saveData}">
-    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
-    			</p:commandButton>
-    		</f:facet>
-			</p:toolbar> 
-				
-			<p:panelGrid id="gridId" columns="2" layout="grid">
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    <div class="p-col-12 p-md-3">
+            <div class="ui-inputgroup" style="float:right">
+	            	<p:commandButton update="gridId dataForm" value="New" icon="fa fa-file-o" actionListener="#{formBean.createNew}"/>
+	    			<p:commandButton update="gridId dataForm" value="Clear" icon="fa fa-trash" action="#{formBean.createNew}"/>
+	    			<p:commandButton update="gridId dataForm msg" value="Save" icon="fa fa-floppy-o" actionListener="#{formBean.saveData}">
+	    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+	    			</p:commandButton>
+            </div>
+            
+            <p:panelGrid id="gridId" columns="2" layout="grid">
 			
 			<p:outputLabel value="Issued Date"/>
 			<p:calendar value="#{formBean.issuedDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 12em"/>
@@ -124,13 +116,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			</p:selectOneMenu>
 			
 			</p:panelGrid>
-				
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="center">
-				<p:toolbar id="tbTool" style="#{skin.toolbar}">
-	    		<f:facet name="left">
-	    					<p:selectOneMenu id="fundSerId" value="#{formBean.fundSearchId}" style="width: 12em" disabled="false" filterMatchMode="contains" filter="true">
+            
+        </div>
+        <div class="p-col-12 p-md-9 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <div class="ui-inputgroup">
+                    	<p:selectOneMenu id="fundSerId" value="#{formBean.fundSearchId}" style="width: 12em" disabled="false" filterMatchMode="contains" filter="true">
 								<f:selectItems value="#{formBean.fundsSearch}"/>
 								<p:ajax event="change" listener="#{formBean.loadData}" update="dataForm dataFormSeries"/>
 							</p:selectOneMenu>
@@ -138,11 +130,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 								<f:selectItems value="#{formBean.collectorsMap}"/>
 								<p:ajax event="change" listener="#{formBean.loadData}" update="dataForm dataFormSeries"/>
 							</p:selectOneMenu>
-	    		</f:facet>
-	    		<f:facet name="right"/>
-				</p:toolbar>
-				
-				<p:tabView prependId="false" cache="true" id="tabId">
+                    </div>
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:tabView prependId="false" cache="true" id="tabId">
 				
 				
 				<p:ajax event="tabChange" listener="#{formBean.onChange}" update="tabId"/>
@@ -354,11 +346,16 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				</p:tab>
 				
 				</p:tabView>
-				
-			</p:layoutUnit>
-	</p:layout>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
 	
-	<p:dialog position="center top" width="600" height="600" widgetVar="formsDialog" responsive="true" header="Series Lookup" modal="false" showEffect="clip" hideEffect="clip" resizable="false">
+	</div><!-- card -->	
+	
+	<p:dialog position="center top" width="900" height="600" widgetVar="formsDialog" closable="false" responsive="true" header="Series Lookup" modal="false" showEffect="clip" hideEffect="clip" resizable="false">
 	<p:toolbar id="tbpay">
     		<f:facet name="left">
     				<p:selectOneMenu id="frmIdSearch" value="#{formBean.formTypeIdSearch}" style="width: 12em" filterMatchMode="contains" filter="true">

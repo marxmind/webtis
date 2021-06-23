@@ -21,6 +21,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
             <h:outputStylesheet name="css/growl.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             
@@ -58,61 +60,56 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     	 
 	<p:focus context="idpayto"/>
 	
-	<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="50" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			<p:layoutUnit position="west" size="800">
-			
-			<p:toolbar id="tbDetails" style="#{skin.toolbar}">
-    		<f:facet name="left">
-    				
-    		</f:facet>
-    		<f:facet name="right">
-    			<p:commandButton update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8" value="New" icon="fa fa-file-o" actionListener="#{checkBean.createNew}"/>
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    <div class="p-col-12 p-md-7" id="idLeft">
+    		<div class="ui-inputgroup" style="float:left">
+    			<p:commandButton update="formId" value="Go To Budget Page" icon="fa fa-file-o" action="budget.xhtml"/>
+    		</div>
+            <div class="ui-inputgroup" style="float:right">
+            	<p:commandButton update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8" value="New" icon="fa fa-file-o" actionListener="#{checkBean.createNew}"/>
     			<p:commandButton update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8" value="Clear" icon="fa fa-trash" action="#{checkBean.clearFields}"/>
-    			<p:commandButton update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8 :formId:dataChkId alertId" value="Save" icon="fa fa-floppy-o" action="#{checkBean.saveData}">
-    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
-    			</p:commandButton>
-    		</f:facet>
-			</p:toolbar> 
+    			<p:commandButton value="Save" icon="fa fa-floppy-o" actionListener="#{checkBean.checkingFieldBeforeSave}"/>
+            </div>
+            
+            
+                
+            
+            <p:panelGrid id="chequeDataId" layout="grid" columns="6" styleClass="ui-noborder">
 			
-			<p:panelGrid id="chequeDataId" layout="grid" columns="3" styleClass="ui-noborder">
-			
-			    <p:outputLabel value="Account No" style="font-size: 2em">
-        		<p:selectOneMenu value="#{checkBean.bankCheckAccountNumber}" style="text-transform:uppercase;width:10em;border-top:none; border-left:none; font-size: 1em;border-right:none;"  filter="true" filterMatchMode="contains">
+			    
+        		
+	                <p:outputLabel for="accId" value="Account No" style="font-size: 1em"/>
+	                <p:selectOneMenu id="accId" value="#{checkBean.bankCheckAccountNumber}" style="text-transform:uppercase;width:10em;border-bottom: 3px solid black;border-top:none; border-left:none; font-size: 1em;border-right:none;"  filter="true" filterMatchMode="contains">
 					<f:selectItem itemLabel="#{checkBean.accountLabel}"/>
 					<f:selectItems value="#{checkBean.accountList}"/>
 					<f:facet name="footer">
-				         <p:separator />
+				         <p:divider styleClass="p-mt-0" />
 				         <h:outputText value="#{checkBean.accountList.size()} available bank accounts" style="font-weight:bold;font-size: 20px; color: blue"/>
 				    </f:facet>
 					<f:ajax listener="#{checkBean.processAccnt}" render="chequeDataId"/>
 				</p:selectOneMenu>
+	           
+				<p:outputLabel value="Check No" style="font-size: 1em"/>
+				<p:inputText id="checkNoId" value="#{checkBean.bankCheckNo}" a:placeholder="0000000000" style="color: black;width:10em;font-size: 1em;font-weight: bold;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
 				
-				</p:outputLabel>
-				<p:outputLabel value="Check No" style="font-size: 2em">
-					<p:inputText value="#{checkBean.bankCheckNo}" a:placeholder="0000000000" style="color: black;width:10em;font-size: 1em;font-weight: bold;border-top:none; border-left:none; border-right:none;"/>
-				</p:outputLabel>
-				<p:outputLabel value="Date" style="font-size: 2em">
-            		<p:calendar value="#{checkBean.dateTime}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="color: black;width:10em;font-size: 1em;border-top:none; border-left:none; border-right:none;"/>
-            	</p:outputLabel>
+				<p:outputLabel value="Date" style="font-size: 1em"/>
+            	<p:datePicker id="basic" value="#{checkBean.dateTime}" pattern="yyyy-MM-dd" inputStyle="color: black;width:10em;font-size: 1em;font-weight: bold;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
 			
 			</p:panelGrid>	
 			<p:panelGrid id="chequeDataId2" layout="grid" columns="1" styleClass="ui-noborder">	
 				
 	            	<p:inputTextarea id="idpayto" completeMethod="#{checkBean.completeBankCheckPayTo}" rows="1" cols="2" value="#{checkBean.bankCheckPayTo}" a:placeholder="Pay To The Order Of" queryDelay="750" minQueryLength="4"
-	            		 style="color: black;width: 34em;font-weight: bold; align-text: left;font-size: 2em;border-top:none; border-left:none; border-right:none;">
+	            		 style="color: black;width: 34em;font-weight: bold; align-text: left;font-size: 2em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
 					</p:inputTextarea>
-				
+					
 			</p:panelGrid>
 			
 			<p:panelGrid id="chequeDataId3" layout="grid" columns="1" styleClass="ui-noborder">	
 			
 					<p:inputTextarea id="idnature" completeMethod="#{checkBean.completeNaturePayment}" rows="1" cols="2" value="#{checkBean.natureOfPayment}" a:placeholder="Nature of Payment" queryDelay="750" minQueryLength="2" 
-	            		 style="color: black;width: 34em;font-weight: bold; align-text: left;font-size: 2em;border-top:none; border-left:none; border-right:none;">
+	            		 style="color: black;width: 34em;font-weight: bold; align-text: left;font-size: 2em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
 					</p:inputTextarea>
 				
 			</p:panelGrid>
@@ -120,119 +117,123 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:panelGrid id="chequeDataId4" layout="grid" columns="1" styleClass="ui-noborder">	
 			
 				<p:outputLabel value="Php: " style="font-size: 2em">
-					<p:inputText id="amntId" value="#{checkBean.inputAmount}" placeholder="000,000,000.00" style="color: blue;font-weight: bold; width:10em;font-size: 2em;border-top:none; border-left:none; border-right:none;">
+					<p:inputText id="amntId" value="#{checkBean.inputAmount}" placeholder="000,000,000.00" style="color: blue;font-weight: bold; width:10em;font-size: 2em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
 						<f:ajax  event="keyup" render="inwordsId" listener="#{checkBean.generateWords}"/>
 					</p:inputText>
 				</p:outputLabel>
 	         </p:panelGrid> 
 	         
 	         
-	         <p:panelGrid id="chequeDataId5" layout="grid" columns="1" styleClass="ui-noborder">
+	         <p:panelGrid id="chequeDataId5" layout="grid" columns="1" >
 	         	 <p:outputLabel id="inwordsId" value="In words: #{checkBean.numberInToWords}" style="font-size: 2em; color: red; font-weight:  bold"/>	
 	         </p:panelGrid>
 	         
 	         <p:panelGrid id="chequeDataId6" layout="grid" columns="1" styleClass="ui-noborder">   
 				
-				<p:outputLabel value="Department" style="font-size: 2em">
-				<p:selectOneMenu id="departmentId" value="#{checkBean.departmentId}" style="color: black;width: 34em;font-size: 1em;border-top:none; border-left:none; border-right:none;" filter="true" filterMatchMode="contains">
+				<div class="ui-inputgroup">
+				<p:outputLabel value="Department" style="font-size: 1em"/>
+				<p:selectOneMenu id="departmentId" value="#{checkBean.departmentId}" style="color: black;width: 30em;font-size: 1em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;" filter="true" filterMatchMode="contains">
 	            		<f:selectItem itemLabel="Select..."/>
 	            		<f:selectItems value="#{checkBean.department}"/>
 	            </p:selectOneMenu>
-	            </p:outputLabel>
+	            </div>
 	            
-	            
-			
-			</p:panelGrid>	
-            <p:panelGrid id="chequeDataId7" layout="grid" columns="3" styleClass="ui-noborder">   	
-            	
-            	
-            	
-            	<p:outputLabel value="Status" style="font-size: 2em">	
-	            	<p:selectOneMenu value="#{checkBean.statusId}"  style="width:20em;color: black;border-top:none; border-left:none; border-right:none;">
+	            <div class="ui-inputgroup">
+	            	<p:outputLabel value="Status" style="font-size: 1em"/>	
+	            	<p:selectOneMenu value="#{checkBean.statusId}"  style="width:20em;color: black;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
 							<f:selectItem itemLabel="Select"/>
 							<f:selectItems value="#{checkBean.statusList}"/>
 							<f:ajax event="change" listener="#{checkBean.assignRemarks}" render="idRemarks"/>
 					</p:selectOneMenu>
-				</p:outputLabel>
+	            </div>
 				
 				
-				<p:outputLabel value="Treasurer" style="font-size: 2em">
-	            	<p:selectOneMenu value="#{checkBean.sig1}" style="width:20em;color: black;border-top:none; border-left:none; border-right:none;"> 
+				
+			</p:panelGrid>	
+            <p:panelGrid id="chequeDataId7" layout="grid" columns="1" styleClass="ui-noborder">   	
+            	
+            	<div class="ui-inputgroup">
+				<p:outputLabel value="Treasurer" style="font-size: 1em"/>
+	            	<p:selectOneMenu value="#{checkBean.sig1}" style="width:20em;color: black;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"> 
 								<f:selectItem itemLabel="#{checkBean.sig1Label}"/>
 								<f:selectItems value="#{checkBean.data}"/>
 					</p:selectOneMenu>
-				</p:outputLabel>
-				
-				<p:outputLabel value="Mayor" style="font-size: 2em">
-					<p:selectOneMenu value="#{checkBean.sig2}" style="width:20em;color: black;border-top:none; border-left:none; border-right:none;">
+				</div>
+				<div class="ui-inputgroup">
+				<p:outputLabel value="Mayor" style="font-size: 1em"/>
+					<p:selectOneMenu value="#{checkBean.sig2}" style="width:20em;color: black;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
 								<f:selectItem itemLabel="#{checkBean.sig2Label}"/>
 								<f:selectItems value="#{checkBean.data1}"/>
 					</p:selectOneMenu>
-				</p:outputLabel>	
+				</div>	
 				
 			</p:panelGrid>
 			
 			<p:panelGrid id="chequeDataId8" layout="grid" columns="1" styleClass="ui-noborder">   	
 			<p:outputLabel value="Remarks" style="font-size: 2em">
-					<p:inputText id="idRemarks" value="#{checkBean.remarks}" disabled="#{checkBean.enableRemarks}" a:placeholder="REMARKS"  style="color: black;width: 40em;border-top:none; border-left:none; border-right:none;"/>
+					<p:inputText id="idRemarks" value="#{checkBean.remarks}" disabled="#{checkBean.enableRemarks}" a:placeholder="REMARKS"  style="color: black;width: 40em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
 				</p:outputLabel>
 			</p:panelGrid>
-			
-			</p:layoutUnit>
-			
-			
-			
-			<p:layoutUnit position="center">
-			
-			
-		<p:toolbar id="tb" style="#{skin.toolbar}">
-    		<f:facet name="left">
-    			<p:selectOneMenu value="#{checkBean.searchBankAccountId}"  filter="true" filterMatchMode="contains">
-						<f:selectItem itemLabel="All Accounts"/>
-						<f:selectItems value="#{checkBean.accountNameList}"/>
-				</p:selectOneMenu>	
-    		</f:facet>
-    		<f:facet name="right">
-    							<p:autoComplete a:data-step="2" a:data-intro="This is a search field. You can search STATUS,Check No and Pay To" minQueryLength="5" a:placeholder="Search..." value="#{checkBean.searchPayTo}" completeMethod="#{checkBean.autoPayToName}" effect="fade" maxResults="10">
+            
+            
+        </div><!--end left side -->
+        <div class="p-col-12 p-md-5 p-col-nogutter" id="idCenter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <div class="ui-inputgroup">
+                    	<p:selectOneMenu value="#{checkBean.searchBankAccountId}"  filter="true" filterMatchMode="contains">
+							<f:selectItem itemLabel="All Accounts"/>
+							<f:selectItems value="#{checkBean.accountNameList}"/>
+						</p:selectOneMenu>
+                    </div>
+                    </div>
+                    <div class="p-col-12 p-col-nogutter">
+                    <div class="ui-inputgroup">
+                    		<p:commandButton id="findId" update="dataChkId"  icon="fa fa-search" actionListener="#{checkBean.find}"/>
+                    		<p:autoComplete a:data-step="2" a:data-intro="This is a search field. You can search STATUS,Check No and Pay To" minQueryLength="5" a:placeholder="Search..." value="#{checkBean.searchPayTo}" completeMethod="#{checkBean.autoPayToName}" effect="fade" maxResults="10">
     								<f:ajax event="change" listener="#{checkBean.find}" render="dataChkId"/>
     							</p:autoComplete>
+		        				<p:datePicker id="range" selectionMode="range" value="#{checkBean.rangeDate}" readonlyInput="true" inputStyle="width: 15em"/>
+		        				<p:commandButton value="Search" update="dataChkId"  icon="fa fa-search" actionListener="#{checkBean.find}"/>
 		        				
-		        				<p:calendar value="#{checkBean.dateFrom}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true"/>
-		    					<p:calendar value="#{checkBean.dateTo}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true"/>
-		        				
-		        				<p:commandButton id="findId" update="dataChkId"  icon="fa fa-search" actionListener="#{checkBean.find}"/>
-		        				&nbsp;&nbsp;&nbsp;&nbsp;
-		        <p:commandButton update="dataChkId" value="Refresh" icon="fa fa-refresh" actionListener="#{checkBean.init}"/>				
-		        				
-    			<p:commandButton update="formId" value="Budget" icon="fa fa-file-o" action="budget.xhtml"/>
-    			
-    		</f:facet>
-		</p:toolbar>
-		<p:toolbar id="tb2" style="#{skin.toolbar}">
-			<f:facet name="left">
-				<p:commandButton value="JANUARY" actionListener="#{checkBean.monthQuery('JANUARY')}" update="dataChkId"/>
-				<p:commandButton value="FEBRUARY" actionListener="#{checkBean.monthQuery('FEBRUARY')}" update="dataChkId"/>
-				<p:commandButton value="MARCH" actionListener="#{checkBean.monthQuery('MARCH')}" update="dataChkId"/>
-				<p:commandButton value="APRIL" actionListener="#{checkBean.monthQuery('APRIL')}" update="dataChkId"/>
-				<p:commandButton value="MAY" actionListener="#{checkBean.monthQuery('MAY')}" update="dataChkId"/>
-				<p:commandButton value="JUNE" actionListener="#{checkBean.monthQuery('JUNE')}" update="dataChkId"/>
-				<p:commandButton value="JULY" actionListener="#{checkBean.monthQuery('JULY')}" update="dataChkId"/>
-				<p:commandButton value="AUGUST" actionListener="#{checkBean.monthQuery('AUGUST')}" update="dataChkId"/>
-				<p:commandButton value="SEPTEMBER" actionListener="#{checkBean.monthQuery('SEPTEMBER')}" update="dataChkId"/>
-				<p:commandButton value="OCTOBER" actionListener="#{checkBean.monthQuery('OCTOBER')}" update="dataChkId"/>
-				<p:commandButton value="NOVEMBER" actionListener="#{checkBean.monthQuery('NOVEMBER')}" update="dataChkId"/>
-				<p:commandButton value="DECEMBER" actionListener="#{checkBean.monthQuery('DECEMBER')}" update="dataChkId"/>
-			</f:facet>
-			<f:facet name="right"/>
-		</p:toolbar> 
-		<p:dataTable id="dataChkId" value="#{checkBean.cheques}" var="rpt" stickyHeader="false"
+				        	<p:commandButton update="dataChkId" value="Refresh" icon="fa fa-refresh" actionListener="#{checkBean.init}"/>				
+				        				
+		    				
+                    </div>
+                    </div>
+                    <div class="p-col-12 p-col-nogutter">
+                    <div class="ui-inputgroup">
+                    	<p:commandButton value="JAN" actionListener="#{checkBean.monthQuery('JANUARY')}" update="dataChkId"/>
+						<p:commandButton value="FEB" actionListener="#{checkBean.monthQuery('FEBRUARY')}" update="dataChkId"/>
+						<p:commandButton value="MAR" actionListener="#{checkBean.monthQuery('MARCH')}" update="dataChkId"/>
+						<p:commandButton value="APR" actionListener="#{checkBean.monthQuery('APRIL')}" update="dataChkId"/>
+						<p:commandButton value="MAY" actionListener="#{checkBean.monthQuery('MAY')}" update="dataChkId"/>
+						<p:commandButton value="JUN" actionListener="#{checkBean.monthQuery('JUNE')}" update="dataChkId"/>
+						<p:commandButton value="JUL" actionListener="#{checkBean.monthQuery('JULY')}" update="dataChkId"/>
+						<p:commandButton value="AUG" actionListener="#{checkBean.monthQuery('AUGUST')}" update="dataChkId"/>
+						<p:commandButton value="SEP" actionListener="#{checkBean.monthQuery('SEPTEMBER')}" update="dataChkId"/>
+						<p:commandButton value="OCT" actionListener="#{checkBean.monthQuery('OCTOBER')}" update="dataChkId"/>
+						<p:commandButton value="NOV" actionListener="#{checkBean.monthQuery('NOVEMBER')}" update="dataChkId"/>
+						<p:commandButton value="DEC" actionListener="#{checkBean.monthQuery('DECEMBER')}" update="dataChkId"/>
+                    </div>
+                </div>
+               <!--end Top bar -->
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="dataChkId" value="#{checkBean.cheques}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                         rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="true"  style="#{skin.table}" paginatorPosition="top" resizeMode="expand"
+                         rowsPerPageTemplate="5,10,15,20,50,100" resizableColumns="true"
+                         scrollable="true"  style="#{skin.table}" paginatorPosition="top" resizeMode="expand" reflow="true"
                          
                          >
                          
                          	<f:facet name="{Exporters}">
+                         			<div class="ui-inputgroup" style="float: left">
+                         			<p:remoteCommand name="rc" update="exPandId" action="#{checkBean.changeTableSize}"/>
+                         			<p:commandButton type="button" id="exPandId" onclick="rc();" value="#{checkBean.buttonSizeName}" />
+                         			</div>
+                         			
+                         			<div class="ui-inputgroup" style="float: right">	
             						<h:commandLink title="Export BankCheuqe Report in excel format" a:data-step="10" a:data-intro="This function use to export this table to excel file.">
                 						    <p:graphicImage name="img/xls.jpg" width="24" height="24" style="float: left"/>
                 							<p:dataExporter type="xls" target="dataChkId" fileName="DispenseCheques" />
@@ -240,8 +241,9 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						<h:commandLink title="Export BankCheuqe Report in pdf format" target="_blank" ajax="false" immediate="false"  actionListener="#{checkBean.printReportAll}" a:data-step="11" a:data-intro="This function use to export this table to pdf file">
                 						    <p:graphicImage name="img/pdf.jpg" width="24" height="24" style="float: left"/>
             						</h:commandLink>
+            						</div>
             				</f:facet>			
-                         
+                         	
 							<p:column headerText="[*]" width="10" exportable="false">
             					<p:commandButton update="dataChkId,alertId" icon="fa fa-trash" actionListener="#{checkBean.deleteRow(rpt)}">
             						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
@@ -253,6 +255,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             				 	<p:commandLink title="Print BankCheuqe in PDF" target="_blank" action="#{checkBean.printReportIndividual(rpt)}" ajax="false" immediate="false" >
             				 			<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
 								</p:commandLink>
+								
 							</p:column>
 							
 							<p:column headerText="View" width="10" exportable="false">
@@ -263,7 +266,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						<p:outputLabel value="#{rpt.checkNo}" style="color: black; font-family: Arial; font-weight: bold;"/>
             				</p:column>
             				
-            				<p:column headerText="Pay To" width="100">
+            				<p:column headerText="Account" width="70" resizable="true" >
+            						<p:outputLabel value="#{rpt.accntName}" style="color: black; font-family: Arial; font-weight: bold;"/>
+            				</p:column>
+            				
+            				<p:column headerText="Pay To" width="70" resizable="true" >
             						<p:outputLabel  value="#{rpt.payToTheOrderOf}" style="color: black; font-family: Arial; font-weight: bold;"/>
             				</p:column>
             				
@@ -276,17 +283,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             				</p:column>
             				
             				
-            				
-            				<p:column headerText="Date" width="20">
+            				<p:column headerText="Date" width="20" resizable="true">
             						<p:outputLabel value="#{rpt.date_disbursement}"/>
             				</p:column>
             				
-            				<p:column headerText="Accnt Name" width="50">
-            						<p:outputLabel value="#{rpt.accntName}"/>
-            				</p:column>
-            				
-            				<p:column headerText="Status" width="50" exportable="false">
-	            				<f:view>		
+            				<p:column headerText="Status" width="40" resizable="true">
+            						<f:view>		
 	            						<my:if condition="#{rpt.status==1}">
 	                         			 	<f:facet name="then">
 	            								<p:outputLabel value="RECEIVED"/>
@@ -295,23 +297,43 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	            								<p:outputLabel value="CANCELLED"/>
 	            							</f:facet>
 	            						  </my:if>
-	            				</f:view>		
+	            					</f:view>
             				</p:column>
             				
 							
 					</p:dataTable>
-				
-				
-				
-			</p:layoutUnit>
-			
-</p:layout>	
+                    </div>
+                </div><!--end Center -->
+            </div>
+        </div>
+       
+    </div>
+	
+	</div><!-- card -->	
 	
 	
 	
 	<p:defaultCommand target="#{checkBean.keyPress}" />
 	<ui:include src="loader.xhtml" />
 	<ui:include src="menu.xhtml" />
+	
+	<p:dialog showHeader="true" header="What would you like me to do?" draggable="false" closable="true" closeOnEscape="true" fitViewport="true" width="400" height="100" widgetVar="dlgAlert">
+		<p:outputLabel value="Please select below selection to continue." />
+		<div class="card">
+			<div class="p-col-12 p-col-nogutter">
+                    <div class="ui-inputgroup ui-noborder">
+                    	<p:button value="Cancel" onclick="PF('dlgAlert').hide(1000)"/>
+                    	<p:commandButton value="Save Only" update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8 :formId:dataChkId alertId" icon="fa fa-floppy-o" action="#{checkBean.saveData}" oncomplete="PF('dlgAlert').hide(1000)"/>
+                    	<p:outputLabel value="Save and Print" />
+                    	<p:commandLink update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8 :formId:dataChkId alertId" target="_blank" action="#{checkBean.savePrint}" ajax="false" immediate="true" onclick="PF('dlgAlert').hide(1000)">
+                    		<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+                    	</p:commandLink>
+                    </div>
+            </div>        
+            
+		</div>
+	</p:dialog>
+	
 </h:form>
 			
 </h:body>

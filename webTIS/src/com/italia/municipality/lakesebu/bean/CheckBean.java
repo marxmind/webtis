@@ -116,8 +116,11 @@ public class CheckBean implements Serializable{
 	
 	private List<com.italia.municipality.lakesebu.controller.Chequedtls> cheques = java.util.Collections.synchronizedList(new ArrayList<com.italia.municipality.lakesebu.controller.Chequedtls>());
 	private String searchPayTo;
-	private Date dateFrom;
-	private Date dateTo;
+	
+	private List<Date> rangeDate;
+	//private Date dateFrom;
+	//private Date dateTo;
+	
 	private String searchBankAccountId;
 	private com.italia.municipality.lakesebu.controller.Chequedtls chequedtlsData;
 	private String grandTotal;
@@ -139,7 +142,7 @@ public class CheckBean implements Serializable{
 	private List department;
 	private Map<Integer, Department> departmentData = java.util.Collections.synchronizedMap(new HashMap<Integer, Department>());
 	
-
+	private String buttonSizeName="Expand Table";
 	/*
 	 * private List<BankAccounts> banks; private BankAccounts selectedBanks;
 	 * 
@@ -341,6 +344,7 @@ public class CheckBean implements Serializable{
 				}
 			}
 			
+			/*
 			if(getDateFrom()!=null && getDateTo()==null){
 				cnt++;
 			}else if(getDateFrom()==null && getDateTo()!=null){
@@ -348,8 +352,13 @@ public class CheckBean implements Serializable{
 			}else if(getDateFrom()!=null && getDateTo()!=null){
 				cnt++;
 				cnt++;
-			}
+			}*/
 			
+			if(getRangeDate()!=null && getRangeDate().size()>1) {
+				cnt +=2;
+			}else {
+				cnt++;
+			}
 			
 			params = new String[cnt];
 			int x = 0;
@@ -374,6 +383,7 @@ public class CheckBean implements Serializable{
 				}
 			}
 			
+			/*
 			if(getDateFrom()!=null && getDateTo()==null){
 				sql += " AND date_disbursement=?";
 				params[x] = DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd");  //convertDateToMonthDayYear(getDateFrom());
@@ -388,8 +398,18 @@ public class CheckBean implements Serializable{
 				x++;
 				params[x] = DateUtils.convertDate(getDateTo(),"yyyy-MM-dd");//convertDateToMonthDayYear(getDateTo());
 				
-			}
+			}*/
 			
+			if(getRangeDate()!=null && getRangeDate().size()>1) {
+				sql += " AND (date_disbursement>=? AND date_disbursement<=? )";
+				params[x] = DateUtils.convertDate(getRangeDate().get(0),"yyyy-MM-dd");//convertDateToMonthDayYear(getDateFrom());
+				x++;
+				params[x] = DateUtils.convertDate(getRangeDate().get(1),"yyyy-MM-dd");//convertDateToMonthDayYear(getDateTo());
+			}else {
+				sql += " AND date_disbursement=?";
+				params[x] = DateUtils.convertDate(getRangeDate().get(0),"yyyy-MM-dd");// convertDateToMonthDayYear(getDateTo());
+				x++;
+			}
 			
 			
 			if(cnt==0){
@@ -577,6 +597,15 @@ public class CheckBean implements Serializable{
 	
 	private  void compileReportList(List<ReportFields> reportFields){
 		try{
+			Date dateFrom = DateUtils.getDateToday();
+			Date dateTo = dateFrom;
+			if(getRangeDate()!=null && getRangeDate().size()>1) {
+				dateFrom = getRangeDate().get(0);
+				dateTo = getRangeDate().get(1);
+			}else {
+				dateFrom = getRangeDate().get(0);
+				dateTo = dateFrom;
+			}
 			
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
 					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
@@ -595,7 +624,7 @@ public class CheckBean implements Serializable{
 	  		DateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");//new SimpleDateFormat("MM/dd/yyyy");//new SimpleDateFormat("yyyy/MM/dd hh:mm: a");
 			Date date = new Date();
 			String _date = dateFormat.format(date);
-			param.put("PARAM_DATE_RANGE", "From: "+ DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd") + " to " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd"));
+			param.put("PARAM_DATE_RANGE", "From: "+ DateUtils.convertDate(dateFrom,"yyyy-MM-dd") + " to " + DateUtils.convertDate(dateTo,"yyyy-MM-dd"));
 	  		param.put("PARAM_DATE", "Printed: "+_date);
 	  		param.put("PARAM_GRAND_TOTAL","Total: Php "+getGrandTotal());
 	  		param.put("PARAM_PREPAREDBY", "Prepared By: "+ Login.getUserLogin().getUserDtls().getFirstname() + " " + Login.getUserLogin().getUserDtls().getLastname());
@@ -620,9 +649,9 @@ public class CheckBean implements Serializable{
 	  			if(amnt[0]!=null){
 	  				double dis = Double.valueOf(amnt[0]+"");
 	  				//dis = Math.round(dis);
-	  				param.put("PARAM_TOTAL_DISPENSE","Total Disbursement from " + firstDayOfTheMonth + " To " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd") + ": Php "+Currency.formatAmount(dis+""));
+	  				param.put("PARAM_TOTAL_DISPENSE","Total Disbursement from " + firstDayOfTheMonth + " To " + DateUtils.convertDate(dateTo,"yyyy-MM-dd") + ": Php "+Currency.formatAmount(dis+""));
 	  			}else{
-	  				param.put("PARAM_TOTAL_DISPENSE","Total Disbursement from " + firstDayOfTheMonth + " To " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd") + ": Php 0.00");
+	  				param.put("PARAM_TOTAL_DISPENSE","Total Disbursement from " + firstDayOfTheMonth + " To " + DateUtils.convertDate(dateTo,"yyyy-MM-dd") + ": Php 0.00");
 	  			}
 	  			
 	  			if(amnt[1]!=null){
@@ -891,8 +920,12 @@ public class CheckBean implements Serializable{
 		//create xml copy
 		saveXML(chk);
 		
-		setDateFrom(getDateTime());
-		setDateTo(getDateTime());
+		rangeDate = new ArrayList<Date>();
+		rangeDate.add(getDateTime());
+		rangeDate.add(getDateTime());
+		
+		//setDateFrom(getDateTime());
+		//setDateTo(getDateTime());
 		init();
 		clearFields();
 		//setChequedtlsData(chk);
@@ -913,6 +946,182 @@ public class CheckBean implements Serializable{
 		}
 		
 		}
+	}
+	
+	private boolean checkAmount() {
+		try {
+			double amount = Double.valueOf(getInputAmount());
+			return true;
+		}catch(NumberFormatException nu) {
+			return false;
+		}
+		
+	}
+	
+	public void checkingFieldBeforeSave() {
+		PrimeFaces pf = PrimeFaces.current();
+		String scs = "";
+		boolean isOk = true;
+		//$( "#myDiv" ).css( "border", "3px solid red" );
+		if(getBankCheckAccountNumber()==null || getBankCheckAccountNumber().isEmpty()) {
+			//Application.addMessage(3, "Error", "Please select Account No");
+			isOk = false;
+			scs += "$('#accId').css('border', '3px solid red');";
+			scs += "$('#checkNoId').css('border', '3px solid red');";
+		}else {
+			scs += "$('#accId').css('border-top', 'none');$('#accId').css('border-left', 'none');$('#accId').css('border-right', 'none');$('#accId').css('border-bottom', '3px solid black');$('#accId').css('color', 'black');";
+			scs += "$('#checkNoId').css('border-top', 'none');$('#checkNoId').css('border-left', 'none');$('#checkNoId').css('border-right', 'none');$('#checkNoId').css('border-bottom', '3px solid black');$('#checkNoId').css('color', 'black');";
+		}
+		
+		if(getBankCheckPayTo()==null || getBankCheckPayTo().isEmpty()) {
+			//Application.addMessage(3, "Error", "Please provide Pay To The Order Of");
+			isOk = false;
+			scs += "$('#idpayto').css('border', '3px solid red');";
+		}else {
+			scs += "$('#idpayto').css('border-top', 'none');$('#idpayto').css('border-left', 'none');$('#idpayto').css('border-right', 'none');$('#idpayto').css('border-bottom', '3px solid black');$('#idpayto').css('color', 'black');";
+		}
+		
+		if(getInputAmount()==null || getInputAmount().isEmpty()) {
+			//Application.addMessage(3, "Error", "Please provide amount");
+			isOk = false;
+			scs += "$('#amntId').css('border', '3px solid red');";
+		}else {
+			if(checkAmount()) {
+				scs += "$('#amntId').css('border-top', 'none');$('#amntId').css('border-left', 'none');$('#amntId').css('border-right', 'none');$('#amntId').css('border-bottom', '3px solid black');$('#amntId').css('color', 'black');";
+			}else {
+				scs += "$('#amntId').css('border', '3px solid red');";
+				isOk = false;
+			}
+		}
+		
+		if(getNatureOfPayment()==null || getNatureOfPayment().isEmpty()) {
+			//Application.addMessage(3, "Error", "Please provide nature of payment");
+			isOk = false;
+			scs += "$('#idnature').css('border', '3px solid red');";
+		}else {
+			scs += "$('#idnature').css('border-top', 'none');$('#idnature').css('border-left', 'none');$('#idnature').css('border-right', 'none');$('#idnature').css('border-bottom', '3px solid black');$('#idnature').css('color', 'black');";
+		}
+		
+		if(getBankCheckName()==null || getBankCheckName().isEmpty()) {
+			//Application.addMessage(3, "Error", "Please select Account No");
+			isOk = false;
+		}
+		
+		if(getBankCheckAccntName()==null || getBankCheckAccntName().isEmpty()) {
+			//Application.addMessage(3, "Error", "Please select Account No");
+			isOk = false;
+		}
+		
+		if(getNumberInToWords()!=null && "PESOS ONLY.".equalsIgnoreCase(getNumberInToWords().trim())) {
+			scs += "$('#amntId').css('border', '3px solid red');";
+			isOk = false;
+		}
+		
+		if(isOk) {
+			
+			pf.executeScript("PF('dlgAlert').show(100)");
+		}else {
+			pf.executeScript(scs);
+		}
+		
+	}
+	
+	public void savePrint() {
+		
+		com.italia.municipality.lakesebu.controller.Chequedtls chk = new com.italia.municipality.lakesebu.controller.Chequedtls();
+		if(getChequedtlsData()!=null){
+			chk = getChequedtlsData();
+		}else{
+			/**
+			 * Date created
+			 */
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = new Date();
+			chk.setDate_edited(dateFormat.format(date));
+			chk.setIsActive(1);
+		}
+		
+		if(getDateTime()==null) setDateTime(DateUtils.getDateToday());
+		
+		chk.setCheckNo(getBankCheckNo());
+		String date_dis = getDateTime()==null? DateUtils.getCurrentDateYYYYMMDD() : DateUtils.convertDate(getDateTime(),"yyyy-MM-dd");
+		date_dis = date_dis.isEmpty()? DateUtils.getCurrentDateYYYYMMDD() : date_dis;
+		chk.setDate_disbursement(date_dis);//convertDateToMonthDayYear(getDateTime())
+		chk.setBankName(getBankCheckName());
+		chk.setAccntName(getBankCheckAccntName());
+		chk.setPayToTheOrderOf(getBankCheckPayTo().toUpperCase());
+		
+		if(getInputAmount()==null){
+			chk.setAmount(0.00);
+			chk.setAmountInWOrds("ZERO PESOS ONLY.");
+		//}else if(getInputAmount()<=0){
+		//	chk.setAmount(0.00);
+		//	chk.setAmountInWOrds("ZERO PESOS ONLY.");
+		}else{
+			
+			chk.setAmount(Double.valueOf(getInputAmount().replace(",", "")));
+			
+			//com.italia.municipality.lakesebu.controller.NumberToWords numberToWords =
+			//		new NumberToWords();
+			//String words = numberToWords.changeToWords(getInputAmount());
+			
+			//chk.setAmountInWOrds(words);
+			chk.setAmountInWOrds(getNumberInToWords());
+		}
+		
+		
+		chk.setSignatory1(Integer.valueOf(getSig1()));
+		chk.setSignatory2(Integer.valueOf(getSig2()));
+		
+		chk.setStatus(getStatusId()==0? 1: getStatusId());
+		chk.setRemarks(getRemarks()==null? (getStatusId()==2? "CANCELLED CHECK" : "RECEIVED") : getRemarks() );
+		
+		if(getStatusId()==2){
+			chk.setAmount(0.00);
+			setInputAmount("0.00");
+			chk.setAmountInWOrds("ZERO PESOS ONLY.");
+		}
+		
+		chk.setAccntNumber(getBankCheckAccountNumber());
+		
+		HttpSession session = SessionBean.getSession();
+		String proc_by = session.getAttribute("username").toString();
+		if(proc_by!=null){
+			chk.setProcessBy(proc_by);
+		}else{
+			chk.setProcessBy("Error");
+		}
+		
+		if(checkLimit()){
+		
+			chk = chk.save(chk);
+		
+		//create xml copy
+		saveXML(chk);
+		
+		rangeDate = new ArrayList<Date>();
+		rangeDate.add(getDateTime());
+		rangeDate.add(getDateTime());
+		
+		init();
+		clearFields();
+		
+		
+		setBankCheckName(chk.getBankName());
+		setBankCheckAccntName(chk.getAccntName());
+		setBankCheckAccountNumber(chk.getAccntNumber());
+		loadNewCheckNo();
+		
+		FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully Saved.", "");
+		FacesContext.getCurrentInstance().addMessage(null, msg);
+		
+		printReportIndividual(chk);
+		}else{
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Limit amount has been reached.", "");
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+		}
+		
+		
 	}
 	
 	private void saveXML(com.italia.municipality.lakesebu.controller.Chequedtls chk){
@@ -1040,8 +1249,12 @@ public class CheckBean implements Serializable{
 		setStatusId(1);
 		setRemarks("RECEIVED");
 		setEnableRemarks(false);
-		setDateFrom(DateUtils.getDateToday());
-		setDateTo(DateUtils.getDateToday());
+		Date date = DateUtils.getDateToday();
+		rangeDate = new ArrayList<Date>();
+		rangeDate.add(date);
+		rangeDate.add(date);
+		//setDateFrom(DateUtils.getDateToday());
+		//setDateTo(DateUtils.getDateToday());
 		//loadNewCheckNo();
 		setNatureOfPayment(null);
 		setDepartmentId(0);
@@ -1052,6 +1265,10 @@ public class CheckBean implements Serializable{
 	
 	@PostConstruct
 	public void init(){
+		Date date = DateUtils.getDateToday();
+		rangeDate = new ArrayList<>();
+		rangeDate.add(date);
+		rangeDate.add(date);
 		
 		getSignatories();
 		getAccounts();
@@ -1060,8 +1277,15 @@ public class CheckBean implements Serializable{
 		com.italia.municipality.lakesebu.controller.Chequedtls chk = new com.italia.municipality.lakesebu.controller.Chequedtls();
 		String sql = "SELECT * FROM tbl_chequedtls WHERE isactive=1 AND (date_disbursement>=? AND date_disbursement<=? ) ORDER BY date_edited DESC LIMIT 50";
 		String[] params = new String[2];
-		params[0] = DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd");
-		params[1] = DateUtils.convertDate(getDateTo(),"yyyy-MM-dd");
+		
+		if(getRangeDate()!=null && getRangeDate().size()>1) {
+			params[0] = DateUtils.convertDate(getRangeDate().get(0),"yyyy-MM-dd");
+			params[1] = DateUtils.convertDate(getRangeDate().get(1),"yyyy-MM-dd");
+		}else {
+			params[0] = DateUtils.convertDate(getRangeDate().get(0),"yyyy-MM-dd");
+			params[1] = params[0];
+		}
+		
 		
 		
 		double amount = 0d;
@@ -1940,8 +2164,13 @@ public class CheckBean implements Serializable{
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 		}else{	
 		chk.delete();
-		setDateFrom(DateUtils.getDateToday());
-		setDateTo(DateUtils.getDateToday());
+		
+		Date date = DateUtils.getDateToday();
+		rangeDate = new ArrayList<Date>();
+		rangeDate.add(date);
+		rangeDate.add(date);
+		//setDateFrom(DateUtils.getDateToday());
+		//setDateTo(DateUtils.getDateToday());
 		init();
 		FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Successfully deleted", "");
 		FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -2307,6 +2536,8 @@ public void setCheques(List<com.italia.municipality.lakesebu.controller.Chequedt
 public void setSearchPayTo(String searchPayTo) {
 	this.searchPayTo = searchPayTo;
 }
+
+/*
 public Date getDateFrom() {
 	if(dateFrom==null){
 		dateFrom = DateUtils.getDateToday();
@@ -2325,6 +2556,7 @@ public Date getDateTo() {
 public void setDateTo(Date dateTo) {
 	this.dateTo = dateTo;
 }
+*/
 public String getSearchBankAccountId() {
 	return searchBankAccountId;
 }
@@ -2392,6 +2624,7 @@ public void find(){
 				//cnt++;
 			}
 			
+			/*
 			if(getDateFrom()!=null && getDateTo()==null){
 				cnt++;
 			}else if(getDateFrom()==null && getDateTo()!=null){
@@ -2399,8 +2632,13 @@ public void find(){
 			}else if(getDateFrom()!=null && getDateTo()!=null){
 				cnt++;
 				cnt++;
-			}
+			}*/
 			
+			if(getRangeDate()!=null && getRangeDate().size()>1) {
+				cnt+=2;
+			}else {
+				cnt++;
+			}
 			
 			params = new String[cnt];
 			int x = 0;
@@ -2442,6 +2680,7 @@ public void find(){
 				//x++;
 			}
 			
+			/*
 			if(getDateFrom()!=null && getDateTo()==null){
 				sql += " AND date_disbursement=?";
 				params[x] = DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd");  //convertDateToMonthDayYear(getDateFrom());
@@ -2456,8 +2695,19 @@ public void find(){
 				x++;
 				params[x] = DateUtils.convertDate(getDateTo(),"yyyy-MM-dd");//convertDateToMonthDayYear(getDateTo());
 				
-			}
+			}*/
 			
+			if(getRangeDate()!=null && getRangeDate().size()>1) {
+				sql += " AND (date_disbursement>=? AND date_disbursement<=? )";
+				params[x] = DateUtils.convertDate(getRangeDate().get(0),"yyyy-MM-dd");//convertDateToMonthDayYear(getDateFrom());
+				x++;
+				params[x] = DateUtils.convertDate(getRangeDate().get(1),"yyyy-MM-dd");//convertDateToMonthDayYear(getDateTo());
+				
+			}else {
+				sql += " AND date_disbursement=?";
+				params[x] = DateUtils.convertDate(getRangeDate().get(0),"yyyy-MM-dd");// convertDateToMonthDayYear(getDateTo());
+				x++;
+			}
 			
 			
 			if(cnt==0){
@@ -2522,6 +2772,26 @@ public void find(){
 			//System.out.println("label1" + getSig1Label());
 			//System.out.println("label2" + getSig2Label());
 			
+}
+
+public void changeTableSize() {
+	PrimeFaces pf = PrimeFaces.current();
+	System.out.println("getButtonSizeName()" + getButtonSizeName());
+	String scs = "";
+	
+	if("Expand Table".equalsIgnoreCase(getButtonSizeName())) {
+		scs = "$('#idLeft').hide(1000);";
+		scs += "$('#idCenter').removeClass('p-md-5');";
+		scs +="$('#idCenter').addClass('p-md-12');";
+		setButtonSizeName("Minimize Table");
+	}else {
+		setButtonSizeName("Expand Table");
+		scs = "$('#idLeft').show(1000);";
+		scs += "$('#idCenter').removeClass('p-md-12');";
+		scs +="$('#idCenter').addClass('p-md-5');";
+	}
+	
+	pf.executeScript(scs);
 }
 
 public String getKeyPress() {
@@ -2627,5 +2897,21 @@ public void setNatureOfPayment(String natureOfPayment) {
 		
 		
 		
+	}
+
+	public List<Date> getRangeDate() {
+		return rangeDate;
+	}
+
+	public void setRangeDate(List<Date> rangeDate) {
+		this.rangeDate = rangeDate;
+	}
+
+	public String getButtonSizeName() {
+		return buttonSizeName;
+	}
+
+	public void setButtonSizeName(String buttonSizeName) {
+		this.buttonSizeName = buttonSizeName;
 	}
 }

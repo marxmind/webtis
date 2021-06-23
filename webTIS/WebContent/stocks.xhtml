@@ -21,6 +21,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
     </f:facet>
@@ -57,29 +59,19 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	
 	
-	<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="50" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			<p:layoutUnit position="west" size="350" visible="true">
-				
-			<p:toolbar id="tbForm" style="#{skin.toolbar}">
-    		<f:facet name="left">
-    				
-    		</f:facet>
-    		<f:facet name="right">
-    			<p:commandButton update="gridId" value="New" icon="fa fa-file-o" actionListener="#{stocksBean.createNew}"/>
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    <div class="p-col-12 p-md-3">
+            <div class="ui-inputgroup" style="float:right">
+            	<p:commandButton update="gridId" value="New" icon="fa fa-file-o" actionListener="#{stocksBean.createNew}"/>
     			<p:commandButton update="gridId" value="Clear" icon="fa fa-trash" action="#{stocksBean.createNew}"/>
     			<p:commandButton update="gridId dataForm msg" value="Save" icon="fa fa-floppy-o" actionListener="#{stocksBean.saveData}">
     				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
     			</p:commandButton>
-    		</f:facet>
-			</p:toolbar> 
-				
-				<p:panelGrid id="gridId" columns="2" layout="grid">
+            </div>
+            
+            <p:panelGrid id="gridId" columns="2" layout="grid" styleClass="ui-noborder">
 				
 				<p:outputLabel value="Recorded Date"/>
 				<p:calendar value="#{stocksBean.recordedDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 12em"/>
@@ -107,24 +99,21 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:inputText id="toId" value="#{stocksBean.seriesTo}" style="width: 12em" readonly="true"/>
 			
 				</p:panelGrid>
-				
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="center">
-				
-			<p:toolbar id="tbFormSearch" style="#{skin.toolbar}">
-    		<f:facet name="left">	
-				    <p:selectOneMenu id="frmIdSearch" value="#{stocksBean.formTypeIdSearch}" style="width: 12em" filterMatchMode="contains" filter="true">
+            
+        </div>
+        <div class="p-col-12 p-md-9 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <div class="ui-inputgroup">
+                    	<p:selectOneMenu id="frmIdSearch" value="#{stocksBean.formTypeIdSearch}" style="width: 12em" filterMatchMode="contains" filter="true">
 							<f:selectItems value="#{stocksBean.formTypeSearch}"/>
 							<p:ajax event="change" listener="#{stocksBean.init}" update="dataForm" />
-					</p:selectOneMenu>
-    		</f:facet>
-    		<f:facet name="right">
-    			
-    		</f:facet>
-			</p:toolbar> 
-				
-				<p:dataTable id="dataForm" value="#{stocksBean.stocks}" var="rpt" stickyHeader="false"
+						</p:selectOneMenu>
+                    </div>
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="dataForm" value="#{stocksBean.stocks}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="true" style="#{skin.table}" paginatorPosition="top" reflow="true"
@@ -188,10 +177,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						<p:outputLabel value="#{rpt.collector.name}"/>
             				</p:column>
             				
-            	</p:dataTable>			
-				
-			</p:layoutUnit>
-	</p:layout>
+            			</p:dataTable>	
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+	
+	</div><!-- card -->	
 	
 	
 	<ui:include src="loader.xhtml" />

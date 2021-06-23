@@ -24,6 +24,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
@@ -69,7 +70,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  *
  */
 @Named
-@SessionScoped
+@ViewScoped
 public class Form56Bean implements Serializable{
 
 	/**
@@ -212,7 +213,7 @@ public class Form56Bean implements Serializable{
 		
 		for(ITaxPayorTrans tran : TaxPayorTrans.retrieve(sql, params)){
 			tran.setLandPayor(paidFor(tran));
-			//System.out.println("Land owner: " + tran.getLandPayor().getPayor().getFullName());
+			System.out.println("Land owner: " + tran.getLandPayor().getPayor().getFullName());
 			trans.add(tran);
 		}
 		//Collections.reverse(trans);
@@ -280,7 +281,7 @@ public class Form56Bean implements Serializable{
 		
 		for(ITaxPayorTrans tran : TaxPayorTrans.retrieve(sql, params)){
 			tran.setLandPayor(paidFor(tran));
-			//System.out.println("Land owner: " + tran.getLandPayor().getPayor().getFullName());
+			System.out.println("Land owner: " + tran.getLandPayor().getPayor().getFullName());
 			trans.add(tran);
 		}
 		Collections.reverse(trans);

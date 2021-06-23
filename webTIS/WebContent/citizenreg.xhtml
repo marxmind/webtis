@@ -22,6 +22,8 @@ xmlns:pe="http://primefaces.org/ui/extensions"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
     </f:facet>
@@ -58,36 +60,20 @@ xmlns:pe="http://primefaces.org/ui/extensions"
         	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
-	<p:focus context="tb"/>
+	
     
-		<p:layout fullPage="true">
-			
-			<p:layoutUnit position="east" size="0" visible="false" >
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="north" size="100"  visible="false" >
-				
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="south" size="50" visible="false" >
-				
-		     </p:layoutUnit>
-			
-			<p:layoutUnit position="west" size="630" >
-					<p:toolbar id="tbMember" style="#{skin.toolbar}" >
-    				<f:facet name="left">
-    				</f:facet>
-    				<f:facet name="right">
-    					<p:commandButton value="New" update=":formId:usercusId, :formId:pictureId" actionListener="#{businessOwnerBean.clearFields}"  icon="fa fa-file-o" title="Click this button to start new information"/>
+		<div class="card">
+    <div class="p-grid sample-layout">
+    
+    <div class="p-col-12 p-md-5">
+            <div class="ui-inputgroup" style="float:right">
+            			<p:commandButton value="New" update=":formId:usercusId, :formId:pictureId" actionListener="#{businessOwnerBean.clearFields}"  icon="fa fa-file-o" title="Click this button to start new information"/>
     					<p:commandButton value="Clear" update="pictureId usercusId" icon="fa fa-trash" actionListener="#{businessOwnerBean.closePopup}" title="Click this button to clear information"/>
 						<p:commandButton value="Save" update="cusId usercusId pictureId msg"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{businessOwnerBean.save}">
         					<p:confirm header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
         				</p:commandButton>
-    				</f:facet>
-					</p:toolbar>
-					<br/>
-					
-					<p:panelGrid id="pictureId" columns="2" cellpadding="0" style="#{skin.grid};">
+            </div>
+            <p:panelGrid id="pictureId" columns="3" cellpadding="0" style="#{skin.grid};">
 							
 							<h:outputLabel id="photo">
         						<p:graphicImage name="images/photocam/#{businessOwnerBean.photoId}.jpg" rendered="#{not empty businessOwnerBean.photoId}" style="width: 100px; height: 100px"/>
@@ -98,14 +84,20 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		                    			update="photo" dragDropSupport="true"
 		                    			allowTypes="/(\.|\/)(gif|jpeg|JPEG||JPG|jpg|png|PNG)$/" />
 		                    			
-		                    			
+		              <pe:qrCode id="qrCodeElem" 
+				           renderMethod="#{businessOwnerBean.renderMethod}" 
+				           renderMode="#{businessOwnerBean.mode}" 
+				           text="#{businessOwnerBean.text}"
+				           label="#{businessOwnerBean.label}"
+				           size="#{businessOwnerBean.size}"                 
+				           fillColor="#{businessOwnerBean.fillColor}"
+				           fontName="Ubuntu"
+				           fontColor="#01A9DB"
+				           ecLevel="H"                   
+				           radius="0.5"/>
         			
-					</p:panelGrid>
-					
-					
-					<br/>
-					
-					<p:panelGrid id="usercusId" columns="4" layout="grid">
+			</p:panelGrid>
+            <p:panelGrid id="usercusId" columns="4" layout="grid">
 				
 						<p:outputLabel for="d1" value="Date:" style="#{skin.label}" />
 						<p:inputText id="d1" value="#{businessOwnerBean.dateregistered}" readonly="true" style="width: 11em;#{skin.textInput}"/>
@@ -203,29 +195,14 @@ xmlns:pe="http://primefaces.org/ui/extensions"
             		   	
     			 	</p:panelGrid> 
     			 	
-    			 	<p:panelGrid layout="grid" columns="1">
-    			 		
-			    		<pe:qrCode id="qrCodeElem" 
-				           renderMethod="#{businessOwnerBean.renderMethod}" 
-				           renderMode="#{businessOwnerBean.mode}" 
-				           text="#{businessOwnerBean.text}"
-				           label="#{businessOwnerBean.label}"
-				           size="#{businessOwnerBean.size}"                 
-				           fillColor="#{businessOwnerBean.fillColor}"
-				           fontName="Ubuntu"
-				           fontColor="#01A9DB"
-				           ecLevel="H"                   
-				           radius="0.5"/>
-    			 		
-    			 	</p:panelGrid>
-					
-			</p:layoutUnit>
-			
-			
-			
-			<p:layoutUnit position="center">
-			
-			<p:toolbar id="tb" style="#{skin.toolbar}">
+    			 	
+            
+            
+        </div>
+        <div class="p-col-12 p-md-7 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <p:toolbar id="tb" style="#{skin.toolbar}">
 			    		<f:facet name="left">
 			        		<div class="ui-inputgroup">
 					<p:inputText value="#{businessOwnerBean.searchCustomer}" a:placeholder="Search..." style="width: 20em">
@@ -255,8 +232,10 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 							
 						</f:facet>
 				</p:toolbar>
-		
-			<p:dataTable id="cusId" value="#{businessOwnerBean.customers}" var="rpt" stickyHeader="false"
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="cusId" value="#{businessOwnerBean.customers}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="true" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top" selection="#{businessOwnerBean.selectedQRCode}" rowKey="#{rpt.id}"
@@ -313,12 +292,15 @@ xmlns:pe="http://primefaces.org/ui/extensions"
             				</p:column>
             				
 					</p:dataTable>
-					
-					
-					
-			</p:layoutUnit>
-			
-		</p:layout>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    
+    </div>
+	
+	</div><!-- card -->	
 		
 
 <p:dialog header="Name List" responsive="true" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" position="center top" modal="false" widgetVar="multiDialogContact" Height="500" width="700" closable="false">

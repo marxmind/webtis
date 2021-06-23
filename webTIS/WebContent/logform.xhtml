@@ -21,6 +21,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+               <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
     </f:facet>
@@ -55,59 +57,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
 	
-	
-	<p:dialog widgetVar="dlgCash" width="500" position="center center" height="300" header="Cash Ticket Details" closeOnEscape="true" closable="false">
-		<p:toolbar id="tbCash" style="#{skin.toolbar}">
-    		<f:facet name="left"/>
-    			
-    		<f:facet name="right">
-    				<p:commandButton value="Save" actionListener="#{logformBean.saveData}" update="gridId listForm reportData colMapId msg" oncomplete="PF('dlgCash').hide()"/>
-    				<p:commandButton value="Close" onclick="PF('dlgCash').hide()"/>
-    		</f:facet>
-			</p:toolbar> 
-		<p:panelGrid id="ctDtlsId" layout="grid" columns="2">
-			<p:inputText value="#{logformBean.pujLabel}"/>
-			<p:inputText value="#{logformBean.puj}" placeholder="00.00">
-				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
-			</p:inputText>
-			
-			<p:inputText value="#{logformBean.peddlerLabel}"/>
-			<p:inputText value="#{logformBean.pedller}" placeholder="00.00">
-				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
-			</p:inputText>
-			
-			<p:inputText value="#{logformBean.isdaLabel}"/>
-			<p:inputText value="#{logformBean.isda}" placeholder="00.00">
-				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
-			</p:inputText>
-			
-			<p:inputText value="#{logformBean.skylabLabel}"/>
-			<p:inputText value="#{logformBean.skylab}" placeholder="00.00">
-				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
-			</p:inputText>
-			
-			<p:inputText value="#{logformBean.marketLablel}"/>
-			<p:inputText value="#{logformBean.market}" placeholder="00.00">
-				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
-			</p:inputText>
-			
-			<p:outputLabel value="Total"/>
-			<p:outputLabel id="totalCashId" value="#{logformBean.totalCashTicket}"/>
-		</p:panelGrid>
-		
-	</p:dialog>
-	
-	
-	<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="50" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			<p:layoutUnit position="west" size="700" visible="true">
-			
-			<p:toolbar id="tbForm" style="#{skin.toolbar}">
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    <div class="p-col-5 p-md-5">
+    		<div class="p-col-12">
+            	
+            	<p:toolbar id="tbForm" style="#{skin.toolbar}">
     		<f:facet name="left">
     				<p:commandButton value="Form Series History" onclick="PF('dlgCSeries').show()"/>
     		</f:facet>
@@ -120,8 +76,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     			</p:commandButton>
     		</f:facet>
 			</p:toolbar> 
-				
-			<p:panelGrid id="gridId" columns="4" layout="grid">
+            	
+            </div>
+            
+            <div class="p-col-12">
+            <p:panelGrid id="gridId" columns="4" layout="grid">
 			
 			<p:outputLabel value="Received Date"/>
 			<p:calendar value="#{logformBean.receivedDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 12em"/>
@@ -177,7 +136,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:commandButton update="listForm gridId tbFormNew saveNormalId saveNotNormalId msg" value="Add to List" icon="fa fa-file-o" actionListener="#{logformBean.addGroup}"/>
 				
 			</p:panelGrid>
-			
+			</div>
+			<div class="p-col-12">
 			<p:toolbar id="tbFormNew" style="#{skin.toolbar}">
     		<f:facet name="left">
     			<p:commandButton update="gridId listForm tbFormNew msg" value="Clear Below List" icon="fa fa-trash" action="#{logformBean.clearBelowFormList}">
@@ -188,7 +148,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     			<p:outputLabel value="Php#{logformBean.totalAmount}"/>
     		</f:facet>
 			</p:toolbar>
-			 
+			 </div>
+			 <div class="p-col-12">
 			<p:dataTable id="listForm" value="#{logformBean.newForms}" var="rp" stickyHeader="false"
 							rows="13" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="26,50,100"
@@ -233,7 +194,9 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						</p:cellEditor>
             				</p:column>	
                          
-            </p:dataTable>             
+            </p:dataTable> 
+            </div>
+            <div class="p-col-12">            
 			<p:toolbar id="tbFormNew2" style="#{skin.toolbar}">
     		<f:facet name="left">
     				
@@ -245,30 +208,37 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     			<p:commandButton id="saveNotNormalId" update="ctDtlsId" value="Save With Ticket" onclick="PF('dlgCash').show()"/>
     		</f:facet>
 			</p:toolbar>
-				
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="center">
-			<p:toolbar id="tbFormGen" style="#{skin.toolbar}">
-    		<f:facet name="left">
-    					<p:selectOneMenu id="fundSerId" value="#{logformBean.fundSearchId}" style="width: 10em" disabled="false">
-							<f:selectItems value="#{logformBean.fundsSearch}"/>
-							<p:ajax event="change" listener="#{logformBean.init}" update="reportData"/>
-						</p:selectOneMenu>
-    					<p:selectOneMenu id="colMapId" value="#{logformBean.collectorMapId}" style="width: 10em" filter="true" filterMatchMode="contains">
-							<f:selectItems value="#{logformBean.collectorsMap}"/>
-							<p:ajax event="change" listener="#{logformBean.init}" update="reportData"/>
-						</p:selectOneMenu>
-    		</f:facet>
-    		<f:facet name="right">
-    					<p:calendar value="#{logformBean.dateFrom}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>
-		    			<p:calendar value="#{logformBean.dateTo}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>	
-		    			<p:commandButton id="findId" update="reportData listForm gridId"  icon="fa fa-search" actionListener="#{logformBean.find}"/>
-    		</f:facet>
-			</p:toolbar> 
-			
-			
-			<p:dataTable id="reportData" value="#{logformBean.infos}" var="in" stickyHeader="false"
+            </div>
+            
+        </div>
+        <div class="p-col-12 p-md-7 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                
+                	<p:toolbar id="tbFormGen" style="#{skin.toolbar}">
+		    		<f:facet name="left">
+		    					<p:selectOneMenu id="fundSerId" value="#{logformBean.fundSearchId}" style="width: 10em" disabled="false">
+									<f:selectItems value="#{logformBean.fundsSearch}"/>
+									<p:ajax event="change" listener="#{logformBean.init}" update="reportData"/>
+								</p:selectOneMenu>
+		    					<p:selectOneMenu id="colMapId" value="#{logformBean.collectorMapId}" style="width: 10em" filter="true" filterMatchMode="contains">
+									<f:selectItems value="#{logformBean.collectorsMap}"/>
+									<p:ajax event="change" listener="#{logformBean.init}" update="reportData"/>
+								</p:selectOneMenu>
+		    		</f:facet>
+		    		<f:facet name="right">
+		    					<p:calendar value="#{logformBean.dateFrom}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>
+				    			<p:calendar value="#{logformBean.dateTo}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>	
+				    			<p:commandButton id="findId" update="reportData listForm gridId"  icon="fa fa-search" actionListener="#{logformBean.find}"/>
+		    		</f:facet>
+					</p:toolbar> 
+                
+                
+                    
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="reportData" value="#{logformBean.infos}" var="in" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="10,20,30,40,50,100"
                          scrollable="true" style="#{skin.table}" paginatorPosition="top" selection="#{logformBean.selectedCollection}" rowKey="#{in.id}">
@@ -327,12 +297,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             				</p:column>
             					
                          
-            </p:dataTable>   
-				
-			<br/><br/><br/><br/><br/><br/><br/>	
-				
-			</p:layoutUnit>
-	</p:layout>
+            			</p:dataTable>   
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+	
+	</div><!-- card -->	
 	
 	<p:dialog widgetVar="dlgPrint">
 		<p:panelGrid id="idPrintDate" columns="1" layout="grid">
@@ -347,7 +320,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		</p:panelGrid>
 	</p:dialog>
 	
-	<p:dialog widgetVar="dlgCSeries" showHeader="false" width="900" height="850" position="center top">
+	<p:dialog widgetVar="dlgCSeries" showHeader="false" width="1000" height="850" position="center top">
 		
 			<p:toolbar id="tblFrm" style="#{skin.toolbar}">
 			
@@ -563,6 +536,50 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 			</div>
 	</p:dialog>
+	
+	<p:dialog widgetVar="dlgCash" width="500" position="center center" height="510" header="Cash Ticket Details" closeOnEscape="true" closable="false">
+		<p:toolbar id="tbCash" style="#{skin.toolbar}">
+    		<f:facet name="left"/>
+    			
+    		<f:facet name="right">
+    				<p:commandButton value="Save" actionListener="#{logformBean.saveData}" update="gridId listForm reportData colMapId msg" oncomplete="PF('dlgCash').hide()"/>
+    				<p:commandButton value="Close" onclick="PF('dlgCash').hide()"/>
+    		</f:facet>
+			</p:toolbar> 
+		<p:panelGrid id="ctDtlsId" layout="grid" columns="2">
+			<p:inputText value="#{logformBean.pujLabel}"/>
+			<p:inputText value="#{logformBean.puj}" placeholder="00.00">
+				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
+			</p:inputText>
+			
+			<p:inputText value="#{logformBean.peddlerLabel}"/>
+			<p:inputText value="#{logformBean.pedller}" placeholder="00.00">
+				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
+			</p:inputText>
+			
+			<p:inputText value="#{logformBean.isdaLabel}"/>
+			<p:inputText value="#{logformBean.isda}" placeholder="00.00">
+				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
+			</p:inputText>
+			
+			<p:inputText value="#{logformBean.skylabLabel}"/>
+			<p:inputText value="#{logformBean.skylab}" placeholder="00.00">
+				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
+			</p:inputText>
+			
+			<p:inputText value="#{logformBean.marketLablel}"/>
+			<p:inputText value="#{logformBean.market}" placeholder="00.00">
+				<p:ajax event="change" listener="#{logformBean.calculateCashTicket}" update="totalCashId"/>
+			</p:inputText>
+			
+			<p:outputLabel value="Total"/>
+			<p:outputLabel id="totalCashId" value="#{logformBean.totalCashTicket}"/>
+		</p:panelGrid>
+		
+	</p:dialog>
+	
+	
+	
 	
 	<ui:include src="loader.xhtml" />
 	<ui:include src="menu.xhtml" />

@@ -21,6 +21,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
     </f:facet>
@@ -55,18 +57,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
 	
-	
-	
-	<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="50" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			<p:layoutUnit position="west" size="500" visible="true">
-				
-				<p:panelGrid id="gridId" columns="2" layout="grid">
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    <div class="p-col-12 p-md-3">
+            <p:panelGrid id="gridId" columns="2" layout="grid">
 			
 			<p:outputLabel value="Year"/>	
 		    <p:selectOneMenu id="yearId" value="#{dtrBean.year}" style="width: 12em">
@@ -101,13 +96,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                 		<p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
             </h:commandLink>
 			</p:panelGrid>
-				
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="center">
-			
-				
-				<p:dataTable id="dataTransId" value="#{dtrBean.dtrs}" var="rpt" stickyHeader="false"
+        </div>
+        <div class="p-col-12 p-md-9 p-col-nogutter">
+            <div class="p-grid">
+                
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="dataTransId" value="#{dtrBean.dtrs}" var="rpt" stickyHeader="false"
 							rows="31" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                          rowsPerPageTemplate="31"
                          scrollable="true" scrollWidth="100%" style="#{skin.table}" paginatorPosition="top"
@@ -143,9 +138,17 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						</p:column>
 									
 				</p:dataTable>
-				
-			</p:layoutUnit>
-	</p:layout>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    
+    
+    
+    </div>
+	
+	</div><!-- card -->	
 	
 	<ui:include src="loader.xhtml" />
 	<ui:include src="menu.xhtml" />

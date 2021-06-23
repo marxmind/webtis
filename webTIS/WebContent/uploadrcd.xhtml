@@ -21,6 +21,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
     </f:facet>
@@ -55,38 +57,43 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
  
- 
- <p:layout fullPage="true">
-			<p:layoutUnit position="north" size="50" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			<p:layoutUnit position="west" size="0" visible="false"/>
-		  	<p:layoutUnit position="center">
-			 
-			 <div id="panelHideUpload" style="display: block;">
+ <div class="card">
+    <div class="p-grid sample-layout">
+    
+    	
+        <div class="p-col-12 p-md-12 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                   <div id="panelHideUpload" style="display: block;">
 			 <p:fileUpload listener="#{rcdBean.uploadFile}"
 					                    			mode="advanced" auto="true" sizeLimit="50000000" label="Upload Your XML file here"
-					                    			update="msg pdfid" dragDropSupport="true" style="#{skin.button}"
+					                    			update="msg pdfid formId" dragDropSupport="true" style="#{skin.button}"
 					                    			allowTypes="/(\.|\/)(xml)$/" />
 			</div>		                    			   
-		  	<div id="panelHidePdf" style="display: none;">
+		  	
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <div id="panelHidePdf" style="display: none;">
 		  	<p:toolbar id="tbFormSearch" style="#{skin.toolbar}">
     		<f:facet name="left">	
 				    <p:commandButton value="Close" onclick="closePdf()" action="uploadrcd"/>
     		</f:facet>
     		<f:facet name="right"/>
 			</p:toolbar>     
-		  	         <p:media id="pdfid" value="#{rcdBean.tempPdfFile}" cache="false" player="pdf" width="1000" height="700">
+		  	         <p:media id="pdfid" value="#{rcdBean.tempPdfFile}" cache="false" player="pdf" width="1000" height="1000">
 		 				<f:param name="id" value="#{rcdBean.generateRandomIdForNotCaching()}" />
 		 			 </p:media>    
 			</div>
-		  	
-		  	
- 			</p:layoutUnit>
- </p:layout>					  
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+	
+	</div><!-- card -->	
+ 			  
 	
 		<h:outputScript>
 		 

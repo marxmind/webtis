@@ -18,11 +18,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -64,6 +66,7 @@ import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.enm.Months;
 import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.licensing.controller.Barangay;
+import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.licensing.controller.DocumentFormatter;
 import com.italia.municipality.lakesebu.licensing.controller.Municipality;
 import com.italia.municipality.lakesebu.licensing.controller.Province;
@@ -195,10 +198,15 @@ public class ORListingBean implements Serializable{
 	private boolean enableBirthday=true;
 	
 	private String qrcodeMsg="Please place the QRCOde on the camera";
-	private com.italia.municipality.lakesebu.licensing.controller.Customer customerDataSelected;
+	private Customer customerDataSelected;
+	private Map<String, Customer> mapCustomer;
 	
 	private boolean alreadyRetrieve=false;
 	private int issuedCollectorId;
+	
+	private String firstName;
+	private String middleName;
+	private String lastName;
 	
 	@PostConstruct
 	public void init() {
@@ -206,16 +214,17 @@ public class ORListingBean implements Serializable{
 			monthId = DateUtils.getCurrentMonth();
 		}
 		System.out.println("Initialized....");
-		
+		if(!alreadyRetrieve) {
+			issuedCollectorId = Login.getUserLogin().getCollectorId();
+			setCollectorSearchId(issuedCollectorId);
+			alreadyRetrieve=true;
+		}
 		setLimitData("10");
 		load();
 		
 		suggestedInfo();
 		
-		if(!alreadyRetrieve) {
-			issuedCollectorId = Login.getUserLogin().getCollectorId();
-			alreadyRetrieve=true;
-		}
+		
 	}
 	
 	public void modeMsg() {
@@ -326,9 +335,17 @@ public class ORListingBean implements Serializable{
 			sql += " AND orl.aform=" + getFormTypeSearchId();
 		}
 		
-		if(getCollectorSearchId()>0) {
-			sql += " AND col.isid=" + getCollectorSearchId();
+		if(getIssuedCollectorId()>0) {//specific for collector
+			sql += " AND col.isid=" + getIssuedCollectorId();
+		}else {
+			if(getCollectorSearchId()>0) {
+				sql += " AND col.isid=" + getCollectorSearchId();
+			}
 		}
+		
+		System.out.println("getIssuedCollectorId()=" + getIssuedCollectorId());
+		System.out.println("getCollectorSearchId()=" + getCollectorSearchId());
+		
 		
 		if(getSortId()>0) {
 			sql += " ORDER By ";
@@ -413,7 +430,7 @@ public class ORListingBean implements Serializable{
 			}
 		}
 		
-		detailsData();
+		//detailsData();
 		setTotalCollection(Currency.formatAmount(amount));
 	}
 	
@@ -672,6 +689,7 @@ public class ORListingBean implements Serializable{
 	
 	public List<String> payorNameSuggested(String query){
 		List<String> result = new ArrayList<>();
+		mapCustomer = new LinkedHashMap<String, Customer>();
 		if(query!=null && !query.isEmpty()) {
 			int size = query.length();
 			if(size>=4) {
@@ -687,7 +705,9 @@ public class ORListingBean implements Serializable{
 				params = new String[0];
 				
 				for(com.italia.municipality.lakesebu.licensing.controller.Customer cust : com.italia.municipality.lakesebu.licensing.controller.Customer.retrieve(sql, params)) {
-					result.add(cust.getLastname().toUpperCase() + ", " + cust.getFirstname() + " " + (cust.getMiddlename()!=null? cust.getMiddlename().substring(0, 1).toUpperCase()+"." : "."));
+					String fullName = cust.getLastname().toUpperCase() + ", " + cust.getFirstname() + " " + (cust.getMiddlename()!=null? cust.getMiddlename().substring(0, 1).toUpperCase()+"." : ".");
+					result.add(fullName);
+					mapCustomer.put(fullName, cust);
 				}
 				
 			 //result = com.italia.municipality.lakesebu.licensing.controller.Customer.retrieveLFMName(query, "fullname", "10");
@@ -1304,15 +1324,63 @@ public class ORListingBean implements Serializable{
 		}else {
 			or.setIsActive(1);
 		}
+		UserDtls user = Login.getUserLogin().getUserDtls();
 		
 		if(customer==null) {
 			customer = new com.italia.municipality.lakesebu.licensing.controller.Customer();
 			
+			if(getMapCustomer()!=null && getMapCustomer().size()>0) {
+				if(getMapCustomer().containsKey(getPayorName())) {
+					customer = getMapCustomer().get(getPayorName());
+				}else {
+					customer.setIsactive(1);
+					customer.setDateregistered(DateUtils.getCurrentDateMonthDayYear());
+					customer.setFirstname(getFirstName().toUpperCase());
+					customer.setMiddlename(getMiddleName().toUpperCase());
+					customer.setLastname(getLastName().toUpperCase());
+					customer.setUserDtls(user);
+					customer.setFullname(getFirstName().toUpperCase() + " " + getLastName().toUpperCase());
+					customer.setBirthdate(getBirthdate()==null?  DateUtils.getCurrentDateYYYYMMDD() :  DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd"));
+					customer.setCivilStatus(1);//default single
+					
+					
+					if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {
+						
+						customer.setCivilStatus(getCivilStatusId());
+						customer.setHeight(getHieghtDateReg());
+						customer.setWeight(getWeight());
+						customer.setWork(getProfessionBusinessNature());
+						customer.setBornplace(getPlaceOfBirth());
+						
+					}
+					customer = Customer.save(customer);
+				}
+			}else {
+				customer.setIsactive(1);
+				customer.setDateregistered(DateUtils.getCurrentDateMonthDayYear());
+				customer.setFirstname(getFirstName().toUpperCase());
+				customer.setMiddlename(getMiddleName().toUpperCase());
+				customer.setLastname(getLastName().toUpperCase());
+				customer.setUserDtls(user);
+				customer.setFullname(getFirstName().toUpperCase() + " " + getLastName().toUpperCase());
+				customer.setBirthdate(getBirthdate()==null?  DateUtils.getCurrentDateYYYYMMDD() :  DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd"));
+				customer.setCivilStatus(1);//default single
+				
+				
+				if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {
+					
+					customer.setCivilStatus(getCivilStatusId());
+					customer.setHeight(getHieghtDateReg());
+					customer.setWeight(getWeight());
+					customer.setWork(getProfessionBusinessNature());
+					customer.setBornplace(getPlaceOfBirth());
+					
+				}
+				customer = Customer.save(customer);
+			}
+			
 		}else {
-			
-			UserDtls user = Login.getUserLogin().getUserDtls();
 			customer.setUserDtls(user);
-			
 		}
 		boolean isOk = true;
 		if(getOrNumber()==null || getOrNumber().isEmpty()) {
@@ -1396,7 +1464,11 @@ public class ORListingBean implements Serializable{
 			}
 			Application.addMessage(1, "Success", "Successfully saved.");
 			if(isCollectorsMode()) {
-				setSearchName(getPayorName());
+				if(customer!=null) {
+					setSearchName(customer.getFirstname() + " " + customer.getLastname());
+				}else {
+					setSearchName(getPayorName());
+				}
 			}
 			
 			namesDataSelected = new ArrayList<PaymentName>();
@@ -1407,9 +1479,10 @@ public class ORListingBean implements Serializable{
 			setOrnameListData(null);
 			setSelectedPaymentNameMap(null);
 			setOrNumber(null);
+			setCollectorId(or.getCollector().getId());
 			init(); //do not load data to reduce loading
 			
-			setCollectorId(or.getCollector().getId());
+			
 			
 			
 			//if(getSelectOrTypeId()>0) {
@@ -1466,7 +1539,14 @@ public class ORListingBean implements Serializable{
 		setDateTrans(DateUtils.convertDateString(or.getDateTrans(), "yyyy-MM-dd"));
 		setOrNumber(or.getOrNumber());
 		setFormTypeId(or.getFormType());
-		setPayorName(or.getCustomer().getFullname());
+		if(or.getCustomer()!=null) {
+			String fName=or.getCustomer().getFirstname();
+			String mName=or.getCustomer().getMiddlename();
+			String lName=or.getCustomer().getLastname();
+			setPayorName(lName.toUpperCase() + ", " + fName.toUpperCase() + " " + (mName==null? "." : mName.toUpperCase().substring(0,1) + "."));
+		}else {
+			setPayorName("");
+		}
 		setAddress(or.getCustomer().getCompleteAddress());
 		setCollectorId(or.getCollector().getId());
 		namesDataSelected = new ArrayList<PaymentName>();//Collections.synchronizedList(new ArrayList<PaymentName>());
@@ -2217,7 +2297,7 @@ private void close(Closeable resource) {
 		
 		setAmount6(interest);
 		setAmount7(total + interest);
-		
+		setTotalAmount(Currency.formatAmount(getAmount7()));
 		int index=getNamesDataSelected().size();
 		
 		if(index==2) {
@@ -3337,6 +3417,120 @@ private void close(Closeable resource) {
 		}
 	}
 	
+	public void supplyCustomerInfo() {
+		if(getMapCustomer()!=null && getMapCustomer().size()>0 && getMapCustomer().get(getPayorName())!=null){
+			Customer cus = getMapCustomer().get(getPayorName());
+			
+			setPayorName(cus.getLastname().toUpperCase() + ", " + cus.getFirstname().toUpperCase() + " " + cus.getMiddlename().substring(0, 1).toUpperCase() + ".");
+			setCustomerAddress(cus.getCompleteAddress());
+			
+			ctcFlds(false);
+			if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
+				
+				
+				setLabel2(0);
+				setLabel3(0);
+				setLabel4(0);
+				setAmount1(5.00);
+				setAmount2(0);
+				setAmount3(0);
+				setAmount4(0);
+				
+				setGenderId(Integer.valueOf(cus.getGender()));
+				setBirthdate(DateUtils.convertDateString(cus.getBirthdate(), "yyyy-MM-dd"));
+				setHieghtDateReg(cus.getHeight());
+				setWeight(cus.getWeight());
+				
+				setCivilStatusId(cus.getCivilStatus());
+				setProfessionBusinessNature(cus.getWork());
+				setPlaceOfBirth(cus.getBornplace());
+				setCitizenshipOrganization(cus.getCitizenship());
+				
+				ctcFlds(true);
+				
+				if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {
+					setEnableBirthday(false);
+					cedulaInterest();
+				}else {
+					setAmount1(500.00);
+					setEnableBirthday(true);
+					cedulaCorporation();
+				}
+				
+			}else {
+				ctcFlds(false);
+			}
+			
+			updateORNumber();
+			
+		}else {
+			String name = getPayorName();
+			if(name!=null && !name.isEmpty()) {
+				int count = name.split(" ").length;
+				for(int i=0; i<count; i++) {
+					switch(i) {
+						case 0 : setLastName(name.split(" ")[i].replace(",", "")); break;
+						case 1 : setMiddleName(name.split(" ")[i].replace(".", "")); break;
+						case 2 : setFirstName(name.split(" ")[i]); break;
+						
+					}
+				}
+			}else {
+				setFirstName(null);
+				setMiddleName(null);
+				setLastName(null);
+			}
+			
+			//pop window for proper name of client
+			PrimeFaces pf = PrimeFaces.current();
+			pf.executeScript("PF('dlgCustomerInfo').show(1000)");
+		}
+	}
+	
+	public void doneCustomerDetails() {
+		boolean isOk = true;
+		PrimeFaces pf = PrimeFaces.current();
+		String scs = "";
+		if(getFirstName()==null || getFirstName().isEmpty()) {
+			isOk = false;
+			scs += "$('#firstId').css('border', '3px solid red');";
+		}
+		if(getMiddleName()==null || getMiddleName().isEmpty()) {
+			isOk = false;
+			scs += "$('#middleId').css('border', '3px solid red');";
+		}
+		if(getLastName()==null || getLastName().isEmpty()) {
+			isOk = false;
+			scs += "$('#lastId').css('border', '3px solid red');";
+		}
+		if(isOk) {
+			scs="";
+			scs += "$('#firstId').css('border', '3px solid black');";
+			scs += "$('#middleId').css('border', '3px solid black');";
+			scs += "$('#lastId').css('border', '3px solid black');";
+			scs +="PF('dlgCustomerInfo').hide(1000)";
+			//PrimeFaces.current().dialog().showMessageInDialog(new FacesMessage(FacesMessage.SEVERITY_INFO, "What we do in life", "Echoes in eternity."););
+			//PrimeFaces.current().dialog().showMessageDynamic(new FacesMessage(FacesMessage.SEVERITY_INFO, "What we do in life", "Echoes in eternity."), isOk);
+			setPayorName(getLastName().toUpperCase() + ", " + getFirstName().toUpperCase()  +" "+ getMiddleName().toUpperCase().substring(0,1) + ". ");
+			checkClientNameInDB();
+		}
+		pf.executeScript(scs);
+	}
+	
+	private void checkClientNameInDB() {
+		String sql = " AND cus.fullname=?";
+		String[] params = new String[1];
+		params[0] = getFirstName().toUpperCase() +" "+ getLastName().toUpperCase();
+		List<Customer> cus = Customer.retrieve(sql, params);
+		if(cus!=null && cus.size()>0) {
+			Customer cust = cus.get(0);
+			setMapCustomer(new LinkedHashMap<String, Customer>());
+			String fullName = cust.getLastname() + ", " + cust.getFirstname() + " " + (cust.getMiddlename()!=null? cust.getMiddlename().substring(0, 1)+"." : ".");
+			setPayorName(fullName);
+			getMapCustomer().put(fullName,cust);
+		}
+	}
+	
 	public void findQRCode() {
 		System.out.println("now looking the qrcode......");
 		final String jsonData = FacesContext.getCurrentInstance()
@@ -3397,5 +3591,37 @@ private void close(Closeable resource) {
 
 	public void setIssuedCollectorId(int issuedCollectorId) {
 		this.issuedCollectorId = issuedCollectorId;
+	}
+
+	public Map<String, Customer> getMapCustomer() {
+		return mapCustomer;
+	}
+
+	public void setMapCustomer(Map<String, Customer> mapCustomer) {
+		this.mapCustomer = mapCustomer;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 }

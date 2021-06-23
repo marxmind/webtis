@@ -1088,7 +1088,7 @@ public class Customer {
 		ps.setString(cnt++, cus.getLastname());
 		ps.setString(cnt++, cus.getGender());
 		ps.setInt(cnt++, cus.getAge());
-		ps.setLong(cnt++, cus.getPurok().getId());
+		ps.setLong(cnt++, cus.getPurok()==null? 01 : cus.getPurok().getId());
 		ps.setString(cnt++, cus.getContactno());
 		ps.setString(cnt++, cus.getDateregistered());
 		ps.setString(cnt++, cardNumber());
@@ -1116,7 +1116,7 @@ public class Customer {
 		LogU.add(cus.getLastname());
 		LogU.add(cus.getGender());
 		LogU.add(cus.getAge());
-		LogU.add(cus.getPurok().getId());
+		LogU.add(cus.getPurok()==null? 01 : cus.getPurok().getId());
 		LogU.add(cus.getContactno());
 		LogU.add(cus.getDateregistered());
 		LogU.add(cus.getCardno());
@@ -1209,7 +1209,7 @@ public class Customer {
 		ps.setString(cnt++, getLastname());
 		ps.setString(cnt++, getGender());
 		ps.setInt(cnt++, getAge());
-		ps.setLong(cnt++, getPurok().getId());
+		ps.setLong(cnt++, getPurok()==null? 01 : getPurok().getId());
 		ps.setString(cnt++, getContactno());
 		ps.setString(cnt++, getDateregistered());
 		ps.setString(cnt++, cardNumber());
@@ -1237,7 +1237,7 @@ public class Customer {
 		LogU.add(getLastname());
 		LogU.add(getGender());
 		LogU.add(getAge());
-		LogU.add(getPurok().getId());
+		LogU.add(getPurok()==null? 01 : getPurok().getId());
 		LogU.add(getContactno());
 		LogU.add(getDateregistered());
 		LogU.add(getCardno());
@@ -1317,7 +1317,7 @@ public class Customer {
 		ps.setString(cnt++, cus.getLastname());
 		ps.setString(cnt++, cus.getGender());
 		ps.setInt(cnt++, cus.getAge());
-		ps.setLong(cnt++, cus.getPurok().getId());
+		ps.setLong(cnt++, cus.getPurok()==null? 01 : cus.getPurok().getId());
 		ps.setString(cnt++, cus.getContactno());
 		ps.setString(cnt++, cus.getDateregistered());
 		ps.setInt(cnt++, cus.getIsactive());
@@ -1345,7 +1345,7 @@ public class Customer {
 		LogU.add(cus.getLastname());
 		LogU.add(cus.getGender());
 		LogU.add(cus.getAge());
-		LogU.add(cus.getPurok().getId());
+		LogU.add(cus.getPurok()==null? 01 : cus.getPurok().getId());
 		LogU.add(cus.getContactno());
 		LogU.add(cus.getDateregistered());
 		LogU.add(cus.getIsactive());
@@ -1424,7 +1424,7 @@ public class Customer {
 		ps.setString(cnt++, getLastname());
 		ps.setString(cnt++, getGender());
 		ps.setInt(cnt++, getAge());
-		ps.setLong(cnt++, getPurok().getId());
+		ps.setLong(cnt++, getPurok()==null? 01 : getPurok().getId());
 		ps.setString(cnt++, getContactno());
 		ps.setString(cnt++, getDateregistered());
 		ps.setInt(cnt++, getIsactive());
@@ -1453,7 +1453,7 @@ public class Customer {
 		LogU.add(getLastname());
 		LogU.add(getGender());
 		LogU.add(getAge());
-		LogU.add(getPurok().getId());
+		LogU.add(getPurok()==null? 01 : getPurok().getId());
 		LogU.add(getContactno());
 		LogU.add(getDateregistered());
 		LogU.add(getIsactive());

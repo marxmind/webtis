@@ -105,7 +105,7 @@ public class TaxPayorTrans implements ITaxPayorTrans {
 			
 		}
 		
-		//System.out.println("SQL: " + ps.toString());
+		System.out.println("ITaxPayorTrans SQL: " + ps.toString());
 		
 		rs = ps.executeQuery();
 		

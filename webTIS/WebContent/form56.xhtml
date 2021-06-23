@@ -22,6 +22,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             
     </f:facet>
@@ -53,20 +55,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
     	 
+    <div class="card">
+    <div class="p-grid sample-layout">
     
-	<p:focus context="tb"/>
-	
-	<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="50" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="west" size="800" visible="true" id="formWidgetId">
-				
-				
-				
-				<p:toolbar id="tbDetails" style="#{skin.toolbar}">
+    <div class="p-col-12 p-md-7">
+            <p:toolbar id="tbDetails" style="#{skin.toolbar}">
 	    		<f:facet name="left">
 	    				<p:commandButton update="ownerId,formDataId,recFromId,wordId,scId,statId,payId,caseId,grandId,form56Id,payorSearchId,paySearchId,yearSelId" value="New" icon="ui-icon-document" actionListener="#{form56Bean.newForm}" a:data-step="6" a:data-intro="New Button - use to add new data."/>
 	    		</f:facet>
@@ -108,13 +101,18 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				</p:panelGrid>
 				<p:outputLabel id="wordId"  value="The Sum of: #{form56Bean.amountInWords}"  
 			            		 style="#{skin.textInput};align-text: left;color:red"/>
-				<br/>
 				
-		        <p:outputLabel value="Special Case" style="#{skin.textInput}"/>&nbsp;&nbsp;
+				
+				<p:toolbar id="grcaseIs">
+	    		<f:facet name="left">
+		        <p:outputLabel value="Special Case" style="color: black#{skin.textInput}"/>&nbsp;&nbsp;
 		        <p:selectBooleanCheckbox id="caseId" value="#{form56Bean.specialCase}" style="#{skin.checkbox}">
 		            		<p:ajax event="change" update="formDataId,caseId,wordId,grandId,msg" listener="#{form56Bean.specialCaseCheck}"/>
 		        </p:selectBooleanCheckbox>
-		        <br/>
+		     	</f:facet>
+		     	<f:facet name="right"/>
+		     	</p:toolbar>
+		      
 		        
 				<p:toolbar id="grandM">
 	    		<f:facet name="left">
@@ -213,15 +211,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		       <p:menuitem value="Delete" update="formDataId,wordId,grandId" icon="ui-icon-close" actionListener="#{form56Bean.deleteCell}"/>
 		       <p:menuitem value="Hide Menu" icon="ui-icon-close" onclick="PF('cMenu').hide()"/>  
 		   </p:contextMenu>
-		   
-		  
-		     
-			</p:layoutUnit>
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			<p:layoutUnit position="center">
-			
-			<p:toolbar id="tb" style="#{skin.toolbar}">
+        </div>
+        <div class="p-col-12 p-md-5 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <p:toolbar id="tb" style="#{skin.toolbar}">
 				<f:facet name="left">
+				
     			<p:autoComplete id="searchNameId" a:placeholder="Search..." value="#{form56Bean.findName}" completeMethod="#{form56Bean.autoPayorName}" effect="fade"/>
     			
     			<p:calendar value="#{form56Bean.findFromDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 10em"/>
@@ -232,13 +228,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     		<f:facet name="right">
     			
     			<p:commandButton update="dataTransId" value="Refresh" icon="ui-icon-document" actionListener="#{form56Bean.init}" />
-    			<p:commandButton update="formId" value="Payor Lookup" icon="ui-icon-document" action="landpayor.xhtml"/>
-    			<p:commandButton update="formId" value="Penalty Lookup" icon="ui-icon-document" action="penalty.xhtml"/>
+    			<p:commandButton value="Payor Lookup" icon="ui-icon-document" action="landpayor.xhtml"/>
+    			<p:commandButton value="Penalty Lookup" icon="ui-icon-document" action="penalty.xhtml"/>
     			
     		</f:facet>
 			</p:toolbar>
-			
-			<p:dataTable id="dataTransId" value="#{form56Bean.trans}" var="rpt" stickyHeader="false"
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="dataTransId" value="#{form56Bean.trans}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="true" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false"
@@ -309,9 +307,16 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						
                          
 	 </p:dataTable>	
-			
-			</p:layoutUnit>
-	</p:layout>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    
+    </div>
+	
+	</div><!-- card -->	
+	
 	
 	<p:dialog position="center top" widgetVar="ownerDialog" 
 header="Land Owner Lookup" Height="800" draggable="false" width="1100" maximizable="true" minimizable="false"  
@@ -323,10 +328,12 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
     				   <f:selectItem itemLabel="All"/>
                        <f:selectItems value="#{form56Bean.barangayListSearch}" var="man" itemLabel="#{man}" itemValue="#{man}" />
                    </p:selectOneMenu>
-    				<p:inputText id="paySearchId" value="#{form56Bean.searchParam}" a:placeholder="Search Owner">
-    					<p:ajax event="keyup" listener="#{form56Bean.findLandOwner}" update="ownDataId" delay="800"/>
-    				</p:inputText>
-    				<p:commandButton id="findOwnId" update="ownDataId"  icon="fa fa-search" actionListener="#{form56Bean.findLandOwner}"/>
+                   <span class="ui-input-icon-left">
+			    	<i class="pi pi-search" />
+	    				<p:inputText id="paySearchId" value="#{form56Bean.searchParam}" a:placeholder="Search Owner">
+	    					<p:ajax event="keyup" listener="#{form56Bean.findLandOwner}" update="ownDataId" delay="800"/>
+	    				</p:inputText>
+    				</span>
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton update="formId" value="Payor Lookup" icon="ui-icon-document" action="landpayor.xhtml"/>
@@ -374,14 +381,16 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
 </p:dialog>
 	
 	<p:dialog position="center top" widgetVar="payorDialog" responsive="true" 
-header="Payor Lookup" Height="800" draggable="false" width="600" maximizable="true" minimizable="false" 
+header="Payor Lookup" Height="800" draggable="false" width="800" maximizable="true" minimizable="false" 
 modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="false">
 	<p:toolbar id="tbpay" style="#{skin.toolbar}">
     		<f:facet name="left">
+    				<span class="ui-input-icon-left">
+			    	<i class="pi pi-search" />
     				<p:inputText id="payorSearchId" value="#{form56Bean.payorSearchParam}" a:placeholder="Search Name" style="width: 20em">
     					<p:ajax event="keyup" listener="#{form56Bean.payorLookup}" update="payorDataId" delay="800"/>
     				</p:inputText>
-                   <p:commandButton id="findpayorId" update="payorDataId"  icon="fa fa-search" actionListener="#{form56Bean.payorLookup}"/>
+    				</span>
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton update="formId" value="Payor Lookup" icon="ui-icon-document" action="landpayor.xhtml"/>
@@ -434,7 +443,7 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
 		
 </p:dialog>
 	
-<p:dialog position="center center" widgetVar="dlgYear" modal="true" width="400" height="155" showHeader="false">
+<p:dialog position="center center" widgetVar="dlgYear" modal="true" width="500" height="300" showHeader="false">
 	<p:toolbar id="tbYear" style="#{skin.toolbar}">
     		<f:facet name="left">
     			<p:commandButton value="Add" actionListener="#{form56Bean.selectedLand}" onclick="PF('ownerDialog').hide();PF('dlgYear').hide()" update="formDataId,wordId,grandId,ownerId"/>
@@ -445,12 +454,12 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
 		</p:toolbar>
 		<p:panelGrid layout="grid" columns="4" id="yearSelId">
 		       			<p:outputLabel value="Date From"/>
-		       			<p:selectOneMenu  value="#{form56Bean.yearSelectedFromId}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
+		       			<p:selectOneMenu  value="#{form56Bean.yearSelectedFromId}" style="width:5em;color:black" filter="true" filterMatchMode="contains">
 		                        <f:selectItems value="#{form56Bean.yearSelectedFroms}" var="man" itemLabel="#{man}" itemValue="#{man}" />
 		                </p:selectOneMenu>
 		                
 		       			<p:outputLabel value="Date To"/>
-		       			<p:selectOneMenu  value="#{form56Bean.yearSelectedToId}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
+		       			<p:selectOneMenu  value="#{form56Bean.yearSelectedToId}" style="width:5em;color:black" filter="true" filterMatchMode="contains">
 			                       <f:selectItems value="#{form56Bean.yearSelectedTos}" var="man" itemLabel="#{man}" itemValue="#{man}" />
 			            </p:selectOneMenu>
 		       			

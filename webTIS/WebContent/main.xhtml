@@ -18,11 +18,9 @@ xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	
 	<f:facet name="middle">
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
-            <h:outputStylesheet name="intro/bootstrap-responsive.mini.css"/>
-            <h:outputStylesheet name="intro/themes/introjs.css"/>
-            <h:outputStylesheet name="textillate/animate.css"/>
-    		<h:outputStylesheet name="textillate/style.css"/>
     		<h:outputStylesheet name="css/pageHeaderFooter.css"/>
+    		<h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
     </f:facet>
@@ -56,140 +54,12 @@ body{
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
 
-<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="100" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			<p:layoutUnit position="west" size="0" visible="false"/>
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			
-			<p:layoutUnit position="center">
-			
-				
-			
-			</p:layoutUnit>
-			
-</p:layout>	
-	 
+		
 	 	<p:commandButton id="showNoteId" value="#{menuBean.total}" action="email.xhtml" icon="fa fa-envelope-o" style="#{notiBean.styleButton}#{skin.emailButton}" title="This is where your email or notification messages save" />
 	 
 	
 	
-  <h:outputScript>
-  $( document ).ready(function() {                          
-    $('.tlt').textillate({                          
-    in: {                         
-    effect: 'bounceInLeft',
-    delayScale: 1.5,
-    delay: 10,
-    sync: false,
-    sequence: true       
-    },
-                                                   
-    out: {                       
-    effect: 'flash',                          
-    delayScale: 1.5,
-    delay: 20,
-    sync: false                       
-    },                          
-    loop: false                           
-    }); 
-    
-    $(".tltpersonal").hide();
-    $(".tltlogin").hide();
-                            
-    });
-    
-    $('#yesId').on('click',function(e){
-    	$('.tlt1').textillate({                          
-    in: {                         
-    effect: 'bounceInLeft',
-    delayScale: 1.5,
-    delay: 10,
-    sync: false,
-    sequence: true       
-    },
-                                                   
-    out: {                       
-    effect: 'flash',                          
-    delayScale: 1.5,
-    delay: 20,
-    sync: false                       
-    },                          
-    loop: false                           
-    });  
-	});     
-	
-	$('#noId').on('click',function(e){
-    	$('.tlt2').textillate({                          
-    in: {                         
-    effect: 'bounceInLeft',
-    delayScale: 1.5,
-    delay: 10,
-    sync: false,
-    sequence: true       
-    },
-                                                   
-    out: {                       
-    effect: 'flash',                          
-    delayScale: 1.5,
-    delay: 20,
-    sync: false                       
-    },                          
-    loop: false                           
-    });  
-	});  
-	
-	$('#personalId').on('click',function(e){
-	
-	$(".tltpersonal").show();
-    $(".tltlogin").hide();
-	
-    	$('.tltpersonal').textillate({                          
-    in: {                         
-    effect: 'bounceInLeft',
-    delayScale: 1.5,
-    delay: 10,
-    sync: false,
-    sequence: true       
-    },
-                                                   
-    out: {                       
-    effect: 'flash',                          
-    delayScale: 1.5,
-    delay: 20,
-    sync: false                       
-    },                          
-    loop: false                           
-    });  
-	});  
-	
-	$('#passId').on('click',function(e){
-	
-	$(".tltpersonal").hide();
-    $(".tltlogin").show();
-    
-    	$('.tltlogin').textillate({                          
-    in: {                         
-    effect: 'bounceInLeft',
-    delayScale: 1.5,
-    delay: 10,
-    sync: false,
-    sequence: true       
-    },
-                                                   
-    out: {                       
-    effect: 'flash',                          
-    delayScale: 1.5,
-    delay: 20,
-    sync: false                       
-    },                          
-    loop: false                           
-    });  
-	});  
-	     
-  </h:outputScript>	 
+  
 	
 	
 	
@@ -248,10 +118,6 @@ body{
 	
 	<ui:include src="loader.xhtml" />	
 	 
-  <h:outputScript name="textillate/jquery.fittext.js" target="head"/>
-  <h:outputScript name="textillate/jquery.lettering.js" target="head"/>
-  <h:outputScript name="textillate/jquery.textillate.js" target="head"/>
-  <h:outputScript name="intro/intro.js" target="head"/>   
 </h:form>
 </h:body>
 </html>

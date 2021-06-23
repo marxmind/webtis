@@ -64,8 +64,9 @@ public class VoucherBean implements Serializable{
 	private int accountNameId;
 	
 	private String searchParticulars;
-	private Date dateFrom;
-	private Date dateTo;
+	//private Date dateFrom;
+	//private Date dateTo;
+	private List<Date> rangeDate;
 	
 	private List<Voucher> trans = Collections.synchronizedList(new ArrayList<Voucher>());
 	private Voucher selectedData;
@@ -90,18 +91,39 @@ public class VoucherBean implements Serializable{
 	
 	@PostConstruct
 	public void init(){
+		
+		
+		
+		String dateFrom = DateUtils.getFirstDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN);
+		String dateTo = DateUtils.getLastDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN); 
+		
+		if(rangeDate==null || rangeDate.size()==0) {
+			rangeDate = new ArrayList<Date>();
+			rangeDate.add(DateUtils.convertDateString(dateFrom, "yyyy-MM-dd"));
+			rangeDate.add(DateUtils.convertDateString(dateTo, "yyyy-MM-dd"));
+		}else {
+			
+			if(rangeDate!=null && rangeDate.size()>1) {
+				dateFrom = DateUtils.convertDate(getRangeDate().get(0), "yyyy-MM-dd");
+				dateTo = DateUtils.convertDate(getRangeDate().get(1), "yyyy-MM-dd");
+			}else {
+				dateFrom = DateUtils.convertDate(getRangeDate().get(0), "yyyy-MM-dd");
+				dateTo = dateFrom;
+			}
+		}
+		
 		String sql = "SELECT * FROM voucher WHERE ";
 		
 		String[] params = new String[3];
 		
 		if(getAccountNameId()==0){
 			params = new String[2];
-			params[0] = DateUtils.convertDate(getDateFrom(), "yyyy-MM-dd");
-			params[1] = DateUtils.convertDate(getDateTo(), "yyyy-MM-dd");
+			params[0] = dateFrom;
+			params[1] = dateTo;
 			sql +="vDate>=? AND vDate<=?"; 
 		}else{
-			params[0] = DateUtils.convertDate(getDateFrom(), "yyyy-MM-dd");
-			params[1] = DateUtils.convertDate(getDateTo(), "yyyy-MM-dd");
+			params[0] = dateFrom;
+			params[1] = dateTo;
 			params[2] = getAccountNameId()+"";
 			sql +="vDate>=? AND vDate<=? AND bank_id=? ";
 		}
@@ -309,6 +331,17 @@ public class VoucherBean implements Serializable{
 				}
 			}
 			
+			String dateFrom = DateUtils.getFirstDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN);
+			String dateTo = DateUtils.getLastDayOfTheMonth("yyyy-MM-dd",DateUtils.getCurrentDateYYYYMMDD(), Locale.TAIWAN); 
+			
+			if(getRangeDate()!=null && getRangeDate().size()>1) {
+				dateFrom = DateUtils.convertDate(getRangeDate().get(0), "yyyy-MM-dd");
+				dateTo = DateUtils.convertDate(getRangeDate().get(1), "yyyy-MM-dd");
+			}else {
+				dateFrom = DateUtils.convertDate(getRangeDate().get(0), "yyyy-MM-dd");
+				dateTo = dateFrom;
+			}
+			
 			//compiling report
 			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
 					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
@@ -323,7 +356,7 @@ public class VoucherBean implements Serializable{
 	  		param.put("PARAM_REPORT_TITLE","CHECK ISSUED REPORT");
 	  		
 	  		param.put("PARAM_PRINTED_DATE","Printed: "+DateUtils.getCurrentDateMMDDYYYYTIME());
-	  		param.put("PARAM_RANGE_DATE",DateUtils.convertDate(getDateFrom(),"yyyy-MM-dd") + " to " + DateUtils.convertDate(getDateTo(),"yyyy-MM-dd"));
+	  		param.put("PARAM_RANGE_DATE",dateFrom + " to " + dateTo);
 	  		
 	  		if(getAccountNameId()==0){
 		  		param.put("PARAM_ACCOUNT_NAME","All Accounts");
@@ -470,6 +503,7 @@ public class VoucherBean implements Serializable{
 	public void setSearchParticulars(String searchParticulars) {
 		this.searchParticulars = searchParticulars;
 	}
+	/*
 	public Date getDateFrom() {
 		
 		if(dateFrom==null){
@@ -494,6 +528,7 @@ public class VoucherBean implements Serializable{
 	public void setDateTo(Date dateTo) {
 		this.dateTo = dateTo;
 	}
+	*/
 	public List<Voucher> getTrans() {
 		return trans;
 	}
@@ -552,6 +587,14 @@ public class VoucherBean implements Serializable{
 	}
 	public void setDepartments(List departments) {
 		this.departments = departments;
+	}
+
+	public List<Date> getRangeDate() {
+		return rangeDate;
+	}
+
+	public void setRangeDate(List<Date> rangeDate) {
+		this.rangeDate = rangeDate;
 	}
 	
 }

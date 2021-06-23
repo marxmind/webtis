@@ -21,6 +21,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
     </f:facet>
@@ -54,105 +56,106 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
-	<p:focus context="tb"/>
 	
 	
-	<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="50" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			<p:layoutUnit position="west" size="0" visible="false"/>
-			
-			<p:layoutUnit position="center">
-			
-			<p:toolbar id="tb" style="#{skin.toolbar}">
-    		<f:facet name="left">
-    				<p:commandButton update="formId" value="Check Writing" icon="ui-icon-document" action="#{budgetBean.checkWriting}"/>
-    		</f:facet>
-    		<f:facet name="right">
-    			
-    			<h:commandLink title="Export Budget Report in excel format">
-                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
-                							<p:dataExporter type="xls" target="formDataId" fileName="Budget" />
-            						</h:commandLink>
-            						<h:commandLink title="Export Budget Report in pdf format">
-                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
-                						    <p:dataExporter type="pdf" target="formDataId" fileName="Budget" />
-            						</h:commandLink>
-            	<p:commandButton update="formDataId" value="Update" icon="ui-icon-document" actionListener="#{budgetBean.init}"/>
-    		</f:facet>
-		</p:toolbar>
-		<p:sticky target="tb" />
-	
-	<p:dataTable id="formDataId" var="rpt" value="#{budgetBean.budgets}" editable="true" paginatorTemplate="{Exporters}" style="#{skin.table}"
-       editMode="cell" widgetVar="cellTrans" rowKey="#{rpt.id}" scrollable="true" selection="#{budgetBean.budgetData}" selectionMode="single">
-       <f:facet name="header">
-           Internal Revenue Allotment for the month of #{budgetBean.monthToday}
-       </f:facet>
-			
-		<p:ajax event="cellEdit"  listener="#{budgetBean.onCellEdit}" update=":formId:formDataId,:formId:msg" />	
-		
-		 <p:column headerText="Account Name" >
-              <p:outputLabel value="#{rpt.accounts.bankAccntName}"/>
-         </p:column>
-         
-         <p:column headerText="Bank Branch" >
-              <p:outputLabel value="#{rpt.accounts.bankAccntBranch}"/>
-         </p:column>
-		
-		<p:column headerText="Added Amount">
-              <p:cellEditor>
-                  <f:facet name="output"><p:outputLabel value="Php#{rpt.addedAmountTmp}" a:placeholder="0.00"/></f:facet>
-                  <f:facet name="input"><p:inputText  value="#{rpt.addedAmount}" a:type="number" a:placeholder="0.00" style="width:96%;color:black"/></f:facet>
-              </p:cellEditor>
-       </p:column>
-		
-		 <p:column>
-		 	<f:facet name="header">Budget Amount</f:facet>
-              <p:outputLabel value="#{rpt.budgetAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
-            <f:facet name="footer">Php #{budgetBean.total}</f:facet>  
-       </p:column>
-       
-       <p:column>
-       		 <f:facet name="header">Used Amount</f:facet>
-              <p:outputLabel value="#{rpt.usedAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
-              <f:facet name="footer">Php #{budgetBean.totalUsed}</f:facet>
-       </p:column>
-       
-       <p:column>
-       	      <f:facet name="header">Remaining Amount</f:facet>
-              <p:outputLabel value="#{rpt.remainingAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
-              <f:facet name="footer">Php #{budgetBean.totalRem}</f:facet>
-       </p:column>
-		
-		
-	  <p:column headerText="Limit Amount">
-              <p:cellEditor>
-                  <f:facet name="output"><p:outputLabel value="#{rpt.limitAmountTmp}" a:placeholder="0.00" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/></f:facet>
-                  <f:facet name="input"><p:inputText  value="#{rpt.limitAmount}" a:type="number" a:placeholder="0.00" style="width:96%;"/></f:facet>
-              </p:cellEditor>
-       </p:column>
-       
-       <p:column headerText="Activated" width="50">
-               <p:selectBooleanCheckbox value="#{rpt.isActivated}">
-                	<p:ajax update="formDataId,msg" listener="#{budgetBean.limitCheck(rpt)}" />
-               </p:selectBooleanCheckbox>
-       </p:column>
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    	
+        <div class="p-col-12 p-md-12 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <div class="ui-inputgroup" style="float:left">
+            			<p:commandButton value="Go To Check Writing Page" icon="ui-icon-document" action="#{budgetBean.checkWriting}"/>
+            		</div>
+            	<div class="ui-inputgroup" style="float:right">
+	            	<h:commandLink title="Export Budget Report in excel format">
+	                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+	                							<p:dataExporter type="xls" target="formDataId" fileName="Budget" />
+	            						</h:commandLink>
+	            						<h:commandLink title="Export Budget Report in pdf format">
+	                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+	                						    <p:dataExporter type="pdf" target="formDataId" fileName="Budget" />
+	            						</h:commandLink>
+	            	<p:commandButton update="formDataId" value="Update" icon="ui-icon-document" actionListener="#{budgetBean.init}"/>
+            	</div>
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="formDataId" var="rpt" value="#{budgetBean.budgets}" editable="true" paginatorTemplate="{Exporters}" style="#{skin.table}"
+					       editMode="cell" widgetVar="cellTrans" reflow="true" rowKey="#{rpt.id}" scrollable="true" selection="#{budgetBean.budgetData}" selectionMode="single">
+					       <f:facet name="header">
+					           Internal Revenue Allotment for the month of #{budgetBean.monthToday}
+					       </f:facet>
+								
+							<p:ajax event="cellEdit"  listener="#{budgetBean.onCellEdit}" update=":formId:formDataId,:formId:msg" />	
+							
+							 <p:column headerText="Account Name" >
+					              <p:outputLabel value="#{rpt.accounts.bankAccntName}"/>
+					         </p:column>
+					         
+					         <p:column headerText="Bank Branch" >
+					              <p:outputLabel value="#{rpt.accounts.bankAccntBranch}"/>
+					         </p:column>
+							
+							<p:column headerText="Added Amount">
+					              <p:cellEditor>
+					                  <f:facet name="output"><p:outputLabel value="Php#{rpt.addedAmountTmp}" a:placeholder="0.00"/></f:facet>
+					                  <f:facet name="input"><p:inputText  value="#{rpt.addedAmount}" a:type="number" a:placeholder="0.00" style="width:96%;color:black"/></f:facet>
+					              </p:cellEditor>
+					       </p:column>
+							
+							 <p:column>
+							 	<f:facet name="header">Budget Amount</f:facet>
+					              <p:outputLabel value="#{rpt.budgetAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
+					            <f:facet name="footer">Php #{budgetBean.total}</f:facet>  
+					       </p:column>
+					       
+					       <p:column>
+					       		 <f:facet name="header">Used Amount</f:facet>
+					              <p:outputLabel value="#{rpt.usedAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
+					              <f:facet name="footer">Php #{budgetBean.totalUsed}</f:facet>
+					       </p:column>
+					       
+					       <p:column>
+					       	      <f:facet name="header">Remaining Amount</f:facet>
+					              <p:outputLabel value="#{rpt.remainingAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
+					              <f:facet name="footer">Php #{budgetBean.totalRem}</f:facet>
+					       </p:column>
+							
+							
+						  <p:column headerText="Limit Amount">
+					              <p:cellEditor>
+					                  <f:facet name="output"><p:outputLabel value="#{rpt.limitAmountTmp}" a:placeholder="0.00" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/></f:facet>
+					                  <f:facet name="input"><p:inputText  value="#{rpt.limitAmount}" a:type="number" a:placeholder="0.00" style="width:96%;"/></f:facet>
+					              </p:cellEditor>
+					       </p:column>
+					       
+					       <p:column headerText="Activated" width="50">
+					               <p:selectBooleanCheckbox value="#{rpt.isActivated}">
+					                	<p:ajax update="formDataId,msg" listener="#{budgetBean.limitCheck(rpt)}" />
+					               </p:selectBooleanCheckbox>
+					       </p:column>
+					        
+					        <p:column headerText="Cycle Date" width="50">
+					              <p:cellEditor>
+					                  <f:facet name="output"><p:outputLabel value="#{rpt.cycleDate}"/></f:facet>
+					                  <f:facet name="input"><p:inputText  value="#{rpt.cycleDate}" a:type="number" a:placeholder="0.00" style="width:96%;color:black"/></f:facet>
+					              </p:cellEditor>
+					       </p:column>
+					        
+						</p:dataTable>
+                    </div>
+                </div>
+            </div>
+        </div>
         
-        <p:column headerText="Cycle Date" width="50">
-              <p:cellEditor>
-                  <f:facet name="output"><p:outputLabel value="#{rpt.cycleDate}"/></f:facet>
-                  <f:facet name="input"><p:inputText  value="#{rpt.cycleDate}" a:type="number" a:placeholder="0.00" style="width:96%;color:black"/></f:facet>
-              </p:cellEditor>
-       </p:column>
-        
-	</p:dataTable>
-			
-			</p:layoutUnit>
-	</p:layout>
+    
+    
+    </div>
+	
+	</div><!-- card -->	
+	
 	
 	
 	

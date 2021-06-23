@@ -21,6 +21,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
             <h:outputStylesheet name="css/growl.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             
@@ -56,15 +58,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
     
-	<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="50" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			<p:layoutUnit position="west" size="550">
-			
-			<p:toolbar id="tbDetails" style="#{skin.toolbar}">
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    <div class="p-col-12 p-md-7">
+    		<div class="p-col-12">
+            <p:toolbar id="tbDetails" style="#{skin.toolbar}">
     		<f:facet name="left">
     				<p:commandButton value="Add Responsibilty" oncomplete="PF('resDlg').show();" />
     				<p:commandButton value="Add Department" oncomplete="PF('depDlg').show();" />
@@ -77,98 +76,105 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     			</p:commandButton>
     		</f:facet>
 			</p:toolbar> 
+			</div>
 			
-			<p:panelGrid id="vId" layout="grid" columns="3" >
+			
+			
+			<div class="p-col-12">
+			<p:panelGrid id="vId" layout="grid" columns="6" >
 				
-				<p:outputLabel value="Responsibility" style="#{skin.textInput}">
-					<p:selectOneMenu value="#{vrBean.resId}" style="width:12em;color: black;" filter="true" filterMatchMode="contains">
+				<p:outputLabel value="Responsibility" style="#{skin.textInput}"/>
+				<p:selectOneMenu value="#{vrBean.resId}" style="width:12em;color: black;" filter="true" filterMatchMode="contains">
 								<f:selectItems value="#{vrBean.responsibility}"/>
 								<p:ajax event="change" listener="#{vrBean.loadCenterFromResponsibility}" update="departmentId payId"/>
-					</p:selectOneMenu>
-				</p:outputLabel>
+				</p:selectOneMenu>
 				
-				<p:outputLabel/>
-				<p:outputLabel/>
+				<p:outputLabel/><p:outputLabel/>
+				<p:outputLabel/><p:outputLabel/>
 				
-				<p:outputLabel value="Date" style="#{skin.textInput}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            		<p:calendar value="#{vrBean.dateCreated}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="color: black;width:12em;">
-            		<p:ajax event="click" listener="#{vrBean.onSeriesChange}" update="seriesId"/>
-            		</p:calendar>
-            	</p:outputLabel>
+				<p:outputLabel value="Date" style="#{skin.textInput}"/>
+            	<p:calendar value="#{vrBean.dateCreated}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="color: black;width:12em;">
+            		<p:ajax event="dateSelect" listener="#{vrBean.onSeriesChange}" update="seriesId"/>
+            	</p:calendar>
 				
-				<p:outputLabel value="Series Month" style="#{skin.textInput}">
-					<p:selectOneMenu id="seriesId" value="#{vrBean.seriesMonthId}" style="width:12em;color: black;" filter="true" filterMatchMode="contains">
+				<p:outputLabel/><p:outputLabel/>
+				<p:outputLabel/><p:outputLabel/>
+				
+				
+				<p:outputLabel value="Series Month" style="#{skin.textInput}"/>
+				<p:selectOneMenu id="seriesId" value="#{vrBean.seriesMonthId}" style="width:12em;color: black;" filter="true" filterMatchMode="contains">
 								<f:selectItems value="#{vrBean.seriesMonths}"/>
-					</p:selectOneMenu>
-				</p:outputLabel>
+				</p:selectOneMenu>
 				
-				<p:outputLabel value="Code   :" style="#{skin.textInput}">
-					<p:autoComplete placeholder="0-00-00-000" value="#{vrBean.voucherNo}" completeMethod="#{vrBean.autoCode}" effect="fade" maxResults="10" inputStyle="width: 12em"/>
-				</p:outputLabel>
 				
-				<p:outputLabel value="Account No" style="#{skin.textInput}">
+				<p:outputLabel value="Code   :" style="#{skin.textInput}"/>
+				<p:autoComplete placeholder="0-00-00-000" value="#{vrBean.voucherNo}" completeMethod="#{vrBean.autoCode}" effect="fade" maxResults="10" inputStyle="width: 12em"/>
+				
+				
+				<p:outputLabel value="Account No" style="#{skin.textInput}"/>
         		<p:selectOneMenu value="#{vrBean.accountNo}"  style="width:12em;" filter="true" filterMatchMode="contains">
 					<f:selectItems value="#{vrBean.accountList}"/>
 					<p:ajax event="change" listener="#{vrBean.loadNewCheckNo}" update="chkId"/>
 				</p:selectOneMenu>
-				</p:outputLabel>
 				
-				<p:outputLabel value="Check No" style="#{skin.textInput}">
-					<p:inputText id="chkId" value="#{vrBean.checkNo}" a:placeholder="Bank Check No" style="color: black;width:12em;"/>
-				</p:outputLabel>
+				<p:outputLabel value="Check No" style="#{skin.textInput}"/>
+				<p:inputText id="chkId" value="#{vrBean.checkNo}" a:placeholder="Bank Check No" style="color: black;width:12em;"/>
 				
-				<p:outputLabel id="payId" value="Payee" style="#{skin.textInput}">
-					<p:autoComplete placeholder="Payee" value="#{vrBean.payee}" completeMethod="#{vrBean.autoPayToName}" effect="fade" maxResults="10" inputStyle="width: 12em"/>
-				</p:outputLabel>
 				
-				<p:outputLabel value="Nature of Payment" style="#{skin.textInput}">
-					<p:autoComplete placeholder="Nature of Payment" value="#{vrBean.natureOfPayment}" completeMethod="#{vrBean.autoNature}" effect="fade" maxResults="10" inputStyle="width: 12em">
+				<p:outputLabel id="payId" value="Payee" style="#{skin.textInput}"/>
+				<p:autoComplete placeholder="Payee" value="#{vrBean.payee}" completeMethod="#{vrBean.autoPayToName}" effect="fade" maxResults="10" inputStyle="width: 12em"/>
+				
+				
+				<p:outputLabel value="Nature of Payment" style="#{skin.textInput}"/>
+				<p:autoComplete placeholder="Nature of Payment" value="#{vrBean.natureOfPayment}" completeMethod="#{vrBean.autoNature}" effect="fade" maxResults="10" inputStyle="width: 12em">
 						<p:ajax event="change" listener="#{vrBean.loadSuggestedAmount}" update="grossId netId"/>
-					</p:autoComplete>
-				</p:outputLabel>
+				</p:autoComplete>
 				
-				<p:outputLabel value="Gross Amount" style="#{skin.textInput}">
+				
+				<p:outputLabel value="Gross Amount" style="#{skin.textInput}"/>
 				<p:inputNumber id="grossId" value="#{vrBean.grossAmount}" inputStyle="color: black;width:12em;">
 					<p:ajax event="keyup" listener="#{vrBean.loadNetAmount}" update="netId"/>
 				</p:inputNumber>
-				</p:outputLabel>
+			
 				
-				<p:outputLabel value="Net Amount" style="#{skin.textInput}">
+				<p:outputLabel value="Net Amount" style="#{skin.textInput}"/>
 				<p:inputNumber id="netId" value="#{vrBean.netAmount}" inputStyle="color: black;width:12em;"/>
-				</p:outputLabel>
 				
-				<p:outputLabel value="Center" style="#{skin.textInput}">
+				
+				<p:outputLabel value="Center" style="#{skin.textInput}"/>
 				<p:selectOneMenu id="departmentId" value="#{vrBean.departmentId}" style="color: black;width: 12em" filter="true" filterMatchMode="contains">
-	            		<f:selectItem itemLabel="Select..."/>
-	            		<f:selectItems value="#{vrBean.department}"/>
+	            	<f:selectItem itemLabel="Select..."/>
+	            	<f:selectItems value="#{vrBean.department}"/>
 	            </p:selectOneMenu>
-	            </p:outputLabel>
+	            
 				
-				<p:outputLabel value="Sign by Treasurer's Office" style="#{skin.textInput}">
-	            	<p:selectOneMenu value="#{vrBean.sig1}" style="width:12em;color: black;">
-								<f:selectItems value="#{vrBean.sigs1}"/>
-					</p:selectOneMenu>
-				</p:outputLabel>
+				<p:outputLabel value="Sign by Treasurer's Office" style="#{skin.textInput}"/>
+	            <p:selectOneMenu value="#{vrBean.sig1}" style="width:12em;color: black;">
+					<f:selectItems value="#{vrBean.sigs1}"/>
+				</p:selectOneMenu>
 				
-				<p:outputLabel value="Sign by Government Official" style="#{skin.textInput}">
-					<p:selectOneMenu value="#{vrBean.sig2}" style="width:12em;color: black;">
-								<f:selectItems value="#{vrBean.sigs2}"/>
-					</p:selectOneMenu>
-				</p:outputLabel>
+				
+				<p:outputLabel value="Sign by Government Official" style="#{skin.textInput}"/>
+				<p:selectOneMenu value="#{vrBean.sig2}" style="width:12em;color: black;">
+					<f:selectItems value="#{vrBean.sigs2}"/>
+				</p:selectOneMenu>
+				
 					
 			</p:panelGrid>
-			
-			</p:layoutUnit>
-			
-			
-			
-			<p:layoutUnit position="center">
-			<p:toolbar id="tbVr" style="#{skin.toolbar}">
+			</div>
+        </div>
+        <div class="p-col-12 p-md-5 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <p:toolbar id="tbVr" style="#{skin.toolbar}">
     		<f:facet name="left">
     			<p:commandButton value="Printable" onclick="PF('dlgPrintable').show();"/>
+    			<span class="ui-input-icon-left">
+			    	<i class="pi pi-search" />
     			<p:inputText id="searchParId" value="#{vrBean.searchParam}" placeholder="Search...">
     				<p:ajax event="keyup" listener="#{vrBean.load}" update="dataVr vId" delay="800"/>
     			</p:inputText>
+    			</span>
     				
     		</f:facet>
     		<f:facet name="right">
@@ -188,12 +194,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	            		<f:selectItem itemLabel="All"/>
 	            		<f:selectItems value="#{vrBean.departmentSearch}"/>
 	            </p:selectOneMenu>
-	            &nbsp;&nbsp;
 	            <p:commandButton id="findOwnId" update="dataVr vId"  icon="fa fa-search" actionListener="#{vrBean.load}"/>	
 			</f:facet>
 			</p:toolbar>
-			
-			<p:dataTable id="dataVr" value="#{vrBean.vrs}" var="vr" stickyHeader="false"
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="dataVr" value="#{vrBean.vrs}" var="vr" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          style="#{skin.table}" paginatorPosition="top"
@@ -275,12 +282,17 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							</p:columnGroup>
 							
 				</p:dataTable>
-			
-			</p:layoutUnit>
-			
-</p:layout>	
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    
+    </div>
 	
-	<p:dialog position="center center" widgetVar="dlgPrintable" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" width="500px" height="500px">
+	</div><!-- card -->	
+	
+	<p:dialog position="center center"  widgetVar="dlgPrintable" modal="false" draggable="false" closable="false" resizable="false" showHeader="true" width="800" height="800" closeOnEscape="true">
     	<p:toolbar id="tbMsg">
 			    		<f:facet name="left">
 			    				<p:selectOneMenu value="#{vrBean.mondIdR}" style="color: black;width: 9em" filter="true" filterMatchMode="contains">
