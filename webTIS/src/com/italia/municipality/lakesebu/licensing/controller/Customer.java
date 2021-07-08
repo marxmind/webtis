@@ -568,7 +568,7 @@ public class Customer {
 		sql = sql + sqlAdd;
 		
 		
-        System.out.println("SQL "+sql);
+        System.out.println("SQL Customer >> "+sql);
 		
 		Connection conn = null;
 		ResultSet rs = null;

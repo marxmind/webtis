@@ -65,18 +65,20 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         <div class="p-col-12 p-md-12 p-col-nogutter">
             <div class="p-grid">
                 <div class="p-col-12 p-col-nogutter">
-                    <div class="ui-inputgroup" style="float:left">
+                    <div class="ui-inputgroup">
                     	<p:selectOneMenu value="#{voucherBean.accountNameId}"  style="width:30em;" filter="true" filterMatchMode="contains">
 							<f:selectItem itemLabel="All Accounts"/>
 							<f:selectItems value="#{voucherBean.accountNameList}"/>
 							<f:ajax event="change" listener="#{voucherBean.init}" render="formDataId" />
 						</p:selectOneMenu>	
-                    </div>
-                    <div class="ui-inputgroup" style="float:right">
-                    	<p:inputText id="searchid" placeholder="Search..." value="#{voucherBean.searchParticulars}" style="width: 20em" />		
+                    	<span class="ui-input-icon-left">
+			    			<i class="pi pi-search" />
+                    		<p:inputText id="searchid" placeholder="Search..." value="#{voucherBean.searchParticulars}" style="width: 20em">
+                    			<p:ajax event="keyup" listener="#{voucherBean.init}" update="formDataId" delay="800"/>
+                    		</p:inputText>
+                    	</span>
 		        		<p:datePicker id="range" selectionMode="range" value="#{voucherBean.rangeDate}" readonlyInput="true" inputStyle="width: 15em"/>
 		        		<p:commandButton id="findId" update="formDataId"  icon="fa fa-search" actionListener="#{voucherBean.init}"/>
-		       			<p:commandButton update="formDataId" value="Refresh" icon="fa fa-refresh" actionListener="#{voucherBean.init}"/>
                     </div>
                 </div>
                 <div class="p-col-12">

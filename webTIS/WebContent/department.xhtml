@@ -8,12 +8,15 @@
  
     <ui:composition>
 		
-		<p:dialog header="Department Maintenance" widgetVar="depDlg" width="500" height="600" position="center top">
+		<p:dialog header="Department Maintenance" widgetVar="depDlg" width="800" height="1000" position="center top">
 		<p:toolbar id="tbDep" style="#{skin.toolbar}">
     		<f:facet name="left">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
     			<p:inputText value="#{departmentBean.searchName}" placeholder="Search here...">
     				<p:ajax event="keyup" listener="#{departmentBean.init}" update="dataDs panId" delay="800"/>
     			</p:inputText>
+    			</span>
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton update="panId" value="New" icon="fa fa-file-o" actionListener="#{departmentBean.clear}" />
@@ -54,7 +57,7 @@
 							<p:column headerText="Name" width="100">
             						<p:outputLabel value="#{ds.departmentName}"/>
             				</p:column>
-            				<p:column headerText="Code" width="70">
+            				<p:column headerText="Code" width="100">
             						<p:outputLabel value="#{ds.code}"/>
             				</p:column>
             				<p:column headerText="Department Head" width="100">

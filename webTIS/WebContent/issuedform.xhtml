@@ -236,9 +236,9 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							</p:selectOneMenu>	
 		    		</f:facet>
 		    		<f:facet name="right">
-		    				<h:commandLink title="Export Monthly Report in pdf format" value="Print" target="_blank" ajax="false" immediate="false"  actionListener="#{formBean.printMonthSeries}">
-			                    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
-			            	</h:commandLink>
+			            	<p:menuButton value="Export Monthly Report in pdf format" style="float: left">
+										<p:menuitem value="Export PDF" ajax="false" immediate="true" icon="fa fa-file-pdf-o" target="_blank" actionListener="#{formBean.printMonthSeries}"/>
+							</p:menuButton>
 		    		</f:facet>
 					</p:toolbar> 
 					

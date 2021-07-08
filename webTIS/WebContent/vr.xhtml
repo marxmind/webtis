@@ -65,15 +65,19 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     		<div class="p-col-12">
             <p:toolbar id="tbDetails" style="#{skin.toolbar}">
     		<f:facet name="left">
+    				<div class="ui-inputgroup">
     				<p:commandButton value="Add Responsibilty" oncomplete="PF('resDlg').show();" />
     				<p:commandButton value="Add Department" oncomplete="PF('depDlg').show();" />
+    				</div>
     		</f:facet>
     		<f:facet name="right">
+    			<div class="ui-inputgroup">
     			<p:commandButton update="vId" value="New" icon="fa fa-file-o" actionListener="#{vrBean.clear}" />
     			<p:commandButton update="vId" value="Clear" icon="fa fa-trash" action="#{vrBean.clear}" />
     			<p:commandButton update="vId dataVr searchParId monthSearchId depSearchId msg" value="Save" icon="fa fa-floppy-o" actionListener="#{vrBean.saveData}">
     				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
     			</p:commandButton>
+    			</div>
     		</f:facet>
 			</p:toolbar> 
 			</div>
@@ -168,6 +172,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                 <div class="p-col-12 p-col-nogutter">
                     <p:toolbar id="tbVr" style="#{skin.toolbar}">
     		<f:facet name="left">
+    			<div class="ui-inputgroup">
     			<p:commandButton value="Printable" onclick="PF('dlgPrintable').show();"/>
     			<span class="ui-input-icon-left">
 			    	<i class="pi pi-search" />
@@ -175,9 +180,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     				<p:ajax event="keyup" listener="#{vrBean.load}" update="dataVr vId" delay="800"/>
     			</p:inputText>
     			</span>
+    			</div>
     				
     		</f:facet>
     		<f:facet name="right">
+    		<div class="ui-inputgroup">
     		<p:selectOneMenu id="mntId" value="#{vrBean.mondId}" style="color: black;width: 9em" filter="true" filterMatchMode="contains">
 	            		<f:selectItems value="#{vrBean.months}"/>
 	            		<p:ajax event="change" listener="#{vrBean.updateMonthSeriesSearch}" update="monthSearchId"/>
@@ -195,6 +202,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	            		<f:selectItems value="#{vrBean.departmentSearch}"/>
 	            </p:selectOneMenu>
 	            <p:commandButton id="findOwnId" update="dataVr vId"  icon="fa fa-search" actionListener="#{vrBean.load}"/>	
+	            </div>
 			</f:facet>
 			</p:toolbar>
                 </div>

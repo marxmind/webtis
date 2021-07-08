@@ -152,7 +152,7 @@ public class BusinessORTransaction {
 			
 		}
 		
-		System.out.println("Clearance SQL " + ps.toString());
+		System.out.println("Business OR SQL " + ps.toString());
 		
 		rs = ps.executeQuery();
 		

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.italia.marxmind.ConnectDB;
+import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
 
 /**
@@ -31,7 +32,7 @@ public class Position {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = ConnectDB.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -54,7 +55,7 @@ public class Position {
 		
 		rs.close();
 		ps.close();
-		ConnectDB.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){e.getMessage();}
 		
 		return poss;
@@ -108,7 +109,7 @@ public class Position {
 		Connection conn = null;
 		
 		try{
-		conn = ConnectDB.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		int id =1;
 		int cnt = 1;
@@ -135,7 +136,7 @@ public class Position {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		ConnectDB.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to empposition : " + s.getMessage());
@@ -155,7 +156,7 @@ public class Position {
 		Connection conn = null;
 		
 		try{
-		conn = ConnectDB.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		int id =1;
 		int cnt = 1;
@@ -182,7 +183,7 @@ public class Position {
 		ps.execute();
 		LogU.add("closing...");
 		ps.close();
-		ConnectDB.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error inserting data to empposition : " + s.getMessage());
@@ -200,7 +201,7 @@ public class Position {
 		Connection conn = null;
 		
 		try{
-		conn = ConnectDB.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
@@ -218,7 +219,7 @@ public class Position {
 		ps.executeUpdate();
 		LogU.add("closing...");
 		ps.close();
-		ConnectDB.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to empposition : " + s.getMessage());
@@ -236,7 +237,7 @@ public class Position {
 		Connection conn = null;
 		
 		try{
-		conn = ConnectDB.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		int cnt = 1;
@@ -254,7 +255,7 @@ public class Position {
 		ps.executeUpdate();
 		LogU.add("closing...");
 		ps.close();
-		ConnectDB.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
 			LogU.add("error updating data to empposition : " + s.getMessage());
@@ -271,7 +272,7 @@ public class Position {
 		String sql = "";
 		try{
 		sql="SELECT posid FROM empposition  ORDER BY posid DESC LIMIT 1";	
-		conn = ConnectDB.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
@@ -281,7 +282,7 @@ public class Position {
 		
 		rs.close();
 		prep.close();
-		ConnectDB.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -322,7 +323,7 @@ public class Position {
 		Connection conn = null;
 		boolean result = false;
 		try{
-		conn = ConnectDB.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement("SELECT posid FROM empposition WHERE posid=?");
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
@@ -333,7 +334,7 @@ public class Position {
 		
 		rs.close();
 		ps.close();
-		ConnectDB.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -345,7 +346,7 @@ public class Position {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
-		conn = ConnectDB.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -358,7 +359,7 @@ public class Position {
 		
 		ps.executeUpdate();
 		ps.close();
-		ConnectDB.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}
@@ -372,7 +373,7 @@ public class Position {
 		String[] params = new String[1];
 		params[0] = getId()+"";
 		try{
-		conn = ConnectDB.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
 		if(params!=null && params.length>0){
@@ -385,7 +386,7 @@ public class Position {
 		
 		ps.executeUpdate();
 		ps.close();
-		ConnectDB.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
 	}

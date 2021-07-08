@@ -275,7 +275,8 @@ public class BusinessOwnerBean implements Serializable{
 		if(getSearchEmergencyPerson()!=null && !getSearchEmergencyPerson().isEmpty()){
 			int size = getSearchEmergencyPerson().length();
 			if(size>=5){
-				sql += " AND cus.fullname like '%" + getSearchEmergencyPerson() +"%'";
+				sql += " AND (cus.fullname like '%" + getSearchEmergencyPerson() +"%' OR cusfirstname like '%"+ 
+			getSearchEmergencyPerson() +"%' OR cusmiddlename like '%"+ getSearchEmergencyPerson() +"%' OR cuslastname like '%"+ getSearchEmergencyPerson() +"%' )";
 				contactPersons = Customer.retrieve(sql, new String[0]);
 			}
 		}else{
@@ -508,7 +509,12 @@ public class BusinessOwnerBean implements Serializable{
 			cus.setFirstname(getFirstname().trim());
 			cus.setMiddlename(getMiddlename().trim());
 			cus.setLastname(getLastname().trim());
-			cus.setFullname(getFirstname().trim() + " " + getLastname().trim());
+			if(getLastname().equalsIgnoreCase(getMiddlename()) ) {
+				cus.setFullname(getFirstname());
+			}else {
+			//cus.setFullname(getFirstname().trim() + " " + getLastname().trim());
+			cus.setFullname(getLastname().trim() + ", " + getFirstname().trim() + " " + getMiddlename().trim());
+			}
 			cus.setGender(getGenderId());
 			cus.setAge(getAge());
 			cus.setCivilStatus(getClivilId());
@@ -1191,12 +1197,18 @@ private void close(Closeable resource) {
 		this.firstname = firstname;
 	}
 	public String getMiddlename() {
+		if(middlename==null || middlename.isEmpty()) {
+			middlename=".";
+		}
 		return middlename;
 	}
 	public void setMiddlename(String middlename) {
 		this.middlename = middlename;
 	}
 	public String getLastname() {
+		if(lastname==null || lastname.isEmpty()) {
+			lastname = ".";
+		}
 		return lastname;
 	}
 	public void setLastname(String lastname) {

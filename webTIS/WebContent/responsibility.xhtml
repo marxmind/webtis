@@ -8,12 +8,15 @@
  
     <ui:composition>
 		
-		<p:dialog header="Responsibility Maintenance" widgetVar="resDlg" width="700" height="600" position="center top">
+		<p:dialog header="Responsibility Maintenance" widgetVar="resDlg" width="800" height="1000" position="center top">
 		<p:toolbar id="tbRes" style="#{skin.toolbar}">
     		<f:facet name="left">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
     			<p:inputText id="idRes" value="#{rssBean.searchName}" placeholder="Search here...">
     				<p:ajax event="keyup" listener="#{rssBean.init}" update="dataRs" delay="800"/>
     			</p:inputText>
+    			</span>
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton update="rssId" value="New" icon="fa fa-file-o" actionListener="#{rssBean.clearRes}" />

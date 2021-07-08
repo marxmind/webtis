@@ -19,8 +19,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	<f:facet name="middle">
             <h:outputStylesheet name="bootstrap/css/bootstrap.css"/>
-            <h:outputStylesheet name="intro/bootstrap-responsive.mini.css"/>
-            <h:outputStylesheet name="intro/themes/introjs.css"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
             <h:outputStylesheet name="primeflex/primeflex.min.css" />
 			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
@@ -45,6 +44,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 
 </h:head>
 <h:body>
+<ui:include src="header.xhtml" />
 <h:form prependId="false" id="formId" style="background-color: #8fdbf5">
 	<p:growl id="msg" showDetail="true" life="2000" />
 	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
@@ -75,8 +75,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 								<f:selectItems value="#{oRListingBean.collectors}"/>
 								<p:ajax event="change" listener="#{oRListingBean.updateORNumber}" update="oridd idPayd idSearchPname"/>
 					</p:selectOneMenu>
-					<p:autoComplete id="idPayd" placeholder="Payor Name"  value="#{oRListingBean.payorName}" completeMethod="#{oRListingBean.payorNameSuggested}" queryDelay="800" effect="fade" maxResults="10" inputStyle="width:15em">
-						<p:ajax event="change" update="fldId2 dataSelectedId totalId lastId middleId firstId" listener="#{oRListingBean.supplyCustomerInfo}" />
+					<p:autoComplete id="idPayd" placeholder="Lastname, Firstname Middlename"  value="#{oRListingBean.payorName}" completeMethod="#{oRListingBean.payorNameSuggested}"  queryDelay="800" effect="fade" maxResults="10" inputStyle="width:15em">
+						<p:ajax event="change" update="fldId2 dataSelectedId totalId" listener="#{oRListingBean.supplyCustomerInfo}" />
 					</p:autoComplete>
 					<p:keyboard id="oridd" value="#{oRListingBean.orNumber}" placeholder="OR No/CTC No" style="width: 15em" layout="custom" layoutTemplate="rocks-close,faces-clear,prime-back" keypadOnly="true"/>
 					<p:inputText placeholder="Address" value="#{oRListingBean.address}" style="width: 15em"/>
@@ -197,21 +197,23 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                 	</div>
                 	
                 	<div class="ui-inputgroup" style="float:right">
-                		<p:selectBooleanCheckbox value="#{oRListingBean.collectorsMode}" itemLabel="Collector's mode" style="color: black">
-					            <p:ajax update="msg" listener="#{oRListingBean.modeMsg}" />
-					        </p:selectBooleanCheckbox>
+                		
+					        <h5><p:outputLabel id="idMode" value="#{oRListingBean.modeName}" style="color: black"/><p:spacer/> <p:spacer/></h5>
+					        <p:toggleSwitch value="#{oRListingBean.collectorsMode}">
+					            <p:ajax listener="#{oRListingBean.modeMsg}" update="idMode msg"/>
+					        </p:toggleSwitch>
                 	</div>
                 	</div>
                     
                     <div class="p-col-12">
                     	<div class="ui-inputgroup" style="float:left">
-                    		<p:selectOneMenu id="frmstatS" value="#{oRListingBean.statusSearchId}" style="width: 8em">
+                    		<p:selectOneMenu id="frmstatS" value="#{oRListingBean.statusSearchId}" style="width: 10em">
 								<f:selectItems value="#{oRListingBean.statusSearch}"/>
 							</p:selectOneMenu>
-			    			<p:selectOneMenu id="sid" value="#{oRListingBean.sortId}" style="width: 8em" filterMatchMode="contains" filter="true">
+			    			<p:selectOneMenu id="sid" value="#{oRListingBean.sortId}" style="width: 10em" filterMatchMode="contains" filter="true">
 								<f:selectItems value="#{oRListingBean.sorts}"/>
 							</p:selectOneMenu>
-			    			<p:selectOneMenu id="scid" value="#{oRListingBean.collectorSearchId}" style="width: 8em" filterMatchMode="contains" filter="true">
+			    			<p:selectOneMenu id="scid" value="#{oRListingBean.collectorSearchId}" style="width: 15em" filterMatchMode="contains" filter="true">
 								<f:selectItems value="#{oRListingBean.collectorsSearch}"/>
 							</p:selectOneMenu>
 			    			<p:selectOneMenu id="mId" value="#{oRListingBean.monthId}" style="width: 8em">
@@ -226,7 +228,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			    			<p:selectOneMenu id="pId" value="#{oRListingBean.paymentId}" style="width: 8em" filterMatchMode="contains" filter="true">
 								<f:selectItems value="#{oRListingBean.paymentTypes}"/>
 							</p:selectOneMenu>
-							<p:selectOneMenu id="frmDep" value="#{oRListingBean.depId}" style="width: 10em" filterMatchMode="contains" filter="true">
+							<p:selectOneMenu id="frmDep" value="#{oRListingBean.depId}" style="width: 15em" filterMatchMode="contains" filter="true">
 								<f:selectItems value="#{oRListingBean.departments}"/>
 							</p:selectOneMenu>
 							<p:commandButton value="Reload Data" actionListener="#{oRListingBean.load}" update="dataOrId dtlsId" />	
@@ -431,7 +433,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	</p:dialog>
 	
 	
-	<p:dialog position="center center" widgetVar="msgDialog" modal="false" draggable="false" closable="false" resizable="false" showHeader="false" width="500px" height="500px">
+	<p:dialog position="center top" widgetVar="msgDialog" modal="false" draggable="false" closable="true" resizable="false" showHeader="true" width="500" height="800">
     	<p:toolbar id="tbMsg">
 			    		<f:facet name="left">
 			    			   <p:commandButton value="Retrieve New Info" actionListener="#{oRListingBean.loadContent}" update="idContentAnalys"/>
@@ -447,10 +449,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	</p:dialog>				
 	
 	
-	<p:commandButton title="Open Camera" icon="fa fa-camera" id="startButton" oncomplete="PF('dlgCam').show();"  style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 400px;left: 600px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
-	<p:commandButton title="Payment Name Lookup" icon="fa fa-search" actionListener="#{oRListingBean.loadPaymentNames}" update="dataId idSearchPname dataSugId" oncomplete="PF('selectDialog').show();" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 450px;left: 600px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	<p:commandButton title="Open Camera" icon="fa fa-camera" id="startButton" oncomplete="PF('dlgCam').show();"  style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 400px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	<p:commandButton title="Payment Name Lookup" icon="fa fa-search" actionListener="#{oRListingBean.loadPaymentNames}" update="dataId idSearchPname dataSugId" oncomplete="PF('selectDialog').show();" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 450px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 	
-	<p:commandButton title="Click to save" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId searchid msg"  icon="fa fa-floppy-o" actionListener="#{oRListingBean.saveData}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 500px;left: 600px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
+	<p:commandButton title="Click to save" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId searchid msg"  icon="fa fa-floppy-o" actionListener="#{oRListingBean.saveData}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 500px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
 			<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 	</p:commandButton>
 	
@@ -612,30 +614,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	
 	
-	<p:dialog fitViewport="true" responsive="true"  widgetVar="dlgCustomerInfo" header="Provide Full Name" position="center center" modal="true" draggable="true" closable="false" closeOnEscape="false" resizable="false" showHeader="true" width="400" height="300" >
-				<div class="ui-inputgroup" style="float:left">
-					<small class="p-d-block">If you're fine with below details. Please click</small>
-					<p:commandButton value="Done" update="lastId middleId firstId idPayd" actionListener="#{oRListingBean.doneCustomerDetails}"/>
-				</div>
-				
-				<br/><br/>
-				<span class="ui-float-label">
-			       <p:inputText id="firstId" value="#{oRListingBean.firstName}"/>
-			       <p:outputLabel for="@previous" value="First Name"/>
-			   </span>
-			   <p:spacer/><p:spacer/><p:spacer/>
-			   <span class="ui-float-label">
-			       <p:inputText id="middleId" value="#{oRListingBean.middleName}"/>
-			       <p:outputLabel for="@previous" value="Middle Name"/>
-			       <small class="p-d-block">If no middle name enter period(.)</small>
-			   </span>
-			   <p:spacer/><p:spacer/><p:spacer/>
-			   <span class="ui-float-label">
-			       <p:inputText id="lastId" value="#{oRListingBean.lastName}"/>
-			       <p:outputLabel for="@previous" value="Last Name"/>
-			   </span>
-	</p:dialog>
-	
+	 
 <ui:include src="loader.xhtml" />
 <ui:include src="menu.xhtml" />		
 </h:form>

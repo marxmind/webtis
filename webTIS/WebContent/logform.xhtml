@@ -217,20 +217,21 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                 
                 	<p:toolbar id="tbFormGen" style="#{skin.toolbar}">
 		    		<f:facet name="left">
-		    					<p:selectOneMenu id="fundSerId" value="#{logformBean.fundSearchId}" style="width: 10em" disabled="false">
+		    					<div class="ui-inputgroup">
+		    					<p:selectOneMenu id="fundSerId" value="#{logformBean.fundSearchId}" style="width: 15em" disabled="false">
 									<f:selectItems value="#{logformBean.fundsSearch}"/>
 									<p:ajax event="change" listener="#{logformBean.init}" update="reportData"/>
 								</p:selectOneMenu>
-		    					<p:selectOneMenu id="colMapId" value="#{logformBean.collectorMapId}" style="width: 10em" filter="true" filterMatchMode="contains">
+		    					<p:selectOneMenu id="colMapId" value="#{logformBean.collectorMapId}" style="width: 15em" filter="true" filterMatchMode="contains">
 									<f:selectItems value="#{logformBean.collectorsMap}"/>
 									<p:ajax event="change" listener="#{logformBean.init}" update="reportData"/>
 								</p:selectOneMenu>
-		    		</f:facet>
-		    		<f:facet name="right">
-		    					<p:calendar value="#{logformBean.dateFrom}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>
+								<p:calendar value="#{logformBean.dateFrom}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>
 				    			<p:calendar value="#{logformBean.dateTo}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/>	
 				    			<p:commandButton id="findId" update="reportData listForm gridId"  icon="fa fa-search" actionListener="#{logformBean.find}"/>
+				    			</div>
 		    		</f:facet>
+		    		<f:facet name="right"/>
 					</p:toolbar> 
                 
                 
@@ -242,25 +243,21 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="10,20,30,40,50,100"
                          scrollable="true" style="#{skin.table}" paginatorPosition="top" selection="#{logformBean.selectedCollection}" rowKey="#{in.id}">
-                         	
+                       
+                       
                        <f:facet name="{Exporters}">
-                       		<p:inputText value="#{logformBean.reportSeriesSummary}" style="width: 8em">
-                       			<p:ajax event="change" listener="#{logformBean.updateSeriesSummary}"/>
-                       		</p:inputText>
-                       		<p:calendar value="#{logformBean.summaryDate}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em"/> 
-                       		<p:commandLink title="PRINT ALL RCD" target="_blank" actionListener="#{logformBean.printAllRCD}" ajax="false" immediate="false">
-            					<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
-							</p:commandLink>
-							<p:commandLink title="PRINT SUMMARY RCD" target="_blank" actionListener="#{logformBean.printSummary}" ajax="false" immediate="false">
-		            					<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
-							</p:commandLink>
-							<p:commandLink title="MONTHLY COLLECTOR PRINT SUMMARY REPORT" target="_blank" actionListener="#{logformBean.printInternalCollectorSummary('collector')}" ajax="false" immediate="false">
-		            					<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
-							</p:commandLink>
-							<p:commandLink title="MONTHLY COLLECTION PRINT SUMMARY REPORT" target="_blank" actionListener="#{logformBean.printInternalCollectorSummary('all')}" ajax="false" immediate="false">
-		            					<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
-							</p:commandLink>
-					   </f:facet>
+                       				<p:inputText value="#{logformBean.reportSeriesSummary}" style="width: 8em">
+		                       			<p:ajax event="change" listener="#{logformBean.updateSeriesSummary}"/>
+		                       		</p:inputText>
+                         			<p:menuButton value="Exports" style="float: left">
+										<p:menuitem value="Print All RCD" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printAllRCD}" target="_blank"/>
+										<p:menuitem value="Print Summary RCD" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printSummary}" target="_blank"/>
+										<p:menuitem value="Monthly Collector Print Summary Report" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printInternalCollectorSummary('collector')}" target="_blank"/>
+										<p:menuitem value="Monthly Collection Print Summary Report" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printInternalCollectorSummary('all')}" target="_blank"/>
+									</p:menuButton> 
+            				</f:facet>
+                         	
+                      
                          	
                          	<p:column selectionMode="multiple" width="15"/>
                          	
@@ -320,7 +317,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		</p:panelGrid>
 	</p:dialog>
 	
-	<p:dialog widgetVar="dlgCSeries" showHeader="false" width="1000" height="850" position="center top">
+	<p:dialog widgetVar="dlgCSeries" showHeader="false" width="1200" height="850" position="center top">
 		
 			<p:toolbar id="tblFrm" style="#{skin.toolbar}">
 			
@@ -360,7 +357,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             		<p:outputLabel value="#{rpt.pcs}"/>
             	</p:column>
             	
-            	<p:column headerText="Form" width="30">
+            	<p:column headerText="Form" width="70">
             		<p:outputLabel value="#{rpt.formTypeName}"/>
             	</p:column>
             	

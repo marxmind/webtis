@@ -21,6 +21,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css"/>
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
     </f:facet>
@@ -52,29 +54,85 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     </p:confirmDialog>
-    <p:focus context="tb"/>
     
-    <p:layout fullPage="true">
-			
-			<p:layoutUnit position="east" size="0" visible="false" >
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="north" size="100"  visible="false" >
+    
+    <div class="card">
+    <div class="p-grid sample-layout">
+    
+    <div class="p-col-12 p-md-4">
+            
+		    		<div class="ui-inputgroup" style="float:right; position: fixed;z-index: 1500;">
+		    			<p:commandButton update="usercusId" actionListener="#{bizBean.clearFields}"  value="New" icon="fa fa-file-o" title="Click this button to start new information"/>
+		    			<p:commandButton update="usercusId" actionListener="#{bizBean.clearFields}"  value="Clear" icon="fa fa-trash" title="Click this button to clear information"/>
+		    			<p:commandButton update="usercusId cusId msg" value="Save"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{bizBean.saveData}">
+		        				<p:confirm header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
+		        		</p:commandButton>
+		    		</div>
+				<br/><br/>
+			<p:panelGrid id="usercusId" columns="2" layout="grid" styleClass="ui-noborder">
 				
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="south" size="50" visible="false" >
+				<p:outputLabel value="Registered Date:" />
+				 <p:calendar value="#{bizBean.dateRegistered}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
 				
-		     </p:layoutUnit>
-			
-			<p:layoutUnit position="center">
-			
-				<p:toolbar id="tb" style="#{skin.toolbar}">
+				<p:outputLabel value="Retired Date:"/>
+				<p:calendar value="#{bizBean.dateRetired}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
+						
+				<p:outputLabel value="Owner:"/>
+            	<p:outputLabel value="#{bizBean.customerName}">
+                <p:commandButton update="ownerId idSearch" icon="fa fa-search" onclick="PF('multiDialogOwner').show()"/>
+            	</p:outputLabel>
+        		
+        		<h:outputLabel for="bizId" value="Business Name:"/>
+            	<p:inputText id="bizId" value="#{bizBean.businessName}" placeholder="Business Name" style="width: 15em" />
+        		
+        		<h:outputLabel for="areaId" value="Plate No: "/>
+            	<p:inputText id="areaId" value="#{bizBean.areaMeter}" placeholder="Plate No" style="width: 15em" />
+        		
+        		<p:outputLabel  value="Status: "/>
+            		<p:selectOneMenu value="#{bizBean.statusId}" style="width: 15em">
+                		<f:selectItems value="#{bizBean.status}"/>
+            		</p:selectOneMenu>
+        		
+        		<h:outputLabel  value="Business Engaged: "/>
+            		<p:selectOneMenu value="#{bizBean.typeId}" style="width: 15em" filter="true" filterMatchMode="contains">
+                		<f:selectItems value="#{bizBean.types}"/>
+            		</p:selectOneMenu>
+        		
+        		<p:outputLabel value="Province Name:"/>
+	 			<p:outputLabel value="#{bizBean.provinceSelected.name}">
+	 			<p:commandButton  update=":formId:provData" icon="fa fa-search" actionListener="#{bizBean.loadProvince}" onclick="PF('multiDialogProvince').show();"/>
+	 			</p:outputLabel>
+        		
+        		<p:outputLabel value="Municipality Name:"/>
+	 			<p:outputLabel value="#{bizBean.municipalSelected.name}">
+	 			<p:commandButton  update=":formId:munData" icon="fa fa-search" actionListener="#{bizBean.loadMunicipal}" onclick="PF('multiDialogMunicipality').show();"/>
+	 			</p:outputLabel>
+	 			
+	 			<p:outputLabel value="Barangay Name:"/>
+	 			<p:outputLabel value="#{bizBean.barangaySelected.name}">
+	 			<p:commandButton  update=":formId:barData" icon="fa fa-search" actionListener="#{bizBean.loadBarangay}" onclick="PF('multiDialogBarangay').show();"/>
+	 			</p:outputLabel>
+        		
+        		<p:outputLabel value="Purok:"/>
+            	<p:autoComplete value="#{bizBean.purok}" completeMethod="#{bizBean.autoPurokName}" minQueryLength="5" maxResults="5" effect="fade" inputStyle="width: 15em"/>
+        		
+        		<p:outputLabel value="Capital Details"/>
+        		<p:inputTextarea value="#{bizBean.supportingDetails}" style="width: 15em" a:placeholder="Please provide capital details"/>
+        			
+     		</p:panelGrid> 
+        </div>
+        <div class="p-col-12 p-md-8 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <p:toolbar id="tb" style="#{skin.toolbar}">
 			    		<f:facet name="left">
 			        		<div class="ui-inputgroup">
-		    			<p:inputText  value="#{bizBean.searchName}" a:placeholder="Search Business" style="width: 20em">
-		    					<p:ajax event="keyup" listener="#{bizBean.init}" update="cusId usercusId" delay="800"/>
-		    			</p:inputText>
+			        		<span class="ui-input-icon-left">
+					    		<i class="pi pi-search" />
+				    			<p:inputText  value="#{bizBean.searchName}" a:placeholder="Search Business" style="width: 20em">
+				    					<p:ajax event="keyup" listener="#{bizBean.init}" update="cusId usercusId" delay="800"/>
+				    			</p:inputText>
+		    				</span>
 		    			<p:commandButton id="idLoadAll" update="cusId usercusId" value="Load All" icon="fa fa-search" actionListener="#{bizBean.loadAll}"/>
 				        <p:selectOneMenu value="#{bizBean.purokId}" style="color: black; width: 15em;#{skin.select}">
 				            	<f:selectItems value="#{bizBean.purokList}"/>
@@ -86,7 +144,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							
 						</f:facet>
 				</p:toolbar>
-				<p:dataTable id="cusId" value="#{bizBean.businesses}" var="rpt" stickyHeader="false"
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="cusId" value="#{bizBean.businesses}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="true" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top"
@@ -141,84 +202,25 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             				</p:rowExpansion>
             				
 					</p:dataTable>
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="west" size="400" >
-				
-				<p:toolbar id="tbBusiness" style="#{skin.toolbar}">
-		    		<f:facet name="left">
-				       
-		    		</f:facet>
-		    		<f:facet name="right">
-		    			<p:commandButton update="usercusId" actionListener="#{bizBean.clearFields}"  value="New" icon="fa fa-file-o" title="Click this button to start new information"/>
-		    			<p:commandButton update="usercusId" actionListener="#{bizBean.clearFields}"  value="Clear" icon="fa fa-trash" title="Click this button to clear information"/>
-		    			<p:commandButton update="usercusId cusId msg" value="Save"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{bizBean.saveData}">
-		        				<p:confirm header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
-		        		</p:commandButton>
-		    		</f:facet>
-				</p:toolbar>
-			<p:panelGrid id="usercusId" columns="2" layout="grid">
-				
-				<p:outputLabel value="Registered Date:" style="#{skin.label}"/>
-				 <p:calendar value="#{bizBean.dateRegistered}" pattern="yyyy-MM-dd" effect="slideDown" style="#{skin.calendar}"/>
-				
-				<p:outputLabel value="Retired Date:" style="#{skin.label}"/>
-				<p:calendar value="#{bizBean.dateRetired}" pattern="yyyy-MM-dd" effect="slideDown" style="#{skin.calendar}"/>
-						
-				<p:outputLabel value="Owner:" style="#{skin.label}"/>
-            	<p:outputLabel value="#{bizBean.customerName}" style="#{skin.label}">
-            		&nbsp;&nbsp;&nbsp;<p:commandButton update="ownerId idSearch" icon="fa fa-search" onclick="PF('multiDialogOwner').show()"  style="#{skin.button}"/>
-            	</p:outputLabel>
-        		
-        		<h:outputLabel for="bizId" value="Business Name:" style="#{skin.label}"/>
-            	<p:inputText id="bizId" value="#{bizBean.businessName}" placeholder="Business Name" style="#{skin.textInput}" />
-        		
-        		<h:outputLabel for="areaId" value="Plate No: " style="#{skin.label}"/>
-            	<p:inputText id="areaId" value="#{bizBean.areaMeter}" placeholder="Plate No" style="#{skin.textInput}" />
-        		
-        		<p:outputLabel  value="Status: " style="#{skin.label}"/>
-            		<p:selectOneMenu value="#{bizBean.statusId}" style="width: 15em;#{skin.select}">
-                		<f:selectItems value="#{bizBean.status}"/>
-            		</p:selectOneMenu>
-        		
-        		<h:outputLabel  value="Business Engaged: " style="#{skin.label}" />
-            		<p:selectOneMenu value="#{bizBean.typeId}" style="width: 15em;#{skin.select}" filter="true" filterMatchMode="contains">
-                		<f:selectItems value="#{bizBean.types}"/>
-            		</p:selectOneMenu>
-        		
-        		<p:outputLabel value="Province Name:" style="#{skin.label}"/>
-	 			<p:outputLabel value="#{bizBean.provinceSelected.name}" style="#{skin.label}">
-	 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:provData" icon="fa fa-search" actionListener="#{bizBean.loadProvince}" onclick="PF('multiDialogProvince').show();"/>
-	 			</p:outputLabel>
-        		
-        		<p:outputLabel value="Municipality Name:" style="#{skin.label}"/>
-	 			<p:outputLabel value="#{bizBean.municipalSelected.name}" style="#{skin.label}">
-	 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:munData" icon="fa fa-search" actionListener="#{bizBean.loadMunicipal}" onclick="PF('multiDialogMunicipality').show();"/>
-	 			</p:outputLabel>
-	 			
-	 			<p:outputLabel value="Barangay Name:" style="#{skin.label}"/>
-	 			<p:outputLabel value="#{bizBean.barangaySelected.name}" style="#{skin.label}">
-	 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:barData" icon="fa fa-search" actionListener="#{bizBean.loadBarangay}" onclick="PF('multiDialogBarangay').show();"/>
-	 			</p:outputLabel>
-        		
-        		<p:outputLabel value="Purok:" style="#{skin.label}"/>
-            	<p:autoComplete value="#{bizBean.purok}" completeMethod="#{bizBean.autoPurokName}" minQueryLength="5" maxResults="5" effect="fade" style="#{skin.textInput}"/>
-        		
-        		<p:outputLabel value="Capital Details" style="#{skin.label}"/>
-        		<p:inputTextarea value="#{bizBean.supportingDetails}" style="#{skin.textInput}" a:placeholder="Please provide capital details"/>
-        			
-     		</p:panelGrid> 
-							
-			</p:layoutUnit>
-		
-		</p:layout>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    
+    </div>
+	
+	</div><!-- card -->	
 		
 		<p:dialog header="Province" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogProvince" Height="500" width="500">
 		<p:toolbar id="tbProvince">
     		<f:facet name="left">
-        		<p:inputText value="#{bizBean.searchProvince}" a:placeholder="Search..." style="width: 30em">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
+        		<p:inputText value="#{bizBean.searchProvince}" a:placeholder="Search..." style="width: 20em">
     					<f:ajax event="keyup" listener="#{bizBean.loadProvince}" render="provData"/>
     			</p:inputText>
+    			</span>
     		</f:facet>
     		<f:facet name="right">
     			
@@ -247,9 +249,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<p:dialog header="Municipality" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogMunicipality" Height="500" width="500">
 		<p:toolbar id="tbMunicipal">
     		<f:facet name="left">
-        		<p:inputText value="#{bizBean.searchMunicipal}" a:placeholder="Search..." style="width: 30em">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
+        		<p:inputText value="#{bizBean.searchMunicipal}" a:placeholder="Search..." style="width: 20em">
     					<f:ajax event="keyup" listener="#{bizBean.loadMunicipal}" render="munData"/>
     			</p:inputText>
+    			</span>
     		</f:facet>
     		<f:facet name="right">
     			
@@ -278,9 +283,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<p:dialog header="Barangay" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogBarangay" Height="500" width="500">
 		<p:toolbar id="tbBarangay">
     		<f:facet name="left">
-        		<p:inputText value="#{bizBean.searchBarangay}" a:placeholder="Search..." style="width: 30em">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
+        		<p:inputText value="#{bizBean.searchBarangay}" a:placeholder="Search..." style="width: 20em">
     					<f:ajax event="keyup" listener="#{bizBean.loadBarangay}" render="barData"/>
     			</p:inputText>
+    			</span>
     		</f:facet>
     		<f:facet name="right">
     			
@@ -309,9 +317,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 <p:dialog header="Name List" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogOwner" Height="500" width="500">
 		<p:toolbar id="tbTax">
     		<f:facet name="left">
-        		<p:inputText id="idSearch" value="#{bizBean.searchTaxPayerName}" a:placeholder="Search Citizen's Name" style="width: 30em">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
+        		<p:inputText id="idSearch" value="#{bizBean.searchTaxPayerName}" a:placeholder="Search Citizen's Name" style="width: 20em">
     					<p:ajax event="keyup" listener="#{bizBean.taxpayerLoad}" update="ownerId usercusId idSearch" delay="800"/>
     			</p:inputText>
+    			</span>
     		</f:facet>
     		<f:facet name="right">
     			

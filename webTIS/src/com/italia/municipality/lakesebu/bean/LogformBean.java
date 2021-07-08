@@ -25,10 +25,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 
+import com.italia.municipality.lakesebu.controller.AppSetting;
 import com.italia.municipality.lakesebu.controller.CollectionInfo;
 import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.Form11Report;
 import com.italia.municipality.lakesebu.controller.IssuedForm;
+import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.Stocks;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.FormStatus;
@@ -150,6 +152,10 @@ public class LogformBean implements Serializable{
 	private String availableSeries;
 	
 	private String changesNumbers;
+	
+	private boolean alreadyRetrieve=false;
+	private int issuedCollectorId;
+	
 	public void changeBehaviorCalendarDatePrint() {
 		if(isUseModifiedDate()) {
 				setEnableCalendarPrint(false);
@@ -375,6 +381,14 @@ public class LogformBean implements Serializable{
 	public void init() {
 		maps = new HashMap<String, CollectionInfo>();//Collections.synchronizedMap(new HashMap<String, CollectionInfo>());
 		infos = new ArrayList<CollectionInfo>();//Collections.synchronizedList(new ArrayList<CollectionInfo>());
+		
+		if(!alreadyRetrieve) {
+			issuedCollectorId = Login.getUserLogin().getCollectorId();
+			setCollectorId(issuedCollectorId);
+			setCollectorMapId(issuedCollectorId);
+			alreadyRetrieve=true;
+			loadIssuedForm();
+		}
 		
 		String sql = "";
 		String[] params = new String[4];
@@ -1361,21 +1375,23 @@ public class LogformBean implements Serializable{
 		Map<Long, IssuedForm> issuedMap = new HashMap<Long, IssuedForm>();//Collections.synchronizedMap(new HashMap<Long, IssuedForm>());
 		boolean hasTicketIssued = false;
 		for(CollectionInfo i : CollectionInfo.retrieve(sql, params)){
+			//System.out.println("Finding... " + FormType.nameId(i.getFormType()));
 			RCDFormDetails dt = new RCDFormDetails();
 			RCDFormSeries sr = new RCDFormSeries();
 			issuedMap.put(i.getIssuedForm().getId(), i.getIssuedForm());
 			
 			//tmpReceivedDate = i.getReceivedDate();//assigned date -- this will be use for no issuance
-			
+			//System.out.println("after issued map...");
 			totalAmount += i.getAmount();
 			String start = DateUtils.numberResult(i.getFormType(), i.getBeginningNo());
 			String end = DateUtils.numberResult(i.getFormType(), i.getEndingNo());
-			
+			//System.out.println("after.... start and end " + start + " - " + end);
 				Form11Report frm = reportCollectionInfo(i);
 				String ctc = frm.getF1();
-				
+				//System.out.println("after form11..ctc= " + ctc);
 				dt.setFormId(cnt+"");
-				dt.setName(i.getFormTypeName());	
+				dt.setName(i.getFormTypeName());
+				
 				if(FormType.CT_2.getId()== i .getFormType() || FormType.CT_5.getId() == i .getFormType()) {
 					dt.setSeriesFrom(Currency.formatAmount(i.getAmount()));
 					dt.setSeriesTo("");
@@ -1386,10 +1402,10 @@ public class LogformBean implements Serializable{
 					dt.setSeriesFrom(start);
 					dt.setSeriesTo(end);
 				}
-				
+				//System.out.println("prepare for dtls hasTicketIssued="+hasTicketIssued);
 				dt.setAmount(Currency.formatAmount(i.getAmount()));
 				dtls.add(dt);
-				
+				//System.out.println("added to dtls");
 				sr.setId(cnt+"");
 				sr.setName(ctc);
 				
@@ -1435,14 +1451,14 @@ public class LogformBean implements Serializable{
 					issuedMap.remove(key);//remove forms with issuance
 				}else {
 					issuedMap.put(key, is);
-					System.out.println("Multiple issued or has issued>>>");
+					//System.out.println("Multiple issued or has issued>>>");
 					sql = " AND frm.fundid=? AND frm.rptgroup<? AND sud.logid=? AND cl.isid=? ORDER BY frm.colid DESC limit 1";
 					params = new String[4];
 					params[0] = is.getFundId()+"";
 					params[1] = in.getRptGroup()+"";
 					params[2] = is.getId()+"";
 					params[3] = is.getCollector().getId()+"";
-					System.out.println("checking previous ");
+					//System.out.println("checking previous ");
 					
 					List<CollectionInfo> infos = CollectionInfo.retrieve(sql, params);
 					if(infos!=null && infos.size()>0) {
@@ -1450,7 +1466,7 @@ public class LogformBean implements Serializable{
 						if(frm!=null) {	
 								String ctc = "";
 								ctc = frm.getF1();
-								System.out.println("Multiple issued or has issued more than one >>> " + ctc);
+								//System.out.println("Multiple issued or has issued more than one >>> " + ctc);
 								sr.setId(cnt+"");
 								sr.setName(ctc);
 								
@@ -1477,7 +1493,7 @@ public class LogformBean implements Serializable{
 						Form11Report frm = reportIssued(is);
 						
 						String ctc = frm.getF1();
-						System.out.println("Multiple issued or has issued but will get in issued form reportIssued form >>> " + ctc);	
+						//System.out.println("Multiple issued or has issued but will get in issued form reportIssued form >>> " + ctc);	
 						sr.setId(cnt+"");
 						sr.setName(ctc);
 						
@@ -1505,13 +1521,13 @@ public class LogformBean implements Serializable{
 			}
 			
 		}else {
-			System.out.println("Totally no issued in collection info");
+			//System.out.println("Totally no issued in collection info");
 			//totally no issued in collectioninfo
 			for(IssuedForm notissued : IssuedForm.retrieve(sql, params)) {
 				RCDFormSeries sr = new RCDFormSeries();
 				Form11Report frm = reportIssued(notissued);
 				String ctc = frm.getF1();
-				System.out.println("Totally no issued in collection info form type>> " + ctc);
+				//System.out.println("Totally no issued in collection info form type>> " + ctc);
 				sr.setId(cnt+"");
 				sr.setName(ctc);
 				
@@ -1537,7 +1553,7 @@ public class LogformBean implements Serializable{
 			}
 		
 		}
-		
+		//System.out.println("check dtls size " + (dtls!=null? dtls.size() : "zero" ) );
 		rcd.setRcdFormDtls(dtls);
 		rcd.setRcdFormSeries(srs);
 		
@@ -1556,7 +1572,8 @@ public class LogformBean implements Serializable{
 		List<RCDFormDetails> dts = new ArrayList<RCDFormDetails>();//Collections.synchronizedList(new ArrayList<RCDFormDetails>());
 		for(FormType form : FormType.values()) {
 			for(RCDFormDetails s : dets) {
-				if(form.getName().equalsIgnoreCase(s.getName())) {
+				//if(form.getName().trim().equalsIgnoreCase(s.getName())) {
+				if(form.getDescription().equalsIgnoreCase(s.getName())) {
 					System.out.println("Details >> " + s.getName());
 					dts.add(s);
 				}
@@ -1649,16 +1666,18 @@ public class LogformBean implements Serializable{
   		param.put("PARAM_TREASURER", rcd.getTreasurer());
   		param.put("PARAM_RPT_GROUP",rcd.getSeriesReport().replace("#", ""));
   		param.put("PARAM_TOTAL",rcd.getAddAmount());
-  		
+  		System.out.println("check before print the dtls " + (rcd.getRcdFormDtls()!=null? rcd.getRcdFormDtls().size() : "zero dtls"));
   		int cnt = 1;
   		String numberSeriesFrom = null;
   		for(RCDFormDetails d : rcd.getRcdFormDtls()) {
+  			
   			if(!d.getAmount().equalsIgnoreCase("0.00")) {
 	  			param.put("PARAM_T"+cnt,d.getName());
 	  			param.put("PARAM_FROM"+cnt,d.getSeriesFrom());
 				param.put("PARAM_TO"+cnt,d.getSeriesTo());
 				param.put("PARAM_A"+cnt,d.getAmount());
 				cnt++;
+				
   			}else {
   				//for RTS
   				numberSeriesFrom = d.getSeriesFrom();
@@ -2070,7 +2089,7 @@ public class LogformBean implements Serializable{
 		Form11Report rpt = new Form11Report();
 		
 		rpt.setF1(FormType.nameId(info.getFormType()));
-		
+		System.out.println("checking Form11Report reportCollectionInfo f1="+rpt.getF1());
 		int logmonth = Integer.valueOf(info.getIssuedForm().getIssuedDate().split("-")[1]);
 		int logDay = Integer.valueOf(info.getIssuedForm().getIssuedDate().split("-")[2]);
 		
@@ -3311,9 +3330,17 @@ public class LogformBean implements Serializable{
 	public List getCollectors() {
 		collectors = new ArrayList<>();
 		collectors.add(new SelectItem(0, "Select Collector"));
-		for(Collector col : Collector.retrieve("", new String[0])) {
+		String sql = "";
+		if(issuedCollectorId>0) {
+			collectors = new ArrayList<>();
+			sql = " AND cl.isid="+issuedCollectorId;
+		}
+		
+		for(Collector col : Collector.retrieve(sql, new String[0])) {
 			collectors.add(new SelectItem(col.getId(), col.getDepartment().getDepartmentName()+"/"+col.getName()));
 		}
+		
+		
 		
 		return collectors;
 	}
@@ -3451,7 +3478,7 @@ public class LogformBean implements Serializable{
 		this.collectorMapId = collectorMapId;
 	}
 
-
+	
 	public List getCollectorsMap() {
 		collectorsMap = new ArrayList<>();
 		collectorsMap.add(new SelectItem(0, "Select Collector"));
@@ -3460,12 +3487,15 @@ public class LogformBean implements Serializable{
 		Collector co = new Collector();
 		co.setId(0);
 		collectotData.put(0, co);
-		
-		for(Collector col : Collector.retrieve("", new String[0])) {
+		String sql = "";
+		if(issuedCollectorId>0) {
+			collectorsMap = new ArrayList<>();
+			sql = " AND cl.isid="+issuedCollectorId;
+		}
+		for(Collector col : Collector.retrieve(sql, new String[0])) {
 			collectorsMap.add(new SelectItem(col.getId(), col.getDepartment().getDepartmentName()+"/"+col.getName()));
 			collectotData.put(col.getId(), col);
 		}
-		
 		return collectorsMap;
 	}
 
@@ -3676,18 +3706,20 @@ public class LogformBean implements Serializable{
 
 	
 	public void updateSeriesSummary() {
-		RCDReader.saveSummaryCounterSeries(getReportSeriesSummary());
+		//RCDReader.saveSummaryCounterSeries(getReportSeriesSummary());
+		AppSetting.updateSeries(getReportSeriesSummary());
 	}
 	
 	public String getReportSeriesSummary() {
 		if(reportSeriesSummary==null) {
 			//reportSeriesSummary = DateUtils.getCurrentYear() + "-" + (DateUtils.getCurrentMonth()<10? "0"+DateUtils.getCurrentMonth() : DateUtils.getCurrentMonth()) + "-#001";
-			reportSeriesSummary=RCDReader.readCounterReportSeries();
+			//reportSeriesSummary=RCDReader.readCounterReportSeries();
+			reportSeriesSummary=AppSetting.getReportSeries();
 		}
 		return reportSeriesSummary;
 	}
 
-
+	
 	public void setReportSeriesSummary(String reportSeriesSummary) {
 		this.reportSeriesSummary = reportSeriesSummary;
 	}
@@ -3893,6 +3925,22 @@ public class LogformBean implements Serializable{
 
 	public void setChangesNumbers(String changesNumbers) {
 		this.changesNumbers = changesNumbers;
+	}
+
+	public boolean isAlreadyRetrieve() {
+		return alreadyRetrieve;
+	}
+
+	public int getIssuedCollectorId() {
+		return issuedCollectorId;
+	}
+
+	public void setAlreadyRetrieve(boolean alreadyRetrieve) {
+		this.alreadyRetrieve = alreadyRetrieve;
+	}
+
+	public void setIssuedCollectorId(int issuedCollectorId) {
+		this.issuedCollectorId = issuedCollectorId;
 	}
 
 

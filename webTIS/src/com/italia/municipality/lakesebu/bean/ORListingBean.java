@@ -46,6 +46,7 @@ import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+import com.italia.municipality.lakesebu.controller.AppSetting;
 import com.italia.municipality.lakesebu.controller.Cedula;
 import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.Customer2;
@@ -208,8 +209,22 @@ public class ORListingBean implements Serializable{
 	private String middleName;
 	private String lastName;
 	
+	private String modeName="Collector Mode Off";
+	
 	@PostConstruct
 	public void init() {
+		
+		if(collectorsMode==false) {
+			
+			String mode = AppSetting.getCollectorMode(getUser());
+			
+			//if("ON".equalsIgnoreCase(RCDReader.readCollectorMode())){
+			if("ON".equalsIgnoreCase(mode)){
+				collectorsMode = true;
+				setModeName("Collector Mode On");
+			}
+		}
+		
 		if(monthId==0) {
 			monthId = DateUtils.getCurrentMonth();
 		}
@@ -227,9 +242,16 @@ public class ORListingBean implements Serializable{
 		
 	}
 	
+	private UserDtls getUser() {
+		return Login.getUserLogin().getUserDtls();
+	}
+	
 	public void modeMsg() {
 		Application.addMessage(1, "Collector's Mode", "You have " + (isCollectorsMode()==true? "activated the collector's mode" : "deactivated the collector's mode"));
-		RCDReader.saveCollectorMode(isCollectorsMode()==true? "ON" : "OFF");
+		//RCDReader.saveCollectorMode(isCollectorsMode()==true? "ON" : "OFF");
+		setModeName(isCollectorsMode()==true? "Collector Mode On" : "Collector Mode Off");
+		//setCollectorsMode(isCollectorsMode()==true? false : true);
+		AppSetting.updateCollectorMode(isCollectorsMode(), getUser());
 	}
 	
 	public void reloadInit() {
@@ -700,12 +722,12 @@ public class ORListingBean implements Serializable{
 				}*/
 				
 				sql = " AND (cus.cuslastname like '%"+ query +"%' OR ";
-				sql += " cus.fullname like '%"+ query +"%' ";
+				sql += " cus.fullname like '%"+ query +"%' OR cus.cusfirstname like '%"+ query +"%' OR cus.cusmiddlename like '%"+ query +"%'";
 				sql += " ) GROUP BY cus.fullname LIMIT 10";
 				params = new String[0];
 				
 				for(com.italia.municipality.lakesebu.licensing.controller.Customer cust : com.italia.municipality.lakesebu.licensing.controller.Customer.retrieve(sql, params)) {
-					String fullName = cust.getLastname().toUpperCase() + ", " + cust.getFirstname() + " " + (cust.getMiddlename()!=null? cust.getMiddlename().substring(0, 1).toUpperCase()+"." : ".");
+					String fullName = cust.getFullname();//cust.getLastname().toUpperCase() + ", " + cust.getFirstname() + " " + (cust.getMiddlename()!=null? cust.getMiddlename().substring(0, 1).toUpperCase()+"." : ".");
 					result.add(fullName);
 					mapCustomer.put(fullName, cust);
 				}
@@ -1334,12 +1356,13 @@ public class ORListingBean implements Serializable{
 					customer = getMapCustomer().get(getPayorName());
 				}else {
 					customer.setIsactive(1);
-					customer.setDateregistered(DateUtils.getCurrentDateMonthDayYear());
+					customer.setDateregistered(DateUtils.convertDate(getDateTrans(),"yyyy-MM-dd"));
 					customer.setFirstname(getFirstName().toUpperCase());
 					customer.setMiddlename(getMiddleName().toUpperCase());
 					customer.setLastname(getLastName().toUpperCase());
 					customer.setUserDtls(user);
-					customer.setFullname(getFirstName().toUpperCase() + " " + getLastName().toUpperCase());
+					//customer.setFullname(getFirstName().toUpperCase() + " " + getLastName().toUpperCase());
+					customer.setFullname(getPayorName().toUpperCase());
 					customer.setBirthdate(getBirthdate()==null?  DateUtils.getCurrentDateYYYYMMDD() :  DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd"));
 					customer.setCivilStatus(1);//default single
 					
@@ -1357,12 +1380,13 @@ public class ORListingBean implements Serializable{
 				}
 			}else {
 				customer.setIsactive(1);
-				customer.setDateregistered(DateUtils.getCurrentDateMonthDayYear());
+				customer.setDateregistered(DateUtils.convertDate(getDateTrans(),"yyyy-MM-dd")); //DateUtils.getCurrentDateMonthDayYear());
 				customer.setFirstname(getFirstName().toUpperCase());
 				customer.setMiddlename(getMiddleName().toUpperCase());
 				customer.setLastname(getLastName().toUpperCase());
 				customer.setUserDtls(user);
-				customer.setFullname(getFirstName().toUpperCase() + " " + getLastName().toUpperCase());
+				//customer.setFullname(getFirstName().toUpperCase() + " " + getLastName().toUpperCase());
+				customer.setFullname(getPayorName().toUpperCase());
 				customer.setBirthdate(getBirthdate()==null?  DateUtils.getCurrentDateYYYYMMDD() :  DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd"));
 				customer.setCivilStatus(1);//default single
 				
@@ -1465,7 +1489,8 @@ public class ORListingBean implements Serializable{
 			Application.addMessage(1, "Success", "Successfully saved.");
 			if(isCollectorsMode()) {
 				if(customer!=null) {
-					setSearchName(customer.getFirstname() + " " + customer.getLastname());
+					//setSearchName(customer.getFirstname() + " " + customer.getLastname());
+					setSearchName(customer.getFullname());
 				}else {
 					setSearchName(getPayorName());
 				}
@@ -1540,10 +1565,15 @@ public class ORListingBean implements Serializable{
 		setOrNumber(or.getOrNumber());
 		setFormTypeId(or.getFormType());
 		if(or.getCustomer()!=null) {
-			String fName=or.getCustomer().getFirstname();
-			String mName=or.getCustomer().getMiddlename();
-			String lName=or.getCustomer().getLastname();
-			setPayorName(lName.toUpperCase() + ", " + fName.toUpperCase() + " " + (mName==null? "." : mName.toUpperCase().substring(0,1) + "."));
+			//String fName=or.getCustomer().getFirstname();
+			//String mName=or.getCustomer().getMiddlename();
+			//String lName=or.getCustomer().getLastname();
+			try{
+				//setPayorName(lName.toUpperCase() + ", " + fName.toUpperCase() + " " + (mName==null? "." : mName.toUpperCase().substring(0,1) + "."));
+			}catch(Exception e) {
+				//setPayorName(lName.toUpperCase() + ", " + fName.toUpperCase() + " " + (mName==null? "." : "."));
+			}
+			setPayorName(or.getCustomer().getFullname().toUpperCase());
 		}else {
 			setPayorName("");
 		}
@@ -1672,7 +1702,15 @@ public class ORListingBean implements Serializable{
 			HashMap param = new HashMap();
 	  		
 	  		param.put("PARAM_DATE", DateUtils.convertDateToMonthDayYear(py.getDateTrans()));
-	  		param.put("PARAM_PAYOR", py.getCustomer().getFullname());
+	  		//param.put("PARAM_PAYOR", py.getCustomer().getFullname());
+	  		Customer customer = py.getCustomer();
+	  		String middle = ".";
+	  		try {
+	  			middle = customer.getMiddlename().contains("\\.")?  "" : customer.getMiddlename().substring(0, 1);
+	  			middle = middle.toUpperCase()+".";
+	  		}catch(Exception e) {}
+	  		String name = customer.getFullname();  //customer.getLastname().toUpperCase() + ", " + customer.getFirstname().toUpperCase() + " " + middle;
+	  		param.put("PARAM_PAYOR", name);
 	  		com.italia.municipality.lakesebu.controller.NumberToWords numberToWords = new NumberToWords();
 	  		
 	  		String amnt = Currency.formatAmount(py.getAmount());
@@ -3063,12 +3101,6 @@ private void close(Closeable resource) {
 
 	public boolean isCollectorsMode() {
 		
-		if(collectorsMode==false) {
-			if("ON".equalsIgnoreCase(RCDReader.readCollectorMode())){
-				collectorsMode = true;
-			}
-		}
-		
 		return collectorsMode;
 	}
 
@@ -3370,7 +3402,8 @@ private void close(Closeable resource) {
 			setFormTypeId(FormType.AF_56.getId());
 		}
 		
-		setPayorName(cus.getLastname().toUpperCase() + ", " + cus.getFirstname().toUpperCase() + " " + cus.getMiddlename().substring(0, 1).toUpperCase() + ".");
+		//setPayorName(cus.getLastname().toUpperCase() + ", " + cus.getFirstname().toUpperCase() + " " + cus.getMiddlename().substring(0, 1).toUpperCase() + ".");
+		setPayorName(cus.getFullname().toUpperCase(null));
 		setCustomerAddress(cus.getCompleteAddress());
 		
 		ctcFlds(false);
@@ -3421,7 +3454,7 @@ private void close(Closeable resource) {
 		if(getMapCustomer()!=null && getMapCustomer().size()>0 && getMapCustomer().get(getPayorName())!=null){
 			Customer cus = getMapCustomer().get(getPayorName());
 			
-			setPayorName(cus.getLastname().toUpperCase() + ", " + cus.getFirstname().toUpperCase() + " " + cus.getMiddlename().substring(0, 1).toUpperCase() + ".");
+			//setPayorName(cus.getLastname().toUpperCase() + ", " + cus.getFirstname().toUpperCase() + " " + cus.getMiddlename().substring(0, 1).toUpperCase() + ".");
 			setCustomerAddress(cus.getCompleteAddress());
 			
 			ctcFlds(false);
@@ -3464,27 +3497,90 @@ private void close(Closeable resource) {
 			updateORNumber();
 			
 		}else {
+			completNameOfClient(getPayorName());
+			/*
 			String name = getPayorName();
 			if(name!=null && !name.isEmpty()) {
-				int count = name.split(" ").length;
-				for(int i=0; i<count; i++) {
-					switch(i) {
-						case 0 : setLastName(name.split(" ")[i].replace(",", "")); break;
-						case 1 : setMiddleName(name.split(" ")[i].replace(".", "")); break;
-						case 2 : setFirstName(name.split(" ")[i]); break;
-						
+				
+				if(name.contains(",")) {
+					String[] coma = name.split(",");
+						setLastName(coma[0]);
+					if(coma[1].contains(" ")) {
+						String[] space = coma[1].split(" ");
+						setFirstName(space[0]);
+						setMiddleName(space[1]);
+					}else {
+						setFirstName(coma[1]);
+						setMiddleName(".");
 					}
+				}else {
+					//detect company name
+					setFirstName(name);
+					setMiddleName(".");
+					setLastName(".");
 				}
+				
 			}else {
 				setFirstName(null);
 				setMiddleName(null);
 				setLastName(null);
 			}
-			
+			*/
 			//pop window for proper name of client
-			PrimeFaces pf = PrimeFaces.current();
-			pf.executeScript("PF('dlgCustomerInfo').show(1000)");
+			//PrimeFaces pf = PrimeFaces.current();
+			//pf.executeScript("PF('dlgCustomerInfo').show(1000)");
 		}
+		completNameOfClient(getPayorName());
+		
+		
+	}
+	
+	private void completNameOfClient(String name) {
+		//System.out.println("checking completNameOfClient="+name);
+		if(name!=null && !name.isEmpty()) {
+			
+			if(name.contains(",")) {
+				//System.out.println("contain comma");
+				String[] coma = name.split(",");
+					setLastName(coma[0]);
+					//System.out.println("setting up lastname: " + coma[0]);
+				if(coma[1].contains(" ")) {
+					String camma = coma[1].trim();
+					//System.out.println("contain space ="+camma);
+					String[] space = camma.split(" ");
+					int size = space.length;
+					
+					switch(size) {
+					case 2:
+						setFirstName(space[0]);
+						setMiddleName(space[1]);
+						break;
+					case 3:
+						setFirstName(space[0] + " " + space[1]);
+						setMiddleName(space[2]);
+						break;
+					case 4:
+						setFirstName(space[0] + " " + space[1]);
+						setMiddleName(space[2] + " " + space[3]);
+						break;	
+						}
+				}else {
+					setFirstName(coma[1].trim());
+					setMiddleName(".");
+				}
+			}else {
+				//detect company name
+				//System.out.println("no last name");
+				setFirstName(name);
+				setMiddleName(".");
+				setLastName(".");
+			}
+		}else {
+			setFirstName(getPayorName());
+			setMiddleName(".");
+			setLastName(".");
+		}
+		//System.out.println("Fullname....\nFirstName:"+getFirstName()+"\nMiddleName:"+getMiddleName()+"\nLastName:"+getLastName());
 	}
 	
 	public void doneCustomerDetails() {
@@ -3623,5 +3719,13 @@ private void close(Closeable resource) {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public String getModeName() {
+		return modeName;
+	}
+
+	public void setModeName(String modeName) {
+		this.modeName = modeName;
 	}
 }

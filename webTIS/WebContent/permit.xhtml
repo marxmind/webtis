@@ -18,15 +18,14 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	</f:facet>
 	
 	<f:facet name="middle">
+            
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
-            
-            <h:outputScript name="bootstrap/js/bootstrap.bundle.min.js" target="head"/>
-            <h:outputScript name="jquery-easing/jquery.easing.min.js" target="head"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
-            
-            
             
             
     </f:facet>
@@ -61,112 +60,18 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
 		
-		
-		<p:layout fullPage="true">
-			
-			<p:layoutUnit position="east" size="0" visible="false">
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="north" size="100"  visible="false" >
-				
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="south" size="50" visible="false" >
-				
-		     </p:layoutUnit>
-			
-			<p:layoutUnit position="center">
-				
-				<p:toolbar id="tb" style="#{skin.toolbar}">
-			    		<f:facet name="left">
-			        		<p:inputText value="#{businessPermitBean.searchName}" a:placeholder="Search..." style="width: 20em">
-			    					<f:ajax event="keyup" listener="#{businessPermitBean.loadSearch}" render="clearFldId pictureId cusId"/>
-			    			</p:inputText>
-							&nbsp;&nbsp;
-							<p:calendar value="#{businessPermitBean.calendarFrom}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
-							&nbsp;&nbsp;
-			    			<p:calendar value="#{businessPermitBean.calendarTo}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
-							&nbsp;&nbsp;
-							<p:commandButton update="clearFldId pictureId cusId" icon="fa fa-search" actionListener="#{businessPermitBean.loadSearch}"/>
-							
-			        	</f:facet>
-			    		<f:facet name="right">
-						</f:facet>
-				</p:toolbar>
-				<p:dataTable id="cusId" value="#{businessPermitBean.pmts}" var="ct" stickyHeader="false"
-							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                         rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="false" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top"
-                         >
-                         	
-                         	<f:facet name="{Exporters}">
-                         			<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="fa fa-th-list" title="Click this button to hide and unhide columns"/>
-									<p:columnToggler datasource="cusId" trigger="toggler" />
-            						<h:commandLink title="Export Clearance in excel format">
-                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
-                							<p:dataExporter type="xls" target="cusId" fileName="Clearance" options="#{exporter.excelOpt}"/>
-            						</h:commandLink>
-            						<p:commandLink title="Export Clearnce in pdf format" target="_blank" actionListener="#{businessPermitBean.printAll}" ajax="false" immediate="false">
-                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
-            						</p:commandLink>
-            				</f:facet>
-                         	
-                     
-          					<p:column headerText="[*]" width="30" exportable="false">
-            					<p:commandButton update="clearFldId pictureId cusId orId msg" icon="fa fa-trash"  actionListener="#{businessPermitBean.deleteRow(ct)}" title="Click this button to delete">
-            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
-            					</p:commandButton>
-            				</p:column>
-            				
-            				<p:column headerText="Print" width="30" exportable="false">
-            						<p:commandLink title="Print in PDF" target="_blank" action="#{businessPermitBean.printPermit(ct)}" ajax="false" immediate="false" >
-            				 			<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
-									</p:commandLink>
-            				</p:column>
-            				
-            				<p:column headerText="View" width="30" exportable="false">
-            					<p:commandButton icon="fa fa-search" title="Click this button to see the additional information" update="clearFldId pictureId orId bzId" actionListener="#{businessPermitBean.clickItem(ct)}"/>
-            				</p:column>
-            				
-            				<p:column headerText="Control No" width="70" sortable="false" sortBy="#{ct.controlNo}">
-            						<p:outputLabel value="#{ct.controlNo}"/>
-            				</p:column>
-            				
-            				<p:column headerText="Plate No" width="70" sortable="false" sortBy="#{ct.plateNo}">
-            						<p:outputLabel value="#{ct.plateNo}"/>
-            				</p:column>
-            				
-            				<p:column headerText="Date Issued" width="70" sortable="false" sortBy="#{ct.dateTrans}">
-            						<p:outputLabel value="#{ct.dateTrans}"/>
-            				</p:column>
-            				
-            				<p:column headerText="Owner" width="100" sortable="false" sortBy="#{ct.customer.fullname}">
-            						<p:outputLabel value="#{ct.customer.fullname}"/>
-            				</p:column>
-            				
-            				<p:column headerText="Business" width="120" sortable="false" sortBy="#{ct.businessName}">
-            						<p:outputLabel value="#{ct.businessName}"/>
-            				</p:column>
-            				
-            				
-            				
-						</p:dataTable>
-						
-			</p:layoutUnit> 
-			
-			<p:layoutUnit position="west" size="700">
-				<p:toolbar id="tbClear" style="#{skin.toolbar};float:bottom; position: fixed;z-index: 1500;">
-		    		<f:facet name="left">
-				        
-		    		</f:facet>
-		    		<f:facet name="right">
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    <div class="p-col-12 p-md-7">
+            	<div class="ui-inputgroup" style="float:right; position: fixed;z-index: 1500;">
 		    				<p:commandButton update="clearFldId pictureId orId bzId tb"  value="New" actionListener="#{businessPermitBean.clearNew}" icon="fa fa-file-o" title="Click this button to start new information"/>
 		    				<p:commandButton update="clearFldId pictureId orId bzId tb" value="Clear" icon="fa fa-trash" actionListener="#{businessPermitBean.clearNew}" title="Click this button to clear information"/>
 		    				<p:commandButton update="cusId clearFldId pictureId orId bzId tb msg" value="Save"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{businessPermitBean.saveData}">
 		        				<p:confirm header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
 		        			</p:commandButton>
-		    		</f:facet>
-				</p:toolbar>
+		    		
+				</div>
 				<br/><br/>
 				<p:panelGrid id="pictureId" columns="1" layout="grid">
 						<h:outputLabel id="photo">
@@ -194,8 +99,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						<p:calendar  value="#{businessPermitBean.issuedDate}"  required="true" pattern="yyyy-MM-dd" effect="slideDown"/>
 						
 						<p:outputLabel value="Requestor:" style="#{skin.label}"/>
-		            	<p:outputLabel value="#{businessPermitBean.customerName}" style="#{skin.label}">
-		            		&nbsp;&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update="idSearchTax ownerId" icon="fa fa-search" actionListener="#{businessPermitBean.loadTaxpayer}" onclick="PF('multiDialogOwner').show()"/>
+		            	<p:outputLabel value="#{businessPermitBean.customerName}" style="color: black;#{skin.label}">
+		            	<p:commandButton style="#{skin.button}" update="idSearchTax ownerId" icon="fa fa-search" actionListener="#{businessPermitBean.loadTaxpayer}" onclick="PF('multiDialogOwner').show()"/>
 		            	</p:outputLabel>
 							
 		        		 <p:outputLabel for="d0" value="Control No" style="#{skin.label}" />
@@ -271,11 +176,100 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						<h:outputText  value="#{ct.purpose}"/>
             				</p:column>
             				
-     					</p:dataTable>   
-	 				
-	 				<br/><br/><br/>
-			</p:layoutUnit>   
-		</p:layout>
+     					</p:dataTable>  
+        </div>
+        <div class="p-col-12 p-md-5 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <p:toolbar id="tb" style="#{skin.toolbar}">
+			    		<f:facet name="left">
+			    			<div class="ui-inputgroup">
+			    			<span class="ui-input-icon-left">
+			    			<i class="pi pi-search" />
+			        		<p:inputText value="#{businessPermitBean.searchName}" a:placeholder="Search..." style="width: 20em">
+			    					<f:ajax event="keyup" listener="#{businessPermitBean.loadSearch}" render="clearFldId pictureId cusId"/>
+			    			</p:inputText>
+			    			</span>
+							<p:calendar value="#{businessPermitBean.calendarFrom}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
+			    			<p:calendar value="#{businessPermitBean.calendarTo}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
+							<p:commandButton update="clearFldId pictureId cusId" icon="fa fa-search" actionListener="#{businessPermitBean.loadSearch}"/>
+							</div>
+			        	</f:facet>
+			    		<f:facet name="right">
+						</f:facet>
+				</p:toolbar>
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="cusId" value="#{businessPermitBean.pmts}" var="ct" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top"
+                         >
+                         	
+                         	<f:facet name="{Exporters}">
+                         			<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="fa fa-th-list" title="Click this button to hide and unhide columns"/>
+									<p:columnToggler datasource="cusId" trigger="toggler" />
+            						<h:commandLink title="Export Clearance in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="cusId" fileName="Clearance" options="#{exporter.excelOpt}"/>
+            						</h:commandLink>
+            						<p:commandLink title="Export Clearnce in pdf format" target="_blank" actionListener="#{businessPermitBean.printAll}" ajax="false" immediate="false">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+            						</p:commandLink>
+            				</f:facet>
+                         	
+                     
+          					<p:column headerText="[*]" width="30" exportable="false">
+            					<p:commandButton update="clearFldId pictureId cusId orId msg" icon="fa fa-trash"  actionListener="#{businessPermitBean.deleteRow(ct)}" title="Click this button to delete">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					</p:commandButton>
+            				</p:column>
+            				
+            				<p:column headerText="Print" width="30" exportable="false">
+            						<p:commandLink title="Print in PDF" target="_blank" action="#{businessPermitBean.printPermit(ct)}" ajax="false" immediate="false" >
+            				 			<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+									</p:commandLink>
+            				</p:column>
+            				
+            				<p:column headerText="View" width="30" exportable="false">
+            					<p:commandButton icon="fa fa-search" title="Click this button to see the additional information" update="clearFldId pictureId orId bzId" actionListener="#{businessPermitBean.clickItem(ct)}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Control No" width="70" sortable="false" sortBy="#{ct.controlNo}">
+            						<p:outputLabel value="#{ct.controlNo}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Plate No" width="70" sortable="false" sortBy="#{ct.plateNo}">
+            						<p:outputLabel value="#{ct.plateNo}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Date Issued" width="70" sortable="false" sortBy="#{ct.dateTrans}">
+            						<p:outputLabel value="#{ct.dateTrans}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Owner" width="100" sortable="false" sortBy="#{ct.customer.fullname}">
+            						<p:outputLabel value="#{ct.customer.fullname}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Business" width="120" sortable="false" sortBy="#{ct.businessName}">
+            						<p:outputLabel value="#{ct.businessName}"/>
+            				</p:column>
+            				
+            				
+            				
+						</p:dataTable>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    
+    
+    </div>
+	
+	</div><!-- card -->	
+		
 		
 		<p:dialog header="Requestor" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" position="center top" modal="false" widgetVar="multiDialogOwner" Height="500" width="500" closable="false">
 		<p:toolbar id="tbTax">

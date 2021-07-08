@@ -206,11 +206,12 @@ public class BusinessPermitBean implements Serializable{
 		setPhotoId(cuz.getPhotoid());
 		shots = new ArrayList<>();
 		shots.add(cuz.getPhotoid());
-		
-		String sql = " AND orl.oractive=1 AND cuz.customerid=? ORDER BY orl.orid DESC";
-		String[] params = new String[1];
+		String year = DateUtils.getCurrentYear()+"";
+		String sql = " AND orl.oractive=1 AND cuz.customerid=? AND (orl.ordate>=? AND orl.ordate<=?) ORDER BY orl.orid DESC";
+		String[] params = new String[3];
 		params[0] = cuz.getId()+"";
-		
+		params[1] = year + "-01-01";
+		params[2] = year + "-12-31";
 		ors = BusinessORTransaction.retrieve(sql, params);
 		
 		loadBusiness();
@@ -226,10 +227,13 @@ public class BusinessPermitBean implements Serializable{
 		setBusinessData(permit);
 		String sql = "";
 		String[] params = new String[0];
-		
-		sql = " AND orl.oractive=1 AND cuz.customerid=? ORDER BY orl.orid DESC";
-		params = new String[1];
+		orsSelected = new ArrayList<BusinessORTransaction>();
+		String year = permit.getDateTrans().split("-")[0];
+		sql = " AND orl.oractive=1 AND cuz.customerid=? AND (orl.ordate>=? AND orl.ordate<=? ) ORDER BY orl.orid DESC";
+		params = new String[3];
 		params[0] = cuz.getId()+"";
+		params[1] = year + "-01-01";
+		params[2] = year + "-12-31";	
 		ors = BusinessORTransaction.retrieve(sql, params);
 		
 		if(permit.getOrs().contains("/")) {
@@ -237,10 +241,10 @@ public class BusinessPermitBean implements Serializable{
 			
 			for(String or : ors) {
 				
-				sql = " AND orl.oractive=1 AND cuz.customerid=? AND orl.orno=? ORDER BY orl.orid DESC";
+				sql = " AND orl.oractive=1 AND cuz.customerid=? AND orl.orno=?   ORDER BY orl.orid DESC";
 				params = new String[2];
 				params[0] = cuz.getId()+"";
-				params[1] = or;
+				params[1] = or;	
 				BusinessORTransaction o = BusinessORTransaction.retrieve(sql, params).get(0);
 				orsSelected.add(o);
 			}
@@ -399,9 +403,10 @@ public class BusinessPermitBean implements Serializable{
 		
 		taxpayers = Collections.synchronizedList(new ArrayList<Customer>());
 		
-		String sql = " AND cus.cusisactive=1 ";
+		//String sql = " AND cus.cusisactive=1 ";
 		
-		if(getSearchTaxpayer()!=null && !getSearchTaxpayer().isEmpty()){
+		//these lines of code have been revised.
+		/*if(getSearchTaxpayer()!=null && !getSearchTaxpayer().isEmpty()){
 			int size = getSearchTaxpayer().length();
 			if(size>=5){
 				sql += " AND (cus.fullname like '%" + getSearchTaxpayer().replace("--", "") +"%' OR cus.cuscardno like '%"+ getSearchTaxpayer().replace("--", "") +"%')";
@@ -419,7 +424,30 @@ public class BusinessPermitBean implements Serializable{
 			sql += " order by cus.customerid DESC limit 10;";
 			taxpayers =  Customer.retrieve(sql, new String[0]);
 		}
-		
+		*/
+		String sql = " AND live.isactivelive=1";
+		if(getSearchTaxpayer()!=null && !getSearchTaxpayer().isEmpty()){
+			int size = getSearchTaxpayer().length();
+			if(size>=5){
+				sql += " AND (cuz.fullname like '%" + getSearchTaxpayer().replace("--", "") +"%' OR cuz.cuscardno like '%"+ getSearchTaxpayer().replace("--", "") +"%')";
+				List<Livelihood> lvs = Livelihood.retrieve(sql, new String[0]);
+				if(lvs!=null && lvs.size()==1) {
+					clickItemOwner(lvs.get(0).getTaxPayer());
+					PrimeFaces pf = PrimeFaces.current();
+					pf.executeScript("PF('multiDialogOwner').hide();");
+					setSearchTaxpayer("");
+				}else {
+					for(Livelihood lv : lvs) {
+						taxpayers.add(lv.getTaxPayer());
+					}
+				}
+			}
+		}else {
+			sql += " ORDER BY live.livelihoodid DESC LIMIT 10";
+			for(Livelihood lv : Livelihood.retrieve(sql, new String[0])){
+				taxpayers.add(lv.getTaxPayer());
+			}
+		}
 		
 	}
 	

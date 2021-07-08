@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rcd" pageWidth="612" pageHeight="1008" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="26e068af-d628-4cb1-a9f8-d0c0204ec0af">
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="inch"/>
@@ -77,7 +77,7 @@
 				</textElement>
 				<text><![CDATA[Prepared By:]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="80" y="106" width="300" height="16" uuid="c73c2e38-2428-43fc-a9f9-4c393bbfb064"/>
 				<textElement>
 					<font size="12" isBold="true" isUnderline="true"/>
@@ -99,7 +99,7 @@
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</line>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="311" y="106" width="268" height="16" uuid="c615100c-0df7-4931-88f5-7770c6f365c6"/>
 				<textElement textAlignment="Right">
 					<font size="12" isBold="true" isUnderline="false"/>
@@ -148,7 +148,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[Description]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="1" y="2" width="578" height="16" uuid="75e2e23e-4996-4385-8684-3d4bcf854d5f"/>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
@@ -165,14 +165,14 @@
 	</columnHeader>
 	<detail>
 		<band height="15" splitType="Stretch">
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="200" height="15" uuid="ec189ee0-8331-4189-be5a-0fc5bf7731dd"/>
 				<box padding="1">
 					<pen lineWidth="1.0"/>
 				</box>
 				<textFieldExpression><![CDATA[$F{f1}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="200" y="0" width="60" height="15" uuid="22b56f7a-2515-4102-bcd2-8098201593a3"/>
 				<box padding="1">
 					<pen lineWidth="1.0"/>
@@ -180,14 +180,14 @@
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$F{f2}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="260" y="0" width="250" height="15" uuid="42e24014-4887-4c72-b19d-306d64cc49c9"/>
 				<box padding="1">
 					<pen lineWidth="1.0"/>
 				</box>
 				<textFieldExpression><![CDATA[$F{f3}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="510" y="0" width="70" height="15" uuid="15570998-826d-47f1-af3e-110e2bf60089"/>
 				<box padding="1">
 					<pen lineWidth="1.0"/>
@@ -215,7 +215,7 @@
 				</textElement>
 				<text><![CDATA[TOTAL]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="444" y="0" width="136" height="20" uuid="da38406f-946b-4b7d-875d-2947e894729c"/>
 				<box padding="1">
 					<pen lineWidth="0.5"/>

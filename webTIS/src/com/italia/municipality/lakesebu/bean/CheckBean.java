@@ -1026,7 +1026,9 @@ public class CheckBean implements Serializable{
 		
 	}
 	
+	
 	public void savePrint() {
+		
 		
 		com.italia.municipality.lakesebu.controller.Chequedtls chk = new com.italia.municipality.lakesebu.controller.Chequedtls();
 		if(getChequedtlsData()!=null){

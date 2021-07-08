@@ -21,6 +21,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputStylesheet name="css/growl.css"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputScript name="bootstrap/js/bootstrap.js" target="head"/>
             
@@ -54,99 +56,111 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     	 </p:confirmDialog>
 	<p:focus context="tb"/>
 	
-	<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="50" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			<p:layoutUnit position="west" size="0" visible="false"/>
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			
-			<p:layoutUnit position="center">
 	
-	<p:toolbar id="tb" style="#{skin.toolbar}">
-    		<f:facet name="left">
-    				<p:inputText id="payId" value="#{payorBean.searchParam}" a:placeholder="Search..." a:data-step="2" a:data-intro="This is a search field. You can search Payor Name and Payor Lot No"/>
-    				<p:selectOneMenu  id="bgId" value="#{payorBean.barangayIdSearch}" filter="true" filterMatchMode="contains" style="color: black" a:data-step="3" a:data-intro="Select in the dropdown box for the barangay you want to show the data.">
-    				   <f:selectItem itemLabel="All"/>
-                       <f:selectItems value="#{payorBean.barangayListSearch}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-                   </p:selectOneMenu>
-                   <p:commandButton id="findId" update="formDataId"  icon="fa fa-search" actionListener="#{payorBean.init}" a:data-step="4" a:data-intro="Search button - this button use to retrieve data."/>
-    		</f:facet>
-    		<f:facet name="right">
-    			<p:commandButton update="extractData" value="Load RPTS Files" onclick="PF('dlgExtract').show();"/>
-    			<p:commandButton update="formDataId" value="New" icon="ui-icon-document" actionListener="#{payorBean.addNew}" a:data-step="5" a:data-intro="New Button - use to add new data."/>
-    			<p:commandButton update="formDataId" value="Refresh" icon="ui-icon-document" actionListener="#{payorBean.init}" a:data-step="6" a:data-intro="Refresh Button - use to refresh data."/>
-    			
-    		</f:facet>
-		</p:toolbar>
-     <p:sticky target="tb" />
- 
-  <p:dataTable id="formDataId" var="rpt" value="#{payorBean.payors}" editable="true" 
-       editMode="cell" widgetVar="cellTrans" rowKey="#{rpt.id}" scrollable="true" selection="#{payorBean.payorTableData}" selectionMode="single" 
-       rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
-                         rowsPerPageTemplate="5,10,15,20,50,100"
-                         a:data-step="11" a:data-intro="To edit field, just click the field you want to change the information."
-                         style="#{skin.table}" paginatorAlwaysVisible="false" paginatorPosition="top"
-                         >
-       
-       <f:facet name="header">
-           Land Owner / Payor
-       </f:facet>
-       
-      						 <f:facet name="{Exporters}">
-            						<h:commandLink title="Export in excel format" a:data-step="9" a:data-intro="This function use to export this table to excel file.">
-                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
-                							<p:dataExporter type="xls" target="formDataId" fileName="Payor" />
-            						</h:commandLink>
-            						<h:commandLink title="Export in pdf format" a:data-step="10" a:data-intro="This function use to export this table to pdf file.">
-                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
-                						    <p:dataExporter type="pdf" target="formDataId" fileName="Payor" />
-            						</h:commandLink>
-            						
-            				</f:facet>
-       
-       <p:ajax event="cellEdit"  listener="#{payorBean.onCellEdit}" update="formDataId" />	
-       
-       <p:column headerText="View Land Details">
-                  <p:commandButton value="View Details" icon="fa fa-search" update="landDataId"  actionListener="#{payorBean.openLand(rpt)}" oncomplete="PF('landDialog').show()"/>
-       </p:column>
-       
-       <p:column headerText="Payor Name">
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="#{rpt.fullName}" /></f:facet>
-                  <f:facet name="input">
-                  <p:inputText  a:placeholder="Last Name, First Name" value="#{rpt.fullName}"  style="width:120%;color:black"/>
-                  </f:facet>
-              </p:cellEditor>
-       </p:column>
-       
-       <p:column headerText="Barangay">
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="#{rpt.barangay.name}" /></f:facet>
-                  <f:facet name="input">
-                  <p:selectOneMenu  value="#{payorBean.barangayId}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
-                       <f:selectItem itemLabel="Select..."/>
-                       <f:selectItems value="#{payorBean.barangayList}" var="man" itemLabel="#{man}" itemValue="#{man}" />
-                   </p:selectOneMenu>
-                  </f:facet>
-              </p:cellEditor>
-       </p:column>
-       
-       <p:column headerText="Address">
-              <p:cellEditor>
-              	  <f:facet name="output"><h:outputText value="#{rpt.address}" /></f:facet>
-                  <f:facet name="input">
-                  <p:inputText  a:placeholder="Complete address" value="#{rpt.address}"  style="width:100%;color:black"/>
-                  </f:facet>
-              </p:cellEditor>
-       </p:column>
-       
-       
-   </p:dataTable>    
- 
- </p:layoutUnit>
- </p:layout>
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    	
+        <div class="p-col-12 p-md-12 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <p:toolbar id="tb" style="#{skin.toolbar}">
+			    		<f:facet name="left">
+			    				<span class="ui-input-icon-left">
+			    				<i class="pi pi-search" />
+			    				<p:inputText id="payId" value="#{payorBean.searchParam}" a:placeholder="Search..." a:data-step="2" a:data-intro="This is a search field. You can search Payor Name and Payor Lot No"/>
+			    				</span>
+			    				<p:selectOneMenu  id="bgId" value="#{payorBean.barangayIdSearch}" filter="true" filterMatchMode="contains" style="color: black" a:data-step="3" a:data-intro="Select in the dropdown box for the barangay you want to show the data.">
+			    				   <f:selectItem itemLabel="All"/>
+			                       <f:selectItems value="#{payorBean.barangayListSearch}" var="man" itemLabel="#{man}" itemValue="#{man}" />
+			                   </p:selectOneMenu>
+			                   <p:commandButton id="findId" update="formDataId"  icon="fa fa-search" actionListener="#{payorBean.init}" a:data-step="4" a:data-intro="Search button - this button use to retrieve data."/>
+			    		</f:facet>
+			    		<f:facet name="right">
+			    			<p:commandButton update="extractData" value="Load RPTS Files" onclick="PF('dlgExtract').show();"/>
+			    			<p:commandButton update="formDataId" value="New" icon="ui-icon-document" actionListener="#{payorBean.addNew}" a:data-step="5" a:data-intro="New Button - use to add new data."/>
+			    			<p:commandButton update="formDataId" value="Refresh" icon="ui-icon-document" actionListener="#{payorBean.init}" a:data-step="6" a:data-intro="Refresh Button - use to refresh data."/>
+			    			
+			    		</f:facet>
+					</p:toolbar>
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="formDataId" var="rpt" value="#{payorBean.payors}" editable="true" 
+						       editMode="cell" widgetVar="cellTrans" rowKey="#{rpt.id}" scrollable="true" selection="#{payorBean.payorTableData}" selectionMode="single" 
+						       rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+						                         rowsPerPageTemplate="5,10,15,20,50,100"
+						                         a:data-step="11" a:data-intro="To edit field, just click the field you want to change the information."
+						                         style="#{skin.table}" paginatorAlwaysVisible="false" paginatorPosition="top"
+						                         >
+						       
+						       <f:facet name="header">
+						           Land Owner / Payor
+						       </f:facet>
+						       
+						      						 <f:facet name="{Exporters}">
+						            						<h:commandLink title="Export in excel format" a:data-step="9" a:data-intro="This function use to export this table to excel file.">
+						                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+						                							<p:dataExporter type="xls" target="formDataId" fileName="Payor" />
+						            						</h:commandLink>
+						            						<h:commandLink title="Export in pdf format" a:data-step="10" a:data-intro="This function use to export this table to pdf file.">
+						                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+						                						    <p:dataExporter type="pdf" target="formDataId" fileName="Payor" />
+						            						</h:commandLink>
+						            						
+						            				</f:facet>
+						       
+						       <p:ajax event="cellEdit"  listener="#{payorBean.onCellEdit}" update="formDataId" />	
+						       
+						       <p:column headerText="View Land Details">
+						                  <p:commandButton value="View Details" icon="fa fa-search" update="landDataId"  actionListener="#{payorBean.openLand(rpt)}" oncomplete="PF('landDialog').show()"/>
+						       </p:column>
+						       
+						       <p:column headerText="Payor Name">
+						              <p:cellEditor>
+						              	  <f:facet name="output"><h:outputText value="#{rpt.fullName}" /></f:facet>
+						                  <f:facet name="input">
+						                  <p:inputText  a:placeholder="Last Name, First Name" value="#{rpt.fullName}"  style="width:120%;color:black"/>
+						                  </f:facet>
+						              </p:cellEditor>
+						       </p:column>
+						       
+						       <p:column headerText="Barangay">
+						              <p:cellEditor>
+						              	  <f:facet name="output"><h:outputText value="#{rpt.barangay.name}" /></f:facet>
+						                  <f:facet name="input">
+						                  <p:selectOneMenu  value="#{payorBean.barangayId}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
+						                       <f:selectItem itemLabel="Select..."/>
+						                       <f:selectItems value="#{payorBean.barangayList}" var="man" itemLabel="#{man}" itemValue="#{man}" />
+						                   </p:selectOneMenu>
+						                  </f:facet>
+						              </p:cellEditor>
+						       </p:column>
+						       
+						       <p:column headerText="Address">
+						              <p:cellEditor>
+						              	  <f:facet name="output"><h:outputText value="#{rpt.address}" /></f:facet>
+						                  <f:facet name="input">
+						                  <p:inputText  a:placeholder="Complete address" value="#{rpt.address}"  style="width:100%;color:black"/>
+						                  </f:facet>
+						              </p:cellEditor>
+						       </p:column>
+						       
+						       
+						   </p:dataTable>  
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    
+    
+    
+    </div>
+	
+	</div><!-- card -->	
+	
+	
  
  	<p:contextMenu for="formDataId" widgetVar="cMenu">
        <p:menuitem value="Add Cell" icon="fa fa-search" actionListener="#{payorBean.addNew}" onclick="PF('cMenu').hide()" update="formDataId"/>
@@ -160,7 +174,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
  
  
  <p:dialog style="background: transparent; !important;" widgetVar="landDialog" position="center top"
- Height="800" draggable="false" width="1100" maximizable="true" minimizable="false" 
+ Height="800" draggable="false" width="1200" maximizable="false" minimizable="false" 
  modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="false">
  
  <p:toolbar id="tbland">
@@ -197,7 +211,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             				</f:facet>
        
        <p:ajax event="cellEdit"  listener="#{payorBean.onCellEditLand}" update=":formId:landDataId" />	   
-       <p:column headerText="Improvement?">
+       <p:column headerText="Improvement?" width="70">
 	       		 <p:cellEditor>
               	  <f:facet name="output">
               	  		<f:view>		
@@ -219,7 +233,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                   </f:facet>
               </p:cellEditor>
        </p:column>
-       <p:column headerText="Status">
+       <p:column headerText="Status" width="70">
               <p:cellEditor>
               	  <f:facet name="output">
               	  		<f:view>		
@@ -242,7 +256,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               </p:cellEditor>
        </p:column>
        
-       <p:column headerText="TD No">
+       <p:column headerText="TD No" width="100">
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.taxDeclarionNo}" /></f:facet>
                   <f:facet name="input">
@@ -251,7 +265,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               </p:cellEditor>
        </p:column>
        
-       <p:column headerText="Lot No">
+       <p:column headerText="Lot No" width="70">
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.lotNo}" /></f:facet>
                   <f:facet name="input">
@@ -260,7 +274,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               </p:cellEditor>
        </p:column>
        
-       <p:column headerText="Land Type">
+       <p:column headerText="Land Type" width="70">
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.landType.landType}" /></f:facet>
                   <f:facet name="input">
@@ -272,7 +286,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               </p:cellEditor>
        </p:column>
        
-       <p:column headerText="Assessed Value">
+       <p:column headerText="Assessed Value" width="70">
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.landValue}" /></f:facet>
                   <f:facet name="input">
@@ -281,7 +295,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               </p:cellEditor>
        </p:column>
        
-        <p:column headerText="Barangay">
+        <p:column headerText="Barangay" width="100">
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.barangay.name}" /></f:facet>
                   <f:facet name="input">
@@ -293,7 +307,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               </p:cellEditor>
        </p:column>
        
-       <p:column headerText="Address">
+       <p:column headerText="Address" width="200">
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.address}" /></f:facet>
                   <f:facet name="input">
@@ -302,7 +316,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               </p:cellEditor>
        </p:column>
        
-       <p:column headerText="Remarks">
+       <p:column headerText="Remarks" width="70">
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.remarks}" /></f:facet>
                   <f:facet name="input">

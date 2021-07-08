@@ -6,7 +6,8 @@
   xmlns:f="http://java.sun.com/jsf/core"
 xmlns:p="http://primefaces.org/ui" 
 xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
-xmlns:my="http://java.sun.com/jsf/composite/my"  
+xmlns:my="http://java.sun.com/jsf/composite/my"
+xmlns:pe="http://primefaces.org/ui/extensions"    
   >
 <h:head>
 <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
@@ -21,6 +22,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
     </f:facet>
@@ -57,36 +60,21 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
-	<p:focus context="tb"/>
+	
+	<div class="card">
+    <div class="p-grid sample-layout">
     
-		<p:layout fullPage="true">
-			
-			<p:layoutUnit position="east" size="0" visible="false" >
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="north" size="100"  visible="false" >
-				
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="south" size="50" visible="false" >
-				
-		     </p:layoutUnit>
-			
-			<p:layoutUnit position="west" size="630" >
-					<p:toolbar id="tbMember" style="#{skin.toolbar}" >
-    				<f:facet name="left">
-    				</f:facet>
-    				<f:facet name="right">
+    <div class="p-col-12 p-md-5">
+            <div class="ui-inputgroup" style="float:right">
     					<p:commandButton value="New" update=":formId:usercusId, :formId:pictureId" actionListener="#{businessOwnerBean.clearFields}"  icon="fa fa-file-o" title="Click this button to start new information"/>
     					<p:commandButton value="Clear" update="pictureId usercusId" icon="fa fa-trash" actionListener="#{businessOwnerBean.closePopup}" title="Click this button to clear information"/>
 						<p:commandButton value="Save" update="cusId usercusId pictureId msg"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{businessOwnerBean.save}">
         					<p:confirm header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
         				</p:commandButton>
-    				</f:facet>
-					</p:toolbar>
+    		</div>		
 					<br/>
 					
-					<p:panelGrid id="pictureId" columns="2" cellpadding="0" style="#{skin.grid};">
+					<p:panelGrid id="pictureId" columns="3" cellpadding="0" style="#{skin.grid};">
 							
 							<h:outputLabel id="photo">
         						<p:graphicImage name="images/photocam/#{businessOwnerBean.photoId}.jpg" rendered="#{not empty businessOwnerBean.photoId}" style="width: 100px; height: 100px"/>
@@ -98,6 +86,17 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		                    			allowTypes="/(\.|\/)(gif|jpeg|JPEG||JPG|jpg|png|PNG)$/" />
 		                    			
 		                    			
+		             <pe:qrCode id="qrCodeElem" 
+				           renderMethod="#{businessOwnerBean.renderMethod}" 
+				           renderMode="#{businessOwnerBean.mode}" 
+				           text="#{businessOwnerBean.text}"
+				           label="#{businessOwnerBean.label}"
+				           size="#{businessOwnerBean.size}"                 
+				           fillColor="#{businessOwnerBean.fillColor}"
+				           fontName="Ubuntu"
+				           fontColor="#01A9DB"
+				           ecLevel="H"                   
+				           radius="0.5"/>       			
         			
 					</p:panelGrid>
 					
@@ -115,17 +114,17 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						<p:outputLabel for="idqr" value="QRCode" style="#{skin.label}"/>
 		        		<p:inputText id="idqr" value="#{businessOwnerBean.qrCode}"  style="width: 11em;#{skin.textInput}"/>
 		        		
-		        		<p:outputLabel for="idNat" value="National ID" style="#{skin.label}"/>
+		        		<p:outputLabel for="idNat" value="PSA ID" style="#{skin.label}"/>
 		        		<p:inputText id="idNat" value="#{businessOwnerBean.nationalId}"  style="width: 11em;#{skin.textInput}"/>
 								
-						<p:outputLabel for="d3" value="First Name:" style="#{skin.label}"/>
-		        		<p:autoComplete id="d3" value="#{businessOwnerBean.firstname}" a:placeholder="First Name" completeMethod="#{businessOwnerBean.autoFirst}" effect="fade" style="width: 11em;#{skin.textInput}"/>
+						<p:outputLabel for="d3" value="First Name(Company Name):" style="#{skin.label}"/>
+		        		<p:autoComplete id="d3" value="#{businessOwnerBean.firstname}" a:placeholder="First Name(Company Name)" completeMethod="#{businessOwnerBean.autoFirst}" effect="fade" style="width: 11em;#{skin.textInput}"/>
 		        		
-		        		<p:outputLabel for="d4" value="Middle Name:" style="#{skin.label}"/>
+		        		<p:outputLabel for="d4" value="Middle Name(add (.) for company):" style="#{skin.label}"/>
 		        		<p:autoComplete id="d4" value="#{businessOwnerBean.middlename}" a:placeholder="Middle Name" completeMethod="#{businessOwnerBean.autoMiddle}" effect="fade" style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		
-		        		<p:outputLabel for="d5" value="Last Name:" style="#{skin.label}"/>
+		        		<p:outputLabel for="d5" value="Last Name(add (.) for company):" style="#{skin.label}"/>
 		        		<p:autoComplete id="d5" value="#{businessOwnerBean.lastname}" a:placeholder="Last Name" completeMethod="#{businessOwnerBean.autoLast}" effect="fade" style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="d6" value="Civil Status:" style="#{skin.label}"/>
@@ -202,14 +201,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			 			</p:outputLabel>
             		   	
     			 	</p:panelGrid> 
-					
-			</p:layoutUnit>
-			
-			
-			
-			<p:layoutUnit position="center">
-			
-			<p:toolbar id="tb" style="#{skin.toolbar}">
+        </div>
+        <div class="p-col-12 p-md-7 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <p:toolbar id="tb" style="#{skin.toolbar}">
 			    		<f:facet name="left">
 			        		<div class="ui-inputgroup">
 					<p:inputText value="#{businessOwnerBean.searchCustomer}" a:placeholder="Search..." style="width: 20em">
@@ -239,67 +235,77 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							
 						</f:facet>
 				</p:toolbar>
-		
-			<p:dataTable id="cusId" value="#{businessOwnerBean.customers}" var="rpt" stickyHeader="false"
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="cusId" value="#{businessOwnerBean.customers}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="true" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top"
                          >
                          	
-                         	<f:facet name="{Exporters}">
-                         			
-                         			<p:commandButton id="toggler" type="button" value="Columns" style="float:right;" icon="fa fa-th-list" title="Click this button to hide and unhide columns"/>
-									<p:columnToggler datasource="cusId" trigger="toggler" />
-                         			
-            						<h:commandLink title="Export Citizen Record in excel format">
-                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
-                							<p:dataExporter type="xls" target="cusId" fileName="CitizenRecord" options="#{exporter.excelOpt}"/>
-            						</h:commandLink>
-            						<h:commandLink title="Export Citizen Record in pdf format">
-                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
-                							<p:dataExporter type="pdf" target="cusId" fileName="CitizenRecord" preProcessor="#{exporter.preProcessPDF}" options="#{exporter.pdfOpt}"/>
-            						</h:commandLink>
-            				</f:facet>
-                         	
-                         	
-                         	
-          					<p:column headerText="[*]" width="40" exportable="false">
-            					<p:commandButton update="cusId usercusId msg" icon="fa fa-trash-o" title="Click this button to delete this data" actionListener="#{businessOwnerBean.deleteRow(rpt)}">
-            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
-            					</p:commandButton>
-            				</p:column>
-            				
-            				<p:column headerText="View" width="40" exportable="false">
-            					<p:commandButton icon="fa fa-search" title="Click this button to see the additional information" update="usercusId pictureId" actionListener="#{businessOwnerBean.clickItem(rpt)}"/>
-            				</p:column>
-            				
-            				<p:column headerText="BID" width="100" sortable="false" sortBy="#{rpt.cardno}">
-            						<p:outputLabel  value="#{rpt.cardno}"/>
-            				</p:column>
-            				
-            				<p:column headerText="Registered" width="100" sortable="false" sortBy="#{rpt.dateregistered}">
-            						<p:outputLabel  value="#{rpt.dateregistered}"/>
-            				</p:column>
-            				
-                         	<p:column headerText="Name" width="120" sortable="false" sortBy="#{rpt.fullname}">
-            						<p:outputLabel  value="#{rpt.fullname}"/>
-            				</p:column>
-            				
-            				<p:column headerText="Gender" width="50" sortable="false" sortBy="#{rpt.genderName}">
-            						<p:outputLabel  value="#{rpt.genderName}"/>
-            				</p:column> 
-            				
-            				<p:column headerText="Address" width="300" sortable="false" sortBy="#{rpt.completeAddress}">
-            						<p:outputLabel  value="#{rpt.completeAddress}"/>
-            				</p:column>
-            				
-					</p:dataTable>
-					
-					
-					
-			</p:layoutUnit>
-			
-		</p:layout>
+		                         	<f:facet name="{Exporters}">
+		                         			
+		                         			<p:commandButton id="toggler" type="button" value="Columns" style="float:right;" icon="fa fa-th-list" title="Click this button to hide and unhide columns"/>
+											<p:columnToggler datasource="cusId" trigger="toggler" />
+		                         			
+		            						<h:commandLink title="Export Citizen Record in excel format">
+		                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+		                							<p:dataExporter type="xls" target="cusId" fileName="CitizenRecord" options="#{exporter.excelOpt}"/>
+		            						</h:commandLink>
+		            						<h:commandLink title="Export Citizen Record in pdf format">
+		                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+		                							<p:dataExporter type="pdf" target="cusId" fileName="CitizenRecord" preProcessor="#{exporter.preProcessPDF}" options="#{exporter.pdfOpt}"/>
+		            						</h:commandLink>
+		            				</f:facet>
+		                         	
+		                         	
+		                         	
+		          					<p:column headerText="[*]" width="40" exportable="false">
+		            					<p:commandButton update="cusId usercusId msg" icon="fa fa-trash-o" title="Click this button to delete this data" actionListener="#{businessOwnerBean.deleteRow(rpt)}">
+		            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+		            					</p:commandButton>
+		            				</p:column>
+		            				
+		            				<p:column headerText="View" width="40" exportable="false">
+		            					<p:commandButton icon="fa fa-search" title="Click this button to see the additional information" update="usercusId pictureId qrCodeElem" actionListener="#{businessOwnerBean.clickItem(rpt)}"/>
+		            				</p:column>
+		            				
+		            				<p:column headerText="BID" width="100" sortable="false" sortBy="#{rpt.cardno}">
+		            						<p:outputLabel  value="#{rpt.cardno}"/>
+		            				</p:column>
+		            				
+		            				<p:column headerText="Registered" width="100" sortable="false" sortBy="#{rpt.dateregistered}">
+		            						<p:outputLabel  value="#{rpt.dateregistered}"/>
+		            				</p:column>
+		            				
+		                         	<p:column headerText="Name" width="120" sortable="false" sortBy="#{rpt.fullname}">
+		            						<p:outputLabel  value="#{rpt.fullname}"/>
+		            				</p:column>
+		            				
+		            				<p:column headerText="Gender" width="50" sortable="false" sortBy="#{rpt.genderName}">
+		            						<p:outputLabel  value="#{rpt.genderName}"/>
+		            				</p:column> 
+		            				
+		            				<p:column headerText="Address" width="300" sortable="false" sortBy="#{rpt.completeAddress}">
+		            						<p:outputLabel  value="#{rpt.completeAddress}"/>
+		            				</p:column>
+		            				
+							</p:dataTable>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    
+    
+    </div>
+	
+	</div><!-- card -->	
+	
+	
+	
+		
 		
 
 <p:dialog header="Name List" responsive="true" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" position="center top" modal="false" widgetVar="multiDialogContact" Height="500" width="700" closable="false">
@@ -311,7 +317,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     		</f:facet>
     			
     		<f:facet name="right">
-    			<p:commandButton  icon="ui-icon-closethick"  title="Click this button to close the dialog" onclick="PF('multiDialogContact').hide();"/>
+    			<p:commandButton  value="Close"  title="Click this button to close the dialog" onclick="PF('multiDialogContact').hide();"/>
     		</f:facet>
 		</p:toolbar>
 		

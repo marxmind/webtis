@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="generalcollections" pageWidth="595" pageHeight="842" columnWidth="575" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20" uuid="1873dd49-bd83-4145-b711-58a01dbe1148">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
@@ -49,21 +49,21 @@
 	</background>
 	<title>
 		<band height="56" splitType="Stretch">
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="575" height="16" uuid="3c35f071-6837-4d14-943d-b97ebc29ea0e"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_TITLE}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="0" y="39" width="575" height="16" uuid="a7910c31-ea8e-4999-8ff6-229a3a5872d4"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="11" isBold="true" isUnderline="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_COLLECTOR}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="MMMMM dd, yyyy" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" pattern="MMMMM dd, yyyy" isBlankWhenNull="true">
 				<reportElement x="490" y="17" width="85" height="13" uuid="2c39da55-9348-40f9-9969-d00cbdd22238"/>
 				<textElement textAlignment="Right">
 					<font isItalic="true"/>
@@ -186,43 +186,43 @@
 	</columnHeader>
 	<detail>
 		<band height="14" splitType="Stretch">
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="1" y="1" width="56" height="13" uuid="7fbc75b9-1be7-47b7-942d-a726415525de">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="636b2acd-94da-4b75-94e1-6d3e19256070"/>
 				</reportElement>
 				<textFieldExpression><![CDATA[$F{f1}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="57" y="1" width="57" height="13" uuid="39975610-6f5f-45ce-bc96-436e42b2bafd">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="636b2acd-94da-4b75-94e1-6d3e19256070"/>
 				</reportElement>
 				<textFieldExpression><![CDATA[$F{f8}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="114" y="1" width="46" height="13" uuid="3d1fd0e8-bb89-4cba-a1a0-7b794f3a8031">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="636b2acd-94da-4b75-94e1-6d3e19256070"/>
 				</reportElement>
 				<textFieldExpression><![CDATA[$F{f2}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="160" y="1" width="117" height="13" uuid="2ff0cac6-329f-4f61-821a-31bb91271463">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="636b2acd-94da-4b75-94e1-6d3e19256070"/>
 				</reportElement>
 				<textFieldExpression><![CDATA[$F{f3}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="277" y="1" width="52" height="13" uuid="63a0f0cf-79b0-4454-a65d-e397189e76a7">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="636b2acd-94da-4b75-94e1-6d3e19256070"/>
 				</reportElement>
 				<textFieldExpression><![CDATA[$F{f4}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="329" y="1" width="196" height="13" uuid="293e51ac-1f41-4473-9ddc-a5027b72f2e2">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="636b2acd-94da-4b75-94e1-6d3e19256070"/>
 				</reportElement>
 				<textFieldExpression><![CDATA[$F{f5}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="525" y="1" width="50" height="13" uuid="f96050d2-d633-41d7-8c05-872a335fea8c">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="636b2acd-94da-4b75-94e1-6d3e19256070"/>
 				</reportElement>
@@ -257,14 +257,14 @@
 				</textElement>
 				<text><![CDATA[Summary Details:]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="50" y="27" width="350" height="13" uuid="5dcba6af-bb52-4bec-a3df-fca5d7fc387a"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_SUM_NAME}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="400" y="27" width="175" height="13" uuid="86b6ac46-76b5-493d-a20e-b630b334ad74"/>
 				<textElement textAlignment="Right">
 					<font isBold="true"/>

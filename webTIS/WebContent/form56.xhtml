@@ -64,10 +64,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	    				<p:commandButton update="ownerId,formDataId,recFromId,wordId,scId,statId,payId,caseId,grandId,form56Id,payorSearchId,paySearchId,yearSelId" value="New" icon="ui-icon-document" actionListener="#{form56Bean.newForm}" a:data-step="6" a:data-intro="New Button - use to add new data."/>
 	    		</f:facet>
 	    		<f:facet name="right">
+	    			<div class="ui-inputgroup">
 	    			<p:commandButton update="formDataId,form56Id,grandId,wordId" value="Calculate" icon="ui-icon-note"  action="#{form56Bean.updateTotal}"/>
 	    			<p:commandButton update="formDataId,form56Id,dataTransId,wordId,paySearchId,yearSelId,caseId,msg" value="Save" icon="ui-icon-note" actionListener="#{form56Bean.saveData}" >
 	    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 	    			</p:commandButton>
+	    			</div>
 	    		</f:facet>
 				</p:toolbar> 
 				
@@ -217,20 +219,21 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                 <div class="p-col-12 p-col-nogutter">
                     <p:toolbar id="tb" style="#{skin.toolbar}">
 				<f:facet name="left">
-				
+				<div class="ui-inputgroup">
     			<p:autoComplete id="searchNameId" a:placeholder="Search..." value="#{form56Bean.findName}" completeMethod="#{form56Bean.autoPayorName}" effect="fade"/>
     			
     			<p:calendar value="#{form56Bean.findFromDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 10em"/>
 		    	<p:calendar value="#{form56Bean.findToDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 10em"/>
     			
-    			<p:commandButton id="findId" update="dataTransId"  icon="fa fa-search" value="Load All" actionListener="#{form56Bean.search}" />	
+    			<p:commandButton id="findId" update="dataTransId"  icon="fa fa-search" value="Load All" actionListener="#{form56Bean.search}" />
+    			</div>	
     		</f:facet>
     		<f:facet name="right">
-    			
+    			<div class="ui-inputgroup">
     			<p:commandButton update="dataTransId" value="Refresh" icon="ui-icon-document" actionListener="#{form56Bean.init}" />
     			<p:commandButton value="Payor Lookup" icon="ui-icon-document" action="landpayor.xhtml"/>
     			<p:commandButton value="Penalty Lookup" icon="ui-icon-document" action="penalty.xhtml"/>
-    			
+    			</div>
     		</f:facet>
 			</p:toolbar>
                 </div>
@@ -319,7 +322,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	
 	<p:dialog position="center top" widgetVar="ownerDialog" 
-header="Land Owner Lookup" Height="800" draggable="false" width="1100" maximizable="true" minimizable="false"  
+header="Land Owner Lookup" Height="400" draggable="false" width="1100" maximizable="false" minimizable="false"  
 modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="false">
 
 	<p:toolbar id="tbown" style="#{skin.toolbar}">
@@ -343,7 +346,7 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
 	</p:toolbar>
 	
 	 <p:dataList value="#{form56Bean.payorLand}"  id="ownDataId"  var="land" type="ordered" itemType="none" style="#{skin.table}"
-	 paginator="true" rows="10" styleClass="paginated" paginatorPosition="top" paginatorAlwaysVisible="false">
+	 paginator="true" rows="3" styleClass="paginated" paginatorPosition="top" paginatorAlwaysVisible="false" rowsPerPageTemplate="3,5,10,15,20,50,100" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
         
         <h:outputText value="#{land.fullName}" style="display:inline-block"/>
         
@@ -381,8 +384,8 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
 </p:dialog>
 	
 	<p:dialog position="center top" widgetVar="payorDialog" responsive="true" 
-header="Payor Lookup" Height="800" draggable="false" width="800" maximizable="true" minimizable="false" 
-modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="false">
+header="Payor Lookup" Height="500" draggable="false" width="800" maximizable="true" minimizable="false" 
+modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="false" fitViewport="true">
 	<p:toolbar id="tbpay" style="#{skin.toolbar}">
     		<f:facet name="left">
     				<span class="ui-input-icon-left">
@@ -400,7 +403,7 @@ modal="false" showEffect="clip" hideEffect="clip" resizable="false" closable="fa
      
 	
 	<p:dataList value="#{form56Bean.payorSearchData}" id="payorDataId" var="payor" type="ordered" itemType="none" style="#{skin.table}"
-	paginator="true" rows="10" styleClass="paginated" paginatorPosition="top" paginatorAlwaysVisible="false">
+	paginator="true" rows="10" styleClass="paginated" paginatorPosition="top" paginatorAlwaysVisible="false" >
 	
 		<p:column headerText="Action" width="60">
 				<p:commandButton value="#{payor.fullName}" update="recFromId" actionListener="#{form56Bean.payorLookupSelected(payor)}" oncomplete="PF('payorDialog').hide()"/>

@@ -108,17 +108,17 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 						<p:outputLabel for="idqr" value="QRCode" style="#{skin.label}"/>
 		        		<p:inputText id="idqr" value="#{businessOwnerBean.qrCode}"  style="width: 11em;#{skin.textInput}"/>
 		        		
-		        		<p:outputLabel for="idNat" value="National ID" style="#{skin.label}"/>
+		        		<p:outputLabel for="idNat" value="PSA ID" style="#{skin.label}"/>
 		        		<p:inputText id="idNat" value="#{businessOwnerBean.nationalId}"  style="width: 11em;#{skin.textInput}"/>
 								
-						<p:outputLabel for="d3" value="First Name:" style="#{skin.label}"/>
-		        		<p:autoComplete id="d3" value="#{businessOwnerBean.firstname}" a:placeholder="First Name" completeMethod="#{businessOwnerBean.autoFirst}" effect="fade" style="width: 11em;#{skin.textInput}"/>
+						<p:outputLabel for="d3" value="First Name(Company Name):" style="#{skin.label}"/>
+		        		<p:autoComplete id="d3" value="#{businessOwnerBean.firstname}" a:placeholder="First Name(Company Name)" completeMethod="#{businessOwnerBean.autoFirst}" effect="fade" style="width: 11em;#{skin.textInput}"/>
 		        		
-		        		<p:outputLabel for="d4" value="Middle Name:" style="#{skin.label}"/>
+		        		<p:outputLabel for="d4" value="Middle Name(add (.) for company):" style="#{skin.label}"/>
 		        		<p:autoComplete id="d4" value="#{businessOwnerBean.middlename}" a:placeholder="Middle Name" completeMethod="#{businessOwnerBean.autoMiddle}" effect="fade" style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		
-		        		<p:outputLabel for="d5" value="Last Name:" style="#{skin.label}"/>
+		        		<p:outputLabel for="d5" value="Last Name(add (.) for company):" style="#{skin.label}"/>
 		        		<p:autoComplete id="d5" value="#{businessOwnerBean.lastname}" a:placeholder="Last Name" completeMethod="#{businessOwnerBean.autoLast}" effect="fade" style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="d6" value="Civil Status:" style="#{skin.label}"/>
@@ -312,7 +312,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
     		</f:facet>
     			
     		<f:facet name="right">
-    			<p:commandButton  icon="ui-icon-closethick"  title="Click this button to close the dialog" onclick="PF('multiDialogContact').hide();"/>
+    			<p:commandButton  value="Close"  title="Click this button to close the dialog" onclick="PF('multiDialogContact').hide();"/>
     		</f:facet>
 		</p:toolbar>
 		

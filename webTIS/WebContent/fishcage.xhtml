@@ -19,6 +19,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	<f:facet name="middle">
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
@@ -54,24 +56,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
-	<p:focus context="tb"/>
 	
-	
-	<p:layout fullPage="true">
-			
-			<p:layoutUnit position="east" size="0" visible="false">
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="north" size="100"  visible="false" >
-				
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="south" size="50" visible="false" >
-				
-		     </p:layoutUnit>
-			
-			<p:layoutUnit position="west" size="300">
-				<p:toolbar id="tbClear" style="#{skin.toolbar};float:bottom; position: fixed;z-index: 1500;">
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    <div class="p-col-12 p-md-4">
+            <p:toolbar id="tbClear" style="#{skin.toolbar};float:bottom; position: fixed;z-index: 1500;">
 		    		<f:facet name="left">
 				        <p:commandButton update="fldId" value="New" icon="fa fa-file-o" actionListener="#{fishcageBean.clear}" title="Click this button to start new information"/>
 		    				<p:commandButton update="fldId idSer" value="Clear" icon="fa fa-trash" actionListener="#{fishcageBean.clear}"  title="Click this button to clear information"/>
@@ -144,12 +134,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:inputNumber value="#{fishcageBean.noOfTotalStock}"  inputStyle="width: 11em;#{skin.textInput}"/>
 				
 				</p:panelGrid>
-				
-			</p:layoutUnit> 
-			
-			<p:layoutUnit position="center">
-				
-				<p:tabView prependId="false" cache="true" id="tabId">
+        </div>
+        <div class="p-col-12 p-md-8 p-col-nogutter">
+            <div class="p-grid">
+                
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:tabView prependId="false" cache="true" id="tabId">
 				
 				<p:ajax event="tabChange" listener="#{fishcageBean.onChange}" update="tabId"/>
 				
@@ -157,10 +148,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				
 				<p:toolbar id="tb" style="#{skin.toolbar}">
 			    		<f:facet name="left">
+			    			<span class="ui-input-icon-left">
+			    			<i class="pi pi-search" />
 			        		<p:inputText id="idSer" value="#{fishcageBean.searchName}" placeholder="Searh name..." style="width: 20em">
 			        			<p:ajax event="keyup" listener="#{fishcageBean.search}" delay="800" update="cageData payFld payData idOwn"/>
 			        		</p:inputText>
-			        		
+			        		</span>
 			        	</f:facet>
 			    		<f:facet name="right">
 			    			
@@ -173,7 +166,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                          paginatorPosition="top" paginatorAlwaysVisible="true"
                          >
                          	<f:facet name="{Exporters}">
-	                         	<p:selectOneMenu value="#{fishcageBean.orderId}" style="float:left; position: left;z-index: 1500;">
+	                         	<p:selectOneMenu value="#{fishcageBean.orderId}" style="float:left; position: left;z-index: 1;">
 			                		<f:selectItems value="#{fishcageBean.orders}"/>
 			                		<p:ajax event="change" listener="#{fishcageBean.init}" update="cageData"/>
 			            		</p:selectOneMenu>
@@ -246,9 +239,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
      						
      						<p:toolbar id="tbCol" style="#{skin.toolbar}">
 						    		<f:facet name="left">
+						    			<span class="ui-input-icon-left">
+			    						<i class="pi pi-search" />
 						        		<p:inputText value="#{fishcageBean.searchInUnpaidName}" placeholder="Searh name..." style="width: 20em">
 						        			<p:ajax event="keyup" listener="#{fishcageBean.loadUnpaidAll('limit')}" delay="800" update="rentData"/>
 						        		</p:inputText>
+						        		</span>
 						        		<p:commandButton actionListener="#{fishcageBean.loadUnpaidAll('all')}" value="Load All" update="rentData"/>
 						        	</f:facet>
 						    		<f:facet name="right">
@@ -343,18 +339,25 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
      					</p:tab>
      					
      					</p:tabView>
-     					
-			</p:layoutUnit> 
-			
-			  
-</p:layout>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    
+    
+    </div>
+	
+	</div><!-- card -->	
+	
+	
 
 
-<p:dialog header="Payment Details" style="#{skin.dialog}" position="center top" closeOnEscape="true" modal="false" showEffect="clip" hideEffect="clip" widgetVar="paymentDlg" Height="300" width="900" closable="false">
+<p:dialog header="Payment Details" style="#{skin.dialog}" position="center top" closeOnEscape="true" modal="false" showEffect="clip" hideEffect="clip" widgetVar="paymentDlg" Height="300" width="1000" closable="false">
 						
 		        <p:toolbar id="tbMotor">
 				    		<f:facet name="left">
-						        	<p:outputLabel id="idOwn" value="#{fishcageBean.selectedOwner}" style="color: white"/>
+						        	<p:outputLabel id="idOwn" value="#{fishcageBean.selectedOwner}" style="color: black"/>
 				    		</f:facet>
 				    		<f:facet name="right">
 				    			<p:commandButton update="payFld" value="Clear" icon="fa fa-trash" actionListener="#{fishcageBean.clearPayments}"  title="Click this button to clear information"/>
@@ -366,7 +369,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						</p:toolbar>
 						
 						
-						<p:panelGrid id="payFld" columns="8" layout="grid">
+						<p:panelGrid id="payFld" columns="4" layout="grid">
 								
 								<p:outputLabel  value="For Year"/>
 								<p:inputText value="#{fishcageBean.foryearpaid}" style="width: 11em"/>
@@ -389,15 +392,16 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				                         rowsPerPageTemplate="5,10,15,20,50,100"
 				                         paginatorPosition="top" paginatorAlwaysVisible="true"
 				                         >
-                         	<f:facet name="{Exporters}">
-                         			<p:commandLink title="Export Payment History in pdf format" target="_blank" actionListener="#{fishcageBean.printPaymentHistory}" ajax="false" immediate="false">
-                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
-            						</p:commandLink>
-			            		    <h:commandLink title="Export List in excel format">
-                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
-                							<p:dataExporter type="xls" target="payData" fileName="OwnerPaymentHistory" options="#{exporter.excelOpt}"/>
-            						</h:commandLink>
-		            		</f:facet>
+                         	
+		            		
+		            		<f:facet name="{Exporters}">
+                         			<p:menuButton value="Exports" style="float: left">
+										<p:menuitem value="Export Excel" ajax="false" immediate="true" icon="fa fa-file-excel-o">
+											<p:dataExporter type="xls" target="payData" fileName="Department"/> 
+										</p:menuitem>
+										<p:menuitem value="Export PDF" icon="fa fa-file-pdf-o" actionListener="#{fishcageBean.printPaymentHistory}" ajax="false" immediate="false" target="_blank"/>
+									</p:menuButton> 
+            				</f:facet>	
                          	
                          	<p:column headerText="Edit" width="15" exportable="false">
             					<p:commandButton icon="fa fa-search" update="payFld" actionListener="#{fishcageBean.showSelectedPayment(py)}"/>
