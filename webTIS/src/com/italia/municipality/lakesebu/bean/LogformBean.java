@@ -699,6 +699,12 @@ public class LogformBean implements Serializable{
 			Application.addMessage(3, "Error", "Please provide amount");
 		}
 		
+		if(getAmount()>0 && !isNotRts) {//if tag as RTS
+			isOk = false;
+			Application.addMessage(3, "Error", "Please remove amount and quantity as this stab tag as RTS");
+		}
+		
+		
 		form.setFundId(getFundId());
 		form.setRptGroup(getGroup());
 		form.setReceivedDate(DateUtils.convertDate(getReceivedDate(), "yyyy-MM-dd"));
@@ -783,6 +789,7 @@ public class LogformBean implements Serializable{
 			setBeginningNo(0);
 			setEndingNo(0);
 			setAmount(0);
+			setRtsId(0);
 			
 			//recalculate
 			recalCulateFormAmount();

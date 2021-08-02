@@ -1,5 +1,9 @@
 package com.italia.municipality.lakesebu.controller;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +13,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
+import com.italia.municipality.lakesebu.security.ClientInfo;
+import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
 
 
@@ -22,7 +28,7 @@ import com.italia.municipality.lakesebu.utils.LogU;
  */
 public class Customer2 {
 	
-	/*
+	
 	private long id;
 	private String registrationDate;
 	private String fullName;
@@ -117,11 +123,11 @@ public class Customer2 {
 		return result;
 	}
 	
-	public static List<Customer> retrieve(String sqlAdd, String[] params){
-		List<Customer> cuss = new ArrayList<Customer>();//Collections.synchronizedList(new ArrayList<Customer>());
+	public static List<Customer2> retrieve(String sqlAdd, String[] params){
+		List<Customer2> cuss = new ArrayList<Customer2>();//Collections.synchronizedList(new ArrayList<Customer>());
 		String supTable = "cus";
 		String userTable = "usr";
-		String sql = "SELECT * FROM customer "+ supTable +
+		String sql = "SELECT * FROM customer2 "+ supTable +
 				                 ", userdtls "+ userTable + 
 				                 
 				" WHERE "
@@ -151,7 +157,7 @@ public class Customer2 {
 		
 		while(rs.next()){
 			
-			Customer cus = new Customer();
+			Customer2 cus = new Customer2();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setRegistrationDate(rs.getString("regdate"));}catch(NullPointerException e){}
 			try{cus.setFullName(rs.getString("fullname"));}catch(NullPointerException e){}
@@ -185,8 +191,8 @@ public class Customer2 {
 		return cuss;
 	}
 	
-	public static Customer retrieveName(String name){
-		Customer cus = new Customer();
+	public static Customer2 retrieveName(String name){
+		Customer2 cus = new Customer2();
 		String supTable = "cus";
 		String userTable = "usr";
 		String sql = "SELECT * FROM customer "+ supTable +
@@ -239,8 +245,8 @@ public class Customer2 {
 		return cus;
 	}
 	
-	public static Customer customer(long customerId){
-		Customer cus = new Customer();
+	public static Customer2 customer(long customerId){
+		Customer2 cus = new Customer2();
 		String supTable = "cus";
 		String userTable = "usr";
 		
@@ -290,20 +296,20 @@ public class Customer2 {
 		
 	}
 	
-	public static Customer save(Customer cus){
+	public static Customer2 save(Customer2 cus){
 		if(cus!=null){
 			
-			long id = Customer.getInfo(cus.getId() ==0? Customer.getLatestId()+1 : cus.getId());
+			long id = Customer2.getInfo(cus.getId() ==0? Customer2.getLatestId()+1 : cus.getId());
 			LogU.add("checking for new added data");
 			if(id==1){
 				LogU.add("insert new Data ");
-				cus = Customer.insertData(cus, "1");
+				cus = Customer2.insertData(cus, "1");
 			}else if(id==2){
 				LogU.add("update Data ");
-				cus = Customer.updateData(cus);
+				cus = Customer2.updateData(cus);
 			}else if(id==3){
 				LogU.add("added new Data ");
-				cus = Customer.insertData(cus, "3");
+				cus = Customer2.insertData(cus, "3");
 			}
 			
 		}
@@ -327,8 +333,8 @@ public class Customer2 {
 			
 	}
 	
-	public static Customer insertData(Customer cus, String type){
-		String sql = "INSERT INTO customer ("
+	public static Customer2 insertData(Customer2 cus, String type){
+		String sql = "INSERT INTO customer2 ("
 				+ "customerid,"
 				+ "regdate,"
 				+ "fullname,"
@@ -347,7 +353,7 @@ public class Customer2 {
 		long id =1;
 		int cnt=1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table customer");
+		LogU.add("inserting data into table customer2");
 		if("1".equalsIgnoreCase(type)){
 			ps.setLong(cnt++, id);
 			cus.setId(id);
@@ -379,14 +385,14 @@ public class Customer2 {
 		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error inserting data to customer : " + s.getMessage());
+			LogU.add("error inserting data to customer2 : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		return cus;
 	}
 	
 	public void insertData(String type){
-		String sql = "INSERT INTO customer ("
+		String sql = "INSERT INTO customer2 ("
 				+ "customerid,"
 				+ "regdate,"
 				+ "fullname,"
@@ -405,7 +411,7 @@ public class Customer2 {
 		long id =1;
 		int cnt=1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table customer");
+		LogU.add("inserting data into table customer2");
 		if("1".equalsIgnoreCase(type)){
 			ps.setLong(cnt++, id);
 			setId(id);
@@ -437,14 +443,14 @@ public class Customer2 {
 		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error inserting data to customer : " + s.getMessage());
+			LogU.add("error inserting data to customer2 : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		
 	}
 	
-	public static Customer updateData(Customer cus){
-		String sql = "UPDATE customer SET "
+	public static Customer2 updateData(Customer2 cus){
+		String sql = "UPDATE customer2 SET "
 				+ "regdate=?,"
 				+ "fullname=?,"
 				+ "address=?,"
@@ -461,7 +467,7 @@ public class Customer2 {
 		
 		int cnt=1;
 		LogU.add("===========================START=========================");
-		LogU.add("updating data into table customer");
+		LogU.add("updating data into table customer2");
 		
 		ps.setString(cnt++, cus.getRegistrationDate());
 		ps.setString(cnt++, cus.getFullName());
@@ -484,14 +490,14 @@ public class Customer2 {
 		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error updating data to customer : " + s.getMessage());
+			LogU.add("error updating data to customer2 : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		return cus;
 	}
 	
 	public void updateData(){
-		String sql = "UPDATE customer SET "
+		String sql = "UPDATE customer2 SET "
 				+ "regdate=?,"
 				+ "fullname=?,"
 				+ "address=?,"
@@ -507,7 +513,7 @@ public class Customer2 {
 		ps = conn.prepareStatement(sql);
 		int cnt=1;
 		LogU.add("===========================START=========================");
-		LogU.add("updating data into table customer");
+		LogU.add("updating data into table customer2");
 		
 		ps.setString(cnt++, getRegistrationDate());
 		ps.setString(cnt++, getFullName());
@@ -530,7 +536,7 @@ public class Customer2 {
 		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error updating data to customer : " + s.getMessage());
+			LogU.add("error updating data to customer2 : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		
@@ -543,7 +549,7 @@ public class Customer2 {
 		ResultSet rs = null;
 		String sql = "";
 		try{
-		sql="SELECT customerid FROM customer  ORDER BY customerid DESC LIMIT 1";	
+		sql="SELECT customerid FROM customer2  ORDER BY customerid DESC LIMIT 1";	
 		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
@@ -596,7 +602,7 @@ public class Customer2 {
 		boolean result = false;
 		try{
 		conn = WebTISDatabaseConnect.getConnection();
-		ps = conn.prepareStatement("SELECT customerid FROM customer WHERE customerid=?");
+		ps = conn.prepareStatement("SELECT customerid FROM customer2 WHERE customerid=?");
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
 		
@@ -640,7 +646,7 @@ public class Customer2 {
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
-		String sql = "UPDATE customer set isactivatecus=0,userdtlsid="+ getUserDtls().getUserdtlsid() +" WHERE customerid=?";
+		String sql = "UPDATE customer2 set isactivatecus=0,userdtlsid="+ getUserDtls().getUserdtlsid() +" WHERE customerid=?";
 		
 		String[] params = new String[1];
 		params[0] = getId()+"";
@@ -705,5 +711,25 @@ public class Customer2 {
 	public void setUserDtls(UserDtls userDtls) {
 		this.userDtls = userDtls;
 	}
-	*/
+	
+	public static void main(String[] args) {
+		File file = new File("C:\\webtis\\update\\customer2.txt");
+		try {
+			PrintWriter pw = new PrintWriter(new FileWriter(file));
+			System.out.println("starting...");
+			String str="";
+			for(Customer2 c : Customer2.retrieve("", new String[0])) {
+				str += c.getId()+"\t"+ c.getFullName()+"\t" + c.getAddress() +"\n";
+			}
+			
+			pw.println(str);
+	        pw.flush();
+	        pw.close();
+	        System.out.println("completed...");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 }

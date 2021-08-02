@@ -133,7 +133,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:inputText id="grpId" value="#{logformBean.group}" style="width: 12em"/>
 				
 				<p:outputLabel value="Action"/>	
-				<p:commandButton update="listForm gridId tbFormNew saveNormalId saveNotNormalId msg" value="Add to List" icon="fa fa-file-o" actionListener="#{logformBean.addGroup}"/>
+				<p:commandButton update="listForm gridId tbFormNew saveNormalId saveNotNormalId isRtsId msg" value="Add to List" icon="fa fa-file-o" actionListener="#{logformBean.addGroup}"/>
 				
 			</p:panelGrid>
 			</div>
@@ -246,15 +246,20 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                        
                        
                        <f:facet name="{Exporters}">
+                       				<div class="ui-inputgroup">
+                       				<p:calendar value="#{logformBean.summaryDate}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 7em">
+                       					<p:ajax event="dateSelect" update="exiD" />
+                       				</p:calendar> 
                        				<p:inputText value="#{logformBean.reportSeriesSummary}" style="width: 8em">
 		                       			<p:ajax event="change" listener="#{logformBean.updateSeriesSummary}"/>
 		                       		</p:inputText>
-                         			<p:menuButton value="Exports" style="float: left">
+                         			<p:menuButton id="exiD" value="Exports" style="float: left">
 										<p:menuitem value="Print All RCD" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printAllRCD}" target="_blank"/>
 										<p:menuitem value="Print Summary RCD" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printSummary}" target="_blank"/>
 										<p:menuitem value="Monthly Collector Print Summary Report" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printInternalCollectorSummary('collector')}" target="_blank"/>
 										<p:menuitem value="Monthly Collection Print Summary Report" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printInternalCollectorSummary('all')}" target="_blank"/>
 									</p:menuButton> 
+									</div>
             				</f:facet>
                          	
                       

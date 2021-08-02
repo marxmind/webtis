@@ -5,7 +5,6 @@ import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -28,7 +27,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -40,8 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.primefaces.PrimeFaces;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
 
 import com.italia.municipality.lakesebu.controller.BankAccounts;
 import com.italia.municipality.lakesebu.controller.Budget;
@@ -58,13 +54,11 @@ import com.italia.municipality.lakesebu.dao.Chequedtls;
 import com.italia.municipality.lakesebu.database.BankChequeDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.BudgetType;
-import com.italia.municipality.lakesebu.enm.Months;
 import com.italia.municipality.lakesebu.enm.TransactionType;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
-import com.italia.municipality.lakesebu.utils.Numbers;
 import com.italia.municipality.lakesebu.xml.BookCheck;
 import com.italia.municipality.lakesebu.xml.CheckXML;
 
@@ -926,8 +920,8 @@ public class CheckBean implements Serializable{
 		
 		//setDateFrom(getDateTime());
 		//setDateTo(getDateTime());
-		init();
-		clearFields();
+		saveInit();
+		//clearFields();
 		//setChequedtlsData(chk);
 		//clickItem(chk);
 		
@@ -948,9 +942,69 @@ public class CheckBean implements Serializable{
 		}
 	}
 	
+	private void saveInit() {
+		
+		getSignatories();
+		getAccounts();
+		
+		cheques = new ArrayList<com.italia.municipality.lakesebu.controller.Chequedtls>();
+		com.italia.municipality.lakesebu.controller.Chequedtls chk = new com.italia.municipality.lakesebu.controller.Chequedtls();
+		String sql = "SELECT * FROM tbl_chequedtls WHERE isactive=1 AND (date_disbursement>=? AND date_disbursement<=? ) ORDER BY date_edited DESC LIMIT 50";
+		String[] params = new String[2];
+		
+		if(getRangeDate()!=null && getRangeDate().size()>1) {
+			params[0] = DateUtils.convertDate(getRangeDate().get(0),"yyyy-MM-dd");
+			params[1] = DateUtils.convertDate(getRangeDate().get(1),"yyyy-MM-dd");
+		}else {
+			params[0] = DateUtils.convertDate(getRangeDate().get(0),"yyyy-MM-dd");
+			params[1] = params[0];
+		}
+		
+		
+		
+		double amount = 0d;
+		for(com.italia.municipality.lakesebu.controller.Chequedtls chq : chk.retrieve(sql, params)){
+			if(chq.getStatus()==1){
+				amount += chq.getAmount();
+			}
+			chq.setAccntNumber(bankAccountNum(chq.getAccntNumber()));
+			cheques.add(chq);
+		}
+		setGrandTotal(formatAmount(amount+""));
+		
+		if(getSig1()==null || "".equalsIgnoreCase(getSig1())){
+			setSig1Label("Please Select...");
+		}
+		if(getSig2()==null || "".equalsIgnoreCase(getSig2())){
+			setSig2Label("Please Select...");
+		}
+		if(getBankCheckAccountNumber()==null || "".equalsIgnoreCase(getBankCheckAccountNumber())){
+			setAccountLabel("Please Select...");
+		}
+		
+		
+		//clearing fields
+		setBankCheckAccountNumber(null);
+		setBankCheckNo(null);
+		setDateTime(DateUtils.getDateToday());
+		setBankCheckName(null);
+		setBankCheckAccntName(null);
+		setBankCheckPayTo(null);
+		setInputAmount(null);
+		setNumberInToWords(null);
+		setSig1(null);
+		setSig2(null);
+		setChequedtlsData(null);
+		setStatusId(1);
+		setRemarks("RECEIVED");
+		setEnableRemarks(false);
+		setNatureOfPayment(null);
+		setDepartmentId(0);
+	}
+	
 	private boolean checkAmount() {
 		try {
-			double amount = Double.valueOf(getInputAmount());
+			double amount = Double.valueOf(getInputAmount().replace(",", ""));
 			return true;
 		}catch(NumberFormatException nu) {
 			return false;
@@ -1105,8 +1159,9 @@ public class CheckBean implements Serializable{
 		rangeDate.add(getDateTime());
 		rangeDate.add(getDateTime());
 		
-		init();
-		clearFields();
+		saveInit();
+		//init();
+		//clearFields();
 		
 		
 		setBankCheckName(chk.getBankName());
@@ -1218,6 +1273,7 @@ public class CheckBean implements Serializable{
 		}*/
 		
 		
+		
 		return results;
 	}
 	
@@ -1275,7 +1331,8 @@ public class CheckBean implements Serializable{
 		getSignatories();
 		getAccounts();
 		
-		cheques = java.util.Collections.synchronizedList(new ArrayList<com.italia.municipality.lakesebu.controller.Chequedtls>());
+		//cheques = java.util.Collections.synchronizedList(new ArrayList<com.italia.municipality.lakesebu.controller.Chequedtls>());
+		cheques = new ArrayList<com.italia.municipality.lakesebu.controller.Chequedtls>();
 		com.italia.municipality.lakesebu.controller.Chequedtls chk = new com.italia.municipality.lakesebu.controller.Chequedtls();
 		String sql = "SELECT * FROM tbl_chequedtls WHERE isactive=1 AND (date_disbursement>=? AND date_disbursement<=? ) ORDER BY date_edited DESC LIMIT 50";
 		String[] params = new String[2];
@@ -2180,6 +2237,31 @@ public class CheckBean implements Serializable{
 	}
 	
 	private ReportFields reportFields=new ReportFields();
+	
+	public void showPrintPdf(com.italia.municipality.lakesebu.controller.Chequedtls chk) {
+		String date = chk.getDate_disbursement();
+		String tmpDate = date;
+		chk.setDate_disbursement(convertDateToMonthDayYear(date));
+		
+		chk.compileReport(chk);
+		chk.setDate_disbursement(tmpDate);
+		try{
+			String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
+					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+			String REPORT_NAME = ReadConfig.value(AppConf.CHEQUE_REPORT_NAME);
+			
+			File file = new File(REPORT_PATH, REPORT_NAME + ".pdf");
+			 FacesContext faces = FacesContext.getCurrentInstance();
+			 ExternalContext context = faces.getExternalContext();
+			 HttpServletResponse response = (HttpServletResponse)context.getResponse();
+			
+			 System.out.println("File in printReportIndividual " + file.getName() + " " + file.getPath());
+			 
+		     BufferedInputStream input = null;
+		     BufferedOutputStream output = null;
+	     
+		}catch(Exception e) {}
+	}
 	
 	public  void printReportIndividual(com.italia.municipality.lakesebu.controller.Chequedtls chk){
 		String date = chk.getDate_disbursement();

@@ -165,6 +165,93 @@ public class ORListing {
 		return false;
 	}
 	
+	public static List<ORListing> retrieveOld(String sqlAdd, String[] params){
+		List<ORListing> ors = new ArrayList<ORListing>();
+		
+		String tableOr = "orl";
+		String tableCus = "cuz";
+		String tableColl = "col";
+		String sql = "SELECT * FROM orlisting "+tableOr+", customer2 "+ tableCus +", issuedcollector "+ tableColl +"  WHERE  "+tableOr+".isactiveor=1 AND " + 
+				tableOr +".customerid=" + tableCus + ".customerid AND " +
+				tableOr +".isid=" + tableColl + ".isid"; 
+		
+		sql += sqlAdd;
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		if(params!=null && params.length>0){
+		
+			for(int i=0; i<params.length; i++){
+				ps.setString(i+1, params[i]);
+			}
+			
+		}
+		System.out.println("ORLISTING SQL " + ps.toString());
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			
+			ORListing or = new ORListing();
+			try{or.setId(rs.getLong("orid"));}catch(NullPointerException e){}
+			try{or.setDateTrans(rs.getString("ordatetrans"));}catch(NullPointerException e){}
+			try{or.setOrNumber(rs.getString("ornumber"));}catch(NullPointerException e){}
+			try{or.setFormType(rs.getInt("aform"));}catch(NullPointerException e){}
+			try{or.setIsActive(rs.getInt("isactiveor"));}catch(NullPointerException e){}
+			try{or.setFormName(FormType.nameId(or.getFormType()));}catch(NullPointerException e){}
+			try{or.setStatus(rs.getInt("orstatus"));}catch(NullPointerException e){}
+			try{or.setStatusName(FormStatus.nameId(or.getStatus()));}catch(NullPointerException e){}
+			try{or.setForminfo(rs.getString("forminfo"));}catch(NullPointerException e){}
+			
+			Customer cus = new Customer();
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setFullname(rs.getString("fullname"));}catch(NullPointerException e){}
+			
+			
+			UserDtls user = new UserDtls();
+			try{user.setUserdtlsid(rs.getLong("userdtlsid"));}catch(NullPointerException e){}
+			cus.setUserDtls(user);
+			
+			or.setCustomer(cus);
+			
+			sql = " AND nameL.isactiveol=1 AND nameL.orid="+or.getId();
+			params = new String[0];
+			List<ORNameList> orn = Collections.synchronizedList(new ArrayList<ORNameList>());
+			double amount = 0d;
+			for(ORNameList o : ORNameList.retrieve(sql, params)) {
+				amount += o.getAmount();
+				orn.add(o);
+			}
+			or.setAmount(amount);
+			or.setOrNameList(orn);
+			
+			Collector col = new Collector();
+			try{col.setId(rs.getInt("isid"));}catch(NullPointerException e){}
+			try{col.setName(rs.getString("collectorname"));}catch(NullPointerException e){}
+			try{col.setIsActive(rs.getInt("isactivecollector"));}catch(NullPointerException e){}
+			try{col.setIsResigned(rs.getInt("isresigned"));}catch(NullPointerException e){}
+			
+			Department dep = new Department();
+			try{dep.setDepid(rs.getInt("departmentid"));}catch(NullPointerException e){}
+			col.setDepartment(dep);
+			or.setCollector(col);
+			
+			ors.add(or);
+			
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return ors;
+	}
+	
 	public static List<ORListing> retrieve(String sqlAdd, String[] params){
 		List<ORListing> ors = new ArrayList<ORListing>();
 		

@@ -488,7 +488,18 @@ public class ORListingBean implements Serializable{
 			if(or.getFormType()==FormType.CTC_INDIVIDUAL.getId()) {
 				isCTC = true;
 			}
-			boolean isbarangayCtc = or.getCollector().getDepartment().getDepid()>=62? true : false; //62-80 = barangay
+			
+			//this line of code has been change. check below codes
+			//boolean isbarangayCtc = or.getCollector().getDepartment().getDepid()>=62? true : false; //62-80 = barangay
+			
+			//revise above condition for barangay
+			Department dep = or.getCollector().getDepartment();
+			boolean isbarangayCtc = false;
+			if(dep.getDepid()>=62 && dep.getDepid()<=80) {//barangay cedula
+				isbarangayCtc = true;
+			}
+			
+			
 			for(ORNameList n : or.getOrNameList()) {
 				rpt = new Reports();
 				rpt.setF1("");
@@ -1446,9 +1457,11 @@ public class ORListingBean implements Serializable{
 				val += getProfessionBusinessNature().isEmpty()? "0<->" : getProfessionBusinessNature() + "<->";
 				val += GlobalVar.MTO_OR_CEDULA_SIGNATORY + "<->";//signatory
 				val += getPlaceOfBirth().isEmpty()? "0<->" : getPlaceOfBirth() +"<->";
-				val += getCitizenshipOrganization().isEmpty()? "0" : getCitizenshipOrganization();
-				
+				val += getCitizenshipOrganization().isEmpty()? "0" : getCitizenshipOrganization() + "<->";
+				val += getAddress();
 				or.setForminfo(val);
+			}else {
+				or.setForminfo(getAddress());//this is a backup address use for OR 51
 			}
 			
 			
@@ -1463,6 +1476,7 @@ public class ORListingBean implements Serializable{
 			Collector col = new Collector();
 			col.setId(getCollectorId());
 			or.setCollector(col);
+			
 			or = ORListing.save(or);
 			
 			//delete first paynames attached in orlisting table
@@ -1595,27 +1609,30 @@ public class ORListingBean implements Serializable{
 				System.out.println(or.getForminfo());
 			String[] val = or.getForminfo().split("<->");
 			
-			setLabel2(Double.valueOf(val[0]));
-			setLabel3(Double.valueOf(val[1]));
-			setLabel4(Double.valueOf(val[2]));
-			setAmount1(Double.valueOf(val[3]));
-			setAmount2(Double.valueOf(val[4]));
-			setAmount3(Double.valueOf(val[5]));
-			setAmount4(Double.valueOf(val[6]));
-			setAmount5(Double.valueOf(val[7]));
-			setAmount6(Double.valueOf(val[8]));
-			setAmount7(Double.valueOf(val[9]));
-			setGenderId(Integer.valueOf(val[10]));
-			setBirthdate(val[11].equalsIgnoreCase("0")? null : DateUtils.convertDateString(val[11], "yyyy-MM-dd"));
-			setTinNo(val[12].equalsIgnoreCase("0")? "" : val[12]);
-			setHieghtDateReg(val[13].equalsIgnoreCase("0")? "" : val[13]);
-			setWeight(val[14].equalsIgnoreCase("0")? "" : val[14]);
-			setCustomerAddress(val[15].equalsIgnoreCase("0")? "" : val[15]);
-			setCivilStatusId(Integer.valueOf(val[16]));
-			setProfessionBusinessNature(val[17].equalsIgnoreCase("0")? "" : val[17]);
-			setSignatory(val[18].equalsIgnoreCase("0")? "" : val[18]);
-			setPlaceOfBirth(val[19].equalsIgnoreCase("0")? "" : val[19]);
-			setCitizenshipOrganization(val[20].equalsIgnoreCase("0")? "" : val[20]);
+			try{setLabel2(Double.valueOf(val[0]));}catch(Exception e) {setLabel2(0.00);}
+			try{setLabel3(Double.valueOf(val[1]));}catch(Exception e) {setLabel3(0.00);}
+			try{setLabel4(Double.valueOf(val[2]));}catch(Exception e) {setLabel4(0.00);}
+			try{setAmount1(Double.valueOf(val[3]));}catch(Exception e) {setAmount1(0.00);}
+			try{setAmount2(Double.valueOf(val[4]));}catch(Exception e) {setAmount2(0.00);}
+			try{setAmount3(Double.valueOf(val[5]));}catch(Exception e) {setAmount3(0.00);}
+			try{setAmount4(Double.valueOf(val[6]));}catch(Exception e) {setAmount4(0.00);}
+			try{setAmount5(Double.valueOf(val[7]));}catch(Exception e) {setAmount5(0.00);}
+			try{setAmount6(Double.valueOf(val[8]));}catch(Exception e) {setAmount6(0.00);}
+			try{setAmount7(Double.valueOf(val[9]));}catch(Exception e) {setAmount7(0.00);}
+			try{setGenderId(Integer.valueOf(val[10]));}catch(Exception e) {setGenderId(1);}
+			try{setBirthdate(val[11].equalsIgnoreCase("0")? null : DateUtils.convertDateString(val[11], "yyyy-MM-dd"));}catch(Exception e) {setBirthdate(DateUtils.getDateToday());}
+			try{setTinNo(val[12].equalsIgnoreCase("0")? "" : val[12]);}catch(Exception e) {setTinNo("");}
+			try{setHieghtDateReg(val[13].equalsIgnoreCase("0")? "" : val[13]);}catch(Exception e) {setHieghtDateReg("");}
+			try{setWeight(val[14].equalsIgnoreCase("0")? "" : val[14]);}catch(Exception e) {setWeight("");}
+			try{setCustomerAddress(val[15].equalsIgnoreCase("0")? "" : val[15]);}catch(Exception e) {setCustomerAddress("");}
+			try{setCivilStatusId(Integer.valueOf(val[16]));}catch(Exception e) {setCivilStatusId(1);}
+			try{setProfessionBusinessNature(val[17].equalsIgnoreCase("0")? "" : val[17]);}catch(Exception e) {setProfessionBusinessNature("");}
+			try{setSignatory(val[18].equalsIgnoreCase("0")? "" : val[18]);}catch(Exception e) {setSignatory("");}
+			try{setPlaceOfBirth(val[19].equalsIgnoreCase("0")? "" : val[19]);}catch(Exception e) {setPlaceOfBirth("");}
+			try{setCitizenshipOrganization(val[20].equalsIgnoreCase("0")? "" : val[20]);}catch(Exception e) {setCitizenshipOrganization("");}
+			try {
+				setAddress(val[21]);
+			}catch(Exception e) {setAddress("");}
 			ctcFlds(true);
 			
 			if(FormType.CTC_INDIVIDUAL.getId()==or.getFormType()) {
@@ -1627,6 +1644,13 @@ public class ORListingBean implements Serializable{
 			}
 			
 		}else {
+			if(or.getForminfo()!=null) {
+				if(or.getForminfo().contains("<->")) {
+					//setAddress();
+				}else {
+					setAddress(or.getForminfo());
+				}
+			}
 			ctcFlds(false);
 		}
 		
@@ -1759,7 +1783,14 @@ public class ORListingBean implements Serializable{
 					
 					param.put("PARAM_YEAR", py.getDateTrans().split("-")[0]);
 					param.put("PARAM_POI", "MTO-LAKE SEBU");
-					param.put("PARAM_ADDRESS", py.getCustomer().getCompleteAddress());
+					
+					try {
+					if(val[21]==null || val[21].isEmpty()) {
+						param.put("PARAM_ADDRESS", getAddress());
+					}else {
+						try{param.put("PARAM_ADDRESS", val[21]);}catch(Exception e) {}
+					}
+					}catch(Exception e) {param.put("PARAM_ADDRESS", getAddress());}
 					param.put("PARAM_TIN", val[12].equalsIgnoreCase("0")? "" : val[12]);
 					param.put("PARAM_CITIZENSHIP", val[20].equalsIgnoreCase("0")? "" : val[20]);
 					param.put("PARAM_CIVIL", CivilStatus.typeName(Integer.valueOf(val[16])));
@@ -1778,13 +1809,16 @@ public class ORListingBean implements Serializable{
 					param.put("PARAM_BIRTH", val[11]);
 					
 		  			ors.add(new OR51());
+				}else {
+					ors.add(new OR51());
 				}
 				
 			}else { //Form51
 			
+				if(FormType.AF_51.getId()==py.getFormType()){ 
+					param.put("PARAM_PAYOR", name + " - " + py.getForminfo());
+				}
 				
-		  		
-		  		
 		  		int cnt = 0;
 		  		double amount = 0d;
 		  		for(ORNameList na : py.getOrNameList()) {
@@ -3403,7 +3437,7 @@ private void close(Closeable resource) {
 		}
 		
 		//setPayorName(cus.getLastname().toUpperCase() + ", " + cus.getFirstname().toUpperCase() + " " + cus.getMiddlename().substring(0, 1).toUpperCase() + ".");
-		setPayorName(cus.getFullname().toUpperCase(null));
+		setPayorName(cus.getFullname().toUpperCase());
 		setCustomerAddress(cus.getCompleteAddress());
 		
 		ctcFlds(false);
@@ -3478,7 +3512,10 @@ private void close(Closeable resource) {
 				setProfessionBusinessNature(cus.getWork());
 				setPlaceOfBirth(cus.getBornplace());
 				setCitizenshipOrganization(cus.getCitizenship());
-				
+				setCustomerAddress("");
+				if(cus.getBornplace()==null) {
+					setAddress(cus.getCompleteAddress());
+				}
 				ctcFlds(true);
 				
 				if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {

@@ -323,9 +323,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<div class="p-col-12 p-col-nogutter">
                     <div class="ui-inputgroup ui-noborder">
                     	<p:button value="Cancel" onclick="PF('dlgAlert').hide(1000)"/>
-                    	<p:commandButton value="Save Only" update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8 :formId:dataChkId alertId" icon="fa fa-floppy-o" action="#{checkBean.saveData}" oncomplete="PF('dlgAlert').hide(1000)"/>
+                    	<p:commandButton value="Save Only" update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8 :formId:dataChkId range alertId" icon="fa fa-floppy-o" action="#{checkBean.saveData}" oncomplete="PF('dlgAlert').hide(1000)"/>
+                    	<p:commandButton value="Save and Print" update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8 :formId:dataChkId range alertId" icon="fa fa-floppy-o" action="#{checkBean.savePrint}" oncomplete="PF('dlgAlert').hide(1000)"/>
+                    	
                     	<p:outputLabel value="Save and Print" />
-                    	<p:commandLink  update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8 :formId:dataChkId alertId" target="_blank" action="#{checkBean.savePrint}" ajax="false" immediate="false" onclick="PF('dlgAlert').hide(1000)">
+                    	<p:commandLink  update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8 :formId:dataChkId range alertId" target="_blank" action="#{checkBean.savePrint}" ajax="false" immediate="false" onclick="PF('dlgAlert').hide(1000)">
                     		<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
                     	</p:commandLink>
                     </div>
