@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Data Migration</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Data Migration</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Data Migration</title>
+
+</h:head>
+
+<h:body>
+	
+	<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId">
+	<p:growl id="msg" life="2000" />
+	
+	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+	
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    	<div class="p-col-12 p-md-6">
+            <p:dataTable id="dataId1" value="#{migrationBean.customer1}" var="rpt" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="10,20,30,40,50,100"
+                         scrollable="true" scrollWidth="100%" style="#{skin.table}" paginatorPosition="top"
+                         >
+                     <p:column headerText="Id" width="10">
+            			<p:outputLabel value="#{rpt.id}"/>
+            		 </p:column>
+                     
+                     <p:column headerText="Name" width="100">
+            			<p:outputLabel value="#{rpt.fullname}"/>
+            		 </p:column>
+                         
+            </p:dataTable>             
+        </div>
+        <div class="p-col-12 p-md-6 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                    <p:inputText placeholder="Search..." value="#{migrationBean.searchName}">
+                    	<p:ajax event="keyup" update="dataId1 dataId2" listener="#{migrationBean.init}"/>
+                    </p:inputText>
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        <p:dataTable id="dataId2" value="#{migrationBean.customer2}" var="rpt" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="10,20,30,40,50,100"
+                         scrollable="true" scrollWidth="100%" style="#{skin.table}" paginatorPosition="top"
+                         >
+                     
+                     <p:column headerText="Id" width="10">
+            			<p:outputLabel value="#{rpt.id}"/>
+            		 </p:column>
+                     
+                     <p:column headerText="Name" width="100">
+            			<p:outputLabel value="#{rpt.fullName}"/>
+            		 </p:column>
+                         
+            </p:dataTable> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    
+    
+    </div>
+	
+	</div><!-- card -->	
+	
+	<ui:include src="loader.xhtml" />
+	<ui:include src="menu.xhtml" />
+</h:form>		
+</h:body>
+</html>
+		
