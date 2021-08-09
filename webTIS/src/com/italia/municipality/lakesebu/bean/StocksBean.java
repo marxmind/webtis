@@ -93,7 +93,9 @@ public class StocksBean implements Serializable{
 				
 				System.out.println("series>>> " + series);
 			}else {
-				series += 1999;
+				setNumberOfStab(1);
+				//series += 1999;
+				series = 2000;
 				
 				System.out.println("else series>>> " + series);
 			}
@@ -306,6 +308,9 @@ public class StocksBean implements Serializable{
 		this.recordedDate = recordedDate;
 	}
 	public int getNumberOfStab() {
+		if(numberOfStab==0) {
+			numberOfStab=1;
+		}
 		return numberOfStab;
 	}
 	public void setNumberOfStab(int numberOfStab) {

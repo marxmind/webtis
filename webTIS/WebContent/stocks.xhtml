@@ -79,14 +79,14 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:outputLabel value="Form Type"/>	
 			    <p:selectOneMenu id="frmId" value="#{stocksBean.formTypeId}" style="width: 12em" filterMatchMode="contains" filter="true">
 						<f:selectItems value="#{stocksBean.formType}"/>
-						<p:ajax event="change" listener="#{stocksBean.generateSeries}" update="fromId toId msg"/>
+						<p:ajax event="change" listener="#{stocksBean.generateSeries}" update="fromId toId idS msg"/>
 				</p:selectOneMenu>
 				
 				<p:outputLabel value="Start Stab No"/>
 				<p:inputNumber value="#{stocksBean.stabNo}" inputStyle="width: 12em"/>
 				
 				<p:outputLabel value="Number of Stab(CT quantity)"/>
-				<p:inputNumber value="#{stocksBean.numberOfStab}" inputStyle="width: 12em">
+				<p:inputNumber id="idS" value="#{stocksBean.numberOfStab}" inputStyle="width: 12em">
 					<p:ajax event="keyup" listener="#{stocksBean.generateSeries}" update="toId msg"/>
 				</p:inputNumber>
 				

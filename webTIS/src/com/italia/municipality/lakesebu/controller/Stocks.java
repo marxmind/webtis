@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
+import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.utils.LogU;
 
@@ -55,19 +56,81 @@ public class Stocks {
 			return false;
 		}
 		
+		boolean isExistInStock = checkStockFirstIfNotYetIssued(seriesFrom, formType);
+		
+		if(isExistInStock) {
+			return true;
+		}else {
+			
+			//if exist in stock and already issued
+			//checking if rts
+			//if rts determine the remaining qty return
+			//if qty remaining is zero return true it means already issued all series
+			//otherwise return false for the remaining number of series
+			//false also if not yet created or issued
+			
+				String tableIssued= "iss";
+				String tableStock= "st";
+				String sql = "SELECT * FROM stockreceipt " + tableStock + ", logissuedform " + tableIssued + " WHERE  " + 
+						tableStock + ".isactivestock=1 AND " +
+						tableStock + ".stockid=" + tableIssued + ".stockid AND " +
+						tableStock + ".seriesfrom='"+ seriesFrom +"' AND " +
+						tableStock + ".formType=" +formType + " AND " +
+						tableIssued + ".formstatus=" + FormStatus.RTS.getId();
+				
+				
+				Connection conn = null;
+				ResultSet rs = null;
+				PreparedStatement ps = null;
+				try{
+				conn = WebTISDatabaseConnect.getConnection();
+				ps = conn.prepareStatement(sql);//"SELECT * FROM stockreceipt WHERE isactivestock=1 AND seriesfrom='"+ seriesFrom +"' AND formType=" + formType);
+				
+				System.out.println("SQL is existing "+ps.toString());
+				
+				rs = ps.executeQuery();
+				while(rs.next()){
+					
+					long beg = rs.getLong("beginningNoLog");
+					long last = rs.getLong("endingNoLog");
+					int logpcs = rs.getInt("logpcs");
+					
+					long begsum = beg + (logpcs - 1);
+					long remainingQty = begsum - last;
+					System.out.println("Remaining... " + remainingQty);
+					if(remainingQty>0) {
+						return false;
+					}else {
+						return true;
+					}
+					
+					
+					
+				}
+				
+				rs.close();
+				ps.close();
+				WebTISDatabaseConnect.close(conn);
+				}catch(Exception e){e.getMessage();}
+		
+		}
+		
+		return false;//return if not yet recorded
+	}
+	
+	private static boolean checkStockFirstIfNotYetIssued(String seriesFrom, int formType) {
 		Connection conn = null;
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
 		conn = WebTISDatabaseConnect.getConnection();
-		ps = conn.prepareStatement("SELECT * FROM stockreceipt WHERE isactivestock=1 AND seriesfrom='"+ seriesFrom +"' AND formType=" + formType);
+		ps = conn.prepareStatement("SELECT * FROM stockreceipt WHERE isactivestock=1 AND isid=0 AND seriesfrom='"+ seriesFrom +"' AND formType=" + formType);
 		
-		System.out.println("SQL is existing "+ps.toString());
+		System.out.println("SQL is existing in stock not yet issued "+ps.toString());
 		
 		rs = ps.executeQuery();
 		while(rs.next()){
 			return true;
-			
 		}
 		
 		rs.close();
