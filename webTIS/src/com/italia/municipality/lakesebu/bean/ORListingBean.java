@@ -3586,8 +3586,12 @@ private void close(Closeable resource) {
 					//System.out.println("contain space ="+camma);
 					String[] space = camma.split(" ");
 					int size = space.length;
-					
+					//System.out.println("check space size:" + size);
 					switch(size) {
+					case 1:
+						setFirstName(space[0]);
+						setMiddleName(".");
+						break;
 					case 2:
 						setFirstName(space[0]);
 						setMiddleName(space[1]);
@@ -3602,22 +3606,24 @@ private void close(Closeable resource) {
 						break;	
 						}
 				}else {
+					//System.out.println("adding period on lastname");
 					setFirstName(coma[1].trim());
 					setMiddleName(".");
 				}
 			}else {
 				//detect company name
-				//System.out.println("no last name");
+				//System.out.println("no last name looks like for company");
 				setFirstName(name);
 				setMiddleName(".");
 				setLastName(".");
 			}
 		}else {
+			//System.out.println("no cutter has been made...");
 			setFirstName(getPayorName());
 			setMiddleName(".");
 			setLastName(".");
 		}
-		//System.out.println("Fullname....\nFirstName:"+getFirstName()+"\nMiddleName:"+getMiddleName()+"\nLastName:"+getLastName());
+		//System.out.println("Fullname....FirstName:"+getFirstName()+" MiddleName:"+getMiddleName()+" LastName:"+getLastName());
 	}
 	
 	public void doneCustomerDetails() {
