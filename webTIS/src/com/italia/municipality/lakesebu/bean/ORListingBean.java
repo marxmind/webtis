@@ -76,6 +76,7 @@ import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
+import com.italia.municipality.lakesebu.utils.OrlistingXML;
 import com.italia.municipality.lakesebu.xml.RCDReader;
 
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -1483,6 +1484,8 @@ public class ORListingBean implements Serializable{
 			//this will ensure for duplication of data
 			ORNameList.delete("DELETE FROM ornamelist WHERE orid=" + or.getId(), new String[0]);
 			
+			List<ORNameList> ortemps = new ArrayList<ORNameList>();
+			
 			List<PaymentName> tmpName = new ArrayList<PaymentName>();
 			Map<Long, PaymentName> tmpMap = new HashMap<Long, PaymentName>();
 			for(PaymentName name : getSelectedPaymentNameMap().values()) {
@@ -1498,8 +1501,17 @@ public class ORListingBean implements Serializable{
 					name.setAmount(0);
 					tmpName.add(name);
 					tmpMap.put(name.getId(), name);
+					
+					
+					ortemps.add(o);
 				}
 			}
+			
+			or.setOrNameList(ortemps);
+			System.out.println("saving to xml");
+			OrlistingXML.saveForUploadXML(or);
+			System.out.println("done saving to xml...");
+			
 			Application.addMessage(1, "Success", "Successfully saved.");
 			if(isCollectorsMode()) {
 				if(customer!=null) {

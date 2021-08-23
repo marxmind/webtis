@@ -37,6 +37,7 @@ public class Conf {
 	private String databaseTimeZone;
 	private String databaseUserName;
 	private String databasePassword;
+	private String serverDatabase;
 	
 	private Conf() {
 		System.out.println("initializing database information...");
@@ -87,6 +88,7 @@ public class Conf {
 			conf.setDatabaseTimeZone(prop.getProperty("DATABASE_SERVER_TIME_ZONE"));
 			conf.setDatabaseUserName(u_name);
 			conf.setDatabasePassword(pword);
+			conf.setServerDatabase(prop.getProperty("DATABASE_SERVER_DB_URL"));
 			
 		}catch(Exception e) {
 			System.out.println("Configuration file was not set. See error: " + e.getMessage());

@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.UserDtls;
+import com.italia.municipality.lakesebu.database.ServerDatabase;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
@@ -680,6 +681,158 @@ public class Customer {
 		rs.close();
 		ps.close();
 		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return cuss;
+	}
+	
+	public static List<Customer> retrieve(String sqlAdd, String[] params, boolean isServerDatabase){
+		List<Customer> cuss = Collections.synchronizedList(new ArrayList<Customer>());
+		String supTable = "cus";
+		String userTable = "usr";
+		String purTable = "pur";
+		String barTable = "bar";
+		String munTable = "mun";
+		String provTable = "prov";
+		String sql = "SELECT * FROM customer "+ supTable +
+				                 ", webtis.userdtls "+ userTable +
+				                 ", purok "+ purTable +
+				                 ", barangay "+ barTable +
+				                 ", municipality "+ munTable +
+				                 ", province "+ provTable + 
+				                 
+				" WHERE "
+				+ supTable +".userdtlsid = "+ userTable +".userdtlsid AND "
+				+ supTable +".purid = "+ purTable +".purid AND "
+				+ supTable +".bgid = "+ barTable +".bgid AND "
+				+ supTable +".munid = "+ munTable +".munid AND "
+				+ supTable +".provid = "+ provTable +".provid ";
+		
+		sql = sql + sqlAdd;
+		
+		
+        System.out.println("SQL Customer >> "+sql);
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		
+		if(isServerDatabase) {	
+			conn = ServerDatabase.getConnection();
+		}else {
+			conn = WebTISDatabaseConnect.getConnection();
+		}
+		
+		ps = conn.prepareStatement(sql);
+		
+		if(params!=null && params.length>0){
+			
+			for(int i=0; i<params.length; i++){
+				ps.setString(i+1, params[i]);
+			}
+			
+		}
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			
+			Customer cus = new Customer();
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
+			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
+			try{cus.setLastname(rs.getString("cuslastname"));}catch(NullPointerException e){}
+			try{cus.setFullname(rs.getString("fullname"));}catch(NullPointerException e){}
+			try{cus.setGender(rs.getString("cusgender"));}catch(NullPointerException e){}
+			try{cus.setAge(rs.getInt("cusage"));}catch(NullPointerException e){}
+			//try{cus.setAddress(rs.getString("cusaddress"));}catch(NullPointerException e){}
+			try{cus.setContactno(rs.getString("cuscontactno"));}catch(NullPointerException e){}
+			try{cus.setDateregistered(rs.getString("cusdateregistered"));}catch(NullPointerException e){}
+			try{cus.setCardno(rs.getString("cuscardno"));}catch(NullPointerException e){}
+			try{cus.setIsactive(rs.getInt("cusisactive"));}catch(NullPointerException e){}
+			try{cus.setTimestamp(rs.getTimestamp("timestamp"));}catch(NullPointerException e){}
+			try{cus.setCivilStatus(rs.getInt("civilstatus"));}catch(NullPointerException e){}
+			try{cus.setPhotoid(rs.getString("photoid"));}catch(NullPointerException e){}
+			
+			if("1".equalsIgnoreCase(cus.getGender())){
+				cus.setGenderName("Male");
+			}else{
+				cus.setGenderName("Female");
+			}
+			
+			try{cus.setBirthdate(rs.getString("borndate"));}catch(NullPointerException e){}
+			try{Customer emergency = new Customer();
+			emergency.setId(rs.getLong("emeperson"));
+			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
+			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}
+			
+			try{cus.setBornplace(rs.getString("bornplace"));}catch(NullPointerException e){}
+			try{cus.setWeight(rs.getString("weight"));}catch(NullPointerException e){}
+			try{cus.setHeight(rs.getString("heigt"));}catch(NullPointerException e){}
+			try{cus.setWork(rs.getString("work"));}catch(NullPointerException e){}
+			try{cus.setCitizenship(rs.getString("citizenship"));}catch(NullPointerException e){}
+			
+			try{cus.setQrcode(rs.getString("qrcode"));}catch(NullPointerException e){}
+			try{cus.setNationalId(rs.getString("nationalid"));}catch(NullPointerException e){}
+			
+			UserDtls user = new UserDtls();
+			try{user.setUserdtlsid(rs.getLong("userdtlsid"));}catch(NullPointerException e){}
+			try{user.setFirstname(rs.getString("firstname"));}catch(NullPointerException e){}
+			try{user.setMiddlename(rs.getString("middlename"));}catch(NullPointerException e){}
+			try{user.setLastname(rs.getString("lastname"));}catch(NullPointerException e){}
+			try{user.setAddress(rs.getString("address"));}catch(NullPointerException e){}
+			try{user.setContactno(rs.getString("contactno"));}catch(NullPointerException e){}
+			try{user.setAge(rs.getInt("age"));}catch(NullPointerException e){}
+			try{user.setGender(rs.getInt("gender"));}catch(NullPointerException e){}
+			try{user.setTimestamp(rs.getTimestamp("timestamp"));}catch(NullPointerException e){}
+			try{user.setIsActive(rs.getInt("isactive"));}catch(NullPointerException e){}
+			cus.setUserDtls(user);
+			
+			Purok pur = new Purok();
+			try{pur.setId(rs.getLong("purid"));}catch(NullPointerException e){}
+			try{pur.setDateTrans(rs.getString("purdate"));}catch(NullPointerException e){}
+			try{pur.setPurokName(rs.getString("purokname"));}catch(NullPointerException e){}
+			try{pur.setIsActive(rs.getInt("isactivepurok"));}catch(NullPointerException e){}
+			cus.setPurok(pur);
+			
+			Barangay bar = new Barangay();
+			try{bar.setId(rs.getInt("bgid"));}catch(NullPointerException e){}
+			try{bar.setName(rs.getString("bgname"));}catch(NullPointerException e){}
+			try{bar.setIsActive(rs.getInt("bgisactive"));}catch(NullPointerException e){}
+			cus.setBarangay(bar);
+			
+			Municipality mun = new Municipality();
+			try{mun.setId(rs.getInt("munid"));}catch(NullPointerException e){}
+			try{mun.setName(rs.getString("munname"));}catch(NullPointerException e){}
+			try{mun.setIsActive(rs.getInt("munisactive"));}catch(NullPointerException e){}
+			cus.setMunicipality(mun);
+			
+			Province prov = new Province();
+			try{prov.setId(rs.getInt("provid"));}catch(NullPointerException e){}
+			try{prov.setName(rs.getString("provname"));}catch(NullPointerException e){}
+			try{prov.setIsActive(rs.getInt("provisactive"));}catch(NullPointerException e){}
+			cus.setProvince(prov);
+			
+			String address="";
+			try{
+				address = pur.getId()==0?"" : pur.getPurokName()+", ";
+				address += bar.getId()==0?"" : bar.getName()+", ";
+				address += mun.getId()==0?"" : mun.getName()+", ";
+				address += prov.getName();
+			}catch(Exception e){}
+			cus.setCompleteAddress(address);
+			
+			cuss.add(cus);
+		}
+		
+		rs.close();
+		ps.close();
+		if(isServerDatabase) {	
+			ServerDatabase.close(conn);
+		}else {
+			WebTISDatabaseConnect.close(conn);
+		}
 		}catch(Exception e){e.getMessage();}
 		
 		return cuss;

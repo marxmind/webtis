@@ -36,5 +36,6 @@ public class GlobalVar {
 	public static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
 	public static final String COUNTER_REPORT_FILE = "counter_report.tis";
 	public static final String COLLECTOR_MODE_FILE="collector-mode.tis";
+	public static final String UPLOAD_XML = "C:"+SEP+"webtis"+SEP+"upload-xml"+SEP;
 	
 }
