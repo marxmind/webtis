@@ -9,7 +9,7 @@ import java.sql.DriverManager;
  * This is for server connection
  *
  */
-public class ServerDatabase {
+/*public class ServerDatabase {
 
 	
 	public static Connection getConnection(){
@@ -46,4 +46,4 @@ public class ServerDatabase {
 		
 	}
 
-}
+}*/

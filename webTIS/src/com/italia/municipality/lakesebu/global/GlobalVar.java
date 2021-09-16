@@ -10,6 +10,7 @@ import java.io.File;
  *
  */
 public class GlobalVar {
+	
 	public static final String SEP = File.separator;
 	public static final String APP_CONF_DIR = "C:"+SEP+"webtis"+SEP+"conf"+SEP;
 	public static final String APP_DATABASE_CONF = "C:"+SEP+"webtis"+SEP+"conf"+SEP+"dbconf.max";
@@ -37,5 +38,5 @@ public class GlobalVar {
 	public static final String COUNTER_REPORT_FILE = "counter_report.tis";
 	public static final String COLLECTOR_MODE_FILE="collector-mode.tis";
 	public static final String UPLOAD_XML = "C:"+SEP+"webtis"+SEP+"upload-xml"+SEP;
-	
+	public static final String COMMIT_XML = "C:"+SEP+"webtis"+SEP+"commit-xml"+SEP;
 }

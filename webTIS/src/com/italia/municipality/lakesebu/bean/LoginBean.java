@@ -13,6 +13,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 
 import com.italia.municipality.lakesebu.controller.Login;
+import com.italia.municipality.lakesebu.controller.ReadConfig;
+import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.Pages;
 import com.italia.municipality.lakesebu.reports.DailyReport;
 import com.italia.municipality.lakesebu.security.ClientInfo;
@@ -76,11 +78,11 @@ public class LoginBean implements Serializable{
 		LogU.add("Guest with username : " + name + " and password ******** is trying to log in the system.");
 		System.out.println("validating .... " + name + " - " + password);
 		if(in!=null){
-			
+			String val = ReadConfig.value(AppConf.SERVER_LOCAL);
 	        HttpSession session = SessionBean.getSession();
 	        session.setAttribute("username", name);
 			session.setAttribute("userid", in.getLogid());
-			
+			session.setAttribute("server-local", val);
 			/*
 			 * switch(in.getAccessLevel().getLevel()){ case 1: {result="main.xhtml"; break;}
 			 * case 2: { result="main.xhtml"; break;} case 3: {

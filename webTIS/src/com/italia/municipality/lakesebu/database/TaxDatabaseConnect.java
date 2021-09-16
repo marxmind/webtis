@@ -3,6 +3,9 @@ package com.italia.municipality.lakesebu.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import javax.servlet.http.HttpSession;
+
+import com.italia.municipality.lakesebu.bean.SessionBean;
 import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.security.SecureChar;
@@ -20,12 +23,16 @@ public class TaxDatabaseConnect {
 		Conf conf = Conf.getInstance();
 		Connection conn = null;
 		try{
-			
+			HttpSession session = SessionBean.getSession();
+			 String val = session.getAttribute("server-local").toString();//if value is true meaning local server is using
 			String driver = conf.getDatabaseDriver();//ReadConfig.value(AppConf.DB_DRIVER);
 			       //driver = SecureChar.decode(driver);
 			Class.forName(driver);
 			String db_url = conf.getDatabaseUrl();// ReadConfig.value(AppConf.DB_URL);
 				   //db_url = SecureChar.decode(db_url);
+			if("false".equalsIgnoreCase(val)) {//meaning changing to remote server
+				db_url = conf.getDatabaseUrlServer();
+			}
 			String port = conf.getDatabasePort(); //ReadConfig.value(AppConf.DB_PORT);
 			       //port = SecureChar.decode(port);
 			String dbName = conf.getDatabaseLand();//ReadConfig.value(AppConf.DB_AGRICULTURE);

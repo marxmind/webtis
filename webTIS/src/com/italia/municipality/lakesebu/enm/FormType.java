@@ -7,20 +7,20 @@ package com.italia.municipality.lakesebu.enm;
  *
  */
 public enum FormType {
-
-	CTC_INDIVIDUAL(1, "C.T.","Community Tax Individual"),
-	CTC_CORPORATION(2, "C & C1","Community Tax Corporation"),
-	AF_51(3, "AF-51","Business Tax"),
-	AF_52(4, "AF-52","Transfer of Large Cattle"),
-	AF_53(5, "AF-53","Ownership of Large Cattle"),
-	AF_54(6, "AF-54","Marriage License"),
-	AF_56(7, "AF-56","Realty Tax"),
-	AF_56_I(8, "AF-56(I)","Realty Tax (Improvised)"),
-	CT_2(9,"CT 2.00","Cash Ticket 2"),
-	CT_5(10,"CT 5.00","Cash Ticket 5"),
-	AF_51_C(11, "AF-51 C","Business Tax (Customized)"),
-	AF_57(12,"AF-57","Ante Mortem & Post Mortem"),
-	AF_58(13,"AF-58","Burial Permit & Fee Receipt"),
+	
+	CTC_INDIVIDUAL(1, "C.T.","Form 0016"),
+	CTC_CORPORATION(2, "C & C1","Form 0017"),
+	AF_51(3, "AF-51","Form 51"),
+	AF_52(4, "AF-52","Form 52"),
+	AF_53(5, "AF-53","Form 53"),
+	AF_54(6, "AF-54","Form 54"),
+	AF_56(7, "AF-56","Form 56"),
+	AF_56_I(8, "AF-56(I)","Form 56(I)"),
+	CT_2(9,"CT 2.00","Form 55(A) Cash Ticket 2"),
+	CT_5(10,"CT 5.00","Form 55(A) Cash Ticket 5"),
+	AF_51_C(11, "AF-51 C","Form 51-C"),
+	AF_57(12,"AF-57","Form 57"),
+	AF_58(13,"AF-58","Form 58"),
 	AI(14,"AI","Auxiliary Invoice"),
 	BP(15,"BP","Bike Plate"),
 	DID(16,"DID","Drivers I.D."),
@@ -36,6 +36,20 @@ public enum FormType {
 	RTA(26,"RTA","Road & Traffic Administration"),
 	TCT(27,"T.C.T","Traffic Citation Ticket"),
 	TWM(28,"T.W.M.","Tags of Weight and Measure");
+	
+	/*
+	 * AF_51(3, "AF-51","Business Tax"),
+	AF_52(4, "AF-52","Transfer of Large Cattle"),
+	AF_53(5, "AF-53","Ownership of Large Cattle"),
+	AF_54(6, "AF-54","Marriage License"),
+	AF_56(7, "AF-56","Realty Tax"),
+	AF_56_I(8, "AF-56(I)","Realty Tax (Improvised)"),
+	CT_2(9,"CT 2.00","Cash Ticket 2"),
+	CT_5(10,"CT 5.00","Cash Ticket 5"),
+	AF_51_C(11, "AF-51 C","Business Tax (Customized)"),
+	AF_57(12,"AF-57","Ante Mortem & Post Mortem"),
+	AF_58(13,"AF-58","Burial Permit & Fee Receipt"),
+	 */
 	
 	private int id;
 	private String name;

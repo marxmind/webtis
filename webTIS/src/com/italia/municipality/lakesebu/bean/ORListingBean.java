@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -49,7 +48,6 @@ import com.google.zxing.common.HybridBinarizer;
 import com.italia.municipality.lakesebu.controller.AppSetting;
 import com.italia.municipality.lakesebu.controller.Cedula;
 import com.italia.municipality.lakesebu.controller.Collector;
-import com.italia.municipality.lakesebu.controller.Customer2;
 import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.NumberToWords;
@@ -57,27 +55,25 @@ import com.italia.municipality.lakesebu.controller.OR51;
 import com.italia.municipality.lakesebu.controller.ORListing;
 import com.italia.municipality.lakesebu.controller.ORNameList;
 import com.italia.municipality.lakesebu.controller.PaymentName;
+import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.controller.ReportFields;
 import com.italia.municipality.lakesebu.controller.Reports;
 import com.italia.municipality.lakesebu.controller.UserDtls;
+import com.italia.municipality.lakesebu.database.Conf;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.CivilStatus;
 import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.enm.Months;
 import com.italia.municipality.lakesebu.global.GlobalVar;
-import com.italia.municipality.lakesebu.licensing.controller.Barangay;
 import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.licensing.controller.DocumentFormatter;
-import com.italia.municipality.lakesebu.licensing.controller.Municipality;
-import com.italia.municipality.lakesebu.licensing.controller.Province;
-import com.italia.municipality.lakesebu.licensing.controller.Purok;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
+import com.italia.municipality.lakesebu.utils.CheckServerConnection;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.OrlistingXML;
-import com.italia.municipality.lakesebu.xml.RCDReader;
 
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -1377,6 +1373,7 @@ public class ORListingBean implements Serializable{
 					customer.setFullname(getPayorName().toUpperCase());
 					customer.setBirthdate(getBirthdate()==null?  DateUtils.getCurrentDateYYYYMMDD() :  DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd"));
 					customer.setCivilStatus(1);//default single
+					customer.setGender(getGenderId()+"");
 					
 					
 					if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {
@@ -1401,7 +1398,7 @@ public class ORListingBean implements Serializable{
 				customer.setFullname(getPayorName().toUpperCase());
 				customer.setBirthdate(getBirthdate()==null?  DateUtils.getCurrentDateYYYYMMDD() :  DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd"));
 				customer.setCivilStatus(1);//default single
-				
+				customer.setGender(getGenderId()+"");
 				
 				if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {
 					
@@ -1508,9 +1505,13 @@ public class ORListingBean implements Serializable{
 			}
 			
 			or.setOrNameList(ortemps);
-			System.out.println("saving to xml");
-			OrlistingXML.saveForUploadXML(or);
-			System.out.println("done saving to xml...");
+			
+			String val = ReadConfig.value(AppConf.SERVER_LOCAL);
+			if("true".equalsIgnoreCase(val)) {//if connection is true meaning is not connected to server, therefore create xml file to be sent to server
+				System.out.println("saving to xml");
+				OrlistingXML.saveForUploadXML(or);
+				System.out.println("done saving to xml...");
+			}
 			
 			Application.addMessage(1, "Success", "Successfully saved.");
 			if(isCollectorsMode()) {
@@ -1805,7 +1806,13 @@ public class ORListingBean implements Serializable{
 					}catch(Exception e) {param.put("PARAM_ADDRESS", getAddress());}
 					param.put("PARAM_TIN", val[12].equalsIgnoreCase("0")? "" : val[12]);
 					param.put("PARAM_CITIZENSHIP", val[20].equalsIgnoreCase("0")? "" : val[20]);
+					
 					param.put("PARAM_CIVIL", CivilStatus.typeName(Integer.valueOf(val[16])));
+					if(FormType.CTC_CORPORATION.getId()==py.getFormType()) {//if corporation remove civil status
+						param.put("PARAM_CIVIL", "");
+					}
+					
+					
 					param.put("PARAM_PROF",val[17].equalsIgnoreCase("0")? "" : val[17]);
 					param.put("PARAM_POB", val[19].equalsIgnoreCase("0")? "" : val[19]);
 					param.put("PARAM_GENDER", Integer.valueOf(val[10])==1? "MALE":"FEMALE");
@@ -3546,6 +3553,9 @@ private void close(Closeable resource) {
 			updateORNumber();
 			
 		}else {
+			if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
+				ctcFlds(true);
+			}
 			completNameOfClient(getPayorName());
 			/*
 			String name = getPayorName();
@@ -3710,6 +3720,7 @@ private void close(Closeable resource) {
 		
 		
 	}
+	
 	
 	public String getQrcodeMsg() {
 		return qrcodeMsg;

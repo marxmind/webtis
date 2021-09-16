@@ -10,28 +10,36 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.Node;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 
+import com.italia.municipality.lakesebu.bean.SessionBean;
+import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.ORListing;
 import com.italia.municipality.lakesebu.controller.ORNameList;
 import com.italia.municipality.lakesebu.controller.PaymentName;
+import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.controller.UserDtls;
-import com.italia.municipality.lakesebu.database.ServerDatabase;
+import com.italia.municipality.lakesebu.database.Conf;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
+import com.italia.municipality.lakesebu.enm.AppConf;
+import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.licensing.controller.Barangay;
 import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.licensing.controller.Municipality;
 import com.italia.municipality.lakesebu.licensing.controller.Province;
 import com.italia.municipality.lakesebu.licensing.controller.Purok;
-import com.italia.municipality.lakesebu.xml.Check;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,27 +74,221 @@ public class OrlistingXML {
 	private List<PaymentName> paynames;
 	
 	public static void main(String[] args) {
-		retrieveXMLforServerSaving();
+		
+		Conf conf = Conf.getInstance();
+		if(CheckServerConnection.pingIp(conf.getServerDatabaseIp())) {//check if ip reachable else assigned localhost
+			//check if server is accessible
+			System.out.println("server ip " + conf.getServerDatabaseIp() + " is accessible...");
+		}else {
+			System.out.println("server " + conf.getServerDatabaseIp() + " is not accessible...");
+		}
+		
+		//retrieveXMLforServerSaving();
+	}
+	
+	public static boolean checkingConnection() {
+		String val = ReadConfig.value(AppConf.SERVER_LOCAL);
+		if("true".equalsIgnoreCase(val)) {//server is local if true
+			Conf conf = Conf.getInstance();
+			if(CheckServerConnection.pingIp(conf.getServerDatabaseIp())) {//check if ip reachable else assigned localhost
+				//check if server is accessible
+				System.out.println("server ip " + conf.getServerDatabaseIp() + " is accessible...");
+				activateSession(true);
+				return true;
+			}else {
+				System.out.println("server " + conf.getServerDatabaseIp() + " is not accessible...");
+				return false;
+			}	
+			
+		}
+		return false;
+	}
+	
+	public static void activateSession(boolean activate) {
+		HttpSession session = SessionBean.getSession();
+		if(activate) {
+			session.setAttribute("server-local", "false");//changing session to false to connect to remote server the database connection @see Conf (WebTISDatabaseConnection, TaxDatabaseConnection...)
+		}else {
+			String val = ReadConfig.value(AppConf.SERVER_LOCAL);
+			session.setAttribute("server-local", val);
+			System.out.println("return to normal connection " + val);
+		}
+	}
+	
+	
+	public static boolean checkORTransactionIfNotExist(OrlistingXML xml) {
+		String sql = " AND orl.isactiveor=1 AND orl.ordatetrans=? AND orl.ornumber=? AND orl.aform=? AND cuz.fullname=?";
+		String[] params = new String[4];
+		params[0] = xml.getDateTrans();
+		params[1] = xml.getOrNumber();
+		params[2] = xml.getFormType();
+		params[3] = xml.getFullName();
+		
+		List<ORListing> ors = ORListing.retrieve(sql, params);
+		if(ors!=null && ors.size()>0) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	public static void retrieveXMLforServerSaving() {
-		File folder = new File(GlobalVar.UPLOAD_XML);
+		File folder = new File(GlobalVar.COMMIT_XML);
 		File[] listOfFiles = folder.listFiles();
 		
 		for (File file : listOfFiles) {
 		    if (file.isFile()) {
-		    	OrlistingXML xml = readXML(file.getName());
-		    	//System.out.println("Fullname:" + xml.getFullName());
-		    	//for(PaymentName p : xml.getPaynames()) {
-		    		//System.out.println("id: " + p.getId() + " amount: " + p.getAmount());
-		    	//}
+		    	OrlistingXML xml = null;
+		    	
+		    	try{xml = readXML(file.getName());}catch(Exception e) {}
+		    	System.out.println("Fullname:" + xml.getFullName());
+		    	
+		    	if(xml!=null && checkORTransactionIfNotExist(xml)) {//return true if exist
+		    	
+		    	UserDtls user = new UserDtls();
+		    	user.setUserdtlsid(Long.valueOf(xml.getUserId()));
+		    	
+		    	Customer cus = customer(xml, user);
+		    	
+		    	if(cus.getId()>0) {
+		    		
+		    		ORListing or = orlisting(xml, cus);
+		    		
+			    	if(or.getId()>0) {
+				    	
+			    		boolean hasprocessed = paymentNames(or, xml, cus)? file.delete() : false;
+			    		if(hasprocessed) {
+			    			System.out.println("file is deleted and processed");
+			    		}else {
+			    			System.out.println("failed to processed official receipt....rollback changes... removing id on orlisting id="+ or.getId());
+			    			//rollback saving on orlisting table
+			    			or.delete();
+			    		}
+			    		
+			    	}else {
+			    		System.out.println("saving official receipt to server was not successfully processed...");
+			    	}
+		    	}
+		    	
+		    	}else {
+		    		System.out.println("data is exist...");
+		    	}
+		    	
+		    }else {
+		    	System.out.println("No file to retrieve...");
 		    }
 		}    
 		
 	}
 	
-	private static void saveOrlisting() {
-		 
+	//getting info for customer
+	private static Customer customer(OrlistingXML xml, UserDtls user) {
+		
+		String[] val = xml.getFormInfo().split("@");
+		String bornplace = null;
+		String weight = null;
+		String heigth = null;
+		String birthdate = null;
+		String work = null;
+		String citizenship = null;
+		String gender = "1";
+		if(val!=null && val.length>1) {
+			try{gender = val[10];}catch(IndexOutOfBoundsException e) {}
+			try{birthdate = val[11].equalsIgnoreCase("0")? null : val[11];}catch(IndexOutOfBoundsException e) {}
+			try{heigth = val[13].equalsIgnoreCase("0")? "" : val[13];}catch(IndexOutOfBoundsException e) {}
+			try{weight = val[14].equalsIgnoreCase("0")? "" : val[14];}catch(IndexOutOfBoundsException e) {}
+			try{work = val[17].equalsIgnoreCase("0")? "" : val[17];}catch(IndexOutOfBoundsException e) {}
+			try{bornplace = val[19].equalsIgnoreCase("0")? "" : val[19];}catch(IndexOutOfBoundsException e) {}
+			try{citizenship = val[20].equalsIgnoreCase("0")? "" : val[20];}catch(IndexOutOfBoundsException e) {}
+		}
+		
+		
+		String sql = " AND cus.fullname=?";
+    	String[] params = new String[1];
+    	params[0] = xml.getFullName();
+    	List<Customer> cs = Customer.retrieve(sql, params);
+    	Customer cus = new Customer();
+    	if(cs!=null && cs.size()>0) {//updating data instead
+    		cus = cs.get(0);
+    		cus.setDateregistered(xml.getDateTrans());		
+    		cus.setFirstname(xml.getFirstName());
+    		cus.setMiddlename(xml.getMiddleName());
+    		cus.setLastname(xml.getLastName());
+    		cus.setFullname(xml.getFullName());
+    		cus.setCivilStatus(Integer.valueOf(xml.getCivilStatus()));
+    		cus.setBirthdate(birthdate);
+    		cus.setGender(gender);
+    		cus.setWeight(weight);
+    		cus.setHeight(heigth);
+    		cus.setBornplace(bornplace);
+    		cus.setWork(work);
+    		cus.setCitizenship(citizenship);
+    		cus.setIsactive(1);
+    		cus.setUserDtls(user);
+    		cus = Customer.save(cus);
+    		System.out.println("Customer name is existing.....");
+    	}else {//adding new data
+    			cus = Customer.builder()
+    			.dateregistered(xml.getDateTrans())		
+    			.firstname(xml.getFirstName())
+    			.middlename(xml.getMiddleName())
+    			.lastname(xml.getLastName())
+    			.fullname(xml.getFullName())
+    			.civilStatus(Integer.valueOf(xml.getCivilStatus()))
+    			.birthdate(birthdate)
+    			.gender(gender)
+    			.weight(weight)
+    			.height(heigth)
+    			.bornplace(bornplace)
+    			.work(work)
+    			.citizenship(citizenship)
+    			.isactive(1)
+    			.userDtls(user)
+    			.build();
+    			
+    			//saving to database
+    			cus = Customer.save(cus);
+    			System.out.println("Customer name is adding to database.....");
+    	}
+		
+		return cus;
+	}
+	
+	private static ORListing orlisting(OrlistingXML xml, Customer cus) {
+		Collector col = new Collector();
+    	col.setId(Integer.valueOf(xml.getCollectorId()));
+    	String formInfo = xml.getFormInfo().replace("@", "<->");
+    	ORListing or = ORListing.builder()
+    			.dateTrans(xml.getDateTrans())
+    			.status(Integer.valueOf(xml.getOrStatus()))
+    			.formType(Integer.valueOf(xml.getFormType()))
+    			.orNumber(xml.getOrNumber())
+    			.isActive(Integer.valueOf(xml.getIsActive()))
+    			.forminfo(formInfo)
+    			.collector(col)
+    			.customer(cus)
+    			.build();
+    	
+    			or = ORListing.save(or);
+    			System.out.println("adding new official receipt");
+    	return or;
+	}
+	
+	private static boolean paymentNames(ORListing or, OrlistingXML xml, Customer cus) {
+		boolean hasprocessed = false;
+		for(PaymentName p : xml.getPaynames()) {
+    		System.out.println("id: " + p.getId() + " amount: " + p.getAmount());
+    		ORNameList o = new ORNameList();
+			o.setAmount(p.getAmount());
+			o.setOrList(or);
+			o.setCustomer(cus);
+			o.setIsActive(1);
+			o.setPaymentName(p);
+			o.save();
+			hasprocessed = true;
+			System.out.println("adding payment names...");
+    	}
+		return hasprocessed;
 	}
 	
 	private static Customer getCustomerInfo(String fullname) {
@@ -96,7 +298,7 @@ public class OrlistingXML {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
-		conn = ServerDatabase.getConnection();
+		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement("SELECT * FROM customer WHERE cusisactive=1 AND fullname="+fullname);
 		
 		rs = ps.executeQuery();
@@ -165,7 +367,7 @@ public class OrlistingXML {
 		
 		rs.close();
 		ps.close();
-		ServerDatabase.close(conn);
+		WebTISDatabaseConnect.close(conn);
 		
 		}catch(Exception e){e.getMessage();}
 		
@@ -173,78 +375,64 @@ public class OrlistingXML {
 		return cus;
 	}
 	
+	
 	private static OrlistingXML readXML(String fileName) {
 		OrlistingXML xml = new OrlistingXML();
-		File file = new File(GlobalVar.UPLOAD_XML + fileName);
-		if(file.exists()){
-			try{
-			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = builderFactory.newDocumentBuilder();
-			Document doc = documentBuilder.parse(file);
-			
-			/////////////normalize
-			doc.getDocumentElement().normalize();
-			//System.out.println("Reading conf......");
-			
-			NodeList ls = doc.getElementsByTagName("orlisting");
-			int size=ls.getLength();
-			
-			for(int i=0; i<size; i++){
-				Node n = ls.item(i);
-				//System.out.println("Current Node: "+ n.getNodeName());
+		File xmlFile = new File(GlobalVar.COMMIT_XML + fileName);
+		if(xmlFile.exists()){
+			try {
+				SAXReader reader = new SAXReader();
+				Document document = reader.read(xmlFile);
 				
-				if(n.getNodeType() == Node.ELEMENT_NODE){
-					Element e = (Element)n;
-					
-					xml.setReg(e.getElementsByTagName("reg").item(0).getTextContent());
-					xml.setFirstName(e.getElementsByTagName("firstname").item(0).getTextContent());
-					xml.setMiddleName(e.getElementsByTagName("middlename").item(0).getTextContent());
-					xml.setLastName(e.getElementsByTagName("lastname").item(0).getTextContent());
-					xml.setFullName(e.getElementsByTagName("fullname").item(0).getTextContent());
-					xml.setBirthDate(e.getElementsByTagName("birthdate").item(0).getTextContent());
-					xml.setCivilStatus(e.getElementsByTagName("civilstatus").item(0).getTextContent());
-					xml.setUserId(e.getElementsByTagName("userid").item(0).getTextContent());
-					
-					xml.setDateTrans(e.getElementsByTagName("datetrans").item(0).getTextContent());
-					xml.setFormType(e.getElementsByTagName("formtype").item(0).getTextContent());
-					xml.setOrNumber(e.getElementsByTagName("ornumber").item(0).getTextContent());
-					xml.setOrStatus(e.getElementsByTagName("status").item(0).getTextContent());
-					xml.setCollectorId(e.getElementsByTagName("collectorid").item(0).getTextContent());
-					xml.setIsActive(e.getElementsByTagName("isactive").item(0).getTextContent());
-					xml.setFormInfo(e.getElementsByTagName("forminfo").item(0).getTextContent());
-					
-					List<PaymentName> pynames = new ArrayList<PaymentName>();
-					NodeList lss = e.getElementsByTagName("details");
-					for(int x=0; x<lss.getLength(); x++) {
-						Node nn = lss.item(x);
-						PaymentName oname = new PaymentName();
-						if(nn.getNodeType() == Node.ELEMENT_NODE) {
-							Element ee = (Element)nn;
-							oname.setId(Long.valueOf(ee.getElementsByTagName("pyid").item(0).getTextContent()));
-							oname.setAmount(Double.valueOf(ee.getElementsByTagName("amount").item(0).getTextContent()));
-							pynames.add(oname);
-						}
-					}
-					xml.setPaynames(pynames);
-					
+				Node node = document.selectSingleNode("/orlisting");
+				
+				xml.setReg(node.selectSingleNode("reg").getText());
+				xml.setFirstName(node.selectSingleNode("firstname").getText());
+				xml.setMiddleName(node.selectSingleNode("middlename").getText());
+				xml.setLastName(node.selectSingleNode("lastname").getText());
+				xml.setFullName(node.selectSingleNode("fullname").getText());
+				xml.setBirthDate(node.selectSingleNode("birthdate").getText());
+				xml.setCivilStatus(node.selectSingleNode("civilstatus").getText());
+				xml.setUserId(node.selectSingleNode("userid").getText());
+				
+				xml.setDateTrans(node.selectSingleNode("datetrans").getText());
+				xml.setFormType(node.selectSingleNode("formtype").getText());
+				xml.setOrNumber(node.selectSingleNode("ornumber").getText());
+				xml.setOrStatus(node.selectSingleNode("status").getText());
+				xml.setCollectorId(node.selectSingleNode("collectorid").getText());
+				xml.setIsActive(node.selectSingleNode("isactive").getText());
+				xml.setFormInfo(node.selectSingleNode("forminfo").getText());
+				
+				List<PaymentName> pynames = new ArrayList<PaymentName>();
+				List<Node> dtls = document.selectNodes("/orlisting/details/payname");
+				for(Node n : dtls) {
+					PaymentName oname = new PaymentName();
+					oname.setId(Long.valueOf(n.selectSingleNode("pyid").getText()));
+					oname.setAmount(Double.valueOf(n.selectSingleNode("amount").getText()));
+					pynames.add(oname);
 				}
-			}
-			}catch(Exception e){}
-		}	
-		
+				xml.setPaynames(pynames);
+				
+				
+			}catch(DocumentException e) {}	
+		}
 		return xml;
 	}
 	
 	public static void saveForUploadXML(ORListing ors) {
 		
 		Customer cus = ors.getCustomer();
-		
+		Collector col = Collector.retrieve(ors.getCollector().getId());
 		//create directory if not present
 		File dir = new File(GlobalVar.UPLOAD_XML);
 		dir.mkdir();
-		File file = new File(GlobalVar.UPLOAD_XML + cus.getFullname() + ".xml");
+		File dirUpload = new File(GlobalVar.COMMIT_XML);
+		dirUpload.mkdir();
+		File file = new File(GlobalVar.UPLOAD_XML + col.getName() + "-" + cus.getFullname() + "-" + FormType.val(ors.getFormType()).getName() + "-" + ors.getDateTrans() + ".xml");
+		File fileUpload = new File(GlobalVar.COMMIT_XML + col.getName() + "-" + cus.getFullname() + "-" + FormType.val(ors.getFormType()).getName() + "-" + ors.getDateTrans() + ".xml");
 		try {
 			PrintWriter pw = new PrintWriter(new FileWriter(file));
+			PrintWriter pwUpload = new PrintWriter(new FileWriter(fileUpload));
 			StringBuilder sb = new StringBuilder();
 			String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 			sb.append(xml);sb.append("\n");
@@ -299,6 +487,10 @@ public class OrlistingXML {
 			pw.println(sb.toString());
 			pw.flush();
 			pw.close();
+			
+			pwUpload.println(sb.toString());
+			pwUpload.flush();
+			pwUpload.close();
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

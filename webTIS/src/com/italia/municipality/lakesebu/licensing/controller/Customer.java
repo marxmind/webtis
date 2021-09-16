@@ -11,7 +11,6 @@ import java.util.List;
 
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.UserDtls;
-import com.italia.municipality.lakesebu.database.ServerDatabase;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
@@ -718,11 +717,8 @@ public class Customer {
 		PreparedStatement ps = null;
 		try{
 		
-		if(isServerDatabase) {	
-			conn = ServerDatabase.getConnection();
-		}else {
 			conn = WebTISDatabaseConnect.getConnection();
-		}
+		
 		
 		ps = conn.prepareStatement(sql);
 		
@@ -828,11 +824,9 @@ public class Customer {
 		
 		rs.close();
 		ps.close();
-		if(isServerDatabase) {	
-			ServerDatabase.close(conn);
-		}else {
-			WebTISDatabaseConnect.close(conn);
-		}
+		
+		WebTISDatabaseConnect.close(conn);
+		
 		}catch(Exception e){e.getMessage();}
 		
 		return cuss;

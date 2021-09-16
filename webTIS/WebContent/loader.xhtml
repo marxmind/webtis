@@ -11,14 +11,16 @@
 		<p:ajaxStatus widgetVar="loadWidget" styleClass="ui-noborder" onstart="showLoading();" onsuccess="hideLoading();" /> 
 			<div id="loader" style="display: none;position: fixed; bottom: 300px; right: 600px; z-index: 9999999999;">
 				<p:graphicImage name="/gif/loading.gif" style="width: 10em;height: 10em"/>
-			</div>	
+			</div>		
 		
 		<script>
 			function showLoading() {
-				$("#loader").show();
+				//$("#loader").show();
+				$("#onProgId").show();//header.xhtml
 			}
 			function hideLoading() {
-				$("#loader").hide();
+				//$("#loader").hide();
+				$("#onProgId").hide();//header.xhtml
 			}
 		</script>
 		

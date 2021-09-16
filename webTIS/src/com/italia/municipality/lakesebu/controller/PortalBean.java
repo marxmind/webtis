@@ -4,9 +4,12 @@ import java.io.FileInputStream;
 import java.io.Serializable;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.servlet.http.HttpSession;
 
+import com.italia.municipality.lakesebu.bean.SessionBean;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.Department;
 
@@ -23,6 +26,14 @@ public class PortalBean implements Serializable {
 	private static final String PROPERTY_FILE = AppConf.PRIMARY_DRIVE.getValue() + AppConf.SEPERATOR.getValue() +
 			AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() +	
 			AppConf.APP_CONFIG_SETTING_FOLDER.getValue() + AppConf.SEPERATOR.getValue() + "office.tis";
+	
+	@PostConstruct
+	public void init() {
+		String val = ReadConfig.value(AppConf.SERVER_LOCAL);
+        HttpSession session = SessionBean.getSession();
+		session.setAttribute("server-local", val);
+		System.out.println("assigning local: " + val);
+	}
 	
 	public static String getPortal(Department department) {
 		

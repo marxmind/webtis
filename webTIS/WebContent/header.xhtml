@@ -9,7 +9,11 @@
     <ui:composition>
     
     <div class="page-header">
-	 			<a><p:outputLabel value="#{menuBean.userFullName} On Board"/> </a>
+	 			
+	 			<div id="onProgId" style="display:none; z-index: 9999999999;">
+    				<p:progressBar id="progressBarIndecator" style="height:10px" mode="indeterminate"/>
+    			</div>
+    			<a><p:outputLabel value="#{menuBean.userFullName} On Board"/> </a>
 	</div>
     
     </ui:composition>

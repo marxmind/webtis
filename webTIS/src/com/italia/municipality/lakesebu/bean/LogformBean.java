@@ -156,6 +156,65 @@ public class LogformBean implements Serializable{
 	private boolean alreadyRetrieve=false;
 	private int issuedCollectorId;
 	
+	private int formTypeIdSearch;
+	private List formTypesSearch = new ArrayList<>();
+	private List<CollectionInfo> formsInfo;
+	private String totalAmountPerForms;
+	private Date fromFormDate;
+	private Date toFormDate;
+	private int collectorIdSearch;
+	private List collectorSearch;
+	 
+	public void loadFormDetails() {
+		formTypeIdSearch = 0;
+		formTypesSearch = new ArrayList<>();
+		formTypesSearch.add(new SelectItem(0, "All Forms"));
+		for(FormType type : FormType.values()) {
+			formTypesSearch.add(new SelectItem(type.getId(), type.getName()));
+		}
+		
+		collectorIdSearch = 0;
+		collectorSearch = new ArrayList<>();
+		collectorSearch.add(new SelectItem(0, "All Collector"));
+		for(Collector col : Collector.retrieve(" AND cl.isactivecollector=1 ORDER BY cl.collectorname", new String[0])) {
+			if(col.getId()!=0) {
+				collectorSearch.add(new SelectItem(col.getId(), col.getName()));
+			}
+		}
+		
+		loadForms();
+		
+		PrimeFaces pf = PrimeFaces.current();
+		pf.executeScript("PF('dlgPerForms').show(1000);");
+	}
+	
+	public void loadForms() {
+		formsInfo = new ArrayList<CollectionInfo>();
+		String sql = " AND frm.isactivecol=1 AND (frm.receiveddate>=? AND frm.receiveddate<=?)";
+		String[] params = new String[2];
+		
+		params[0] =  DateUtils.convertDate(getFromFormDate(), "yyyy-MM-dd");
+		params[1] =  DateUtils.convertDate(getToFormDate(), "yyyy-MM-dd");
+		double amount = 0d;
+		
+		if(getFormTypeIdSearch()>0) {
+			sql += " AND frm.formtypecol=" + getFormTypeIdSearch();
+		}
+		
+		if(getCollectorIdSearch()>0) {
+			sql += " AND cl.isid=" + getCollectorIdSearch();
+		}
+		
+		for(CollectionInfo info : CollectionInfo.retrieve(sql, params)) {
+			
+			amount += info.getAmount();
+			formsInfo.add(info);
+			
+		}
+		
+		setTotalAmountPerForms(Currency.formatAmount(amount));
+	}
+	
 	public void changeBehaviorCalendarDatePrint() {
 		if(isUseModifiedDate()) {
 				setEnableCalendarPrint(false);
@@ -3948,6 +4007,76 @@ public class LogformBean implements Serializable{
 
 	public void setIssuedCollectorId(int issuedCollectorId) {
 		this.issuedCollectorId = issuedCollectorId;
+	}
+
+	public int getFormTypeIdSearch() {
+		return formTypeIdSearch;
+	}
+
+	public List getFormTypesSearch() {
+		return formTypesSearch;
+	}
+
+	public void setFormTypeIdSearch(int formTypeIdSearch) {
+		this.formTypeIdSearch = formTypeIdSearch;
+	}
+
+	public void setFormTypesSearch(List formTypesSearch) {
+		this.formTypesSearch = formTypesSearch;
+	}
+
+	public List<CollectionInfo> getFormsInfo() {
+		return formsInfo;
+	}
+
+	public void setFormsInfo(List<CollectionInfo> formsInfo) {
+		this.formsInfo = formsInfo;
+	}
+
+	public String getTotalAmountPerForms() {
+		return totalAmountPerForms;
+	}
+
+	public void setTotalAmountPerForms(String totalAmountPerForms) {
+		this.totalAmountPerForms = totalAmountPerForms;
+	}
+
+	public Date getFromFormDate() {
+		if(fromFormDate==null) {
+			fromFormDate = DateUtils.getDateToday();
+		}
+		return fromFormDate;
+	}
+
+	public Date getToFormDate() {
+		if(toFormDate==null) {
+			toFormDate = DateUtils.getDateToday();
+		}
+		return toFormDate;
+	}
+
+	public void setFromFormDate(Date fromFormDate) {
+		this.fromFormDate = fromFormDate;
+	}
+
+	public void setToFormDate(Date toFormDate) {
+		this.toFormDate = toFormDate;
+	}
+
+	public int getCollectorIdSearch() {
+		return collectorIdSearch;
+	}
+
+	public List getCollectorSearch() {
+		return collectorSearch;
+	}
+
+	public void setCollectorIdSearch(int collectorIdSearch) {
+		this.collectorIdSearch = collectorIdSearch;
+	}
+
+	public void setCollectorSearch(List collectorSearch) {
+		this.collectorSearch = collectorSearch;
 	}
 
 

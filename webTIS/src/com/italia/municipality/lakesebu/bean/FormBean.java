@@ -248,9 +248,14 @@ public class FormBean implements Serializable{
 		String XML_FOLDER = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
 				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue() +
 				"xml" + AppConf.SEPERATOR.getValue();  
-		
 		String monthlyReportName = DateUtils.getMonthName(getMonthId()).toUpperCase() + "-" + DateUtils.getCurrentYear();
-		setSeriesForm(new ArrayList<Form11Report>());
+		
+		
+		File xmlFile = new File(XML_FOLDER + monthlyReportName + ".xml");
+		
+		if(xmlFile.isFile()) {//if file present
+		setSeriesForm(new ArrayList<Form11Report>());	
+		//System.out.println("File is present");
 		RCDReader xml = RCDReader.readXML(XML_FOLDER + monthlyReportName + ".xml", true);
 		for(RCDFormSeries s : xml.getRcdFormSeries()) {
 			Form11Report sr = new Form11Report();
@@ -279,6 +284,10 @@ public class FormBean implements Serializable{
 			getSeriesForm().add(sr);
 		}
 		printMonth();
+		}else {//else create the file
+			//System.out.println("File is not present... creating new file");
+			buildFormData();
+		}
 	}
 	
 	private void printMonth() {
@@ -380,7 +389,8 @@ public class FormBean implements Serializable{
 	}
 	
 	private RCDReader buildFormData() {
-		String monthlyReportName = DateUtils.getMonthName(DateUtils.getCurrentMonth()).toUpperCase() + "-" + DateUtils.getCurrentYear();
+		//String monthlyReportName = DateUtils.getMonthName(DateUtils.getCurrentMonth()).toUpperCase() + "-" + DateUtils.getCurrentYear();
+		String monthlyReportName = DateUtils.getMonthName(getMonthId()).toUpperCase() + "-" + DateUtils.getCurrentYear();
 		String collector = "FERDINAND L. LOPEZ";
 		String[] dates = DateUtils.getCurrentDateYYYYMMDD().split("-");
 		
@@ -408,7 +418,7 @@ public class FormBean implements Serializable{
 		dt.setSeriesTo("");
 		dt.setAmount("0");
 		dtls.add(dt);
-		
+		//System.out.println("checking series >> " + seriesForm!=null? seriesForm.size() : "null" );
 		for(Form11Report frm : seriesForm) {
 			
 			RCDFormSeries sr = new RCDFormSeries();
@@ -460,6 +470,7 @@ public class FormBean implements Serializable{
 		for(FormType form : FormType.values()) {
 			for(RCDFormSeries s : series) {
 				if(form.getName().equalsIgnoreCase(s.getName())) {
+					//System.out.println("FormType name =" + form.getName() + " == " + "series form = " + s.getName());
 					ss.add(s);
 				}
 			}

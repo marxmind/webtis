@@ -55,7 +55,8 @@ public enum AppConf {
 	THEME_STYLE("themeStyle"),
 	DTR_REPORT("dtr"),
 	FORM11_REPORT("form11"),
-	LICENSING_IMG("license-img");
+	LICENSING_IMG("license-img"),
+	SERVER_LOCAL("server-local");
 	
 	private String value;
 	

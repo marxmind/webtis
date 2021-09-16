@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.util.Properties;
 
 import com.italia.municipality.lakesebu.enm.AppConf;
+import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.security.SecureChar;
 
 import lombok.Getter;
@@ -21,8 +22,8 @@ import lombok.Setter;
 @Getter
 public class Conf {
 
-	private String CONFIG_FILE_NAME = "dbconf.max";
-	private String APP_FOLDER = AppConf.PRIMARY_DRIVE.getValue() + File.separator + AppConf.APP_CONFIG_FOLDER_NAME.getValue() + File.separator + AppConf.APP_CONFIG_SETTING_FOLDER.getValue() + File.separator;
+	
+	//private String APP_FOLDER = AppConf.PRIMARY_DRIVE.getValue() + File.separator + AppConf.APP_CONFIG_FOLDER_NAME.getValue() + File.separator + AppConf.APP_CONFIG_SETTING_FOLDER.getValue() + File.separator;
 	private static volatile Conf conf;
 	private String databaseBank;
 	private String databaseLand;
@@ -32,12 +33,14 @@ public class Conf {
 	private String databaseCashBook;
 	private String databasePort;
 	private String databaseUrl;
+	private String databaseUrlServer;
 	private String databaseDriver;
 	private String databaseSSL;
 	private String databaseTimeZone;
 	private String databaseUserName;
 	private String databasePassword;
 	private String serverDatabase;
+	private String serverDatabaseIp;
 	
 	private Conf() {
 		System.out.println("initializing database information...");
@@ -59,11 +62,11 @@ public class Conf {
 	}
 	
 	private void readConf() {
-		System.out.println("File: " + APP_FOLDER + CONFIG_FILE_NAME);
+		//System.out.println("File: " + APP_FOLDER + GlobalVar.CONFIG_DB_FILE_NAME);
 		try {
 			//URL path = ConnectDB.class.getResource(CONFIG_FILE_NAME);
 			
-			File file = new File(APP_FOLDER + CONFIG_FILE_NAME);
+			File file = new File(GlobalVar.APP_DATABASE_CONF);  //APP_FOLDER + GlobalVar.CONFIG_DB_FILE_NAME);
 			Properties prop = new Properties();
 			prop.load(new FileInputStream(file));
 			
@@ -83,12 +86,14 @@ public class Conf {
 			conf.setDatabaseCashBook(prop.getProperty("DATABASE_NAME_CASHBOOK"));
 			conf.setDatabaseDriver(prop.getProperty("DATABASE_DRIVER"));
 			conf.setDatabaseUrl(prop.getProperty("DATABASE_URL"));
+			conf.setDatabaseUrlServer(prop.getProperty("DATABASE_URL_SERVER"));
 			conf.setDatabasePort(prop.getProperty("DATABASE_PORT"));
 			conf.setDatabaseSSL(prop.getProperty("DATABASE_SSL"));
 			conf.setDatabaseTimeZone(prop.getProperty("DATABASE_SERVER_TIME_ZONE"));
 			conf.setDatabaseUserName(u_name);
 			conf.setDatabasePassword(pword);
 			conf.setServerDatabase(prop.getProperty("DATABASE_SERVER_DB_URL"));
+			conf.setServerDatabaseIp(prop.getProperty("DATABASE_SERVER_IP"));
 			
 		}catch(Exception e) {
 			System.out.println("Configuration file was not set. See error: " + e.getMessage());

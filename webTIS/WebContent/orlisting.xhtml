@@ -94,10 +94,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					<p:inputText value="#{oRListingBean.placeOfBirth}" placeholder="Place Of Birth/Organization" style="width: 15em"/>
 					<p:inputText value="#{oRListingBean.tinNo}" placeholder="TIN NO 000-000-000-00000" style="width: 15em"/>
 					
-					<p:inputText value="#{oRListingBean.hieghtDateReg}" placeholder="Height/Date Reg" style="width: 15em"/>
+					<p:inputText value="#{oRListingBean.hieghtDateReg}" placeholder="Height/Date Reg of Company" style="width: 15em"/>
 					<p:inputText value="#{oRListingBean.weight}" placeholder="Weight" style="width: 15em" disabled="#{oRListingBean.enableBirthday}"/>
 					
-					<p:inputText value="#{oRListingBean.customerAddress}" placeholder="Citizen/Company Address" style="width: 15em"/>
+					<p:inputText value="#{oRListingBean.customerAddress}" placeholder="Company Address" style="width: 15em"/>
 					<p:inputText value="#{oRListingBean.citizenshipOrganization}" placeholder="Citizenship/Kind of Organization" style="width: 15em"/>
 					
 					<p:selectOneMenu id="civilId" value="#{oRListingBean.civilStatusId}" style="width: 15em" disabled="#{oRListingBean.enableBirthday}">
@@ -448,13 +448,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					<p:textEditor id="idContentAnalys" toolbarVisible="false" widgetVar="msgComposeText" value="#{oRListingBean.textContent}" readonly="true"/>
 	</p:dialog>				
 	
-	
+	<p:commandButton title="Sync" icon="fa fa-compass" id="syncButton" oncomplete="PF('dlgCam').show();"  style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 300px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	<p:commandButton title="Send" update="dataSendOr"  icon="fa fa-send" actionListener="#{sendOrServerBean.loadFiles}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 350px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 	<p:commandButton title="Open Camera" icon="fa fa-camera" id="startButton" oncomplete="PF('dlgCam').show();"  style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 400px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 	<p:commandButton title="Payment Name Lookup" icon="fa fa-search" actionListener="#{oRListingBean.loadPaymentNames}" update="dataId idSearchPname dataSugId" oncomplete="PF('selectDialog').show();" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 450px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 	
 	<p:commandButton title="Click to save" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId searchid msg"  icon="fa fa-floppy-o" actionListener="#{oRListingBean.saveData}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 500px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
 			<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 	</p:commandButton>
+	
 	
 	
 	
@@ -616,7 +618,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	 
 <ui:include src="loader.xhtml" />
-<ui:include src="menu.xhtml" />		
+<ui:include src="menu.xhtml" />
+<ui:include src="sendingor.xhtml" />			
 </h:form>
 </h:body>
 </html>

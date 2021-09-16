@@ -66,6 +66,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             	<p:toolbar id="tbForm" style="#{skin.toolbar}">
     		<f:facet name="left">
     				<p:commandButton value="Form Series History" onclick="PF('dlgCSeries').show()"/>
+    				<p:commandButton value="Show Income Per Forms" actionListener="#{logformBean.loadFormDetails}" update="tbFormPer formData"/>
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton update="gridId listForm" value="New" icon="fa fa-file-o" actionListener="#{logformBean.clear}">
@@ -580,7 +581,108 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		
 	</p:dialog>
 	
-	
+	<p:dialog widgetVar="dlgPerForms" width="1000" position="center top" height="700" header="Forms Details Collection" closeOnEscape="true" closable="false">
+		<p:toolbar id="tbFormPer" style="#{skin.toolbar}">
+    		<f:facet name="left">
+    				<p:selectOneMenu id="frmColFormId" value="#{logformBean.collectorIdSearch}" style="width: 12em" filter="true" filterMatchMode="contains">
+						<f:selectItems value="#{logformBean.collectorSearch}"/>
+						<p:ajax event="change" listener="#{logformBean.loadForms}" update="formData" />
+					</p:selectOneMenu>
+    				<p:selectOneMenu id="frmFormId" value="#{logformBean.formTypeIdSearch}" style="width: 12em" filter="true" filterMatchMode="contains">
+						<f:selectItems value="#{logformBean.formTypesSearch}"/>
+						<p:ajax event="change" listener="#{logformBean.loadForms}" update="formData" />
+					</p:selectOneMenu>
+    				<p:calendar value="#{logformBean.fromFormDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 12em">
+    					<p:ajax event="dateSelect" listener="#{logformBean.loadForms}" update="formData" />
+    				</p:calendar>
+    				<p:calendar value="#{logformBean.toFormDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 12em">
+    					<p:ajax event="dateSelect" listener="#{logformBean.loadForms}" update="formData" />
+    				</p:calendar>
+    				
+			</f:facet>		
+    		<f:facet name="right">
+    				<p:commandButton value="Close" onclick="PF('dlgPerForms').hide()"/>
+    		</f:facet>
+		</p:toolbar> 
+		
+		<p:dataTable id="formData" value="#{logformBean.formsInfo}" var="fm" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="10,20,30,40,50,100"
+                         scrollable="true" paginatorPosition="top" paginatorAlwaysVisible="true">
+                         
+                         <f:facet name="{Exporters}">
+                       				<div class="ui-inputgroup">
+                         			<p:menuButton id="exeForm" value="Exports" style="float: left">
+										<p:menuitem value="Download Excel" ajax="false" immediate="true" icon="fa fa-file-xls-o" target="_blank">
+											<p:dataExporter type="xls" target="formData" fileName="formdata" pageOnly="false"/>
+										</p:menuitem>
+									</p:menuButton> 
+									</div>
+            				</f:facet>
+                         
+                         
+                         <p:columnGroup type="header">
+								<p:row>
+									<p:column rowspan="2" headerText="Date Reported" width="100"/>
+									<p:column rowspan="2" headerText="Collector" width="100"/>
+									<p:column colspan="4" headerText="Series" width="300"/>
+									<p:column rowspan="2" headerText="Amount" width="100"/>
+								</p:row>
+								<p:row>
+									<p:column colspan="1" headerText="Form" width="150"/>
+				                    <p:column colspan="1" headerText="From" width="50"/>
+				                    <p:column colspan="1" headerText="To"  width="50"/>
+				                     <p:column colspan="1" headerText="Qty" width="50"/>
+			                	</p:row>
+							</p:columnGroup>
+							
+							
+                         
+                         
+                         <p:column>
+            						<p:outputLabel value="#{fm.receivedDate}"/>
+            			 </p:column>
+            			 
+            			 <p:column >
+            						<p:outputLabel value="#{fm.collector.name}"/>
+            			 </p:column>
+                         
+                         <p:column>
+            					<p:outputLabel value="#{fm.formTypeName}"/>
+            			 </p:column>
+            			 
+            			 <p:column>
+            						<p:outputLabel value="#{fm.beginningNo}"/>
+            			 </p:column>
+            			 
+            			 <p:column>
+            						<p:outputLabel value="#{fm.endingNo}"/>
+            			 </p:column>
+            			 
+            			 <p:column>
+            						<p:outputLabel value="#{fm.pcs}"/>
+            			 </p:column>
+            			 
+            			 <p:column>
+            						<p:outputLabel value="#{fm.amount}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            			 </p:column>
+                         
+                      <p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="2" headerText="amoun"/>
+							<p:column rowspan="1" headerText="#{logformBean.totalAmountPerForms}"/>
+							
+						</p:row>
+					</p:columnGroup>   
+					
+					<f:facet name="header">
+			            <span class="p-text-bold" style="font-size: 2em">Total: #{logformBean.totalAmountPerForms}</span>
+			        </f:facet>
+        </p:dataTable>                 
+		
+	</p:dialog>
 	
 	
 	<ui:include src="loader.xhtml" />
