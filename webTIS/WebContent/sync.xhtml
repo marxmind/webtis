@@ -1,0 +1,41 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h = "http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      >
+ 
+    <ui:composition>
+    		
+    		<script>
+				function showFetch() {
+					$("#onPid").show();
+				}
+				function hideFetch() {
+					$("#onPid").hide();
+				}
+			</script>
+    		<p:growl id="msgFetch" showDetail="true" life="2000" />
+    		<p:dialog widgetVar="dlgFetch" width="700" height="700" header="Fetch to server" closable="true" modal="true">
+    		
+    		<p:toolbar id="tbFetch">
+    		<f:facet name="left">
+    			<p:commandButton update="dataFetch msgFetch" value="Fetch Data From Server" icon="fa fa-cloud-download" actionListener="#{syncBean.fetchDataFromServer}" onclick="showFetch()" oncomplete="hideFetch()"/>
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton update="dataFetch msgFetch" value="Update Local Data" icon="fa fa-desktop" actionListener="#{syncBean.uploadData}" onclick="showFetch()" oncomplete="hideFetch()"/>
+    		</f:facet>
+			</p:toolbar> 
+			<div id="onPid" style="display:none">
+    			<p:progressBar id="progressFetch" style="height:6px" mode="indeterminate"/>
+    		</div>
+    		<p:inputTextarea id="dataFetch" value="#{syncBean.notify}" cols="70" rows="25" readonly="true"/>		
+    				 
+    				 
+    		</p:dialog>
+    	
+			
+    
+    </ui:composition>
+</html>

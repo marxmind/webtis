@@ -1,0 +1,138 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h = "http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:my="http://java.sun.com/jsf/composite/my"  
+      >
+ 
+    <ui:composition>
+    		
+    		<p:growl id="msgArticle" showDetail="true" life="2000" />
+    		<p:dialog widgetVar="dlgArticle" width="1000" height="900" position="right top" header="Revenue Code" closable="true" modal="true">
+    		
+    		<p:tabView prependId="false" cache="true" id="tabRevenue">
+    		
+    		<p:ajax event="tabChange" listener="#{articleBean.onChange}" update="dataRevenue dataSubRevenue"/>
+    		
+    		<p:tab title="Article" rendered="#{articleBean.normalUser}">
+    			
+    		<p:toolbar id="tbFormArticle">
+    		<f:facet name="left">
+    			<p:inputText value="#{articleBean.searchArticle}" placeholder="Search..." style="width: 25em">
+    				<p:ajax event="keyup" listener="#{articleBean.loadArticle}" update="dataRevenue" />
+    			</p:inputText>
+    		</f:facet>
+    		<f:facet name="right"/>
+			</p:toolbar> 
+    			
+    		
+    		 <p:dataTable id="dataRevenue" value="#{articleBean.articles}" var="tx" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100" paginatorAlwaysVisible="false" editable="true" editMode="cell" rowKey="#{tx.id}"
+                         paginatorPosition="top" reflow="true" emptyMessage="No data available">
+                         
+                         <p:ajax event="cellEdit"  listener="#{articleBean.onCellEditArticle}" update="dataRevenue msgArticle" />	
+                         
+                         <p:column headerText="Article" width="100">
+								<p:cellEditor>
+						              	  <f:facet name="output"><h:outputText value="#{tx.code}" /></f:facet>
+						                  <f:facet name="input">
+						                  <p:inputText  placeholder="Description" value="#{tx.code}" />
+						                  </f:facet>
+						        </p:cellEditor>
+						 </p:column>
+						 
+						 <p:column headerText="Name" width="100">
+								<p:cellEditor>
+						              	  <f:facet name="output"><h:outputText value="#{tx.name}" /></f:facet>
+						                  <f:facet name="input">
+						                  <p:inputText  placeholder="Description" value="#{tx.name}" />
+						                  </f:facet>
+						        </p:cellEditor>
+						 </p:column>
+						 
+						 <p:column headerText="Description" width="100">
+								<p:cellEditor>
+						              	  <f:facet name="output"><h:outputText value="#{tx.description}" /></f:facet>
+						                  <f:facet name="input">
+						                  <p:inputText  placeholder="Description" value="#{tx.description}" />
+						                  </f:facet>
+						        </p:cellEditor>
+						 </p:column>
+						 
+						 <p:column headerText="Action" width="20">
+						 	<p:commandButton title="Click to save" update="dataRevenue msgArticle"  icon="fa fa-floppy-o" actionListener="#{articleBean.saveArticle(tx)}">
+									<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+							</p:commandButton>
+						 </p:column>
+    		</p:dataTable>
+    		
+    		</p:tab><!-- End of article -->
+    		
+    		<p:tab title="Sub Article" rendered="#{articleBean.normalUser}">
+    			
+    			<p:toolbar id="tbFormArticleSub">
+    		<f:facet name="left">
+    			<p:inputText value="#{articleBean.searchSubArticle}" placeholder="Search..." style="width: 25em">
+    				<p:ajax event="keyup" listener="#{articleBean.loadArticle}" update="dataRevenue" />
+    			</p:inputText>
+    		</f:facet>
+    		<f:facet name="right"/>
+			</p:toolbar> 
+    			
+    		
+    		 <p:dataTable id="dataSubRevenue" value="#{articleBean.subArticles}" var="tx" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100" paginatorAlwaysVisible="false" editable="true" editMode="cell" rowKey="#{tx.id}"
+                         paginatorPosition="top" reflow="true" emptyMessage="No data available">
+                         
+                         <p:ajax event="cellEdit"  listener="#{articleBean.onCellEditSubArticle}" update="dataSubRevenue msgArticle" />	
+                         
+                         <p:column headerText="Article Code" width="100">
+								<p:cellEditor>
+						              	  <f:facet name="output"><h:outputText value="#{tx.article.code}" /></f:facet>
+						                  <f:facet name="input">
+						                  		<p:selectOneMenu value="#{tx.articleId}"  filter="true" filterMatchMode="contains" styleClass="js-tilt" style="width: 15em">
+									      			<f:selectItems value="#{tx.articles}"/>
+						      					</p:selectOneMenu>
+						                  </f:facet>
+						        </p:cellEditor>
+						 </p:column>
+                         
+                         <p:column headerText="Name" width="100">
+								<p:cellEditor>
+						              	  <f:facet name="output"><h:outputText value="#{tx.name}" /></f:facet>
+						                  <f:facet name="input">
+						                  <p:inputText  placeholder="Description" value="#{tx.name}" />
+						                  </f:facet>
+						        </p:cellEditor>
+						 </p:column>
+						 
+						 
+						 
+						 <p:column headerText="Action" width="20">
+						 	<p:commandButton title="Click to save" update="dataSubRevenue msgArticle"  icon="fa fa-floppy-o" actionListener="#{articleBean.saveArticleSub(tx)}">
+									<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+							</p:commandButton>
+						 </p:column>
+    		</p:dataTable>
+    			
+    		</p:tab>
+    		
+    		<p:tab title="Particulars" rendered="#{articleBean.normalUser}">
+    		
+    		</p:tab>
+    		
+    		<p:tab title="Revenue Code Details">
+    		
+    		</p:tab>
+    		
+    		</p:tabView>
+    		
+    		</p:dialog>
+    		
+    
+    </ui:composition>
+</html>
