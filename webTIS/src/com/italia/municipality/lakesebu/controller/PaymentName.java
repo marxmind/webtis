@@ -12,6 +12,13 @@ import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.utils.LogU;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * 
  * @author Mark Italia
@@ -20,6 +27,12 @@ import com.italia.municipality.lakesebu.utils.LogU;
  *
  *
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
+@ToString
 public class PaymentName {
 
 	private long id;
@@ -28,6 +41,15 @@ public class PaymentName {
 	private String name;
 	private double amount;
 	private int isActive;
+	private String description;
+	private List pyNames;
+	private long pyId;
+	
+	private long taxGroupId;//reference to account group
+	
+	public static List<PaymentName> retrieve(long id){
+		return retrieve(" AND accntgrpid=" + id + " ORDER BY pyname", new String[0]);
+	}
 	
 	public static List<PaymentName> retrieve(String sqlAdd, String[] params){
 		List<PaymentName> names = new ArrayList<PaymentName>();
@@ -60,6 +82,8 @@ public class PaymentName {
 			try{name.setName(rs.getString("pyname"));}catch(NullPointerException e){}
 			try{name.setAmount(rs.getDouble("pyamount"));}catch(NullPointerException e){}
 			try{name.setIsActive(rs.getInt("isactivepy"));}catch(NullPointerException e){}
+			try{name.setDescription(rs.getString("description"));}catch(NullPointerException e){}
+			try{name.setTaxGroupId(rs.getLong("accntgrpid"));}catch(NullPointerException e){}
 			
 			names.add(name);
 		}
@@ -116,8 +140,10 @@ public class PaymentName {
 				+ "pyaccntcode,"
 				+ "pyname,"
 				+ "pyamount,"
-				+ "isactivepy)" 
-				+ "values(?,?,?,?,?,?)";
+				+ "isactivepy,"
+				+ "description,"
+				+ "accntgrpid)" 
+				+ "values(?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -145,12 +171,16 @@ public class PaymentName {
 		ps.setString(cnt++, name.getName());
 		ps.setDouble(cnt++, name.getAmount());
 		ps.setInt(cnt++, name.getIsActive());
+		ps.setString(cnt++, name.getDescription());
+		ps.setLong(cnt++, name.getTaxGroupId());
 		
 		LogU.add(name.getDateTrans());
 		LogU.add(name.getAccountingCode());
 		LogU.add(name.getName());
 		LogU.add(name.getAmount());
 		LogU.add(name.getIsActive());
+		LogU.add(name.getDescription());
+		LogU.add(name.getTaxGroupId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -172,8 +202,10 @@ public class PaymentName {
 				+ "pyaccntcode,"
 				+ "pyname,"
 				+ "pyamount,"
-				+ "isactivepy)" 
-				+ "values(?,?,?,?,?,?)";
+				+ "isactivepy,"
+				+ "description,"
+				+ "accntgrpid)" 
+				+ "values(?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -201,12 +233,16 @@ public class PaymentName {
 		ps.setString(cnt++, getName());
 		ps.setDouble(cnt++, getAmount());
 		ps.setInt(cnt++, getIsActive());
+		ps.setString(cnt++, getDescription());
+		ps.setLong(cnt++, getTaxGroupId());
 		
 		LogU.add(getDateTrans());
 		LogU.add(getAccountingCode());
 		LogU.add(getName());
 		LogU.add(getAmount());
 		LogU.add(getIsActive());
+		LogU.add(getDescription());
+		LogU.add(getTaxGroupId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -225,7 +261,9 @@ public class PaymentName {
 				+ "pydatetrans=?,"
 				+ "pyaccntcode=?,"
 				+ "pyname=?,"
-				+ "pyamount=?" 
+				+ "pyamount=?,"
+				+ "description=?,"
+				+ "accntgrpid=?" 
 				+ " WHERE pyid=?";
 		
 		PreparedStatement ps = null;
@@ -243,12 +281,16 @@ public class PaymentName {
 		ps.setString(cnt++, name.getAccountingCode());
 		ps.setString(cnt++, name.getName());
 		ps.setDouble(cnt++, name.getAmount());
+		ps.setString(cnt++, name.getDescription());
+		ps.setLong(cnt++, name.getTaxGroupId());
 		ps.setLong(cnt++, name.getId());
 		
 		LogU.add(name.getDateTrans());
 		LogU.add(name.getAccountingCode());
 		LogU.add(name.getName());
 		LogU.add(name.getAmount());
+		LogU.add(name.getDescription());
+		LogU.add(name.getTaxGroupId());
 		LogU.add(name.getId());
 		
 		LogU.add("executing for saving...");
@@ -269,7 +311,9 @@ public class PaymentName {
 				+ "pydatetrans=?,"
 				+ "pyaccntcode=?,"
 				+ "pyname=?,"
-				+ "pyamount=?" 
+				+ "pyamount=?,"
+				+ "description=?,"
+				+ "accntgrpid=?" 
 				+ " WHERE pyid=?";
 		
 		PreparedStatement ps = null;
@@ -287,12 +331,16 @@ public class PaymentName {
 		ps.setString(cnt++, getAccountingCode());
 		ps.setString(cnt++, getName());
 		ps.setDouble(cnt++, getAmount());
+		ps.setString(cnt++, getDescription());
+		ps.setLong(cnt++, getTaxGroupId());
 		ps.setLong(cnt++, getId());
 		
 		LogU.add(getDateTrans());
 		LogU.add(getAccountingCode());
 		LogU.add(getName());
 		LogU.add(getAmount());
+		LogU.add(getDescription());
+		LogU.add(getTaxGroupId());
 		LogU.add(getId());
 		
 		LogU.add("executing for saving...");
@@ -433,44 +481,5 @@ public class PaymentName {
 		}catch(SQLException s){}
 		
 	}
-	
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public String getDateTrans() {
-		return dateTrans;
-	}
-	public void setDateTrans(String dateTrans) {
-		this.dateTrans = dateTrans;
-	}
-	public String getAccountingCode() {
-		return accountingCode;
-	}
-	public void setAccountingCode(String accountingCode) {
-		this.accountingCode = accountingCode;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public double getAmount() {
-		return amount;
-	}
-	public void setAmount(double amount) {
-		this.amount = amount;
-	}
-	public int getIsActive() {
-		return isActive;
-	}
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-	
-	
 	
 }

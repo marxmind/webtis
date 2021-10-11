@@ -11,21 +11,22 @@ import java.io.File;
  */
 public class GlobalVar {
 	
+	public static final String APP_NAME = "webtis";
 	public static final String SEP = File.separator;
-	public static final String APP_CONF_DIR = "C:"+SEP+"webtis"+SEP+"conf"+SEP;
-	public static final String APP_DATABASE_CONF = "C:"+SEP+"webtis"+SEP+"conf"+SEP+"dbconf.max";
-	public static final String LOG_FOLDER = "C:"+SEP+"webtis"+SEP+"log"+SEP;
+	public static final String APP_CONF_DIR = "C:"+SEP+APP_NAME+SEP+"conf"+SEP;
+	public static final String APP_DATABASE_CONF = "C:"+SEP+APP_NAME+SEP+"conf"+SEP+"dbconf.max";
+	public static final String LOG_FOLDER = "C:"+SEP+APP_NAME+SEP+"log"+SEP;
 	public static final boolean LOG_ENABLE = true;
-	public static final String LICENSE_DATA_FILE = "C:"+SEP+"webtis"+SEP+"conf"+SEP+"dbconf.max";
-	public static final String LICENSE_FILE_NAME= "C:"+SEP+"webtis"+SEP+"conf"+SEP+"data.max";
+	public static final String LICENSE_DATA_FILE = "C:"+SEP+APP_NAME+SEP+"conf"+SEP+"dbconf.max";
+	public static final String LICENSE_FILE_NAME= "C:"+SEP+APP_NAME+SEP+"conf"+SEP+"data.max";
 	public static final String LICENSE_EXP = "";
-	public static final String UPLOADED_EXCEL_PATH_FOLDER = "C:"+SEP+"webtis"+SEP+"upload"+SEP;
+	public static final String UPLOADED_EXCEL_PATH_FOLDER = "C:"+SEP+APP_NAME+SEP+"upload"+SEP;
 	public static final String BARANGAY_CODE = "MUN ";
 	public static final String BARANGAY="Poblaction";
 	public static final String MUNICIPALITY="Lake Sebu";
 	public static final String PROVINCE="South Cotabato";
-	public static final String OWNER_IMG_FOLDER="C:"+SEP+"webtis"+SEP+"license"+SEP+"img"+SEP;
-	public static final String OWNER_IMG_PATH="C:"+SEP+"webtis"+SEP+"license"+SEP;
+	public static final String OWNER_IMG_FOLDER="C:"+SEP+APP_NAME+SEP+"license"+SEP+"img"+SEP;
+	public static final String OWNER_IMG_PATH="C:"+SEP+APP_NAME+SEP+"license"+SEP;
 	public static final String WATER_RENTAL_CERTIFICATE_RPT="water_rental_certificate";
 	public static final String WATER_RENTAL_PAYMENT_HISTORY_RPT="water_rental_ors";
 	public static final String MTO_OR_CEDULA_SIGNATORY="FERDINAND L. LOPEZ";
@@ -37,6 +38,11 @@ public class GlobalVar {
 	public static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
 	public static final String COUNTER_REPORT_FILE = "counter_report.tis";
 	public static final String COLLECTOR_MODE_FILE="collector-mode.tis";
-	public static final String UPLOAD_XML = "C:"+SEP+"webtis"+SEP+"upload-xml"+SEP;
-	public static final String COMMIT_XML = "C:"+SEP+"webtis"+SEP+"commit-xml"+SEP;
+	public static final String UPLOAD_XML = "C:"+SEP+APP_NAME+SEP+"upload-xml"+SEP;
+	public static final String COMMIT_XML = "C:"+SEP+APP_NAME+SEP+"commit-xml"+SEP;
+	public static final String COMMIT_XML_ERROR = COMMIT_XML + "error" + SEP;
+	public static final String COMMIT_XML_EXIST = COMMIT_XML+"exist"+SEP;
+	public static final String COMMIT_XML_UNPROCESSED = COMMIT_XML+"unprocessed"+SEP;
+	public static final String DOWNLOADED_DATA_FOLDER = "C:" + SEP + APP_NAME + SEP + "downloaded-data" + SEP ; //data from server
+	public static final String COMPLETED_DATA_FOLDER = DOWNLOADED_DATA_FOLDER + "completed-data" + SEP ; //data from server
 }

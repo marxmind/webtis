@@ -24,7 +24,8 @@
     		<p:toolbar id="tbForm" style="#{skin.toolbar}">
     		<f:facet name="left"/>
     		<f:facet name="right">
-    			<p:commandButton update="dataSendOr msgUpload" value="Upload" icon="fa fa-cloud-upload" actionListener="#{sendOrServerBean.upload}" onclick="showProgress()" oncomplete="hideProgress()"/>
+    			<p:commandButton title="Reload" icon="fa fa-compass" id="syncUp" value="Reload" actionListener="#{sendOrServerBean.loadFiles}" update="dataSendOr"/>
+    			<p:commandButton update="dataSendOr msgUpload" value="Upload" icon="fa fa-upload" actionListener="#{sendOrServerBean.upload}" onclick="showProgress()" oncomplete="hideProgress()"/>
     		</f:facet>
 			</p:toolbar> 
 					

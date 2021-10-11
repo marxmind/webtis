@@ -29,6 +29,66 @@ public class ORNameList {
 	private Customer customer;
 	private PaymentName paymentName;
 	
+	public static List<ORNameList> retrieveGroupByPayName(String sqlAdd, String[] params) {
+		
+		List<ORNameList> orns = new ArrayList<ORNameList>();
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		
+		String tableNameList = "nameL";
+		String tableOr = "orl";
+		String tableName = "pay";
+		
+		String sql = "SELECT nameL.olid, sum(nameL.olamount) as amount,orl.orid,orl.ordatetrans,orl.aform, orl.ornumber,pay.pyid,pay.pyname,pay.accntgrpid  FROM ornamelist " + tableNameList + ", orlisting " + tableOr + ", paymentname " + tableName + " WHERE " + tableOr + ".isactiveor=1 AND " +
+				tableNameList + ".orid=" + tableOr +".orid AND " +
+				tableNameList + ".pyid=" + tableName + ".pyid ";
+		
+		sql += sqlAdd + " Group By " + tableName + ".pyname";
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		if(params!=null && params.length>0){
+			
+			for(int i=0; i<params.length; i++){
+				ps.setString(i+1, params[i]);
+			}
+			
+		}
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			ORNameList orn = new ORNameList();
+			try{orn.setId(rs.getLong("olid"));}catch(NullPointerException e){}
+			
+			ORListing or = new ORListing();
+			try{or.setId(rs.getLong("orid"));}catch(NullPointerException e){}
+			try{or.setDateTrans(rs.getString("ordatetrans"));}catch(NullPointerException e){}
+			try{or.setOrNumber(rs.getString("ornumber"));}catch(NullPointerException e){}
+			try{or.setFormType(rs.getInt("aform"));}catch(NullPointerException e){}
+			orn.setOrList(or);
+			
+			PaymentName name = new PaymentName();
+			try{name.setId(rs.getLong("pyid"));}catch(NullPointerException e){}
+			try{name.setName(rs.getString("pyname"));}catch(NullPointerException e){}
+			try{name.setTaxGroupId(rs.getLong("accntgrpid"));}catch(NullPointerException e){}
+			try{name.setAmount(rs.getDouble("amount"));}catch(NullPointerException e){}
+			orn.setPaymentName(name);
+			
+			orns.add(orn);
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return orns;
+	}
+	
+	
 	public static List<ORNameList> retrieve(String sqlAdd, String[] params){
 		List<ORNameList> orns = new ArrayList<ORNameList>();
 		

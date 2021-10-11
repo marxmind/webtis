@@ -1,14 +1,20 @@
 package com.italia.municipality.lakesebu.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.DocumentBuilder;
@@ -73,17 +79,57 @@ public class OrlistingXML {
 	//private List<ORNameList> orlisting;
 	private List<PaymentName> paynames;
 	
+	private static String[] special = {"&","Ñ","ñ"};
+	private static String[] counterSpecialName = {"ampersand","enyebig","enyesmall"};
+	
 	public static void main(String[] args) {
 		
-		Conf conf = Conf.getInstance();
-		if(CheckServerConnection.pingIp(conf.getServerDatabaseIp())) {//check if ip reachable else assigned localhost
-			//check if server is accessible
-			System.out.println("server ip " + conf.getServerDatabaseIp() + " is accessible...");
-		}else {
-			System.out.println("server " + conf.getServerDatabaseIp() + " is not accessible...");
+		String name = "FRANCISCO ESPAÑOLA";
+		String val = OrlistingXML.convertSpecialChar(name);
+		System.out.println("Convert: " + val);
+		System.out.println("Rollback: " + OrlistingXML.convertSpecialCharToRegular(val));
+		
+	}
+	
+	public static Map<String, String> mapChar(){
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		map.put("&", "ampersand");
+		map.put("Ñ", "enyebig");
+		map.put("ñ", "enyesmall");
+		
+		return map;
+	}
+	
+	public static String convertSpecialChar(String val) {
+		
+		String tmp = "";
+		for(char c : val.toCharArray()) {
+			if(mapChar().containsKey(c+"")) {
+				tmp += mapChar().get(c+"");
+			}else {
+				tmp += c+"";
+			}
 		}
 		
-		//retrieveXMLforServerSaving();
+		return tmp;
+	}
+	
+	public static String convertSpecialCharToRegular(String val) {
+		
+		int count = 0;
+		for(String s : counterSpecialName) {
+			val = val.replace(s, special[count++]); 
+		}
+		
+		return val;
+	}
+	
+	public static String convert(String val, boolean isConvert) {
+		if(isConvert) {
+			return convertSpecialChar(val);
+		}else {
+			return convertSpecialCharToRegular(val);
+		}
 	}
 	
 	public static boolean checkingConnection() {
@@ -141,7 +187,7 @@ public class OrlistingXML {
 		    	OrlistingXML xml = null;
 		    	
 		    	try{xml = readXML(file.getName());}catch(Exception e) {}
-		    	System.out.println("Fullname:" + xml.getFullName());
+		    	System.out.println("Fullname:" + xml.getFullName() + " on file " + file.getName());
 		    	
 		    	if(xml!=null && checkORTransactionIfNotExist(xml)) {//return true if exist
 		    	
@@ -162,22 +208,95 @@ public class OrlistingXML {
 			    		}else {
 			    			System.out.println("failed to processed official receipt....rollback changes... removing id on orlisting id="+ or.getId());
 			    			//rollback saving on orlisting table
+			    			errorFile(file);
 			    			or.delete();
 			    		}
 			    		
 			    	}else {
 			    		System.out.println("saving official receipt to server was not successfully processed...");
+			    		unprocessedFile(file);
 			    	}
 		    	}
 		    	
 		    	}else {
 		    		System.out.println("data is exist...");
+		    		existFile(file);
 		    	}
 		    	
 		    }else {
 		    	System.out.println("No file to retrieve...");
 		    }
 		}    
+		
+	}
+	
+	private static boolean copyFile(File source, File destination) {
+		 InputStream inStream = null;
+	     OutputStream outStream = null;
+	      
+	       try
+	       {
+	    	   
+	    	   inStream = new FileInputStream(source);
+	           outStream = new FileOutputStream(destination);
+	           
+	           byte[] buffer = new byte[1024];
+	           
+	           int length;
+	           while ((length = inStream.read(buffer)) > 0)
+	           {
+	              outStream.write(buffer, 0, length);
+	           }
+	 
+	           if (inStream != null)
+	              inStream.close();
+	           if (outStream != null)
+	              outStream.close();
+	 
+	           System.out.println("File Copied..");
+	    	   return true;
+	       }
+	       catch(IOException e)
+	       {
+	          e.printStackTrace();
+	       }
+	       return false;
+	}
+	
+	private static void unprocessedFile(File unprocessed) {
+		File fileDir = new File(GlobalVar.COMMIT_XML_UNPROCESSED);
+		fileDir.mkdir();
+		
+		File newFile = new File(GlobalVar.COMMIT_XML_UNPROCESSED + unprocessed.getName());
+		if(copyFile(unprocessed, newFile)) {
+			unprocessed.delete();
+			System.out.println("unprocessed file has been transfered to " + fileDir.getAbsolutePath() + " file: " + unprocessed.getName());
+		}
+		
+	}
+	
+	private static void errorFile(File error) {
+		File fileDir = new File(GlobalVar.COMMIT_XML_ERROR);
+		fileDir.mkdir();
+		
+		File newFile = new File(GlobalVar.COMMIT_XML_ERROR + error.getName());
+		if(copyFile(error, newFile)) {
+			error.delete();
+			System.out.println("Error fi le has been transfered to " + fileDir.getAbsolutePath() + " file: " + error.getName());
+		}
+		
+	}
+	
+	private static void existFile(File exist) {
+		File fileDir = new File(GlobalVar.COMMIT_XML_EXIST);
+		fileDir.mkdir();
+		
+		File newFile = new File(GlobalVar.COMMIT_XML_EXIST + exist.getName());
+		
+		if(copyFile(exist, newFile)) {
+			exist.delete();
+			System.out.println("exist file has been transfered to " + fileDir.getAbsolutePath() + " file: " + exist.getName());
+		}
 		
 	}
 	
@@ -386,35 +505,39 @@ public class OrlistingXML {
 				
 				Node node = document.selectSingleNode("/orlisting");
 				
-				xml.setReg(node.selectSingleNode("reg").getText());
-				xml.setFirstName(node.selectSingleNode("firstname").getText());
-				xml.setMiddleName(node.selectSingleNode("middlename").getText());
-				xml.setLastName(node.selectSingleNode("lastname").getText());
-				xml.setFullName(node.selectSingleNode("fullname").getText());
-				xml.setBirthDate(node.selectSingleNode("birthdate").getText());
-				xml.setCivilStatus(node.selectSingleNode("civilstatus").getText());
-				xml.setUserId(node.selectSingleNode("userid").getText());
+				try{xml.setReg(node.selectSingleNode("reg").getText());}catch(Exception e) {}
+				try{xml.setFirstName(convert(node.selectSingleNode("firstname").getText(),false));}catch(Exception e) {}
+				try{xml.setMiddleName(convert(node.selectSingleNode("middlename").getText(),false));}catch(Exception e) {}
+				try{xml.setLastName(convert(node.selectSingleNode("lastname").getText(),false));}catch(Exception e) {}
+				try{xml.setFullName(convert(node.selectSingleNode("fullname").getText(),false));}catch(Exception e) {}
+				try{xml.setBirthDate(node.selectSingleNode("birthdate").getText());}catch(Exception e) {}
+				try{xml.setCivilStatus(node.selectSingleNode("civilstatus").getText());}catch(Exception e) {}
+				try{xml.setUserId(node.selectSingleNode("userid").getText());}catch(Exception e) {}
 				
-				xml.setDateTrans(node.selectSingleNode("datetrans").getText());
-				xml.setFormType(node.selectSingleNode("formtype").getText());
-				xml.setOrNumber(node.selectSingleNode("ornumber").getText());
-				xml.setOrStatus(node.selectSingleNode("status").getText());
-				xml.setCollectorId(node.selectSingleNode("collectorid").getText());
-				xml.setIsActive(node.selectSingleNode("isactive").getText());
-				xml.setFormInfo(node.selectSingleNode("forminfo").getText());
+				try{xml.setDateTrans(node.selectSingleNode("datetrans").getText());}catch(Exception e) {}
+				try{xml.setFormType(node.selectSingleNode("formtype").getText());}catch(Exception e) {}
+				try{xml.setOrNumber(node.selectSingleNode("ornumber").getText());}catch(Exception e) {}
+				try{xml.setOrStatus(node.selectSingleNode("status").getText());}catch(Exception e) {}
+				try{xml.setCollectorId(node.selectSingleNode("collectorid").getText());}catch(Exception e) {}
+				try{xml.setIsActive(node.selectSingleNode("isactive").getText());}catch(Exception e) {}
+				try{xml.setFormInfo(convert(node.selectSingleNode("forminfo").getText(),false));}catch(Exception e) {}
 				
 				List<PaymentName> pynames = new ArrayList<PaymentName>();
 				List<Node> dtls = document.selectNodes("/orlisting/details/payname");
 				for(Node n : dtls) {
 					PaymentName oname = new PaymentName();
-					oname.setId(Long.valueOf(n.selectSingleNode("pyid").getText()));
-					oname.setAmount(Double.valueOf(n.selectSingleNode("amount").getText()));
+					try{oname.setId(Long.valueOf(n.selectSingleNode("pyid").getText()));}catch(Exception e) {}
+					try{oname.setAmount(Double.valueOf(n.selectSingleNode("amount").getText()));}catch(Exception e) {}
 					pynames.add(oname);
 				}
 				xml.setPaynames(pynames);
 				
 				
-			}catch(DocumentException e) {}	
+			}catch(DocumentException e) {
+				System.out.println("Error Found for file " + fileName);
+				e.printStackTrace();
+				
+			}	
 		}
 		return xml;
 	}
@@ -428,8 +551,12 @@ public class OrlistingXML {
 		dir.mkdir();
 		File dirUpload = new File(GlobalVar.COMMIT_XML);
 		dirUpload.mkdir();
-		File file = new File(GlobalVar.UPLOAD_XML + col.getName() + "-" + cus.getFullname() + "-" + FormType.val(ors.getFormType()).getName() + "-" + ors.getDateTrans() + ".xml");
-		File fileUpload = new File(GlobalVar.COMMIT_XML + col.getName() + "-" + cus.getFullname() + "-" + FormType.val(ors.getFormType()).getName() + "-" + ors.getDateTrans() + ".xml");
+		//File file = new File(GlobalVar.UPLOAD_XML + col.getName() + "-" + cus.getFullname() + "-" + FormType.val(ors.getFormType()).getName() + "-" + ors.getDateTrans() + "-" + ors.getOrNumber() +".xml");
+		//File fileUpload = new File(GlobalVar.COMMIT_XML + col.getName() + "-" + cus.getFullname() + "-" + FormType.val(ors.getFormType()).getName() + "-" + ors.getDateTrans() + "-" + ors.getOrNumber() + ".xml");
+		
+		File file = new File(GlobalVar.UPLOAD_XML + FormType.val(ors.getFormType()).getName() + "-" + ors.getOrNumber() +".xml");
+		File fileUpload = new File(GlobalVar.COMMIT_XML  + FormType.val(ors.getFormType()).getName() + "-" + ors.getOrNumber() + ".xml");
+		
 		try {
 			PrintWriter pw = new PrintWriter(new FileWriter(file));
 			PrintWriter pwUpload = new PrintWriter(new FileWriter(fileUpload));
@@ -441,10 +568,10 @@ public class OrlistingXML {
 			
 			//customer info
 			sb.append("<reg>"+ DateUtils.getCurrentDateYYYYMMDD() +"</reg>");sb.append("\n");
-			sb.append("<firstname>"+ cus.getFirstname() +"</firstname>");sb.append("\n");
-			sb.append("<middlename>"+ cus.getMiddlename() +"</middlename>");sb.append("\n");
-			sb.append("<lastname>"+ cus.getLastname() +"</lastname>");sb.append("\n");
-			sb.append("<fullname>"+ cus.getFullname() +"</fullname>");sb.append("\n");
+			sb.append("<firstname>"+ convert(cus.getFirstname(),true) +"</firstname>");sb.append("\n");
+			sb.append("<middlename>"+ convert(cus.getMiddlename(),true) +"</middlename>");sb.append("\n");
+			sb.append("<lastname>"+ convert(cus.getLastname(),true) +"</lastname>");sb.append("\n");
+			sb.append("<fullname>"+ convert(cus.getFullname().trim(),true) +"</fullname>");sb.append("\n");
 			sb.append("<birthdate>"+ cus.getBirthdate() +"</birthdate>");sb.append("\n");
 			sb.append("<civilstatus>"+ cus.getCivilStatus() +"</civilstatus>");sb.append("\n");
 			//user
@@ -461,9 +588,9 @@ public class OrlistingXML {
 			
 			
 			if(ors.getForminfo()!=null && !ors.getForminfo().isEmpty() && ors.getForminfo().contains("<->")) {
-				sb.append("<forminfo>"+ ors.getForminfo().replace("<->", "@") +"</forminfo>");sb.append("\n");
+				sb.append("<forminfo>"+ convert(ors.getForminfo().replace("<->", "@"),true) +"</forminfo>");sb.append("\n");
 			}else {
-				sb.append("<forminfo>"+ ors.getForminfo() +"</forminfo>");sb.append("\n");
+				sb.append("<forminfo>"+ convert(ors.getForminfo(),true) +"</forminfo>");sb.append("\n");
 			}
 			
 			//details

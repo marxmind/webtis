@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
+import javax.faces.annotation.ManagedProperty;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -58,6 +59,7 @@ import com.italia.municipality.lakesebu.controller.PaymentName;
 import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.controller.ReportFields;
 import com.italia.municipality.lakesebu.controller.Reports;
+import com.italia.municipality.lakesebu.controller.TaxCodeGroup;
 import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.database.Conf;
 import com.italia.municipality.lakesebu.enm.AppConf;
@@ -75,6 +77,8 @@ import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.OrlistingXML;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -111,7 +115,7 @@ public class ORListingBean implements Serializable{
 	
 	private ORListing orRecordData;
 	private List<ORNameList> ornameListData;
-	private List<ORListing> ors = new ArrayList<ORListing>();//Collections.synchronizedList(new ArrayList<ORListing>());
+	private List<ORListing> ors = new ArrayList<ORListing>();
 	private String totalCollection;
 	
 	private String searchName;
@@ -208,6 +212,13 @@ public class ORListingBean implements Serializable{
 	
 	private String modeName="Collector Mode Off";
 	
+	@Setter @ Getter private List<TaxCodeGroup> groups;
+	@Setter @ Getter private String searchNameAll;
+	@Setter @ Getter private List<ORListing> orsAll;
+	@Setter @ Getter private String totalCollectionAll;
+	@Setter @ Getter private String notes;
+	
+	
 	@PostConstruct
 	public void init() {
 		
@@ -237,6 +248,37 @@ public class ORListingBean implements Serializable{
 		suggestedInfo();
 		
 		
+	}
+	
+	public void loadAllOrs() {
+		
+		String sql = "";
+		String[] params = new String[0];
+		double amount = 0d;
+		orsAll = new ArrayList<ORListing>();
+		
+		if(getSearchNameAll()!=null && !getSearchNameAll().isEmpty() && getSearchNameAll().length()>4) {
+			
+			
+		sql += " AND (cuz.fullname like '%"+ getSearchNameAll().replace("--", "") +"%' OR orl.ornumber like '%"+ getSearchNameAll().replace("--", "") +"%' OR orl.ordatetrans like '%"+ getSearchNameAll().replace("--", "") +"%' OR col.collectorname like '%"+ getSearchNameAll().replace("--", "") +"%' ) ";
+			
+			
+		}else {
+			sql += " LIMIT 10";
+		}
+			
+		
+		
+		for(ORListing o : ORListing.retrieve(sql, params)) {
+			if(FormStatus.CANCELLED.getId()!=o.getStatus()) {
+				amount += o.getAmount();
+			}	
+			orsAll.add(o);
+			
+		}
+		
+		
+		setTotalCollectionAll(Currency.formatAmount(amount));
 	}
 	
 	private UserDtls getUser() {
@@ -794,6 +836,33 @@ public class ORListingBean implements Serializable{
 			
 			
 		}
+		loadTaxGroup();
+	}
+	
+	public void loadTaxGroup() {
+		groups = new ArrayList<TaxCodeGroup>();
+		groups= TaxCodeGroup.retrieve("", new String[0]);
+	}
+	
+	public void loadPaymentDetails(TaxCodeGroup gp) {
+		namesData = new ArrayList<PaymentName>();
+		Map<Long, PaymentName> mapData = new HashMap<Long, PaymentName>();
+	
+		for(PaymentName py : gp.getGroups()) {
+			
+				long id = py.getId();
+				if(mapData!=null) {
+					if(!mapData.containsKey(id)) {
+						namesData.add(py);
+						mapData.put(id, py);
+						addSuggested(py);
+					}
+				}else {
+					namesData.add(py);
+					mapData.put(id, py);
+					addSuggested(py);
+				}
+			}
 		
 	}
 	
@@ -1356,7 +1425,22 @@ public class ORListingBean implements Serializable{
 		}
 		UserDtls user = Login.getUserLogin().getUserDtls();
 		
-		if(customer==null) {
+		boolean isOk = true;
+		if(getOrNumber()==null || getOrNumber().isEmpty()) {
+			isOk = false;
+			Application.addMessage(3, "Error", "Please provide official receipt");
+		}
+		if(getPayorName()==null || getPayorName().isEmpty()) {
+			isOk = false;
+			Application.addMessage(3, "Error", "Please provide payor name");
+		}
+		
+		if(getSelectedPaymentNameMap()==null) {
+			isOk = false;
+			Application.addMessage(3, "Error", "Please provide payment name");
+		}
+		
+		if(isOk && customer==null) {
 			customer = new com.italia.municipality.lakesebu.licensing.controller.Customer();
 			
 			if(getMapCustomer()!=null && getMapCustomer().size()>0) {
@@ -1370,7 +1454,7 @@ public class ORListingBean implements Serializable{
 					customer.setLastname(getLastName().toUpperCase());
 					customer.setUserDtls(user);
 					//customer.setFullname(getFirstName().toUpperCase() + " " + getLastName().toUpperCase());
-					customer.setFullname(getPayorName().toUpperCase());
+					customer.setFullname(getPayorName().toUpperCase().trim());
 					customer.setBirthdate(getBirthdate()==null?  DateUtils.getCurrentDateYYYYMMDD() :  DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd"));
 					customer.setCivilStatus(1);//default single
 					customer.setGender(getGenderId()+"");
@@ -1395,7 +1479,7 @@ public class ORListingBean implements Serializable{
 				customer.setLastname(getLastName().toUpperCase());
 				customer.setUserDtls(user);
 				//customer.setFullname(getFirstName().toUpperCase() + " " + getLastName().toUpperCase());
-				customer.setFullname(getPayorName().toUpperCase());
+				customer.setFullname(getPayorName().toUpperCase().trim());
 				customer.setBirthdate(getBirthdate()==null?  DateUtils.getCurrentDateYYYYMMDD() :  DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd"));
 				customer.setCivilStatus(1);//default single
 				customer.setGender(getGenderId()+"");
@@ -1415,20 +1499,8 @@ public class ORListingBean implements Serializable{
 		}else {
 			customer.setUserDtls(user);
 		}
-		boolean isOk = true;
-		if(getOrNumber()==null || getOrNumber().isEmpty()) {
-			isOk = false;
-			Application.addMessage(3, "Error", "Please provide official receipt");
-		}
-		if(getPayorName()==null || getPayorName().isEmpty()) {
-			isOk = false;
-			Application.addMessage(3, "Error", "Please provide payor name");
-		}
 		
-		if(getSelectedPaymentNameMap()==null) {
-			isOk = false;
-			Application.addMessage(3, "Error", "Please provide payment name");
-		}
+		
 		
 		if(isOk) {
 			
@@ -1465,7 +1537,7 @@ public class ORListingBean implements Serializable{
 			
 			
 			
-			
+			or.setNotes(getNotes());//this for remarks you can add remarks except ctc and corporation
 			or.setStatus(getStatusId());
 			or.setDateTrans(DateUtils.convertDate(getDateTrans(), "yyyy-MM-dd"));
 			or.setFormType(getFormTypeId());
@@ -1532,6 +1604,7 @@ public class ORListingBean implements Serializable{
 			setSelectedPaymentNameMap(null);
 			setOrNumber(null);
 			setCollectorId(or.getCollector().getId());
+			setNotes(null);
 			init(); //do not load data to reduce loading
 			
 			
@@ -1572,6 +1645,46 @@ public class ORListingBean implements Serializable{
 		
 	}
 	
+	public void clearAllFlds() {
+		namesDataSelected = new ArrayList<PaymentName>();
+		selectedPaymentNameMap = new HashMap<Long, PaymentName>();
+		setPayorName(null);
+		setTotalAmount("0.00");
+		setOrRecordData(null);
+		setOrnameListData(null);
+		setSelectedPaymentNameMap(null);
+		setOrNumber(null);
+		setCollectorId(issuedCollectorId);
+		//init();
+		
+		
+		if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
+			setLabel2(0);
+			setLabel3(0);
+			setLabel4(0);
+			setAmount1(0);
+			setAmount2(0);
+			setAmount3(0);
+			setAmount4(0);
+			setAmount5(0);
+			setAmount6(0);
+			setAmount7(0);
+			setGenderId(1);
+			setBirthdate(null);
+			setTinNo(null);
+			setHieghtDateReg(null);
+			setWeight(null);
+			setCustomerAddress(null);
+			setCivilStatusId(1);
+			setProfessionBusinessNature(null);
+			setPlaceOfBirth(null);
+			setCitizenshipOrganization(null);
+			selectedOR();
+		}
+		
+		setFormTypeId(FormType.AF_51.getId());
+	}
+	
 	private void ctcFlds(boolean enanleCTC) {
 		
 		PrimeFaces pf = PrimeFaces.current();
@@ -1591,6 +1704,7 @@ public class ORListingBean implements Serializable{
 		setDateTrans(DateUtils.convertDateString(or.getDateTrans(), "yyyy-MM-dd"));
 		setOrNumber(or.getOrNumber());
 		setFormTypeId(or.getFormType());
+		setNotes(or.getNotes());
 		if(or.getCustomer()!=null) {
 			//String fName=or.getCustomer().getFirstname();
 			//String mName=or.getCustomer().getMiddlename();
@@ -1719,6 +1833,17 @@ public class ORListingBean implements Serializable{
 		or.delete();
 		init();
 		clearFlds();
+		
+		try {
+			String name = or.getCollector().getName() + "-" + or.getCustomer().getFullname() + "-" + or.getFormName() + "-" + or.getDateTrans() + "-" + or.getOrNumber() + ".xml"; 
+			String localpath = GlobalVar.COMMIT_XML;
+			File file = new File(localpath + name);
+			
+			if(file.exists()) {
+				file.delete();
+			}
+		}catch(Exception e) {}
+		
 		Application.addMessage(1, "Sucess", "Successfully deleted.");
 	}
 	
@@ -1840,6 +1965,17 @@ public class ORListingBean implements Serializable{
 				
 		  		int cnt = 0;
 		  		double amount = 0d;
+		  		
+		  		if(py.getNotes()!=null) {
+			  		//add notes for except ctc and corporation for now 51
+				  		OR51 or = new OR51();
+				  		or.setDescription(py.getNotes());
+				  		or.setCode("");
+				  		or.setAmount("");
+			  			ors.add(or);
+			  			cnt++;
+			  	}
+		  		
 		  		for(ORNameList na : py.getOrNameList()) {
 		  			if(na.getAmount()>0) {
 		  				OR51 or = new OR51();
@@ -1852,6 +1988,8 @@ public class ORListingBean implements Serializable{
 		  			}
 		  		}
 		  		
+		  		
+		  		
 		  		if(cnt<12) {
 		  			int addFldSize = 11 - cnt;
 			  		for(int i=1; i<=addFldSize; i++) {
@@ -1863,9 +2001,8 @@ public class ORListingBean implements Serializable{
 			  		}
 		  		}
 		  		
-		  		
 		  		//total amount
-		  		OR51 or = new OR51();
+	  			OR51 or = new OR51();
 		  		or.setDescription("");
 		  		or.setCode("");
 		  		or.setAmount(Currency.formatAmount(amount));
@@ -3720,6 +3857,29 @@ private void close(Closeable resource) {
 		
 		
 	}
+	
+	public void runUpdate() {
+		PrimeFaces pf = PrimeFaces.current();
+		File folder = new File(GlobalVar.COMMIT_XML);
+		File[] listOfFiles = folder.listFiles();
+		
+		if(listOfFiles!=null && listOfFiles.length>0) {
+			boolean hasFiles = false;
+			for(File f : listOfFiles) {
+				if(f.isFile()) {
+					hasFiles = true;
+				}
+			}
+			if(hasFiles) {
+				pf.executeScript("PF('dlgSendOr').show(1000)");
+				Application.addMessage(1, "Failure to update", "Please send your data to server first.");
+			}
+			
+		}else {
+			pf.executeScript("PF('dlgFetch').show(1000)");
+		}
+	}
+	
 	
 	
 	public String getQrcodeMsg() {

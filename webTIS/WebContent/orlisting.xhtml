@@ -82,7 +82,9 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					<p:inputText placeholder="Address" value="#{oRListingBean.address}" style="width: 15em"/>
 					
 				</p:panelGrid>
-				
+				<p:panelGrid id="fldNoteId" columns="1" layout="grid">
+					<p:inputTextarea value="#{oRListingBean.notes}" cols="70" rows="1" placeholder="You can add remarks here except ctc and corporation"/>
+				</p:panelGrid>
 				<div id="ctid" style="display: none">
 					<p:panelGrid id="fldId2" columns="2" layout="grid">
 					
@@ -194,6 +196,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							offLabel="Filtered - ASC" onIcon="ui-icon-check" offIcon="ui-icon-close" >
 								<p:ajax event="change" listener="#{oRListingBean.load}" update="dataOrId dtlsId"/>
 							</p:selectBooleanButton>
+							<p:commandButton icon="fa fa-align-justify" oncomplete="PF('dlgAllOrs').show(1000);" value="All Transaction" actionListener="#{oRListingBean.loadAllOrs}" update="dataOrAllId" />
                 	</div>
                 	
                 	<div class="ui-inputgroup" style="float:right">
@@ -255,7 +258,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							</p:column>
 							
 							<p:column headerText="View" width="20" exportable="false">
-								<p:commandButton icon="fa fa-search" update="dataOrId dataSelectedId fldId fldId2 totalId" actionListener="#{oRListingBean.clickItem(ors)}"/>
+								<p:commandButton icon="fa fa-search" update="dataOrId dataSelectedId fldId fldId2 totalId fldNoteId" actionListener="#{oRListingBean.clickItem(ors)}"/>
 							</p:column>
 							
 							<p:column headerText="[*]" width="20" exportable="false">
@@ -383,7 +386,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 		
 	
-	<p:dialog position="center top" widgetVar="selectDialog" modal="false" draggable="true" closable="false" resizable="false" showHeader="true" width="800" height="800" closeOnEscape="true">
+	<p:dialog position="center top" widgetVar="selectDialog" modal="false" draggable="true" closable="false" resizable="false" fitViewport="true" responsive="true" showHeader="true" width="1000" height="900" closeOnEscape="true">
     				<p:toolbar id="tbAdd">
 			    		<f:facet name="left">
 			    			<div class="ui-inputgroup" style="float:left">
@@ -400,26 +403,42 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			    		</f:facet>
 					</p:toolbar>
 					
-					
+					<p:outputLabel value="Recently used" />
 					<p:dataGrid id="dataSugId" value="#{oRListingBean.suggestedData}" var="sug" stickyHeader="false"
 							paginator="false" style="#{skin.table}" rows="10" columns="3">
                          	
             				<p:column headerText="Suggested" width="50">
-            						<p:commandButton value="#{sug.name} Php#{sug.amount}" actionListener="#{oRListingBean.addSuggested(sug)}" update="dataId dataSelectedId totalId"/>
+            						<p:commandButton value="#{sug.name} Php#{sug.amount}" style="width: 300px" actionListener="#{oRListingBean.addSuggested(sug)}" update="dataId dataSelectedId totalId"/>
             				</p:column>
-            		</p:dataGrid>			
-					
-    				<p:dataTable id="dataId" value="#{oRListingBean.namesData}" var="rpt" stickyHeader="false"
-							rows="100" paginator="false" style="#{skin.table}" 
+            		</p:dataGrid>
+            		
+            		<br/>
+            		
+            		<p:outputLabel value="Group Tax Code" />
+            		<p:dataGrid id="dataGroupId" value="#{oRListingBean.groups}" var="tx" stickyHeader="false"
+							paginator="false" style="#{skin.table}" rows="10" columns="3">
+                         	
+            				<p:column headerText="Suggested" width="50">
+            						<p:commandButton value="#{tx.name}" style="width: 300px" actionListener="#{oRListingBean.loadPaymentDetails(tx)}" update="dataId dataSelectedId totalId" oncomplete="PF('selectDialog').hide();"/>
+            				</p:column>
+            		</p:dataGrid>
+            		
+					<p:outputLabel value="Selection" />
+    				<p:dataTable id="dataId" value="#{oRListingBean.namesData}" var="rpt" stickyHeader="false" 
+							rows="100" paginator="false"
 							editable="true" editMode="cell" rowKey="#{rpt.id}" 
                          >
                          	
                          	<p:ajax event="cellEdit"  listener="#{oRListingBean.onCellEdit}" update="dataId dataSelectedId totalId" />
                          	
-            				<p:column headerText="Name" width="100">
+                         	<p:column width="10">
+            			 			<p:commandButton actionListener="#{oRListingBean.addNamePayment(rpt)}" icon="fa fa-thumbs-up" update="dataId dataSelectedId totalId" />
+            				</p:column>
+                         	
+            				<p:column width="100">
             			 			<p:outputLabel value="#{rpt.name}"/>
             				</p:column>
-            				<p:column headerText="Amount" width="50">
+            				<p:column width="50">
             						<p:cellEditor>
 					              	  <f:facet name="output">
 					              	  	<h:outputText value="#{rpt.amount}" />
@@ -446,17 +465,53 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			    		</f:facet>
 					</p:toolbar>
 					<p:textEditor id="idContentAnalys" toolbarVisible="false" widgetVar="msgComposeText" value="#{oRListingBean.textContent}" readonly="true"/>
-	</p:dialog>				
+	</p:dialog>
 	
-	<p:commandButton title="Sync" icon="fa fa-compass" id="syncButton" oncomplete="PF('dlgCam').show();"  style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 300px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
-	<p:commandButton title="Send" update="dataSendOr"  icon="fa fa-send" actionListener="#{sendOrServerBean.loadFiles}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 350px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
-	<p:commandButton title="Open Camera" icon="fa fa-camera" id="startButton" oncomplete="PF('dlgCam').show();"  style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 400px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
-	<p:commandButton title="Payment Name Lookup" icon="fa fa-search" actionListener="#{oRListingBean.loadPaymentNames}" update="dataId idSearchPname dataSugId" oncomplete="PF('selectDialog').show();" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 450px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	<h:outputScript>
+		window.onload = function(){
+			
+		}
+		
+		function showOtherButton() {
+			$("#otherButtonId").show(1000);
+			hideSettingButton();
+		}
+		function hideOtherButton() {
+			$("#otherButtonId").hide();
+			showSettingButton();
+		}
+		
+		function showSettingButton() {
+			$("#settingId").show(1000);
+		}
+		function hideSettingButton() {
+			$("#settingId").hide();
+		}
+		
+	</h:outputScript>
 	
-	<p:commandButton title="Click to save" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId searchid msg"  icon="fa fa-floppy-o" actionListener="#{oRListingBean.saveData}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 500px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
+	<div id="settingId" style="display: block">
+	<p:commandButton title="Settings" icon="fa fa-cog" id="taxSettings" onclick="showOtherButton();" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 50px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	</div>
+	
+	<div id="otherButtonId" style="display: none">
+	<p:commandButton title="Settings" icon="fa fa-cog" id="taxSettings2" onclick="hideOtherButton();" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 50px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>	
+			
+	<p:commandButton widgetVar="widTaxCode" title="Particular Settings" icon="fa fa-book" id="taxButton" actionListener="#{paymentTaxCodeBean.loadTaxCode}" oncomplete="PF('dlgTaxCode').show(1000);" update="dataTax"  style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 250px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	<p:commandButton widgetVar="widSync" title="Sync" icon="fa fa-compass" id="syncButton" actionListener="#{oRListingBean.runUpdate}" update="dataSendOr dataFetch msg"  style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 300px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	<p:commandButton widgetVar="widSend" title="Send" update="dataSendOr"  icon="fa fa-send" actionListener="#{sendOrServerBean.loadFiles}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 350px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	
+	</div>
+	<p:commandButton widgetVar="widCamera" title="Open Camera" icon="fa fa-camera" id="startButton" oncomplete="PF('dlgCam').show();"  style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 400px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	<p:commandButton title="Particular Name Lookup" icon="fa fa-search" actionListener="#{oRListingBean.loadPaymentNames}" update="dataId idSearchPname dataSugId dataGroupId" oncomplete="PF('selectDialog').show();" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 450px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	<p:commandButton title="Click to save" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId searchid fldNoteId msg" onclick="PF('selectDialog').hide(1000);"  icon="fa fa-floppy-o" actionListener="#{oRListingBean.saveData}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 500px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
 			<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 	</p:commandButton>
 	
+		
+	<p:commandButton title="Click to Clear" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId searchid" onclick="PF('selectDialog').hide(1000);PF('dlgTaxCode').hide(1000);PF('dlgCam').hide(1000);"  icon="fa fa-trash" actionListener="#{oRListingBean.clearAllFlds}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 100px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
+			<p:confirm header="Confirmation" message="Are you sure you want to clear this fields?" icon="ui-icon-alert" />
+	</p:commandButton>
 	
 	
 	
@@ -614,12 +669,95 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		</p:panelGrid>
 	</p:dialog>
 	
+	<p:dialog widgetVar="dlgAllOrs" position="center top" losable="false" closeOnEscape="true" resizable="false" showHeader="true" width="1200" height="900" closable="true">
+		
+		<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
+				<p:inputText id="searchOrid" value="#{oRListingBean.searchNameAll}" placeholder="Search Name..." style="width: 25em">
+				    <p:ajax event="keyup" listener="#{oRListingBean.loadAllOrs}" update="dataOrAllId" delay="900"/>
+				</p:inputText>
+		</span>
+		
+		<p:dataTable id="dataOrAllId" value="#{oRListingBean.orsAll}" var="ors" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false"
+							>
+							
+							<p:column headerText="Info" width="20" exportable="false">
+								<p:rowToggler/>
+							</p:column>
+							
+							<p:column headerText="PDF" width="60" exportable="false">
+            				 	<p:commandLink title="Print OR in PDF" target="_blank" action="#{oRListingBean.printOR(ors)}" ajax="false" immediate="false" >
+            				 			<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+								</p:commandLink>
+							</p:column>
+							
+                         	<p:column headerText="Date" width="70">
+            						<p:outputLabel value="#{ors.dateTrans}"/>
+            				</p:column>
+            				<p:column headerText="Status" width="70">
+            						<p:outputLabel value="#{ors.statusName}"/>
+            				</p:column>
+            				<p:column headerText="Collector" width="150">
+            						<p:outputLabel value="#{ors.collector.name}"/>
+            				</p:column>
+            				<p:column headerText="Form" width="70">
+            						<p:outputLabel value="#{ors.formName}"/>
+            				</p:column>
+            				<p:column headerText="OR No." width="70">
+            						<p:outputLabel value="#{ors.orNumber}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Name" width="200">
+            						<p:outputLabel value="#{ors.customer.fullname}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Amount" width="50">
+            						<p:outputLabel value="#{ors.amount}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+            				
+            				<p:rowExpansion>
+								
+								<p:dataTable value="#{ors.orNameList}" var="sc" stickyHeader="false"
+									rows="100" paginator="false" style="#{skin.table}">
+		                         	
+		            				<p:column headerText="Name" width="100">
+		            						<p:outputLabel value="#{sc.paymentName.name}"/>
+		            				</p:column>
+		            				<p:column headerText="Amount" width="50">
+		            						<p:outputLabel value="#{sc.amount}">
+		            							<f:convertNumber currencySymbol="" type="currency"/>
+		            						</p:outputLabel>
+		            				</p:column>
+            					</p:dataTable>
+								
+							</p:rowExpansion>
+            				
+            				<p:columnGroup type="footer">
+            					<p:row >
+            						<p:column colspan="8" style="text-align:right;" footerText="Totals:"/>
+            						<p:column footerText="Php#{oRListingBean.totalCollectionAll}" />
+            					</p:row>
+            				</p:columnGroup>
+            				
+            		</p:dataTable>
+		
+	</p:dialog>
 	
-	
+		
 	 
 <ui:include src="loader.xhtml" />
 <ui:include src="menu.xhtml" />
-<ui:include src="sendingor.xhtml" />			
+<ui:include src="sendingor.xhtml" />
+<ui:include src="sync.xhtml" />	
+<ui:include src="taxcode.xhtml" />	
+
+<p:commandButton title="Tax Revenue Code Book" icon="fa fa-book" id="taxRevenue" actionListener="#{articleBean.openRevenue}" update="dataRevenue tabRevenue" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;bottom: 30px;right: 7px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+<ui:include src="article.xhtml" />			
 </h:form>
 </h:body>
 </html>

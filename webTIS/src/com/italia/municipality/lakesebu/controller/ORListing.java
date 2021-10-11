@@ -42,6 +42,7 @@ public class ORListing {
 	private int isActive;
 	private int status;
 	private String forminfo;
+	private String notes;
 	
 	private Collector collector;
 	private Customer customer;
@@ -164,7 +165,12 @@ public class ORListing {
 		
 		return false;
 	}
-	
+	/**
+	 * This is an old version of Customer which was moved to customer2
+	 * @param sqlAdd
+	 * @param params
+	 * @return
+	 */
 	public static List<ORListing> retrieveOld(String sqlAdd, String[] params){
 		List<ORListing> ors = new ArrayList<ORListing>();
 		
@@ -206,6 +212,7 @@ public class ORListing {
 			try{or.setStatus(rs.getInt("orstatus"));}catch(NullPointerException e){}
 			try{or.setStatusName(FormStatus.nameId(or.getStatus()));}catch(NullPointerException e){}
 			try{or.setForminfo(rs.getString("forminfo"));}catch(NullPointerException e){}
+			try{or.setNotes(rs.getString("notes"));}catch(NullPointerException e){}
 			
 			Customer cus = new Customer();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
@@ -293,6 +300,7 @@ public class ORListing {
 			try{or.setStatus(rs.getInt("orstatus"));}catch(NullPointerException e){}
 			try{or.setStatusName(FormStatus.nameId(or.getStatus()));}catch(NullPointerException e){}
 			try{or.setForminfo(rs.getString("forminfo"));}catch(NullPointerException e){}
+			try{or.setNotes(rs.getString("notes"));}catch(NullPointerException e){}
 			
 			Customer cus = new Customer();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
@@ -428,8 +436,9 @@ public class ORListing {
 				+ "customerid,"
 				+ "isid,"
 				+ "orstatus,"
-				+ "forminfo)" 
-				+ "values(?,?,?,?,?,?,?,?,?)";
+				+ "forminfo,"
+				+ "notes)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -460,6 +469,7 @@ public class ORListing {
 		ps.setInt(cnt++, name.getCollector().getId());
 		ps.setInt(cnt++, name.getStatus());
 		ps.setString(cnt++, name.getForminfo());
+		ps.setString(cnt++, name.getNotes());
 		
 		LogU.add(name.getDateTrans());
 		LogU.add(name.getOrNumber());
@@ -469,6 +479,7 @@ public class ORListing {
 		LogU.add(name.getCollector().getId());
 		LogU.add(name.getStatus());
 		LogU.add(name.getForminfo());
+		LogU.add(name.getNotes());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -493,8 +504,9 @@ public class ORListing {
 				+ "customerid,"
 				+ "isid,"
 				+ "orstatus,"
-				+ "forminfo)" 
-				+ "values(?,?,?,?,?,?,?,?,?)";
+				+ "forminfo,"
+				+ "notes)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -525,6 +537,7 @@ public class ORListing {
 		ps.setInt(cnt++, getCollector().getId());
 		ps.setInt(cnt++, getStatus());
 		ps.setString(cnt++, getForminfo());
+		ps.setString(cnt++, getNotes());
 		
 		LogU.add(getDateTrans());
 		LogU.add(getOrNumber());
@@ -534,6 +547,7 @@ public class ORListing {
 		LogU.add(getCollector().getId());
 		LogU.add(getStatus());
 		LogU.add(getForminfo());
+		LogU.add(getNotes());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -556,7 +570,8 @@ public class ORListing {
 				+ "customerid=?,"
 				+ "isid=?,"
 				+ "orstatus=?,"
-				+ "forminfo=?" 
+				+ "forminfo=?,"
+				+ "notes=?" 
 				+ " WHERE orid=?";
 		
 		PreparedStatement ps = null;
@@ -577,6 +592,7 @@ public class ORListing {
 		ps.setInt(cnt++, name.getCollector().getId());
 		ps.setInt(cnt++, name.getStatus());
 		ps.setString(cnt++, name.getForminfo());
+		ps.setString(cnt++, name.getNotes());
 		ps.setLong(cnt++, name.getId());
 		
 		LogU.add(name.getDateTrans());
@@ -586,6 +602,7 @@ public class ORListing {
 		LogU.add(name.getCollector().getId());
 		LogU.add(name.getStatus());
 		LogU.add(name.getForminfo());
+		LogU.add(name.getNotes());
 		LogU.add(name.getId());
 		
 		LogU.add("executing for saving...");
@@ -609,7 +626,8 @@ public class ORListing {
 				+ "customerid=?,"
 				+ "isid=?,"
 				+ "orstatus=?,"
-				+ "forminfo=?" 
+				+ "forminfo=?,"
+				+ "notes=?" 
 				+ " WHERE orid=?";
 		
 		PreparedStatement ps = null;
@@ -631,6 +649,7 @@ public class ORListing {
 		ps.setInt(cnt++, getCollector().getId());
 		ps.setInt(cnt++, getStatus());
 		ps.setString(cnt++, getForminfo());
+		ps.setString(cnt++, getNotes());
 		ps.setLong(cnt++, getId());
 		
 		LogU.add(getDateTrans());
@@ -640,6 +659,7 @@ public class ORListing {
 		LogU.add(getCollector().getId());
 		LogU.add(getStatus());
 		LogU.add(getForminfo());
+		LogU.add(getNotes());
 		LogU.add(getId());
 		
 		LogU.add("executing for saving...");

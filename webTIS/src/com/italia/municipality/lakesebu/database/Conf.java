@@ -3,11 +3,8 @@ package com.italia.municipality.lakesebu.database;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
-
-import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.security.SecureChar;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,6 +38,7 @@ public class Conf {
 	private String databasePassword;
 	private String serverDatabase;
 	private String serverDatabaseIp;
+	private String databaseHomePath;
 	
 	private Conf() {
 		System.out.println("initializing database information...");
@@ -94,12 +92,11 @@ public class Conf {
 			conf.setDatabasePassword(pword);
 			conf.setServerDatabase(prop.getProperty("DATABASE_SERVER_DB_URL"));
 			conf.setServerDatabaseIp(prop.getProperty("DATABASE_SERVER_IP"));
+			conf.setDatabaseHomePath(prop.getProperty("DATABASE_HOME_PATH"));
 			
 		}catch(Exception e) {
 			System.out.println("Configuration file was not set. See error: " + e.getMessage());
 		}
 	}
-
-	
 	
 }
