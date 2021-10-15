@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.9.0.final using JasperReports Library version 6.9.0-cb8f9004be492ccc537180b49c026951f4220bf3  -->
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rcd" pageWidth="612" pageHeight="1008" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="26e068af-d628-4cb1-a9f8-d0c0204ec0af">
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="inch"/>
@@ -77,14 +77,14 @@
 				</textElement>
 				<text><![CDATA[Name of Accountable Officer:]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="162" y="118" width="221" height="16" uuid="c73c2e38-2428-43fc-a9f9-4c393bbfb064"/>
 				<textElement>
 					<font size="12" isBold="true" isUnderline="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_TREASURER}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="309" y="99" width="270" height="16" uuid="f65c92cf-7778-4c31-94ff-1c7775fe82b1"/>
 				<box rightPadding="1"/>
 				<textElement textAlignment="Right">
@@ -107,7 +107,7 @@
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</line>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="311" y="82" width="268" height="16" uuid="c615100c-0df7-4931-88f5-7770c6f365c6"/>
 				<textElement textAlignment="Right">
 					<font size="12" isBold="true" isUnderline="false"/>
@@ -124,7 +124,7 @@
 					<pen lineStyle="Solid"/>
 				</graphicElement>
 			</rectangle>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="36" y="102" width="221" height="16" uuid="275e47c6-1e1d-4086-8a47-72c2519f02ab"/>
 				<textElement>
 					<font size="12" isBold="true" isUnderline="true"/>
@@ -165,22 +165,22 @@
 	</columnHeader>
 	<detail>
 		<band height="15" splitType="Stretch">
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="286" height="15" uuid="ec189ee0-8331-4189-be5a-0fc5bf7731dd"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="286" height="15" uuid="ec189ee0-8331-4189-be5a-0fc5bf7731dd"/>
 				<box padding="1">
 					<pen lineWidth="1.0"/>
 				</box>
 				<textFieldExpression><![CDATA[$F{f1}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="286" y="0" width="158" height="15" uuid="22b56f7a-2515-4102-bcd2-8098201593a3"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ElementGroupHeight" x="286" y="0" width="158" height="15" uuid="22b56f7a-2515-4102-bcd2-8098201593a3"/>
 				<box padding="1">
 					<pen lineWidth="1.0"/>
 				</box>
 				<textFieldExpression><![CDATA[$F{f2}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="444" y="0" width="136" height="15" uuid="4a3fe823-9538-4c7b-a106-15b267d14d2c"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ElementGroupHeight" x="444" y="0" width="136" height="15" uuid="4a3fe823-9538-4c7b-a106-15b267d14d2c"/>
 				<box padding="1">
 					<pen lineWidth="1.0"/>
 				</box>
@@ -205,7 +205,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[TOTAL]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="444" y="0" width="136" height="15" uuid="da38406f-946b-4b7d-875d-2947e894729c"/>
 				<box padding="1">
 					<pen lineWidth="0.5"/>
@@ -264,7 +264,7 @@
 			<line>
 				<reportElement x="100" y="64" width="90" height="1" uuid="851c9cae-3319-44e2-b501-d611b3a0b302"/>
 			</line>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="204" y="112" width="98" height="15" uuid="0c5d6ff4-c974-4b61-83db-7668052270a9"/>
 				<box padding="0">
 					<pen lineWidth="0.0"/>
@@ -274,7 +274,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_TOTAL}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="204" y="81" width="98" height="15" uuid="a32fdb64-d6c4-4dd0-8680-094f2ed7ded5"/>
 				<box padding="0">
 					<pen lineWidth="0.0"/>
@@ -416,7 +416,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Top"/>
 				<text><![CDATA[I hereby certify that the foregoing report of collections and deposits and accountability for accountable forms is true and correct.]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="5" y="226" width="210" height="15" uuid="4a088a66-de6d-45b6-a9fa-d53e3213d8d0"/>
 				<textElement textAlignment="Center">
 					<font size="10" isBold="true" isUnderline="true"/>
@@ -459,7 +459,7 @@
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</line>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="197" y="227" width="110" height="15" uuid="9720fb2a-dd9b-4a5c-821f-26d4e83a14a7">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -468,7 +468,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_VERIFIED_DATE}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="468" y="224" width="110" height="15" uuid="33dae22b-49b5-492f-ad8d-4c4de8366f0c">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -477,7 +477,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_VERIFIED_DATE}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="311" y="224" width="210" height="15" uuid="0ecf7b11-5140-473d-b86e-17922f63a06e"/>
 				<textElement textAlignment="Left">
 					<font size="10" isBold="true" isUnderline="true"/>

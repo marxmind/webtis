@@ -36,6 +36,51 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
  <style>
 <!-- 
 
+	.speeddial-circle-demo .ui-speeddial-circle {
+        top: calc(50% - 2rem);
+        left: calc(50% - 2rem);
+    }
+
+    .speeddial-circle-demo .ui-speeddial-semi-circle.ui-speeddial-direction-up {
+         left: calc(50% - 2rem);
+         bottom: 0;
+    }
+
+    .speeddial-circle-demo .ui-speeddial-semi-circle.ui-speeddial-direction-down {
+         left: calc(50% - 2rem);
+         top: 0;
+    }
+
+    .speeddial-circle-demo .ui-speeddial-semi-circle.ui-speeddial-direction-left {
+         right: 0;
+         top: calc(50% - 2rem);
+    }
+
+    .speeddial-circle-demo .ui-speeddial-semi-circle.ui-speeddial-direction-right {
+         left: 0;
+         top: calc(50% - 2rem);
+    }
+
+    .speeddial-circle-demo .ui-speeddial-quarter-circle.ui-speeddial-direction-up-left {
+         right: 0;
+         bottom: 0;
+    }
+
+    .speeddial-circle-demo .ui-speeddial-quarter-circle.ui-speeddial-direction-up-right {
+         left: 0;
+         bottom: 0;
+    }
+
+    .speeddial-circle-demo .ui-speeddial-quarter-circle.ui-speeddial-direction-down-left {
+         right: 0;
+         top: 0;
+    }
+
+    .speeddial-circle-demo .ui-speeddial-quarter-circle.ui-speeddial-direction-down-right {
+         left: 0;
+         top: 0;
+    }
+
  -->
  </style>
  
@@ -47,12 +92,16 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 <ui:include src="header.xhtml" />
 <h:form prependId="false" id="formId" style="background-color: #8fdbf5">
 	<p:growl id="msg" showDetail="true" life="2000" />
-	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
-        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-    	 </p:confirmDialog>
-    	 
 	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+        </p:confirmDialog>
+    
+ 	<p:confirmPopup global="true">
+            <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirm-popup-yes" />
+    </p:confirmPopup>
 	
 	<div class="card">
     <div class="p-grid sample-layout">
@@ -138,7 +187,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					
 					</p:panelGrid>
 				</div>
-				
+					
+					
 				   <p:dataTable id="dataSelectedId" value="#{oRListingBean.namesDataSelected}" var="rs" stickyHeader="false"
 							rows="100" paginator="false" style="#{skin.table}"
 							editable="true" editMode="cell" rowKey="#{rs.id}"
@@ -147,8 +197,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                          	<p:ajax event="cellEdit"  listener="#{oRListingBean.onCellEditSelected}" update="frmId totalId fldId2 dataId dataOrId" />
                          	
                          	<p:column headerText="[*]" width="20" exportable="false">
-            					<p:commandButton update="dataSelectedId dataOrId dtlsId totalId msg" icon="fa fa-trash" actionListener="#{oRListingBean.paynameDelete(rs)}">
-            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+            					<p:commandButton  icon="fa fa-trash" actionListener="#{oRListingBean.paynameDelete(rs)}" update="dataSelectedId dataOrId dtlsId totalId msg">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert"/>
             					</p:commandButton>
             				</p:column>
             				<p:column headerText="View" width="20" exportable="false">
@@ -240,6 +290,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                     </div>
                     
                 </div>
+                
                 <div class="p-col-12">
                     <div class="p-grid">
                         <p:tabView prependId="false" cache="true">
@@ -262,9 +313,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							</p:column>
 							
 							<p:column headerText="[*]" width="20" exportable="false">
-            					<p:commandButton update="dataOrId dataSelectedId fldId msg" icon="fa fa-trash" actionListener="#{oRListingBean.deleteRow(ors)}">
+            					<p:commandButton icon="fa fa-trash" actionListener="#{oRListingBean.deleteRow(ors)}" update="dataOrId dataSelectedId fldId msg">
             						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
             					</p:commandButton>
+            					 
             				</p:column>
 							
 							<p:column headerText="PDF" width="60" exportable="false">
@@ -386,7 +438,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 		
 	
-	<p:dialog position="center top" widgetVar="selectDialog" modal="false" draggable="true" closable="false" resizable="false" fitViewport="true" responsive="true" showHeader="true" width="1000" height="900" closeOnEscape="true">
+	<p:dialog position="center top" widgetVar="selectDialog" modal="false" draggable="true" closable="false" resizable="false" fitViewport="true" responsive="true" showHeader="false"  closeOnEscape="true">
+    				<p:card style="width: 62em">
     				<p:toolbar id="tbAdd">
 			    		<f:facet name="left">
 			    			<div class="ui-inputgroup" style="float:left">
@@ -403,7 +456,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			    		</f:facet>
 					</p:toolbar>
 					
-					<p:outputLabel value="Recently used" />
+					<p:outputLabel value="Recently Selected" />
 					<p:dataGrid id="dataSugId" value="#{oRListingBean.suggestedData}" var="sug" stickyHeader="false"
 							paginator="false" style="#{skin.table}" rows="10" columns="3">
                          	
@@ -414,7 +467,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             		
             		<br/>
             		
-            		<p:outputLabel value="Group Tax Code" />
+            		<p:outputLabel value="Group Tax Particulars" />
             		<p:dataGrid id="dataGroupId" value="#{oRListingBean.groups}" var="tx" stickyHeader="false"
 							paginator="false" style="#{skin.table}" rows="10" columns="3">
                          	
@@ -449,6 +502,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					               </p:cellEditor>
             				</p:column>
             		</p:dataTable>
+            		
+            		</p:card>
 	</p:dialog>
 	
 	
@@ -505,12 +560,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<p:commandButton widgetVar="widCamera" title="Open Camera" icon="fa fa-camera" id="startButton" oncomplete="PF('dlgCam').show();"  style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 400px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 	<p:commandButton title="Particular Name Lookup" icon="fa fa-search" actionListener="#{oRListingBean.loadPaymentNames}" update="dataId idSearchPname dataSugId dataGroupId" oncomplete="PF('selectDialog').show();" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 450px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 	<p:commandButton title="Click to save" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId searchid fldNoteId msg" onclick="PF('selectDialog').hide(1000);"  icon="fa fa-floppy-o" actionListener="#{oRListingBean.saveData}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 500px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
-			<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+			<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save this data?" icon="pi pi-exclamation-triangle" />
 	</p:commandButton>
 	
 		
 	<p:commandButton title="Click to Clear" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId searchid" onclick="PF('selectDialog').hide(1000);PF('dlgTaxCode').hide(1000);PF('dlgCam').hide(1000);"  icon="fa fa-trash" actionListener="#{oRListingBean.clearAllFlds}" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;top: 100px;left: 0px;float:right; position: fixed;z-index: 1500;font-size: 100% ! important;font-weight: bold ! important;  text-transform: none ! important; ">
-			<p:confirm header="Confirmation" message="Are you sure you want to clear this fields?" icon="ui-icon-alert" />
+			<p:confirm type="popup" header="Confirmation" message="Are you sure you want to clear this fields?" icon="ui-icon-alert" />
 	</p:commandButton>
 	
 	
@@ -756,8 +811,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 <ui:include src="sync.xhtml" />	
 <ui:include src="taxcode.xhtml" />	
 
-<p:commandButton title="Tax Revenue Code Book" icon="fa fa-book" id="taxRevenue" actionListener="#{articleBean.openRevenue}" update="dataRevenue tabRevenue" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;bottom: 30px;right: 7px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
-<ui:include src="article.xhtml" />			
+<p:commandButton title="Tax Revenue Code Book" icon="fa fa-book" id="taxRevenue" actionListener="#{articleBean.openRevenue}" update="dataRevenue tabRevenue dataRev" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;bottom: 30px;right: 7px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+<ui:include src="article.xhtml" />	
+
+<p:commandButton title="Fish Cage Billing" icon="fa fa-list" id="fishBill" actionListener="#{fishcageBillingBean.openBilling}" update="dataFishBill" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 50px;width: 50px;bottom: 30px;right: 60px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+<ui:include src="fishcagebill.xhtml" />	
+		
 </h:form>
 </h:body>
 </html>

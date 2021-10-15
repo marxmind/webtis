@@ -18,6 +18,13 @@ import com.italia.municipality.lakesebu.security.ClientInfo;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * 
  * @author mark italia
@@ -25,6 +32,12 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @version 1.0
  *
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
+@ToString
 public class Login {
 	
 	private Long logid;
@@ -40,34 +53,7 @@ public class Login {
 	private String clientbrowser;
 	private int isActive;
 	private int collectorId;
-	
-	public Login(){}
-	
-	public Login(
-			Long logid,
-			String username,
-			String password,
-			String lastlogin,
-			UserAccessLevel accessLevel,
-			int isOnline,
-			UserDtls userDtls,
-			String logintime,
-			String clientip,
-			String clientbrowser,
-			int isActive
-			){
-		this.logid = logid;
-		this.username = username;
-		this.password = password;
-		this.lastlogin = lastlogin;
-		this.accessLevel = accessLevel;
-		this.isOnline = isOnline;
-		this.userDtls = userDtls;
-		this.logintime = logintime;
-		this.clientip = clientip;
-		this.clientbrowser = clientbrowser;
-		this.isActive = isActive;
-	}
+	private int hasUpdate;
 	
 	public static String loginSQL(String tablename,Login in){
 		String sql="";
@@ -162,6 +148,7 @@ public class Login {
 			try{in.setClientbrowser(rs.getString("clientbrowser"));}catch(NullPointerException e){}
 			try{in.setIsActive(rs.getInt("isactive"));}catch(NullPointerException e){}
 			try{in.setCollectorId(rs.getInt("collectorid"));}catch(NullPointerException e){}
+			try{in.setHasUpdate(rs.getInt("hasupdate"));}catch(NullPointerException e){}
 			
 			UserAccessLevel level = new UserAccessLevel();
 			try{level.setUseraccesslevelid(rs.getInt("useraccesslevelid"));}catch(NullPointerException e){}
@@ -227,6 +214,7 @@ public class Login {
 			try{in.setAccessLevel(UserAccessLevel.userAccessLevel(rs.getString("useraccesslevelid")));}catch(NullPointerException e){}
 			try{in.setIsOnline(rs.getInt("isOnline"));}catch(NullPointerException e){}
 			try{in.setCollectorId(rs.getInt("collectorid"));}catch(NullPointerException e){}
+			try{in.setHasUpdate(rs.getInt("hasupdate"));}catch(NullPointerException e){}
 			try{UserDtls user = new UserDtls();
 			user.setUserdtlsid(rs.getLong("userdtlsid"));
 			in.setUserDtls(user);}catch(NullPointerException e){}
@@ -363,8 +351,9 @@ public class Login {
 				+ "clientip,"
 				+ "clientbrowser,"
 				+ "isactive,"
-				+ "collectorid)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "collectorid,"
+				+ "hasupdate)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -397,6 +386,7 @@ public class Login {
 		ps.setString(10, in.getClientbrowser());
 		ps.setInt(11, in.getIsActive());
 		ps.setInt(12, in.getCollectorId());
+		ps.setInt(13, in.getHasUpdate());
 		
 		LogU.add(in.getUsername());
 		LogU.add(in.getPassword());
@@ -409,6 +399,7 @@ public class Login {
 		LogU.add(in.getClientbrowser());
 		LogU.add(in.getIsActive());
 		LogU.add(in.getCollectorId());
+		LogU.add(in.getHasUpdate());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -436,8 +427,9 @@ public class Login {
 				+ "clientip,"
 				+ "clientbrowser,"
 				+ "isactive,"
-				+ "collectorid)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "collectorid,"
+				+ "hasupdate)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -470,6 +462,7 @@ public class Login {
 		ps.setString(10, getClientbrowser());
 		ps.setInt(11, getIsActive());
 		ps.setInt(12, getCollectorId());
+		ps.setInt(13, getHasUpdate());
 		
 		LogU.add(getUsername());
 		LogU.add(getPassword());
@@ -482,6 +475,7 @@ public class Login {
 		LogU.add(getClientbrowser());
 		LogU.add(getIsActive());
 		LogU.add(getCollectorId());
+		LogU.add(getHasUpdate());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -507,7 +501,8 @@ public class Login {
 				+ "clientip=?,"
 				+ "clientbrowser=?,"
 				+ "isactive=?,"
-				+ "collectorid=?" 
+				+ "collectorid=?,"
+				+ "hasupdate=?" 
 				+ " WHERE logid=?";
 		
 		PreparedStatement ps = null;
@@ -530,7 +525,8 @@ public class Login {
 		ps.setString(9, in.getClientbrowser());
 		ps.setInt(10, in.getIsActive());
 		ps.setInt(11, in.getCollectorId());
-		ps.setLong(12, in.getLogid());
+		ps.setInt(12, in.getHasUpdate());
+		ps.setLong(13, in.getLogid());
 		 
 		LogU.add(in.getUsername());
 		LogU.add(in.getPassword());
@@ -541,6 +537,7 @@ public class Login {
 		LogU.add(in.getLogintime());
 		LogU.add(in.getClientip());
 		LogU.add(in.getCollectorId());
+		LogU.add(in.getHasUpdate());
 		LogU.add(in.getClientbrowser());
 		
 		LogU.add("executing for saving...");
@@ -568,7 +565,8 @@ public class Login {
 				+ "clientip=?,"
 				+ "clientbrowser=?,"
 				+ "isactive=?,"
-				+ "collectorid=?" 
+				+ "collectorid=?,"
+				+ "hasupdate=?" 
 				+ " WHERE logid=?";
 		
 		PreparedStatement ps = null;
@@ -591,7 +589,8 @@ public class Login {
 		ps.setString(9,getClientbrowser());
 		ps.setInt(10, getIsActive());
 		ps.setInt(11, getCollectorId());
-		ps.setLong(12, getLogid());
+		ps.setInt(12, getHasUpdate());
+		ps.setLong(13, getLogid());
 		
 		LogU.add(getUsername());
 		LogU.add(getPassword());
@@ -603,6 +602,7 @@ public class Login {
 		LogU.add(getClientip());
 		LogU.add(getClientbrowser());
 		LogU.add(getCollectorId());
+		LogU.add(getHasUpdate());
 		LogU.add(getLogid());
 		
 		LogU.add("executing for saving...");
@@ -786,117 +786,6 @@ public class Login {
 		WebTISDatabaseConnect.close(conn);
 		}catch(SQLException s){}
 		
-	}
-	
-	public Long getLogid() {
-		return logid;
-	}
-	public void setLogid(Long logid) {
-		this.logid = logid;
-	}
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	public String getLastlogin() {
-		return lastlogin;
-	}
-	public void setLastlogin(String lastlogin) {
-		this.lastlogin = lastlogin;
-	}
-	public UserAccessLevel getAccessLevel() {
-		return accessLevel;
-	}
-	public void setAccessLevel(UserAccessLevel accessLevel) {
-		this.accessLevel = accessLevel;
-	}
-	public int getIsOnline() {
-		return isOnline;
-	}
-	public void setIsOnline(int isOnline) {
-		this.isOnline = isOnline;
-	}
-	public UserDtls getUserDtls() {
-		return userDtls;
-	}
-	public void setUserDtls(UserDtls userDtls) {
-		this.userDtls = userDtls;
-	}
-	public Timestamp getTimestamp() {
-		return timestamp;
-	}
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public String getLogintime() {
-		return logintime;
-	}
-
-	public void setLogintime(String logintime) {
-		this.logintime = logintime;
-	}
-
-	public String getClientip() {
-		return clientip;
-	}
-
-	public void setClientip(String clientip) {
-		this.clientip = clientip;
-	}
-
-	public String getClientbrowser() {
-		return clientbrowser;
-	}
-
-	public void setClientbrowser(String clientbrowser) {
-		this.clientbrowser = clientbrowser;
-	}
-	
-	public static void main(String[] args) {
-//		/System.out.println(Login.login(1).getUsername());
-		/*Login in = new Login();
-		in.setLogid(2l);
-		in.setUsername("babez");
-		in.setPassword("babez");
-		in.setLastlogin(DateUtils.getCurrentDateMMDDYYYYTIME());
-		UserAccessLevel accessLevel = new UserAccessLevel();
-		accessLevel.setUseraccesslevelid(1);
-		accessLevel.setLevel(1);
-		accessLevel.setName("Programmer");
-		in.setAccessLevel(accessLevel);
-		in.setIsOnline(1);
-		UserDtls userDtls = new UserDtls();
-		userDtls.setUserdtlsid(2l);
-		in.setUserDtls(userDtls);
-		in.setLogintime(DateUtils.getCurrentDateMMDDYYYYTIME());
-		in.setClientip("UNKNOWN");
-		in.setClientbrowser("UNKNOWN");
-		in.save(in);*/
-	}
-
-	public int getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-
-	public int getCollectorId() {
-		return collectorId;
-	}
-
-	public void setCollectorId(int collectorId) {
-		this.collectorId = collectorId;
 	}
 	
 }

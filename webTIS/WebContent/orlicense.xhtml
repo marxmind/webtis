@@ -52,11 +52,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<p:growl id="msg" showDetail="true" life="2000" />
 	
 	
-		 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
-        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-    	 </p:confirmDialog>
+		 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+        </p:confirmDialog>
 		
+		<p:confirmPopup global="true">
+            <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirm-popup-yes" />
+    	</p:confirmPopup>
 		
 		<p:confirmDialog widgetVar="cfNote" header="Please Confirm" message="Are you sure you want to save?" severity="info" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
 	       		<p:outputLabel value="Please check below where to send notification" />

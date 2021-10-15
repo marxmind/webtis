@@ -36,10 +36,24 @@ public class ArticleParticular {
 	private String name;
 	private String description;
 	private double amount;
+	private double mpf;
+	private double espf;
+	private double emf;
+	private double rmf;
+	private double sf;
+	private double ssf;
+	
 	private int isActive;
+	
 	
 	private Article article;
 	private ArticleSubtype articleSubtype;
+	
+	private long articleId;
+	private List articles;
+	
+	private long subId;
+	private List subs;
 	
 	public static List<ArticleParticular> retrieve(String sqlAdd, String[] params){
 		List<ArticleParticular> pts = new ArrayList<ArticleParticular>();
@@ -96,8 +110,13 @@ public class ArticleParticular {
 					.isActive(rs.getInt("parisactive"))
 					.article(art)
 					.articleSubtype(sub)
+					.mpf(rs.getDouble("mpf"))
+					.espf(rs.getDouble("espf"))
+					.emf(rs.getDouble("emf"))
+					.rmf(rs.getDouble("rmf"))
+					.sf(rs.getDouble("sf"))
+					.ssf(rs.getDouble("ssf"))
 					.build();
-			
 			
 			pts.add(pt);
 			
@@ -156,8 +175,14 @@ public class ArticleParticular {
 				+ "paramount,"
 				+ "parisactive,"
 				+ "artid,"
-				+ "subid)" 
-				+ " VALUES(?,?,?,?,?,?,?)";
+				+ "subid,"
+				+ "mpf,"
+				+ "espf,"
+				+ "emf,"
+				+ "rmf,"
+				+ "sf,"
+				+ "ssf)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -186,6 +211,12 @@ public class ArticleParticular {
 		ps.setInt(cnt++, st.getIsActive());
 		ps.setLong(cnt++, st.getArticle().getId());
 		ps.setLong(cnt++, st.getArticleSubtype().getId());
+		ps.setDouble(cnt++, st.getMpf());
+		ps.setDouble(cnt++, st.getEspf());
+		ps.setDouble(cnt++, st.getEmf());
+		ps.setDouble(cnt++, st.getRmf());
+		ps.setDouble(cnt++, st.getSf());
+		ps.setDouble(cnt++, st.getSsf());
 		
 		LogU.add(st.getName());
 		LogU.add(st.getDescription());
@@ -193,6 +224,12 @@ public class ArticleParticular {
 		LogU.add(st.getIsActive());
 		LogU.add(st.getArticle().getId());
 		LogU.add(st.getArticleSubtype().getId());
+		LogU.add(st.getMpf());
+		LogU.add(st.getEspf());
+		LogU.add(st.getEmf());
+		LogU.add(st.getRmf());
+		LogU.add(st.getSf());
+		LogU.add(st.getSsf());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -213,7 +250,13 @@ public class ArticleParticular {
 				+ "pardesc=?,"
 				+ "paramount=?,"
 				+ "artid=?,"
-				+ "subid=?"
+				+ "subid=?,"
+				+ "mpf=?,"
+				+ "espf=?,"
+				+ "emf=?,"
+				+ "rmf=?,"
+				+ "sf=?,"
+				+ "ssf=?"
 				+ " WHERE parid=?";
 		
 		PreparedStatement ps = null;
@@ -232,6 +275,12 @@ public class ArticleParticular {
 		ps.setDouble(cnt++, st.getAmount());
 		ps.setLong(cnt++, st.getArticle().getId());
 		ps.setLong(cnt++, st.getArticleSubtype().getId());
+		ps.setDouble(cnt++, st.getMpf());
+		ps.setDouble(cnt++, st.getEspf());
+		ps.setDouble(cnt++, st.getEmf());
+		ps.setDouble(cnt++, st.getRmf());
+		ps.setDouble(cnt++, st.getSf());
+		ps.setDouble(cnt++, st.getSsf());
 		ps.setLong(cnt++, st.getId());
 		
 		LogU.add(st.getName());
@@ -239,6 +288,12 @@ public class ArticleParticular {
 		LogU.add(st.getAmount());
 		LogU.add(st.getArticle().getId());
 		LogU.add(st.getArticleSubtype().getId());
+		LogU.add(st.getMpf());
+		LogU.add(st.getEspf());
+		LogU.add(st.getEmf());
+		LogU.add(st.getRmf());
+		LogU.add(st.getSf());
+		LogU.add(st.getSsf());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");

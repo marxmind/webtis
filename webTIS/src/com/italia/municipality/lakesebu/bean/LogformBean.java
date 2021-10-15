@@ -3023,6 +3023,10 @@ public class LogformBean implements Serializable{
 					AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
 			String REPORT_NAME ="rcdallMonthly";
 			
+			if("all".equalsIgnoreCase(titleType)) {
+				REPORT_NAME ="rcdperMonthly";
+			}
+			
 			ReportCompiler compiler = new ReportCompiler();
 			String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, REPORT_PATH);
 			
@@ -3058,7 +3062,7 @@ public class LogformBean implements Serializable{
 			}
 			
 			
-			for(int i=cnt; i<20; i++) {
+			for(int i=cnt; i<30; i++) {
 				Rcd rpt = new Rcd();
 				reports.add(rpt);
 			}
@@ -3071,8 +3075,11 @@ public class LogformBean implements Serializable{
 	  		if("collector".equalsIgnoreCase(titleType)) {
 	  			title = "TOTAL COLLECTOR COLLECTION FOR THE MONTH OF " + DateUtils.getMonthName(Integer.valueOf(getSelectedCollection().get(0).getReceivedDate().split("-")[1])).toUpperCase();
 	  		}else if("all".equalsIgnoreCase(titleType)) {
-	  			title = "TOTAL COLLECTION FOR THE MONTH OF " + DateUtils.getMonthName(Integer.valueOf(getSelectedCollection().get(0).getReceivedDate().split("-")[1])).toUpperCase();
+	  			//title = "TOTAL COLLECTION FOR THE MONTH OF " + DateUtils.getMonthName(Integer.valueOf(getSelectedCollection().get(0).getReceivedDate().split("-")[1])).toUpperCase();
+	  			title = "For the month of " + DateUtils.getMonthName(Integer.valueOf(getSelectedCollection().get(0).getReceivedDate().split("-")[1])).toUpperCase();
 	  		}
+	  		
+	  		System.out.println("report file : " + REPORT_NAME);
 	  		
 	  		title += ", " +  getSelectedCollection().get(0).getReceivedDate().split("-")[0];
 	  		

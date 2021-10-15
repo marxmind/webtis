@@ -51,12 +51,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 <h:form prependId="false" id="formId">
 	<p:growl id="msg" life="2000" showDetail="true"/>
 	
-	
-	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
-        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-    	 </p:confirmDialog>
-	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+        </p:confirmDialog>
+    
+    <p:confirmPopup global="true">
+            <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirm-popup-yes" />
+    </p:confirmPopup>
 	
 	
 	<div class="card">
@@ -67,7 +70,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             	<p:commandButton update="gridId" value="New" icon="fa fa-file-o" actionListener="#{stocksBean.createNew}"/>
     			<p:commandButton update="gridId" value="Clear" icon="fa fa-trash" action="#{stocksBean.createNew}"/>
     			<p:commandButton update="gridId dataForm msg" value="Save" icon="fa fa-floppy-o" actionListener="#{stocksBean.saveData}">
-    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save this data?" icon="pi pi-info-circle" />
     			</p:commandButton>
             </div>
             

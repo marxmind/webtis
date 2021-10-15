@@ -17,6 +17,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * 
+ * @author Mark Italia
+ * @since 1/2/2019
+ * @version 1.0
+ * 
+ * @apiNote This is the fish cage owner class
+ *
+ */
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter

@@ -50,10 +50,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 <h:form prependId="false" id="formId" style="background-color: #8fdbf5">
 	<p:growl id="msg" showDetail="true" sticky="false"/>
 	
-	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
-        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-    	 </p:confirmDialog>
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+        </p:confirmDialog>
+        
+        <p:confirmPopup global="true">
+            <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirm-popup-yes" />
+    </p:confirmPopup>
     	 
     <div class="card">
     <div class="p-grid sample-layout">
@@ -67,7 +72,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	    			<div class="ui-inputgroup">
 	    			<p:commandButton update="formDataId,form56Id,grandId,wordId" value="Calculate" icon="ui-icon-note"  action="#{form56Bean.updateTotal}"/>
 	    			<p:commandButton update="formDataId,form56Id,dataTransId,wordId,paySearchId,yearSelId,caseId,msg" value="Save" icon="ui-icon-note" actionListener="#{form56Bean.saveData}" >
-	    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+	    				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 	    			</p:commandButton>
 	    			</div>
 	    		</f:facet>

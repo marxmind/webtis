@@ -8,6 +8,8 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.primefaces.PrimeFaces;
+
 import com.italia.municipality.lakesebu.controller.Email;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.UserAccessLevel;
@@ -35,6 +37,7 @@ public class MenuBean implements Serializable{
 	private String totalMsg;
 	private String total;
 	private String styleButton;
+	private boolean hasUpdate;
 	
 	private static final String REPORT_FOLDER = AppConf.PRIMARY_DRIVE.getValue() + File.separator + 
 			AppConf.APP_CONFIG_FOLDER_NAME.getValue() + File.separator + "dailyreport" + File.separator;
@@ -43,10 +46,20 @@ public class MenuBean implements Serializable{
 		return Login.getUserLogin().getUserDtls();
 	}
 	
-	@PostConstruct
-	public void init() {
-		//loadCountEmailNote();
-		//runReport();
+	public void updateOff() {
+		Login in = Login.getUserLogin();
+		in.setHasUpdate(0);
+		in.save();
+		PrimeFaces pf = PrimeFaces.current();
+		pf.executeScript("PF('dlgUpdate').hide(1000);");
+	}
+	
+	public boolean getHasUpdate() {
+		return Login.getUserLogin().getHasUpdate()==1? true : false;
+	}
+	
+	public void setHasUpdate(boolean hasUpdate) {
+		this.hasUpdate = hasUpdate;
 	}
 	
 	private void runReport() {

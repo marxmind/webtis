@@ -22,7 +22,7 @@
     			<p:commandButton update="rssId" value="New" icon="fa fa-file-o" actionListener="#{rssBean.clearRes}" />
     			<p:commandButton update="rssId" value="Clear" icon="fa fa-trash" actionListener="#{rssBean.clearRes}" />
     			<p:commandButton update="dataRs idRes msg" value="Save" icon="fa fa-floppy-o" actionListener="#{rssBean.saveRes}">
-    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
     			</p:commandButton>
     			<p:commandButton value="Close" oncomplete="PF('resDlg').hide();" />
     		</f:facet>

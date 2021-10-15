@@ -21,7 +21,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
-               <h:outputStylesheet name="primeflex/primeflex.min.css" />
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
 			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
@@ -52,10 +52,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<p:growl id="msg" showDetail="true" life="2000" />
 	
 	
-	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" style="#{skin.msg}">
-        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-    	 </p:confirmDialog>
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+        </p:confirmDialog>
+    
+    <p:confirmPopup global="true">
+            <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirm-popup-yes" />
+    </p:confirmPopup>
 	
 	<div class="card">
     <div class="p-grid sample-layout">
@@ -70,10 +75,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton update="gridId listForm" value="New" icon="fa fa-file-o" actionListener="#{logformBean.clear}">
-    				<p:confirm header="Confirmation" message="Are you sure you want to create new?" icon="ui-icon-alert" />
+    				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to create new?" icon="pi pi-info-circle" />
     			</p:commandButton>
     			<p:commandButton update="gridId listForm" value="Clear" icon="fa fa-trash" action="#{logformBean.clear}">
-    				<p:confirm header="Confirmation" message="Are you sure you want clear below forms list?" icon="ui-icon-alert" />
+    				<p:confirm type="popup" header="Confirmation" message="Are you sure you want clear all fields?" icon="pi pi-info-circle" />
     			</p:commandButton>
     		</f:facet>
 			</p:toolbar> 
@@ -142,7 +147,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:toolbar id="tbFormNew" style="#{skin.toolbar}">
     		<f:facet name="left">
     			<p:commandButton update="gridId listForm tbFormNew msg" value="Clear Below List" icon="fa fa-trash" action="#{logformBean.clearBelowFormList}">
-    				<p:confirm header="Confirmation" message="Are you sure you want clear below forms list?" icon="ui-icon-alert" />
+    				<p:confirm type="popup" header="Confirmation" message="Are you sure you want clear below forms list?" icon="pi pi-info-circle" />
     			</p:commandButton>	
     		</f:facet>
     		<f:facet name="right">
@@ -204,7 +209,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton id="saveNormalId" update="gridId listForm reportData colMapId msg" value="Save Only" icon="fa fa-floppy-o" actionListener="#{logformBean.saveData}">
-    				<p:confirm header="Confirmation" message="Are you sure you want to save this data? Once saved, previous report is no longer allowed for editing." icon="ui-icon-alert" />
+    				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save this data? Once saved, previous report is no longer allowed for editing." icon="pi pi-info-circle" />
     			</p:commandButton>
     			<p:commandButton id="saveNotNormalId" update="ctDtlsId" value="Save With Ticket" onclick="PF('dlgCash').show()"/>
     		</f:facet>
@@ -258,7 +263,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 										<p:menuitem value="Print All RCD" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printAllRCD}" target="_blank"/>
 										<p:menuitem value="Print Summary RCD" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printSummary}" target="_blank"/>
 										<p:menuitem value="Monthly Collector Print Summary Report" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printInternalCollectorSummary('collector')}" target="_blank"/>
-										<p:menuitem value="Monthly Collection Print Summary Report" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printInternalCollectorSummary('all')}" target="_blank"/>
+										<p:menuitem value="Monthly Collection Report" ajax="false" immediate="true" icon="fa fa-file-pdf-o" actionListener="#{logformBean.printInternalCollectorSummary('all')}" target="_blank"/>
 									</p:menuButton> 
 									</div>
             				</f:facet>
@@ -476,7 +481,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             	</p:column>
             	<p:column width="10">
             		<p:commandButton update="dataIssued msg" icon="fa fa-floppy-o" action="#{logformBean.updateSeriesInfo(rt)}">
-	    				<p:confirm header="Confirmation" message="Are you sure you want to update this issued form series?" icon="ui-icon-alert" />
+	    				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to update this issued form series?" icon="pi pi-info-circle" />
 	    			</p:commandButton>
             	</p:column>
 			</p:dataTable>
@@ -530,7 +535,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	    		<f:facet name="right">
 	    			<p:outputLabel value="If you are ok with the series click here to save the changes" />
 	    			<p:commandButton update="dataSeries dataIssued fixDataIssued idSearchSeries msg" icon="fa fa-floppy-o" action="#{logformBean.saveChangeSeries}">
-	    				<p:confirm header="Confirmation" message="Are you sure you want to change on the series?" icon="ui-icon-alert" />
+	    				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to change on the series?" icon="pi pi-info-circle" />
 	    			</p:commandButton>
 	    		</f:facet>
 			</p:toolbar>

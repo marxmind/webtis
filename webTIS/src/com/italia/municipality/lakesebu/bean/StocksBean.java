@@ -285,7 +285,7 @@ public class StocksBean implements Serializable{
 	public void deleteRow(Stocks st) {
 		st.delete();
 		init();
-		Application.addMessage(1, "Success", "Successfully saved.");
+		Application.addMessage(1, "Success", "Successfully deleted.");
 	}
 	
 	public void createNew() {

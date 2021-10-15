@@ -22,7 +22,7 @@
     			<p:commandButton update="panId" value="New" icon="fa fa-file-o" actionListener="#{departmentBean.clear}" />
     			<p:commandButton update="panId" value="Clear" icon="fa fa-trash" actionListener="#{departmentBean.clear}" />
     			<p:commandButton update="panId dataDs msg" value="Save" icon="fa fa-floppy-o" actionListener="#{departmentBean.saveDep}">
-    				<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+    				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
     			</p:commandButton>
     			<p:commandButton value="Close" oncomplete="PF('depDlg').hide();" />
     		</f:facet>

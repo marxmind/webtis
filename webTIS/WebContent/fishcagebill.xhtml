@@ -1,0 +1,122 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h = "http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:my="http://java.sun.com/jsf/composite/my"  
+      >
+ 
+    <ui:composition>
+    		
+    		<p:growl id="msgfishbill" showDetail="true" life="2000" />
+    		<p:dialog widgetVar="dlgfishbill" fitViewport="true" position="center top" header="Billing Statement" closable="true" resizable="true" responsive="true" showHeader="true" modal="true" closeOnEscape="true">
+    		
+    		<p:card style="width: 100em">
+    		
+    		<f:facet name="header">
+		        <p:inputText value="#{fishcageBillingBean.searchBill}" placeholder="Search..." style="width: 25em">
+    				<p:ajax event="keyup" listener="#{fishcageBillingBean.loadData}" update="dataFishBill" />
+    			</p:inputText>
+		    </f:facet>
+    		
+    		<f:facet name="footer">
+    			<p:commandButton value="Close" onclick="PF('dlgfishbill').hide(1000);" />
+    		</f:facet>
+    		
+    		<f:facet name="subtitle">
+    		<p:dataTable id="dataFishBill" value="#{fishcageBillingBean.statements}" var="tx" stickyHeader="false"
+							rows="5" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100" paginatorAlwaysVisible="false" editable="true" editMode="cell" rowKey="#{tx.id}"
+                         paginatorPosition="top" reflow="true" emptyMessage="No data available">
+                         
+                         <p:ajax event="cellEdit"  listener="#{fishcageBillingBean.onCellEdit}" update="dataFishBill msgfishbill" />	
+                         
+                         <p:column headerText="Date" width="50">
+								<p:cellEditor>
+						              	  <f:facet name="output"><h:outputText value="#{tx.dateTrans}" /></f:facet>
+						                  <f:facet name="input">
+						                  <p:calendar value="#{tx.date}" />
+						                  </f:facet>
+						        </p:cellEditor>
+						 </p:column>
+                         
+                         <p:column headerText="Billing No" width="100">
+								<p:outputLabel value="#{tx.controlNo}" />
+						 </p:column>
+						 
+						 <p:column headerText="Fish Owner" width="100">
+								<p:cellEditor>
+						              	  <f:facet name="output"><p:outputLabel value="#{tx.owner.ownerName}"/></f:facet>
+						                  <f:facet name="input">
+						                  		<p:selectOneMenu value="#{tx.ownerListId}"  filter="true" filterMatchMode="contains" styleClass="js-tilt" style="width: 15em">
+									      			<f:selectItems value="#{tx.owners}"/>
+						      					</p:selectOneMenu>
+						                  </f:facet>
+						        </p:cellEditor>
+						 </p:column>
+						 
+						 <p:column headerText="Particulars" width="50">
+								<p:commandButton value="Add/Change" icon="fa fa-search" actionListener="#{fishcageBillingBean.openParticulars}" update="dataFishBillPay"/>
+						 </p:column>
+						 
+						 <p:column headerText="Remarks" width="100">
+								<p:cellEditor>
+						              	  <f:facet name="output"><h:outputText value="#{tx.remarks}" /></f:facet>
+						                  <f:facet name="input">
+						                  <p:inputTextarea placeholder="Add your remakrs here" value="#{tx.remarks}" cols="20" rows="5" />
+						                  </f:facet>
+						        </p:cellEditor>
+						 </p:column>
+						 
+						 <p:column headerText="Action" width="20">
+						 	<p:commandButton title="Click to save" update="dataFishBill msgfishbill"  icon="fa fa-floppy-o" actionListener="#{fishcageBillingBean.saveBill(tx)}">
+									<p:confirm header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
+							</p:commandButton>
+						 </p:column>
+						 
+			</p:dataTable>
+    		</f:facet>
+    		</p:card>
+    		
+    		</p:dialog>
+    		
+    		
+    		<p:dialog widgetVar="dlgfBillPay" position="center top" header="Particulars" width="600" height="800" closable="true" resizable="true" responsive="true" showHeader="false" modal="true" closeOnEscape="true">
+    			
+    			<p:toolbar id="tabFishBillPay">
+    		<f:facet name="left">
+    			<p:inputText value="#{fishcageBillingBean.searchBill}" placeholder="Search..." style="width: 25em">
+    				<p:ajax event="keyup" listener="#{fishcageBillingBean.loadParticulars}" update="dataFishBillPay" />
+    			</p:inputText>
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton value="Close" onclick="PF('dlgfBillPay').hide(1000);" />
+    		</f:facet>
+			</p:toolbar>
+    			
+    			<p:dataTable id="dataFishBillPay" value="#{fishcageBillingBean.payments}" var="tx" stickyHeader="false"
+							rows="5" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100" paginatorAlwaysVisible="false" editable="true" editMode="cell" rowKey="#{tx.id}"
+                         paginatorPosition="top" reflow="true" emptyMessage="No data available">
+                         
+                         <p:ajax event="cellEdit"  listener="#{fishcageBillingBean.onCellEditPay}" update="dataFishBillPay" />
+                         
+                         <p:column headerText="Particular" width="100">
+                         	<p:outputLabel value="#{tx.name}" />
+                         </p:column>
+                         
+                         <p:column headerText="Amount" width="50">
+								<p:cellEditor>
+						              	  <f:facet name="output"><p:outputLabel value="#{tx.amount}"><f:convertNumber currencySymbol="" type="currency"/> </p:outputLabel> </f:facet>
+						                  <f:facet name="input">
+						                  <p:inputNumber value="#{tx.amount}"/>
+						                  </f:facet>
+						        </p:cellEditor>
+						 </p:column>
+                         
+    			</p:dataTable>
+    		</p:dialog>
+    
+    </ui:composition>
+</html>

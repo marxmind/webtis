@@ -15,13 +15,30 @@ import com.italia.municipality.lakesebu.bean.SessionBean;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * 
  * @author mark italia
  * @since 09/27/2016
  * @version 1.0
+ * 
+ * @since 10/14/2021
+ * @version 2.0
+ * @apiNote adapting lombok annotation
  *
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
+@ToString
 public class UserDtls {
 
 	private long userdtlsid;
@@ -40,6 +57,7 @@ public class UserDtls {
 	private Timestamp timestamp;
 	private int isActive;
 	
+	/*
 	public UserDtls(){}
 	
 	public UserDtls(
@@ -73,7 +91,7 @@ public class UserDtls {
 		this.userDtls = userDtls;
 		this.isActive = isActive;
 	}
-	
+	*/
 	public static String userSQL(String tablename,UserDtls user){
 		String sql= " AND "+ tablename +".isactive=" + user.getIsActive();
 		if(user!=null){
@@ -340,6 +358,8 @@ public class UserDtls {
 				try{user.setTimestamp(rs.getTimestamp("timestamp"));}catch(NullPointerException e){}
 				try{user.setIsActive(rs.getInt("isactive"));}catch(NullPointerException e){}
 				try{user.setJob(Job.job(rs.getString("jobtitleid")));}catch(NullPointerException e){}
+				
+				
 			}
 			
 			rs.close();
@@ -904,6 +924,7 @@ public class UserDtls {
 		
 	}
 	
+	/*
 	public long getUserdtlsid() {
 		return userdtlsid;
 	}
@@ -1000,21 +1021,5 @@ public class UserDtls {
 	public void setRegdate(String regdate) {
 		this.regdate = regdate;
 	}
-
-	public static void main(String[] args) {
-		/*
-		UserDtls u = new UserDtls();
-		u.setIsActive(1);
-		Department dep = new Department();
-		for(UserDtls us : u.retrieve(u,dep)){
-			System.out.println(us.getFirstname() + " Job " +
-		us.getJob().getJobname() + " Department " +
-		us.getDepartment().getDepartmentName() + " Access Level " + us.getLogin().getAccessLevel().getName() + 
-		" added by " + us.getUserDtls().getFirstname());
-		}*/
-		
-		
-		
-		
-	}
+	*/
 }
