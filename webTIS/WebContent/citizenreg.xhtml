@@ -26,6 +26,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
+             <h:outputStylesheet name="css/bodyconf.css"/>
     </f:facet>
         
     <f:facet name="last">
@@ -71,31 +72,32 @@ xmlns:pe="http://primefaces.org/ui/extensions"
     <div class="p-grid sample-layout">
     
     <div class="p-col-12 p-md-5">
+    		<p:card style="width: 53em">
             <div class="ui-inputgroup" style="float:right">
-            			<p:commandButton value="New" update=":formId:usercusId, :formId:pictureId" actionListener="#{businessOwnerBean.clearFields}"  icon="fa fa-file-o" title="Click this button to start new information"/>
-    					<p:commandButton value="Clear" update="pictureId usercusId" icon="fa fa-trash" actionListener="#{businessOwnerBean.closePopup}" title="Click this button to clear information"/>
-						<p:commandButton value="Save" update="cusId usercusId pictureId msg"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{businessOwnerBean.save}">
+            			<p:commandButton value="New" update=":formId:usercusId, :formId:pictureId" actionListener="#{citizenBean.clearFields}"  icon="fa fa-file-o" title="Click this button to start new information"/>
+    					<p:commandButton value="Clear" update="pictureId usercusId" icon="fa fa-trash" actionListener="#{citizenBean.closePopup}" title="Click this button to clear information"/>
+						<p:commandButton value="Save" update="cusId usercusId pictureId msg"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{citizenBean.save}">
         					<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
         				</p:commandButton>
             </div>
             <p:panelGrid id="pictureId" columns="3" cellpadding="0" style="#{skin.grid};">
 							
 							<h:outputLabel id="photo">
-        						<p:graphicImage name="images/photocam/#{businessOwnerBean.photoId}.jpg" rendered="#{not empty businessOwnerBean.photoId}" style="width: 100px; height: 100px"/>
+        						<p:graphicImage name="images/photocam/#{citizenBean.photoId}.jpg" rendered="#{not empty citizenBean.photoId}" style="width: 100px; height: 100px"/>
         					</h:outputLabel>
         		
-        			<p:fileUpload listener="#{businessOwnerBean.fileUploadListener}"
+        			<p:fileUpload listener="#{citizenBean.fileUploadListener}"
 		                    			mode="advanced" auto="true" sizeLimit="50000000" label="Upload Picture"
 		                    			update="photo" dragDropSupport="true"
 		                    			allowTypes="/(\.|\/)(gif|jpeg|JPEG||JPG|jpg|png|PNG)$/" />
 		                    			
 		              <pe:qrCode id="qrCodeElem" 
-				           renderMethod="#{businessOwnerBean.renderMethod}" 
-				           renderMode="#{businessOwnerBean.mode}" 
-				           text="#{businessOwnerBean.text}"
-				           label="#{businessOwnerBean.label}"
-				           size="#{businessOwnerBean.size}"                 
-				           fillColor="#{businessOwnerBean.fillColor}"
+				           renderMethod="#{citizenBean.renderMethod}" 
+				           renderMode="#{citizenBean.mode}" 
+				           text="#{citizenBean.text}"
+				           label="#{citizenBean.label}"
+				           size="#{citizenBean.size}"                 
+				           fillColor="#{citizenBean.fillColor}"
 				           fontName="Ubuntu"
 				           fontColor="#01A9DB"
 				           ecLevel="H"                   
@@ -105,103 +107,103 @@ xmlns:pe="http://primefaces.org/ui/extensions"
             <p:panelGrid id="usercusId" columns="4" layout="grid">
 				
 						<p:outputLabel for="d1" value="Date:" style="#{skin.label}" />
-						<p:inputText id="d1" value="#{businessOwnerBean.dateregistered}" readonly="true" style="width: 11em;#{skin.textInput}"/>
+						<p:inputText id="d1" value="#{citizenBean.dateregistered}" readonly="true" style="width: 11em;#{skin.textInput}"/>
 						
 						<p:outputLabel for="d2" value="Card Number:" style="#{skin.label}" />
-						<p:inputText id="d2" value="#{businessOwnerBean.cardnumber}" readonly="true" style="width: 11em;#{skin.textInput}"/>
+						<p:inputText id="d2" value="#{citizenBean.cardnumber}" readonly="true" style="width: 11em;#{skin.textInput}"/>
 						
 						<p:outputLabel for="idqr" value="QRCode" style="#{skin.label}"/>
-		        		<p:inputText id="idqr" value="#{businessOwnerBean.qrCode}"  style="width: 11em;#{skin.textInput}"/>
+		        		<p:inputText id="idqr" value="#{citizenBean.qrCode}"  style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="idNat" value="PSA ID" style="#{skin.label}"/>
-		        		<p:inputText id="idNat" value="#{businessOwnerBean.nationalId}"  style="width: 11em;#{skin.textInput}"/>
+		        		<p:inputText id="idNat" value="#{citizenBean.nationalId}"  style="width: 11em;#{skin.textInput}"/>
 								
 						<p:outputLabel for="d3" value="First Name(Company Name):" style="#{skin.label}"/>
-		        		<p:autoComplete id="d3" value="#{businessOwnerBean.firstname}" a:placeholder="First Name(Company Name)" completeMethod="#{businessOwnerBean.autoFirst}" effect="fade" style="width: 11em;#{skin.textInput}"/>
+		        		<p:autoComplete id="d3" value="#{citizenBean.firstname}" a:placeholder="First Name(Company Name)" completeMethod="#{citizenBean.autoFirst}" effect="fade" style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="d4" value="Middle Name(add (.) for company):" style="#{skin.label}"/>
-		        		<p:autoComplete id="d4" value="#{businessOwnerBean.middlename}" a:placeholder="Middle Name" completeMethod="#{businessOwnerBean.autoMiddle}" effect="fade" style="width: 11em;#{skin.textInput}"/>
+		        		<p:autoComplete id="d4" value="#{citizenBean.middlename}" a:placeholder="Middle Name" completeMethod="#{citizenBean.autoMiddle}" effect="fade" style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		
 		        		<p:outputLabel for="d5" value="Last Name(add (.) for company):" style="#{skin.label}"/>
-		        		<p:autoComplete id="d5" value="#{businessOwnerBean.lastname}" a:placeholder="Last Name" completeMethod="#{businessOwnerBean.autoLast}" effect="fade" style="width: 11em;#{skin.textInput}"/>
+		        		<p:autoComplete id="d5" value="#{citizenBean.lastname}" a:placeholder="Last Name" completeMethod="#{citizenBean.autoLast}" effect="fade" style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="d6" value="Civil Status:" style="#{skin.label}"/>
-		            	<p:selectOneMenu id="d6" value="#{businessOwnerBean.clivilId}" style="width: 11em;#{skin.select}" title="Click this to select Civil Status" filterMatchMode="contains" filter="true">
-		                		<f:selectItems value="#{businessOwnerBean.civils}"/>
+		            	<p:selectOneMenu id="d6" value="#{citizenBean.clivilId}" style="width: 11em;#{skin.select}" title="Click this to select Civil Status" filterMatchMode="contains" filter="true">
+		                		<f:selectItems value="#{citizenBean.civils}"/>
 		            	</p:selectOneMenu>
 		        		
 		        		<p:outputLabel for="d7" id="birthId" value="Birtdate:" style="#{skin.label}"/>
-		        		<p:calendar id="d7" value="#{businessOwnerBean.birthdate}" pattern="yyyy-MM-dd" effect="slideDown" style="width: 11em;#{skin.calendar}" title="Click this calendar to define person's birthdate">
-		        			<f:ajax event="change" listener="#{businessOwnerBean.calculateAge}" render="idAge"/>
+		        		<p:calendar id="d7" value="#{citizenBean.birthdate}" pattern="yyyy-MM-dd" effect="slideDown" style="width: 11em;#{skin.calendar}" title="Click this calendar to define person's birthdate">
+		        			<f:ajax event="change" listener="#{citizenBean.calculateAge}" render="idAge"/>
 		        		</p:calendar>
 		        		
 		        		<p:outputLabel for="idAge" value="Age:" style="#{skin.label}"/>
-		        		<p:inputText id="idAge" value="#{businessOwnerBean.age}" a:type="number" style="width: 11em;#{skin.textInput}"/>
+		        		<p:inputText id="idAge" value="#{citizenBean.age}" a:type="number" style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="idplace" value="Born Place:" style="#{skin.label}"/>
-		        		<p:inputText id="idplace" value="#{businessOwnerBean.bornplace}"  style="width: 11em;#{skin.textInput}"/>
+		        		<p:inputText id="idplace" value="#{citizenBean.bornplace}"  style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="idw" value="Weight:" style="#{skin.label}"/>
-		        		<p:inputText id="idw" value="#{businessOwnerBean.weight}"  style="width: 11em;#{skin.textInput}"/>
+		        		<p:inputText id="idw" value="#{citizenBean.weight}"  style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="idh" value="Height:" style="#{skin.label}"/>
-		        		<p:inputText id="idh" value="#{businessOwnerBean.height}"  style="width: 11em;#{skin.textInput}"/>
+		        		<p:inputText id="idh" value="#{citizenBean.height}"  style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="idwork" value="Work:" style="#{skin.label}"/>
-		        		<p:inputText id="idwork" value="#{businessOwnerBean.work}"  style="width: 11em;#{skin.textInput}"/>
+		        		<p:inputText id="idwork" value="#{citizenBean.work}"  style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="idCit" value="Citizenship:" style="#{skin.label}"/>
-		        		<p:inputText id="idCit" value="#{businessOwnerBean.citizenship}"  style="width: 11em;#{skin.textInput}"/>
+		        		<p:inputText id="idCit" value="#{citizenBean.citizenship}"  style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="d8" value="Gender: " style="#{skin.label}"/>
-		            	<p:selectOneMenu id="d8" value="#{businessOwnerBean.genderId}" style="width: 11em;#{skin.select}" title="Click this to define gender">
-		                	<f:selectItems value="#{businessOwnerBean.genderList}"/>
+		            	<p:selectOneMenu id="d8" value="#{citizenBean.genderId}" style="width: 11em;#{skin.select}" title="Click this to define gender">
+		                	<f:selectItems value="#{citizenBean.genderList}"/>
 		            	</p:selectOneMenu>
 		        		
 		        		
 		        		
 		        		<p:outputLabel for="d9" value="Province Name:" style="#{skin.label}"/>
-			 			<p:outputLabel id="d9" value="#{businessOwnerBean.provinceSelected.name}" style="#{skin.label}">
-			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:provData" icon="fa fa-search" title="Click this button to select Province name" actionListener="#{businessOwnerBean.loadProvince}" onclick="PF('multiDialogProvince').show();"/>
+			 			<p:outputLabel id="d9" value="#{citizenBean.provinceSelected.name}" style="#{skin.label}">
+			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:provData" icon="fa fa-search" title="Click this button to select Province name" actionListener="#{citizenBean.loadProvince}" onclick="PF('multiDialogProvince').show();"/>
 			 			</p:outputLabel>
 		        		
 		        		<p:outputLabel for="d10" value="Contact No:" style="#{skin.label}"/>
-		        		<p:inputText id="d10" value="#{businessOwnerBean.contactno}" a:placeholder="+63900 0000 000" style="width: 11em;#{skin.textInput}"/>
+		        		<p:inputText id="d10" value="#{citizenBean.contactno}" a:placeholder="+63900 0000 000" style="width: 11em;#{skin.textInput}"/>
 		        		
 		        		<p:outputLabel for="d11" value="Municipality Name:" style="#{skin.label}"/>
-			 			<p:outputLabel id="d11" value="#{businessOwnerBean.municipalSelected.name}" style="#{skin.label}" >
-			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:munData" icon="fa fa-search" title="Click this button to select Municipality name" actionListener="#{businessOwnerBean.loadMunicipal}" onclick="PF('multiDialogMunicipality').show();"/>
+			 			<p:outputLabel id="d11" value="#{citizenBean.municipalSelected.name}" style="#{skin.label}" >
+			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:munData" icon="fa fa-search" title="Click this button to select Municipality name" actionListener="#{citizenBean.loadMunicipal}" onclick="PF('multiDialogMunicipality').show();"/>
 			 			</p:outputLabel>
 		        		
 		        		<p:outputLabel for="d12" value="Contact Person:" style="#{skin.label}"/>
 		        		<p:outputLabel id="d12">
-		            	<p:outputLabel id="emerId" value="#{businessOwnerBean.emergencyContactPersonName}" readonly="true" style="#{skin.label}"/>
-		            	&nbsp;&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update="ownerId" icon="fa fa-search" actionListener="#{businessOwnerBean.loadContactPerson}" title="Click this button to select Contact Person name" onclick="PF('multiDialogContact').show()"/>
-		            	&nbsp;<p:commandButton style="#{skin.button}" update="emerId,relId,msg"  icon="fa fa-trash-o" title="Click this button to remove the attached contact person for this citizen" actionListener="#{businessOwnerBean.removeEmergencyPerson}">
+		            	<p:outputLabel id="emerId" value="#{citizenBean.emergencyContactPersonName}" readonly="true" style="#{skin.label}"/>
+		            	&nbsp;&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update="ownerId" icon="fa fa-search" actionListener="#{citizenBean.loadContactPerson}" title="Click this button to select Contact Person name" onclick="PF('multiDialogContact').show()"/>
+		            	&nbsp;<p:commandButton style="#{skin.button}" update="emerId,relId,msg"  icon="fa fa-trash-o" title="Click this button to remove the attached contact person for this citizen" actionListener="#{citizenBean.removeEmergencyPerson}">
         				<p:confirm header="Confirmation" message="Are you sure you want to removed contact person for this citizen?." icon="ui-icon-alert" />
         		</p:commandButton>
 		            	</p:outputLabel>
 		        		
 		        		<p:outputLabel for="d13" value="Barangay Name:" style="#{skin.label}"/>
-			 			<p:outputLabel id="d13" value="#{businessOwnerBean.barangaySelected.name}" style="#{skin.label}">
-			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:barData tb" icon="fa fa-search" title="Click this button to select Barangay name" actionListener="#{businessOwnerBean.loadBarangay}" onclick="PF('multiDialogBarangay').show();"/>
+			 			<p:outputLabel id="d13" value="#{citizenBean.barangaySelected.name}" style="#{skin.label}">
+			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:barData tb" icon="fa fa-search" title="Click this button to select Barangay name" actionListener="#{citizenBean.loadBarangay}" onclick="PF('multiDialogBarangay').show();"/>
 			 			</p:outputLabel>
 		        		 
 						 <p:outputLabel for="relId" value="Relationship: " style="#{skin.label}"/>
-		            		<p:selectOneMenu id="relId" value="#{businessOwnerBean.relationshipId}" style="width: 11em;#{skin.select}" title="Click this to define relationship" filterMatchMode="contains" filter="true">
-		                		<f:selectItems value="#{businessOwnerBean.relationships}"/>
+		            		<p:selectOneMenu id="relId" value="#{citizenBean.relationshipId}" style="width: 11em;#{skin.select}" title="Click this to define relationship" filterMatchMode="contains" filter="true">
+		                		<f:selectItems value="#{citizenBean.relationships}"/>
 		            		</p:selectOneMenu>
 						
 		            	<p:outputLabel for="d14" value="Purok Name:" style="#{skin.label}"/>
-			 			<p:outputLabel id="d14" value="#{businessOwnerBean.purokSelected.purokName}" style="#{skin.label}">
-			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:purData" icon="fa fa-search" title="Click this button to select Purok/Zone/Sitio name" actionListener="#{businessOwnerBean.loadPurok}" onclick="PF('multiDialogPurok').show();"/>
+			 			<p:outputLabel id="d14" value="#{citizenBean.purokSelected.purokName}" style="#{skin.label}">
+			 			&nbsp;&nbsp;<p:commandButton style="#{skin.button}" update=":formId:purData" icon="fa fa-search" title="Click this button to select Purok/Zone/Sitio name" actionListener="#{citizenBean.loadPurok}" onclick="PF('multiDialogPurok').show();"/>
 			 			</p:outputLabel>
             		   	
     			 	</p:panelGrid> 
     			 	
     			 	
-            
+           </p:card> 
             
         </div>
         <div class="p-col-12 p-md-7 p-col-nogutter">
@@ -210,26 +212,26 @@ xmlns:pe="http://primefaces.org/ui/extensions"
                     <p:toolbar id="tb" style="#{skin.toolbar}">
 			    		<f:facet name="left">
 			        		<div class="ui-inputgroup">
-					<p:inputText value="#{businessOwnerBean.searchCustomer}" a:placeholder="Search..." style="width: 20em">
-	    					<f:ajax event="keyup" listener="#{businessOwnerBean.init}" render="cusId usercusId pictureId"/>
+					<p:inputText value="#{citizenBean.searchCustomer}" a:placeholder="Search..." style="width: 20em">
+	    					<f:ajax event="keyup" listener="#{citizenBean.init}" render="cusId usercusId pictureId"/>
 	    			</p:inputText>
-	    			<p:commandButton id="idFind" tabindex="1" update="cusId usercusId pictureId" icon="fa fa-search" actionListener="#{businessOwnerBean.init}"/>
-	    			<p:commandButton id="idLoadAll" update="cusId usercusId pictureId tb" value="Load All" icon="fa fa-search" actionListener="#{businessOwnerBean.loadAll}"/>
-					<p:selectBooleanCheckbox value="#{businessOwnerBean.male}" style="#{skin.checkbox}">
-						<f:ajax event="change" render="cusId" listener="#{businessOwnerBean.loadFilter}"/>
+	    			<p:commandButton id="idFind" tabindex="1" update="cusId usercusId pictureId" icon="fa fa-search" actionListener="#{citizenBean.init}"/>
+	    			<p:commandButton id="idLoadAll" update="cusId usercusId pictureId tb" value="Load All" icon="fa fa-search" actionListener="#{citizenBean.loadAll}"/>
+					<p:selectBooleanCheckbox value="#{citizenBean.male}" style="#{skin.checkbox}">
+						<f:ajax event="change" render="cusId" listener="#{citizenBean.loadFilter}"/>
 					</p:selectBooleanCheckbox>
 	    			<p:outputLabel value="Male:" style="#{skin.label}"/>
-					<p:selectBooleanCheckbox value="#{businessOwnerBean.female}" style="#{skin.checkbox}">
-						<f:ajax event="change" render="cusId" listener="#{businessOwnerBean.loadFilter}"/>
+					<p:selectBooleanCheckbox value="#{citizenBean.female}" style="#{skin.checkbox}">
+						<f:ajax event="change" render="cusId" listener="#{citizenBean.loadFilter}"/>
 					</p:selectBooleanCheckbox>
 	    			 <p:outputLabel value="Female:" style="#{skin.label}"/>
-					<p:selectBooleanCheckbox value="#{businessOwnerBean.filteredBarangay}" style="#{skin.checkbox}">
-						<f:ajax event="change" render="cusId" listener="#{businessOwnerBean.loadFilter}"/>
+					<p:selectBooleanCheckbox value="#{citizenBean.filteredBarangay}" style="#{skin.checkbox}">
+						<f:ajax event="change" render="cusId" listener="#{citizenBean.loadFilter}"/>
 					</p:selectBooleanCheckbox>
-					 <p:outputLabel value="#{businessOwnerBean.barangaySelected.name} Only:" style="#{skin.label}"/>
-	    			 <p:selectOneMenu value="#{businessOwnerBean.purokId}" style="color: black; width: 15em;#{skin.select}">
-			            	<f:selectItems value="#{businessOwnerBean.purokList}"/>
-			            	<f:ajax event="change" render="cusId" listener="#{businessOwnerBean.loadFilter}"/>
+					 <p:outputLabel value="#{citizenBean.barangaySelected.name} Only:" style="#{skin.label}"/>
+	    			 <p:selectOneMenu value="#{citizenBean.purokId}" style="color: black; width: 15em;#{skin.select}">
+			            	<f:selectItems value="#{citizenBean.purokList}"/>
+			            	<f:ajax event="change" render="cusId" listener="#{citizenBean.loadFilter}"/>
 			        </p:selectOneMenu>
     			</div>
 			        	</f:facet>
@@ -240,10 +242,10 @@ xmlns:pe="http://primefaces.org/ui/extensions"
                 </div>
                 <div class="p-col-12">
                     <div class="p-grid">
-                        <p:dataTable id="cusId" value="#{businessOwnerBean.customers}" var="rpt" stickyHeader="false"
+                        <p:dataTable id="cusId" value="#{citizenBean.customers}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="true" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top" selection="#{businessOwnerBean.selectedQRCode}" rowKey="#{rpt.id}"
+                         scrollable="true" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top" selection="#{citizenBean.selectedQRCode}" rowKey="#{rpt.id}"
                          >
                          	
                          	<f:facet name="{Exporters}">
@@ -259,7 +261,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
                 						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
                 							<p:dataExporter type="pdf" target="cusId" fileName="CitizenRecord" preProcessor="#{exporter.preProcessPDF}" options="#{exporter.pdfOpt}"/>
             						</h:commandLink>
-            						<p:commandLink title="Print in QRCode" actionListener="#{businessOwnerBean.printQRCode}" target="_blank" ajax="false" immediate="false" style="float: left">
+            						<p:commandLink title="Print in QRCode" actionListener="#{citizenBean.printQRCode}" target="_blank" ajax="false" immediate="false" style="float: left">
             				 			<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
 								  </p:commandLink>
             				</f:facet>
@@ -267,13 +269,13 @@ xmlns:pe="http://primefaces.org/ui/extensions"
                          	<p:column selectionMode="multiple" width="15"/>
                          	
           					<p:column headerText="[*]" width="40" exportable="false">
-            					<p:commandButton update="cusId usercusId msg" icon="fa fa-trash-o" title="Click this button to delete this data" actionListener="#{businessOwnerBean.deleteRow(rpt)}">
+            					<p:commandButton update="cusId usercusId msg" icon="fa fa-trash-o" title="Click this button to delete this data" actionListener="#{citizenBean.deleteRow(rpt)}">
             						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
             					</p:commandButton>
             				</p:column>
             				
             				<p:column headerText="View" width="40" exportable="false">
-            					<p:commandButton icon="fa fa-search" title="Click this button to see the additional information" update="usercusId pictureId qrCodeElem" actionListener="#{businessOwnerBean.clickItem(rpt)}"/>
+            					<p:commandButton icon="fa fa-search" title="Click this button to see the additional information" update="usercusId pictureId qrCodeElem" actionListener="#{citizenBean.clickItem(rpt)}"/>
             				</p:column>
             				
             				<p:column headerText="BID" width="100" sortable="false" sortBy="#{rpt.cardno}">
@@ -311,8 +313,8 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 <p:dialog header="Name List" responsive="true" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" position="center top" modal="false" widgetVar="multiDialogContact" Height="500" width="700" closable="false">
 		<p:toolbar id="tbTax">
     		<f:facet name="left">
-        		<p:inputText id="idSearchTax" value="#{businessOwnerBean.searchEmergencyPerson}" a:placeholder="Search Name">
-    					<f:ajax event="keyup" listener="#{businessOwnerBean.loadContactPerson}" render="ownerId"/>
+        		<p:inputText id="idSearchTax" value="#{citizenBean.searchEmergencyPerson}" a:placeholder="Search Name">
+    					<f:ajax event="keyup" listener="#{citizenBean.loadContactPerson}" render="ownerId"/>
     			</p:inputText>
     		</f:facet>
     			
@@ -322,14 +324,14 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		</p:toolbar>
 		
 		
-		<p:dataTable id="ownerId" value="#{businessOwnerBean.contactPersons}" var="own" stickyHeader="false"
+		<p:dataTable id="ownerId" value="#{citizenBean.contactPersons}" var="own" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="true" 
                          >
                          
                          <p:column headerText="Action" width="30">
-                         	<p:commandButton icon="fa  fa-hand-pointer-o" title="Click this button to select this person" update="emerId" actionListener="#{businessOwnerBean.clickContact(own)}" oncomplete="PF('multiDialogContact').hide()"/>
+                         	<p:commandButton icon="fa  fa-hand-pointer-o" title="Click this button to select this person" update="emerId" actionListener="#{citizenBean.clickContact(own)}" oncomplete="PF('multiDialogContact').hide()"/>
                          </p:column>
                          <p:column headerText="Name" width="120">
             						<p:outputLabel  value="#{own.fullname}"/>
@@ -342,8 +344,8 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 	<p:dialog header="Province" responsive="true" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogProvince" Height="500" width="700">
 		<p:toolbar id="tbProvince">
     		<f:facet name="left">
-        		<p:inputText value="#{businessOwnerBean.searchProvince}" a:placeholder="Search..." style="width: 30em">
-    					<f:ajax event="keyup" listener="#{businessOwnerBean.loadProvince}" render="provData"/>
+        		<p:inputText value="#{citizenBean.searchProvince}" a:placeholder="Search..." style="width: 30em">
+    					<f:ajax event="keyup" listener="#{citizenBean.loadProvince}" render="provData"/>
     			</p:inputText>
     		</f:facet>
     		<f:facet name="right">
@@ -352,14 +354,14 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		</p:toolbar>
 		
 		
-		<p:dataTable id="provData" value="#{businessOwnerBean.provinces}" var="rg" stickyHeader="false"
+		<p:dataTable id="provData" value="#{citizenBean.provinces}" var="rg" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="true" 
                          >
                          
                          <p:column headerText="Action" width="30">
-                         	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Province" update=":formId:usercusId" actionListener="#{businessOwnerBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogProvince').hide()"/>
+                         	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Province" update=":formId:usercusId" actionListener="#{citizenBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogProvince').hide()"/>
                          </p:column>
                          
                          <p:column headerText="Province Name" width="120">
@@ -373,8 +375,8 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 	<p:dialog header="Municipality" responsive="true" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogMunicipality" Height="500" width="700">
 		<p:toolbar id="tbMunicipal">
     		<f:facet name="left">
-        		<p:inputText value="#{businessOwnerBean.searchMunicipal}" a:placeholder="Search..." style="width: 30em">
-    					<f:ajax event="keyup" listener="#{businessOwnerBean.loadMunicipal}" render="munData"/>
+        		<p:inputText value="#{citizenBean.searchMunicipal}" a:placeholder="Search..." style="width: 30em">
+    					<f:ajax event="keyup" listener="#{citizenBean.loadMunicipal}" render="munData"/>
     			</p:inputText>
     		</f:facet>
     		<f:facet name="right">
@@ -383,14 +385,14 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		</p:toolbar>
 		
 		
-		<p:dataTable id="munData" value="#{businessOwnerBean.municipals}" var="rg" stickyHeader="false"
+		<p:dataTable id="munData" value="#{citizenBean.municipals}" var="rg" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="true" 
                          >
                          
                          <p:column headerText="Action" width="30">
-                        	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Municipality" update=":formId:usercusId" actionListener="#{businessOwnerBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogMunicipality').hide()"/> 
+                        	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Municipality" update=":formId:usercusId" actionListener="#{citizenBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogMunicipality').hide()"/> 
                          </p:column>
                          
                          <p:column headerText="Municipality Name" width="120">
@@ -404,8 +406,8 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 	<p:dialog header="Barangay" responsive="true" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogBarangay" Height="500" width="700">
 		<p:toolbar id="tbBarangay">
     		<f:facet name="left">
-        		<p:inputText value="#{businessOwnerBean.searchBarangay}" a:placeholder="Search..." style="width: 30em">
-    					<f:ajax event="keyup" listener="#{businessOwnerBean.loadBarangay}" render="barData"/>
+        		<p:inputText value="#{citizenBean.searchBarangay}" a:placeholder="Search..." style="width: 30em">
+    					<f:ajax event="keyup" listener="#{citizenBean.loadBarangay}" render="barData"/>
     			</p:inputText>
     		</f:facet>
     		<f:facet name="right">
@@ -414,13 +416,13 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		</p:toolbar>
 		
 		
-		<p:dataTable id="barData" value="#{businessOwnerBean.barangays}" var="rg" stickyHeader="false"
+		<p:dataTable id="barData" value="#{citizenBean.barangays}" var="rg" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="true" 
                          >
                          <p:column headerText="Action" width="30">
-                         	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Barangay" update=":formId:usercusId tb" actionListener="#{businessOwnerBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogBarangay').hide()"/>
+                         	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Barangay" update=":formId:usercusId tb" actionListener="#{citizenBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogBarangay').hide()"/>
                          </p:column>
                          <p:column headerText="Barangay Name" width="120">
             						<p:outputLabel  value="#{rg.name}" />
@@ -433,8 +435,8 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 	<p:dialog responsive="true" header="Purok" position="center top" style="#{skin.dialog}" showEffect="clip" hideEffect="clip" modal="false" widgetVar="multiDialogPurok" Height="500" width="700">
 		<p:toolbar id="tbPurok">
     		<f:facet name="left">
-        		<p:inputText value="#{businessOwnerBean.searchPurok}" a:placeholder="Search..." style="width: 30em">
-    					<f:ajax event="keyup" listener="#{businessOwnerBean.loadPurok}" render="purData"/>
+        		<p:inputText value="#{citizenBean.searchPurok}" a:placeholder="Search..." style="width: 30em">
+    					<f:ajax event="keyup" listener="#{citizenBean.loadPurok}" render="purData"/>
     			</p:inputText>
     		</f:facet>
     		<f:facet name="right">
@@ -443,14 +445,14 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		</p:toolbar>
 		
 		
-		<p:dataTable id="purData" value="#{businessOwnerBean.puroks}" var="rg" stickyHeader="false"
+		<p:dataTable id="purData" value="#{citizenBean.puroks}" var="rg" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="true" 
                          >
                          
                          <p:column headerText="Action" width="30">
-                         	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Purok/Zone/Sitio" update=":formId:usercusId" actionListener="#{businessOwnerBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogPurok').hide()"/>
+                         	<p:commandButton icon="fa fa-hand-pointer-o" title="Click this button to select this Purok/Zone/Sitio" update=":formId:usercusId" actionListener="#{citizenBean.clickItemPopup(rg)}"  oncomplete="PF('multiDialogPurok').hide()"/>
                          </p:column>
                          
                          <p:column headerText="Barangay Name" width="120">

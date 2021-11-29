@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.italia.municipality.lakesebu.da.controller.FishCage;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
@@ -41,6 +43,7 @@ public class FishcageBillingStatment {
 	private String particulars;
 	private String remarks;
 	private int isActive;
+	private int isCompleted;
 	
 	private FishCage owner;
 	private UserDtls userDtls;
@@ -48,6 +51,103 @@ public class FishcageBillingStatment {
 	private Date date;
 	private long ownerListId;
 	private List owners;
+	
+	public List<PaymentName> listparticulars;
+	
+	public static List<String> searchControlNumber(String name){
+		List<String> str = new ArrayList<String>();
+		String sql = "SELECT fbcontrolno FROM fishcagebillingstatement WHERE fbisactive=1 AND fbcontrolno like '%"+ name.replace("--", "") +"%'";
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			str.add(rs.getString("fbcontrolno"));
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return str;
+	}
+	
+	public static List<PaymentName> getPaynames(String particulars){
+		List<PaymentName> parts = new ArrayList<PaymentName>();
+		
+		if (particulars==null || particulars.isEmpty())
+			return parts;
+		
+		
+		double total = 0d;
+		if(particulars.contains("<@>")) {
+			Map<Long, Double> mapName = new LinkedHashMap<Long, Double>();
+			String[] pts = particulars.split("<@>");
+			
+			String sql = "";
+			int cnt = 1;
+			sql = " AND (";
+			for(String p : pts) {
+				
+				System.out.println("ppts>>> " + p);
+				
+				String[] ids = p.split(":");
+				long id = Long.valueOf(ids[0]);
+				
+				if(cnt==1) {
+					sql += " pyid=" + id;
+				}else {
+					sql += " OR pyid=" + id;
+				}
+				
+				
+				
+				mapName.put(id, Double.valueOf(ids[1]));
+				
+				cnt++;
+			}
+			sql += " )";
+			
+			System.out.println("SQL Payname>>>> " + sql);
+			
+			for(PaymentName p : PaymentName.retrieve(sql, new String[0])) {
+				double amount = mapName.get(p.getId());
+				p.setAmount(amount);
+				parts.add(p);
+				total += amount;
+			}
+			
+			
+		}else {
+			String[] pa = particulars.split(":");
+			double amount = Double.valueOf(pa[1]);
+			parts.add(
+					PaymentName.builder()
+					.id(Long.valueOf(pa[0]))
+					.name(PaymentName.retrieve(Long.valueOf(pa[0])).get(0).getName())
+					.amount(amount)
+					.build()
+					);
+			total = amount;
+		}
+		
+		parts.add(
+				PaymentName.builder()
+				.id(0)
+				.name("Total")
+				.amount(total)
+				.build()
+				);
+		
+		return parts;
+	}
 	
 	public static String getControlNewNo() {
 		
@@ -176,6 +276,7 @@ public class FishcageBillingStatment {
 					.isActive(rs.getInt("fbisactive"))
 					.owner(cg)
 					.userDtls(user)
+					.isCompleted(rs.getInt("iscompleted"))
 					.build();
 			
 			sts.add(st);
@@ -224,8 +325,9 @@ public class FishcageBillingStatment {
 				+ "fbremarks,"
 				+ "fbisactive,"
 				+ "cid,"
-				+ "userid)" 
-				+ " VALUES(?,?,?,?,?,?,?,?)";
+				+ "userid,"
+				+ "iscompleted)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -255,6 +357,7 @@ public class FishcageBillingStatment {
 		ps.setInt(cnt++, st.getIsActive());
 		ps.setLong(cnt++, st.getOwner().getId());
 		ps.setLong(cnt++, st.getUserDtls().getUserdtlsid());
+		ps.setInt(cnt++, st.getIsCompleted());
 		
 		LogU.add(st.getDateTrans());
 		LogU.add(st.getControlNo());
@@ -263,6 +366,7 @@ public class FishcageBillingStatment {
 		LogU.add(st.getIsActive());
 		LogU.add(st.getOwner().getId());
 		LogU.add(st.getUserDtls().getUserdtlsid());
+		LogU.add(st.getIsCompleted());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -284,7 +388,8 @@ public class FishcageBillingStatment {
 				+ "fbparticulars=?,"
 				+ "fbremarks=?,"
 				+ "cid=?,"
-				+ "userid=?" 
+				+ "userid=?,"
+				+ "iscompleted=?" 
 				+ " WHERE fbid=?";
 		
 		PreparedStatement ps = null;
@@ -304,6 +409,7 @@ public class FishcageBillingStatment {
 		ps.setString(cnt++, st.getRemarks());
 		ps.setLong(cnt++, st.getOwner().getId());
 		ps.setLong(cnt++, st.getUserDtls().getUserdtlsid());
+		ps.setInt(cnt++, st.getIsCompleted());
 		ps.setLong(cnt++, st.getId());
 		
 		LogU.add(st.getDateTrans());
@@ -312,6 +418,7 @@ public class FishcageBillingStatment {
 		LogU.add(st.getRemarks());
 		LogU.add(st.getOwner().getId());
 		LogU.add(st.getUserDtls().getUserdtlsid());
+		LogU.add(st.getIsCompleted());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");

@@ -65,6 +65,35 @@ public class AppSetting {
 		return "OFF";
 	}
 	
+	public static List<AppSetting> getTargetBudget() {
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		List<AppSetting> apps = new ArrayList<AppSetting>();
+		String sql = "SELECT namesetting,settingvalue FROM appsettings WHERE isactivesett=1 AND userdtlsid=0 ORDER BY settingvalue";
+		
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			AppSetting app = AppSetting.builder()
+					.name(rs.getString("namesetting"))
+					.value(rs.getString("settingvalue"))
+					.build();
+			apps.add(app);
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return apps;
+	}
+	
 	public static String updateCollectorMode(boolean isOn ,UserDtls user) {
 		System.out.println("updateCollectorMode..." + isOn);
 		//isOn = isOn==true? false : true;

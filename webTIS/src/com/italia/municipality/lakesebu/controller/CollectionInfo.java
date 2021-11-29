@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.FormStatus;
@@ -49,6 +51,216 @@ public class CollectionInfo {
 	private boolean hasCashTicket;
 	
 	private int isRts;
+	
+	public static Map<Integer, Map<Integer, Double>> graph(List years) {
+		
+		Map<Integer, Map<Integer, Double>> mapData = new LinkedHashMap<Integer, Map<Integer, Double>>();
+		
+		for(Object year : years) {
+			int yer = Integer.valueOf(year.toString());
+			mapData.put(yer, CollectionInfo.retrieveYear(yer));
+		}
+		
+		return mapData;
+		
+	}
+	
+	public static Map<Integer, Map<Integer, Map<Integer, Double>>> graph(List years, List collectors, int form) {
+		Map<Integer, Map<Integer, Map<Integer, Double>>> mapYear = new LinkedHashMap<Integer, Map<Integer, Map<Integer, Double>>>();
+		
+		for(Object collector : collectors) {
+			int col = Integer.valueOf(collector.toString());
+			for(Object year : years) {
+				int yer = Integer.valueOf(year.toString());
+				mapYear = CollectionInfo.retrieveYear(yer,col,form,mapYear);
+			}
+		}
+		
+		
+		return mapYear;
+		
+	}
+	
+	/*
+	 * public static Map<Integer,Map<Integer, Map<Integer, Map<Integer, Double>>>>
+	 * graph(List years, List collectors, List forms) { Map<Integer, Map<Integer,
+	 * Map<Integer, Map<Integer, Double>>>> mapYear = new LinkedHashMap<Integer,
+	 * Map<Integer, Map<Integer, Map<Integer, Double>>>>();
+	 * 
+	 * for(Object form : forms) { int fm = Integer.valueOf(form.toString());
+	 * for(Object collector : collectors) { int col =
+	 * Integer.valueOf(collector.toString()); for(Object year : years) { int yer =
+	 * Integer.valueOf(year.toString()); mapYear =
+	 * CollectionInfo.retrieveYear(yer,col,fm,mapYear); } } }
+	 * 
+	 * 
+	 * return mapYear;
+	 * 
+	 * }
+	 */
+	
+	public static Map<Integer, Double> retrieveYear(int year){
+		Map<Integer, Double> mapData = new LinkedHashMap<Integer, Double>();
+		
+		String[] params = new String[2];
+		params[0] = year + "-01-01";
+		params[1] = year + "-12-31";
+		String sql = "SELECT DATE_FORMAT(receiveddate,'%m') as month, sum(amount) as amount FROM collectioninfo WHERE isactivecol=1 and (receiveddate>=? AND receiveddate<=?) GROUP BY MONTH(receiveddate)";
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		
+		try{
+			conn = WebTISDatabaseConnect.getConnection();
+			ps = conn.prepareStatement(sql);
+			
+			if(params!=null && params.length>0){
+				
+				for(int i=0; i<params.length; i++){
+					ps.setString(i+1, params[i]);
+				}
+				
+			}
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()){
+				mapData.put(rs.getInt("month"), rs.getDouble("amount"));
+			}
+		
+			rs.close();
+			ps.close();
+			WebTISDatabaseConnect.close(conn);
+			}catch(Exception e){e.getMessage();}
+		
+		return mapData;
+	}
+	
+	public static Map<Integer, Map<Integer, Map<Integer, Double>>> retrieveYear(int year, int collector,int form,Map<Integer, Map<Integer, Map<Integer, Double>>> mapYear){
+		//Map<Integer, Map<Integer, Map<Integer, Double>>> mapYear = new LinkedHashMap<Integer, Map<Integer, Map<Integer, Double>>>();
+		Map<Integer, Map<Integer, Double>> mapCollector = new LinkedHashMap<Integer, Map<Integer, Double>>();
+		 Map<Integer, Double> mapMonth = new LinkedHashMap<Integer, Double>();
+		String[] params = new String[3];
+		params[0] = year + "-01-01";
+		params[1] = year + "-12-31";
+		params[2] = collector+"";
+		String sql = "SELECT DATE_FORMAT(receiveddate,'%Y') as year,DATE_FORMAT(receiveddate,'%m') as month,isid as collector, sum(amount) as amount FROM collectioninfo WHERE isactivecol=1 and (receiveddate>=? AND receiveddate<=?) AND isid=?";
+		
+		if(form>0) {
+			sql += " AND formtypecol=" + form;
+		}
+		
+		sql += " GROUP BY MONTH(receiveddate)";
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		
+		try{
+			conn = WebTISDatabaseConnect.getConnection();
+			ps = conn.prepareStatement(sql);
+			
+			if(params!=null && params.length>0){
+				
+				for(int i=0; i<params.length; i++){
+					ps.setString(i+1, params[i]);
+				}
+				
+			}
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()){
+				//mapData.put(rs.getInt("month"), rs.getDouble("amount"));
+				int yr = rs.getInt("year");
+				int mt = rs.getInt("month");
+				int col = rs.getInt("collector");
+				double amount = rs.getDouble("amount");
+				
+				if(mapYear!=null && mapYear.containsKey(yr)) {
+					if(mapYear.get(yr).containsKey(col)) {
+						if(mapYear.get(yr).get(col).containsKey(mt)) {
+							double amnt = mapYear.get(yr).get(col).get(mt) + amount;
+							mapYear.get(yr).get(col).put(mt, amnt);
+						}else {
+							mapYear.get(yr).get(col).put(mt, amount);
+						}
+					}else {
+						mapMonth = new LinkedHashMap<Integer, Double>();
+						mapMonth.put(mt, amount);
+						mapYear.get(yr).put(col, mapMonth);
+					}
+				}else {
+					mapMonth.put(mt, amount);
+					mapCollector.put(col, mapMonth);
+					mapYear.put(yr, mapCollector);
+				}
+			}
+		
+			rs.close();
+			ps.close();
+			WebTISDatabaseConnect.close(conn);
+			}catch(Exception e){e.getMessage();}
+		
+		return mapYear;
+	}
+	
+	/*
+	 * public static Map<Integer, Map<Integer, Map<Integer, Map<Integer, Double>>>>
+	 * retrieveYear(int year, int collector,int form, Map<Integer, Map<Integer,
+	 * Map<Integer, Map<Integer, Double>>>> mapYear){ Map<Integer, Map<Integer,
+	 * Map<Integer, Double>>> mapForm = new LinkedHashMap<Integer, Map<Integer,
+	 * Map<Integer, Double>>>(); Map<Integer, Map<Integer, Double>> mapCollector =
+	 * new LinkedHashMap<Integer, Map<Integer, Double>>(); Map<Integer, Double>
+	 * mapMonth = new LinkedHashMap<Integer, Double>(); String[] params = new
+	 * String[4]; params[0] = year + "-01-01"; params[1] = year + "-12-31";
+	 * params[2] = collector+""; params[3] = form+""; String sql =
+	 * "SELECT formtypecol as form,DATE_FORMAT(receiveddate,'%Y') as year,DATE_FORMAT(receiveddate,'%m') as month,isid as collector, sum(amount) as amount FROM collectioninfo WHERE isactivecol=1 and (receiveddate>=? AND receiveddate<=?) AND isid=? AND formtypecol=? GROUP BY MONTH(receiveddate)"
+	 * ;
+	 * 
+	 * Connection conn = null; ResultSet rs = null; PreparedStatement ps = null;
+	 * 
+	 * try{ conn = WebTISDatabaseConnect.getConnection(); ps =
+	 * conn.prepareStatement(sql);
+	 * 
+	 * if(params!=null && params.length>0){
+	 * 
+	 * for(int i=0; i<params.length; i++){ ps.setString(i+1, params[i]); }
+	 * 
+	 * }
+	 * 
+	 * rs = ps.executeQuery();
+	 * 
+	 * while(rs.next()){ //mapData.put(rs.getInt("month"), rs.getDouble("amount"));
+	 * int frm = rs.getInt("form"); int yr = rs.getInt("year"); int mt =
+	 * rs.getInt("month"); int col = rs.getInt("collector"); double amount =
+	 * rs.getDouble("amount");
+	 * 
+	 * if(mapYear!=null && mapYear.containsKey(yr)) {
+	 * if(mapYear.get(yr).containsKey(frm)) {
+	 * if(mapYear.get(yr).get(frm).containsKey(col)) {
+	 * if(mapYear.get(yr).get(frm).get(col).containsKey(mt)) { double newAmount =
+	 * mapYear.get(yr).get(frm).get(col).get(mt) + amount;
+	 * mapYear.get(yr).get(frm).get(col).put(mt, newAmount); }else {
+	 * mapYear.get(yr).get(frm).get(col).put(mt, amount); } }else { mapMonth = new
+	 * LinkedHashMap<Integer, Double>(); mapMonth.put(mt,amount); mapCollector = new
+	 * LinkedHashMap<Integer, Map<Integer, Double>>(); mapCollector.put(col,
+	 * mapMonth); mapYear.get(yr).put(frm, mapCollector); } }else { mapMonth = new
+	 * LinkedHashMap<Integer, Double>(); mapMonth.put(mt,amount); mapCollector = new
+	 * LinkedHashMap<Integer, Map<Integer, Double>>(); mapCollector.put(col,
+	 * mapMonth); mapForm = new LinkedHashMap<Integer, Map<Integer, Map<Integer,
+	 * Double>>>(); mapYear.get(yr).put(frm, mapCollector); } }else {
+	 * mapMonth.put(mt, amount); mapCollector.put(col, mapMonth); mapForm.put(frm,
+	 * mapCollector); mapYear.put(yr, mapForm); }
+	 * 
+	 * }
+	 * 
+	 * rs.close(); ps.close(); WebTISDatabaseConnect.close(conn); }catch(Exception
+	 * e){e.getMessage();}
+	 * 
+	 * return mapYear; }
+	 */
 	
 	public static int getNewReportGroup(long colloctorId, int fundId) {
 		int rpt=0;
@@ -97,8 +309,8 @@ public class CollectionInfo {
 		while(rs.next()){
 			dbGroup = rs.getInt("rptgroup");
 			
-			System.out.println("Access group >> " + groupNumber);
-			System.out.println("dbGroup group >> " + dbGroup);
+			//System.out.println("Access group >> " + groupNumber);
+			//System.out.println("dbGroup group >> " + dbGroup);
 			
 			if(groupNumber>=dbGroup) {
 				return true;

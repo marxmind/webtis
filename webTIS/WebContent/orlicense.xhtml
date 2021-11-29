@@ -25,6 +25,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
+             <h:outputStylesheet name="css/bodyconf.css"/>
     </f:facet>
         
     <f:facet name="last">
@@ -133,13 +134,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					<p:commandButton update="ownerId idSearchTax" icon="fa fa-search" actionListener="#{orBean.loadTaxpayer}" onclick="PF('multiDialogOwner').show()"/>
 				</p:outputLabel>
 				
-				<p:outputLabel value="Gross Amount"/>
-				<p:outputLabel value="Please check on the left side if for Capital"/>
+				<p:outputLabel value=""/>
+				<p:outputLabel value="Capital/Gross Amount"/>
 				
 				<p:outputLabel/>
 				<p:outputLabel/>
 								
-				<p:selectBooleanCheckbox value="#{orBean.capital}"/>
+				<p:selectBooleanCheckbox value="#{orBean.capital}"><p:outputLabel value="Please check this if for Capital"/> </p:selectBooleanCheckbox>
 				<p:inputNumber value="#{orBean.grossAmount}" a:placeholder="0.00" style="#{skin.textInput}"/>			
 				
 				

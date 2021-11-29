@@ -25,6 +25,7 @@ public class SyncBean implements Serializable {
 	 */
 	private static final long serialVersionUID = 3245658451L;
 	@Setter @Getter private String notify;
+	@Setter @Getter private boolean success;
 	
 	public void fetchDataFromServer() {
 		String val = "";
@@ -32,10 +33,12 @@ public class SyncBean implements Serializable {
 			val += "connecting to server.....";
 			SyncData.downloadDataFromServer();
 			val += "\nCompleted dowloading data...";
-			Application.addMessage(1, "Success", "Success to fetch data from server...");
+			Application.addMessage(1, "Success", "Successfuly fetch data from server...");
+			setSuccess(true);
 		}else {
 			val += "Failed to connect to server...";
 			Application.addMessage(1, "Failed", "Unable to connect to server...");
+			setSuccess(false);
 		}
 		setNotify(val);
 		
@@ -88,11 +91,12 @@ public class SyncBean implements Serializable {
 			System.out.println("successfully updating data...");
 			Application.addMessage(1, "Success", "Data has been successfully updated");
 			sb.append("updated successfully.....");
-			
+			setSuccess(false);
 		}else {
 			System.out.println("file is not present... failed to update data...");
 			Application.addMessage(1, "Error", "Data has been failed to update");
 			sb.append("failure to update.....\nreason files are not present or not yet fetch from server...\nplease click Fetch Data From Server.");
+			setSuccess(true);
 		}
 		setNotify(sb.toString());
 		

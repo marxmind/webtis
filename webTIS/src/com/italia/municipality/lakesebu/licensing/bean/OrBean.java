@@ -19,11 +19,10 @@ import org.primefaces.PrimeFaces;
 import com.italia.municipality.lakesebu.controller.Email;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.UserDtls;
-import com.italia.municipality.lakesebu.enm.Database;
 import com.italia.municipality.lakesebu.enm.DateFormat;
 import com.italia.municipality.lakesebu.enm.EmailType;
 import com.italia.municipality.lakesebu.enm.Job;
-import com.italia.municipality.lakesebu.licensing.controller.Customer;
+import com.italia.municipality.lakesebu.licensing.controller.BusinessCustomer;
 import com.italia.municipality.lakesebu.licensing.controller.BusinessORTransaction;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.DateUtils;
@@ -49,14 +48,14 @@ public class OrBean implements Serializable{
 	private String issuedAddress;
 	private String purpose;
 	private double grossAmount;
-	private Customer customerSelected;
+	private BusinessCustomer customerSelected;
 	private String citizenName;
 	
 	private String BARANGAY = "Poblacion";
 	private String MUNICIPALITY = "Lake Sebu";
 	private String PROVINCE = "South Cotabato";
 	
-	private List<Customer> taxpayers = Collections.synchronizedList(new ArrayList<Customer>());
+	private List<BusinessCustomer> taxpayers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
 	private String searchTaxpayerName;
 	
 	private BusinessORTransaction orData;
@@ -103,7 +102,7 @@ public class OrBean implements Serializable{
 		tr.setDateTrans("Grand Total");
 		tr.setOrNumber("");
 		tr.setAmount(grandTotal);
-		Customer cus = new Customer();
+		BusinessCustomer cus = new BusinessCustomer();
 		cus.setFullname("");
 		tr.setCustomer(cus);
 		orNumbers.add(tr);
@@ -111,7 +110,7 @@ public class OrBean implements Serializable{
 	
 	public void loadTaxpayer(){
 		
-		taxpayers = Collections.synchronizedList(new ArrayList<Customer>());
+		taxpayers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
 		
 		String sql = " AND cus.cusisactive=1 ";
 		
@@ -122,7 +121,7 @@ public class OrBean implements Serializable{
 			sql += " order by cus.customerid DESC limit 100;";
 		}
 		
-		taxpayers = Customer.retrieve(sql, new String[0]);
+		taxpayers = BusinessCustomer.retrieve(sql, new String[0]);
 		
 		if(taxpayers!=null && taxpayers.size()==1) {
 			setSearchTaxpayerName("");
@@ -346,7 +345,7 @@ public class OrBean implements Serializable{
 		setCapital(or.getIscapital()==0? false : true);
 	}
 	
-	public void clickItemOwner(Customer cus){
+	public void clickItemOwner(BusinessCustomer cus){
 		setCustomerSelected(cus);
 		setCitizenName(cus.getFullname());
 	}
@@ -421,11 +420,11 @@ public class OrBean implements Serializable{
 		this.searchName = searchName;
 	}
 
-	public Customer getCustomerSelected() {
+	public BusinessCustomer getCustomerSelected() {
 		return customerSelected;
 	}
 
-	public void setCustomerSelected(Customer customerSelected) {
+	public void setCustomerSelected(BusinessCustomer customerSelected) {
 		this.customerSelected = customerSelected;
 	}
 
@@ -501,11 +500,11 @@ public class OrBean implements Serializable{
 		this.purpose = purpose;
 	}
 
-	public List<Customer> getTaxpayers() {
+	public List<BusinessCustomer> getTaxpayers() {
 		return taxpayers;
 	}
 
-	public void setTaxpayers(List<Customer> taxpayers) {
+	public void setTaxpayers(List<BusinessCustomer> taxpayers) {
 		this.taxpayers = taxpayers;
 	}
 

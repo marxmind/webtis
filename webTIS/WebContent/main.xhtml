@@ -21,6 +21,7 @@ xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
     		<h:outputStylesheet name="css/pageHeaderFooter.css"/>
     		<h:outputStylesheet name="primeflex/primeflex.min.css" />
 			<h:outputStylesheet name="primeflex/layout.css" />
+			 <h:outputStylesheet name="css/bodyconf.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
     </f:facet>
@@ -32,6 +33,7 @@ xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
  
  <style>
 <!-- 
+
 body{
 	background-color: linear-gradient(red, yellow);
 }
@@ -55,7 +57,7 @@ body{
     	 </p:confirmDialog>
 
 		
-	 	<p:commandButton id="showNoteId" value="#{menuBean.total}" action="email.xhtml" icon="fa fa-envelope-o" style="#{notiBean.styleButton}#{skin.emailButton}" title="This is where your email or notification messages save" />
+	 	<p:commandButton id="showNoteId" value="#{menuBean.total}" action="email.xhtml" icon="fa fa-envelope-o" style="#{notiBean.styleButton}#{skin.emailButton}" immediate="false" ajax="false" />
 	 
 	
 	
@@ -106,10 +108,10 @@ body{
 				              <p:commandButton icon="fa fa-file-o" action="logform" value="Collector's Recording" styleClass="button" immediate="false" ajax="false"/>
 				             <p:commandButton icon="fa fa-file-o" action="reportsgraph" value="Graph Reports" styleClass="button" immediate="false" ajax="false"/>
 				             <p:commandButton icon="fa fa-file-o" action="orlisting" value="General Collections" styleClass="button" immediate="false" ajax="false"/>
-				             <p:commandButton icon="fa  fa-power-off" action="portal" value="Logout" styleClass="button" actionListener="#{loginBean.logout}" immediate="false" ajax="false"/>
 				             <p:commandButton icon="fa fa-file-o" action="uploadrcd" value="Upload Forms" styleClass="button" immediate="false" ajax="false"/>
 				             <p:commandButton icon="fa fa-file-o" action="vr" value="Vourcher Recording" styleClass="button" immediate="false" ajax="false"/>
 				             <p:commandButton icon="fa fa-file-o" action="citizenreg" value="Citizen Registration" styleClass="button" immediate="false" ajax="false"/>
+				             <p:commandButton icon="fa  fa-power-off" action="portal" value="Logout" styleClass="button" actionListener="#{loginBean.logout}" immediate="false" ajax="false"/>
 				             <p:outputLabel/>
 			
 		</p:panelGrid>

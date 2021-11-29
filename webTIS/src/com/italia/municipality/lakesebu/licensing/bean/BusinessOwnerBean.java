@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,20 +30,16 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
-
 import org.primefaces.event.CaptureEvent;
 import org.primefaces.event.FileUploadEvent;
-
-import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.QRCodeCitizen;
-import com.italia.municipality.lakesebu.controller.ReportFields;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.CivilStatus;
 import com.italia.municipality.lakesebu.enm.Relationships;
 import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.licensing.controller.Barangay;
-import com.italia.municipality.lakesebu.licensing.controller.Customer;
+import com.italia.municipality.lakesebu.licensing.controller.BusinessCustomer;
 import com.italia.municipality.lakesebu.licensing.controller.Municipality;
 import com.italia.municipality.lakesebu.licensing.controller.Province;
 import com.italia.municipality.lakesebu.licensing.controller.Purok;
@@ -79,9 +73,9 @@ public class BusinessOwnerBean implements Serializable{
 	private String genderId;
 	private List genderList = new ArrayList<>();
 	
-	private List<Customer> customers =new ArrayList<Customer>();
+	private List<BusinessCustomer> customers =new ArrayList<BusinessCustomer>();
 	private String searchCustomer;
-	private Customer customer; 
+	private BusinessCustomer customer; 
 	
 	private boolean enableAdditionalButton;
 	
@@ -93,9 +87,9 @@ public class BusinessOwnerBean implements Serializable{
 	
 	private Date birthdate;
 	private String emergencyContactPersonName;
-	private Customer emergencyContactPerson;
+	private BusinessCustomer emergencyContactPerson;
 	private String searchEmergencyPerson;
-	private List<Customer> contactPersons = new ArrayList<Customer>();
+	private List<BusinessCustomer> contactPersons = new ArrayList<BusinessCustomer>();
 	
 	private String photoId="camera";
 	
@@ -146,7 +140,7 @@ public class BusinessOwnerBean implements Serializable{
     private String qrCode;
     private String nationalId;
     
-    private List<Customer> selectedQRCode;
+    private List<BusinessCustomer> selectedQRCode;
 	
 	@PostConstruct
 	public void init(){
@@ -201,23 +195,23 @@ public class BusinessOwnerBean implements Serializable{
 			
 			int size = getSearchCustomer().length();
 			if(size>=5){
-				customers = Collections.synchronizedList(new ArrayList<Customer>());
+				customers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
 				if(getSearchCustomer().contains(barangayCode)){
 					String code = getSearchCustomer().toUpperCase();
 					sql += " AND cus.cuscardno like '%" + code +"%'";
-					customers = Customer.retrieve(sql, new String[0]);
+					customers = BusinessCustomer.retrieve(sql, new String[0]);
 				}else{
 					if(sanitize!=null || !sanitize.isEmpty()) {
 						sql += " AND cus.fullname like '%" + sanitize +"%'";
-						customers = Customer.retrieve(sql, new String[0]);
+						customers = BusinessCustomer.retrieve(sql, new String[0]);
 					}
 				}
 				
 			}
 		}else{
-			customers = Collections.synchronizedList(new ArrayList<Customer>());
+			customers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
 			sql += " order by cus.customerid DESC limit 100;";
-			customers = Customer.retrieve(sql, new String[0]);
+			customers = BusinessCustomer.retrieve(sql, new String[0]);
 		}
 		
 		
@@ -235,17 +229,17 @@ public class BusinessOwnerBean implements Serializable{
 		setFilteredBarangay(false);
 		setMale(false);
 		setFemale(false);
-		customers = Collections.synchronizedList(new ArrayList<Customer>());
+		customers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
 		
 		String sql = " AND cus.cusisactive=1 ORDER BY cus.customerid ASC";
-		customers = Customer.retrieve(sql, new String[0]);
+		customers = BusinessCustomer.retrieve(sql, new String[0]);
 		
 	}
 	
 	public void loadFilter(){
 		clearFields();
 		
-		customers = Collections.synchronizedList(new ArrayList<Customer>());
+		customers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
 		
 		String sql = " AND cus.cusisactive=1 ";
 		
@@ -264,12 +258,12 @@ public class BusinessOwnerBean implements Serializable{
 		}
 		
 		sql+=" ORDER BY cus.customerid ASC";
-		customers = Customer.retrieve(sql, new String[0]);
+		customers = BusinessCustomer.retrieve(sql, new String[0]);
 		
 	}
 	
 	public void loadContactPerson(){
-		contactPersons = Collections.synchronizedList(new ArrayList<Customer>());
+		contactPersons = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
 		String sql = " AND cus.cusisactive=1 ";
 		
 		if(getSearchEmergencyPerson()!=null && !getSearchEmergencyPerson().isEmpty()){
@@ -277,11 +271,11 @@ public class BusinessOwnerBean implements Serializable{
 			if(size>=5){
 				sql += " AND (cus.fullname like '%" + getSearchEmergencyPerson() +"%' OR cusfirstname like '%"+ 
 			getSearchEmergencyPerson() +"%' OR cusmiddlename like '%"+ getSearchEmergencyPerson() +"%' OR cuslastname like '%"+ getSearchEmergencyPerson() +"%' )";
-				contactPersons = Customer.retrieve(sql, new String[0]);
+				contactPersons = BusinessCustomer.retrieve(sql, new String[0]);
 			}
 		}else{
 			sql += " order by cus.customerid DESC limit 10;";
-			contactPersons = Customer.retrieve(sql, new String[0]);
+			contactPersons = BusinessCustomer.retrieve(sql, new String[0]);
 		}
 		
 		
@@ -367,7 +361,7 @@ public class BusinessOwnerBean implements Serializable{
 		
 	}
 	
-	public void clickContact(Customer person){
+	public void clickContact(BusinessCustomer person){
 		setEmergencyContactPerson(person);
 		setEmergencyContactPersonName(person.getFullname());
 	}
@@ -438,7 +432,7 @@ public class BusinessOwnerBean implements Serializable{
 		
 		if(Login.getUserLogin().checkUserStatus()){
 			
-			Customer cus = new Customer();
+			BusinessCustomer cus = new BusinessCustomer();
 			if(getCustomer()!=null){
 				cus = getCustomer();
 			}else{
@@ -485,7 +479,7 @@ public class BusinessOwnerBean implements Serializable{
 			
 			if(getCustomer()==null && getFirstname()!=null && getMiddlename()!=null && getLastname()!=null){
 				
-				boolean isExist = Customer.validateNameEntry(getFirstname(), getMiddlename(), getLastname());
+				boolean isExist = BusinessCustomer.validateNameEntry(getFirstname(), getMiddlename(), getLastname());
 				if(isExist){
 					Application.addMessage(3, getFirstname() + " " + getLastname() + " is already recorded.", "");
 					isOk= false;
@@ -545,7 +539,7 @@ public class BusinessOwnerBean implements Serializable{
 			cus.setQrcode(getQrCode());
 			cus.setNationalId(getNationalId());
 			
-			cus = Customer.save(cus);
+			cus = BusinessCustomer.save(cus);
 			clickItem(cus);
 			setCustomer(cus);
 			
@@ -701,7 +695,7 @@ public class BusinessOwnerBean implements Serializable{
 		
 	}
 	
-	private FileInputStream generateQRCode(Customer cus, String folder) throws IOException {
+	private FileInputStream generateQRCode(BusinessCustomer cus, String folder) throws IOException {
 		
 		String fileName = cus.getFullname();
 		String val = "";
@@ -957,7 +951,7 @@ private void close(Closeable resource) {
     }
 }
 	
-	public void clickItem(Customer cus){
+	public void clickItem(BusinessCustomer cus){
 		shots = new ArrayList<>();//clearing picture
 		setCustomer(cus);
 		setCardnumber(cus.getCardno());
@@ -973,7 +967,7 @@ private void close(Closeable resource) {
 		setBirthdate(DateUtils.convertDateString(cus.getBirthdate(),"yyyy-MM-dd"));
 		setEmergencyContactPerson(cus.getEmergencyContactPerson());
 		if(cus.getEmergencyContactPerson()!=null){
-		Customer person = Customer.customer(cus.getEmergencyContactPerson().getId());	
+			BusinessCustomer person = BusinessCustomer.customer(cus.getEmergencyContactPerson().getId());	
 		setEmergencyContactPersonName(person.getFullname());
 		setRelationshipId(cus.getRelationship());
 		}else{
@@ -1112,7 +1106,7 @@ private void close(Closeable resource) {
 		}catch(Exception e){}
 	}
 	
-	public void deleteRow(Customer cus){
+	public void deleteRow(BusinessCustomer cus){
 		if(Login.getUserLogin().checkUserStatus()){
 			cus.setUserDtls(Login.getUserLogin().getUserDtls());
 			cus.delete();
@@ -1168,7 +1162,7 @@ private void close(Closeable resource) {
 	public List<String> autoFirst(String query){
 		int size = query.length();
 		if(size>=2){
-			return Customer.retrieve(query, "cusfirstname"," limit 10");
+			return BusinessCustomer.retrieve(query, "cusfirstname"," limit 10");
 		}else{
 			return Collections.synchronizedList(new ArrayList<String>());
 		}
@@ -1176,7 +1170,7 @@ private void close(Closeable resource) {
 	public List<String> autoMiddle(String query){
 		int size = query.length();
 		if(size>=2){
-			return Customer.retrieve(query, "cusmiddlename"," limit 10");
+			return BusinessCustomer.retrieve(query, "cusmiddlename"," limit 10");
 		}else{
 			return Collections.synchronizedList(new ArrayList<String>());
 		}
@@ -1184,7 +1178,7 @@ private void close(Closeable resource) {
 	public List<String> autoLast(String query){
 		int size = query.length();
 		if(size>=2){	
-			return Customer.retrieve(query, "cuslastname"," limit 10");
+			return BusinessCustomer.retrieve(query, "cuslastname"," limit 10");
 		}else{
 			return Collections.synchronizedList(new ArrayList<String>());
 		}	
@@ -1238,10 +1232,10 @@ private void close(Closeable resource) {
 	public void setContactno(String contactno) {
 		this.contactno = contactno;
 	}
-	public List<Customer> getCustomers() {
+	public List<BusinessCustomer> getCustomers() {
 		return customers;
 	}
-	public void setCustomers(List<Customer> customers) {
+	public void setCustomers(List<BusinessCustomer> customers) {
 		this.customers = customers;
 	}
 	public String getSearchCustomer() {
@@ -1250,10 +1244,10 @@ private void close(Closeable resource) {
 	public void setSearchCustomer(String searchCustomer) {
 		this.searchCustomer = searchCustomer;
 	}
-	public Customer getCustomer() {
+	public BusinessCustomer getCustomer() {
 		return customer;
 	}
-	public void setCustomer(Customer customer) {
+	public void setCustomer(BusinessCustomer customer) {
 		this.customer = customer;
 	}
 
@@ -1270,7 +1264,7 @@ private void close(Closeable resource) {
 
 	public String getCardnumber() {
 		if(cardnumber==null){
-			cardnumber = Customer.cardNumber();
+			cardnumber = BusinessCustomer.cardNumber();
 		}
 		return cardnumber;
 	}
@@ -1303,139 +1297,7 @@ private void close(Closeable resource) {
 		this.genderList = genderList;
 	}
 
-	/*public List getBarangay() {
-		
-		barMap = Collections.synchronizedMap(new HashMap<Integer, Barangay>());
-		String sql = " AND bgy.bgisactive=1";
-		if(getMunicipalityId()!=0 && getProvinceId()!=0){
-			sql += " AND mun.munid="+getMunicipalityId() + " AND prv.provid=" + getProvinceId();
-		}
-		
-		barangay = new ArrayList<>();
-		List<Barangay> bars = Barangay.retrieve(sql, new String[0]);
-		if(bars!=null && bars.size()>0){
-			for(Barangay bg : bars){
-				barangay.add(new SelectItem(bg.getId(), bg.getName()));
-				barMap.put(bg.getId(), bg);
-			}
-		}else{
-			Barangay bar = new Barangay();
-			bar.setId(0);
-			bar.setName("N/A");
-			barangay.add(new SelectItem(bar.getId(), bar.getName()));
-			barMap.put(bar.getId(), bar);
-		}
-		
-		return barangay;
-	}
-
-	public void setBarangay(List barangay) {
-		this.barangay = barangay;
-	}
-
-	public int getBarangayId() {
-		if(barangayId==0){
-			barangayId =1;
-		}
-		return barangayId;
-	}
-
-	public void setBarangayId(int barangayId) {
-		this.barangayId = barangayId;
-	}
-
-	public List getMunicipality() {
-		
-		munMap = Collections.synchronizedMap(new HashMap<Integer, Municipality>());
-		String sql = " AND mun.munisactive=1";
-		if(getProvinceId()!=0){
-			sql += " AND prv.provid=" + getProvinceId();
-		}
-		municipality = new ArrayList<>();
-		List<Municipality> muns = Municipality.retrieve(sql, new String[0]);
-		
-		if(muns!=null && muns.size()>0){
-			for(Municipality bg : muns){
-				municipality.add(new SelectItem(bg.getId(), bg.getName()));
-				munMap.put(bg.getId(), bg);
-			}
-		}else{
-			Municipality mun = new Municipality();
-			mun.setId(0);
-			mun.setName("N/A");
-			munMap.put(mun.getId(), mun);
-			municipality.add(new SelectItem(mun.getId(), mun.getName()));
-		}
-		
-		return municipality;
-	}
-
-	public void setMunicipality(List municipality) {
-		this.municipality = municipality;
-	}
-
-	public int getMunicipalityId() {
-		if(municipalityId==0){
-			municipalityId =1;
-		}
-		return municipalityId;
-	}
-
-	public void setMunicipalityId(int municipalityId) {
-		this.municipalityId = municipalityId;
-	}
-
-	public List getProvince() {
-		
-		provMap = Collections.synchronizedMap(new HashMap<Integer, Province>());
-		
-		province = new ArrayList<>();
-		for(Province bg : Province.retrieve(" AND prv.provisactive=1", new String[0])){
-			province.add(new SelectItem(bg.getId(), bg.getName()));
-			provMap.put(bg.getId(), bg);
-		}
-		
-		return province;
-	}
-
-	public void setProvince(List province) {
-		this.province = province;
-	}
-
-	public int getProvinceId() {
-		if(provinceId==0){
-			provinceId = 1;
-		}
-		return provinceId;
-	}
-
-	public void setProvinceId(int provinceId) {
-		this.provinceId = provinceId;
-	}
-
-	public Map<Integer, Barangay> getBarMap() {
-		return barMap;
-	}
-
-	public void setBarMap(Map<Integer, Barangay> barMap) {
-		this.barMap = barMap;
-	}
-
-	public Map<Integer, Municipality> getMunMap() {
-		return munMap;
-	}
-
-	public void setMunMap(Map<Integer, Municipality> munMap) {
-		this.munMap = munMap;
-	}
-
-	public Map<Integer, Province> getProvMap() {
-		return provMap;
-	}
-
-	public void setProvMap(Map<Integer, Province> provMap) {
-		this.provMap = provMap;
-	}*/
+	
 
 	public int getClivilId() {
 		if(clivilId==0){
@@ -1493,11 +1355,11 @@ private void close(Closeable resource) {
 		this.birthdate = birthdate;
 	}
 
-	public Customer getEmergencyContactPerson() {
+	public BusinessCustomer getEmergencyContactPerson() {
 		return emergencyContactPerson;
 	}
 
-	public void setEmergencyContactPerson(Customer emergencyContactPerson) {
+	public void setEmergencyContactPerson(BusinessCustomer emergencyContactPerson) {
 		this.emergencyContactPerson = emergencyContactPerson;
 	}
 
@@ -1509,7 +1371,7 @@ private void close(Closeable resource) {
 		this.searchEmergencyPerson = searchEmergencyPerson;
 	}
 
-	public List<Customer> getContactPersons() {
+	public List<BusinessCustomer> getContactPersons() {
 		return contactPersons;
 	}
 
@@ -1521,7 +1383,7 @@ private void close(Closeable resource) {
 		this.emergencyContactPersonName = emergencyContactPersonName;
 	}
 
-	public void setContactPersons(List<Customer> contactPersons) {
+	public void setContactPersons(List<BusinessCustomer> contactPersons) {
 		this.contactPersons = contactPersons;
 	}
 
@@ -1820,11 +1682,11 @@ private void close(Closeable resource) {
 		this.fillColor = fillColor;
 	}
 
-	public List<Customer> getSelectedQRCode() {
+	public List<BusinessCustomer> getSelectedQRCode() {
 		return selectedQRCode;
 	}
 
-	public void setSelectedQRCode(List<Customer> selectedQRCode) {
+	public void setSelectedQRCode(List<BusinessCustomer> selectedQRCode) {
 		this.selectedQRCode = selectedQRCode;
 	}
 

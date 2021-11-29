@@ -11,7 +11,6 @@ import java.util.List;
 import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.Database;
-import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
 
 import lombok.AllArgsConstructor;
@@ -50,7 +49,7 @@ public class Livelihood {
 	private Barangay barangay;
 	private Municipality municipality;
 	private Province province;
-	private Customer taxPayer;
+	private BusinessCustomer taxPayer;
 	private UserDtls userDtls;
 	
 	private String businessLabel;
@@ -106,7 +105,7 @@ public class Livelihood {
 		String tableMun = "mun";
 		String tableProv = "prov";
 		String tableUser = "usr";
-		String sql = "SELECT * FROM livelihood " + tableLive + ", customer " + tableCus +", barangay " + tableBar + ", municipality " + tableMun + ", province " + tableProv + ", "+WEBTIS+".userdtls " + tableUser + " WHERE " +
+		String sql = "SELECT * FROM livelihood " + tableLive + ", businesscustomer " + tableCus +", barangay " + tableBar + ", municipality " + tableMun + ", province " + tableProv + ", "+WEBTIS+".userdtls " + tableUser + " WHERE " +
 				tableLive + ".customerid=" + tableCus + ".customerid AND " +
 				tableLive + ".bgid=" + tableBar + ".bgid AND " + 
 				tableLive + ".munid=" + tableMun + ".munid AND " +
@@ -147,7 +146,7 @@ public class Livelihood {
 			try{live.setIsActive(rs.getInt("isactivelive"));}catch(NullPointerException e){}
 			try{live.setTimestamp(rs.getTimestamp("timestamplive"));}catch(NullPointerException e){}
 			
-			Customer cus = new Customer();
+			BusinessCustomer cus = new BusinessCustomer();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
 			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}

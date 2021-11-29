@@ -49,7 +49,7 @@ private static final long serialVersionUID = 1678900989767L;
 	private String total;
 	private String styleButton;
 	
-	private List<Email> mails = Collections.synchronizedList(new ArrayList<Email>());
+	private List<Email> mails;
 	
 	private String[] bLabels = new String[10];
 	private boolean[] buttons = new boolean[10];
@@ -82,6 +82,7 @@ private static final long serialVersionUID = 1678900989767L;
 	
 	@PostConstruct
 	public void init() {
+		
 		load(EmailType.INBOX.getName());
 		//loadCountEmailNote();//transferred to menuBean
 		if(mails!=null && mails.size()>0) {
@@ -563,15 +564,17 @@ private static final long serialVersionUID = 1678900989767L;
 		String sendToMail = "";
 		try {
 			for(Object obj : getSelectedSendUsers()) {
-				String userId = (String)obj;
+				long userId = (Long)obj;
 				if(cnt>1) {
 					sendToMail += ":" + userId;
 				}else {
-					sendToMail = userId;
+					sendToMail = userId+"";
 				}
 				cnt++;
 			}
 		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println("catch email sendToMail=" + sendToMail);
 			//only for draft send without edit
 			boolean isMoreDraft = false;
 			if(getEmailSelected()!=null) {
@@ -595,6 +598,8 @@ private static final long serialVersionUID = 1678900989767L;
 				sendToMail = getEmailSelected().getToEmail();
 			}
 		}
+		
+		System.out.println("catch email no catch =" + sendToMail);
 		
 		boolean isMore = false;
 		try {
@@ -705,11 +710,11 @@ private static final long serialVersionUID = 1678900989767L;
 		int cnt = 1;
 		String sendToMail = "";
 		for(Object obj : getSelectedSendUsers()) {
-			String userId = (String)obj;
+			long userId = (Long)obj;
 			if(cnt>1) {
 				sendToMail += ":" + userId;
 			}else {
-				sendToMail = userId;
+				sendToMail = userId+"";
 			}
 			cnt++;
 		}
@@ -957,7 +962,7 @@ private static final long serialVersionUID = 1678900989767L;
 	
 	
 	private void loadEmails(String sql, String[] params) {
-		mails = Collections.synchronizedList(new ArrayList<Email>());
+		mails = new ArrayList<Email>();
 		
 		UserDtls logUser = getUser();
 		for(Email e : Email.retrieve(sql, params)) {

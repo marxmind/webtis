@@ -20,6 +20,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<f:facet name="middle">
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputStylesheet name="css/growl.css"/>
+             <h:outputStylesheet name="css/bodyconf.css"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
             <h:outputStylesheet name="primeflex/primeflex.min.css" />
 			<h:outputStylesheet name="primeflex/layout.css" />
@@ -380,9 +381,6 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
  </p:dialog>
  
  
-	<p:dialog position="left bottom" visible="true" widgetVar="helpmeDialog" modal="false" draggable="true" closable="false" resizable="false" showHeader="false" a:data-step="1" a:data-intro="If you need my help, just press me. Im here through this course. Please click NEXT to see the next information, SKIP to end this help assistance">
-    	<p:graphicImage title="Press me if you need my assistance" name="/gif/help.gif" style="width: 3em;height: 3em" styleClass="img-circle" onclick="javascript:introJs().setOption('showBullets', false).start();" />
-	</p:dialog>
 	
 	<ui:include src="loader.xhtml" />	
 	<ui:include src="menu.xhtml" />   

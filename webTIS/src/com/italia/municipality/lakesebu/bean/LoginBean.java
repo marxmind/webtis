@@ -58,7 +58,7 @@ public class LoginBean implements Serializable{
 	
 	@PostConstruct
 	public void init() {
-		DailyReport.runReport();
+		//DailyReport.runReport();
 	}
 	
 	//validate login

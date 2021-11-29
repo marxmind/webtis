@@ -17,14 +17,14 @@
 				}
 			</script>
     		<p:growl id="msgFetch" showDetail="true" life="2000" />
-    		<p:dialog widgetVar="dlgFetch" width="700" height="700" header="Fetch to server" closable="true" modal="true">
+    		<p:dialog widgetVar="dlgFetch" width="700" height="700" header="Fetch to server" closable="true" modal="true" closeOnEscape="true">
     		
     		<p:toolbar id="tbFetch">
     		<f:facet name="left">
-    			<p:commandButton update="dataFetch msgFetch" value="Fetch Data From Server" icon="fa fa-cloud-download" actionListener="#{syncBean.fetchDataFromServer}" onclick="showFetch()" oncomplete="hideFetch()"/>
+    			<p:commandButton id="idFetch" disabled="#{syncBean.success}" update="dataFetch idFetch idUp msgFetch" value="Fetch Data From Server" icon="fa fa-cloud-download" actionListener="#{syncBean.fetchDataFromServer}" onclick="showFetch()" oncomplete="hideFetch()"/>
     		</f:facet>
     		<f:facet name="right">
-    			<p:commandButton update="dataFetch msgFetch" value="Update Local Data" icon="fa fa-desktop" actionListener="#{syncBean.uploadData}" onclick="showFetch()" oncomplete="hideFetch()"/>
+    			<p:commandButton id="idUp" disabled="#{!syncBean.success}" update="dataFetch idFetch idUp msgFetch" value="Update Local Data" icon="fa fa-desktop" actionListener="#{syncBean.uploadData}" onclick="showFetch()" oncomplete="hideFetch()"/>
     		</f:facet>
 			</p:toolbar> 
 			<div id="onPid" style="display:none">

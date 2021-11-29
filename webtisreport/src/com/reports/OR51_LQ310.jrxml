@@ -43,7 +43,7 @@
 				<textElement>
 					<font size="10"/>
 				</textElement>
-				<text><![CDATA[MTO Lake Sebu]]></text>
+				<text><![CDATA[]]></text>
 			</staticText>
 		</band>
 	</title>
@@ -59,8 +59,8 @@
 	</columnHeader>
 	<detail>
 		<band height="14" splitType="Stretch">
-			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
-				<reportElement x="3" y="0" width="145" height="11" uuid="183ac405-d88d-4da4-9165-9de07e90f290">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ElementGroupHeight" x="3" y="0" width="145" height="11" uuid="183ac405-d88d-4da4-9165-9de07e90f290">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
@@ -68,21 +68,17 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
-				<reportElement x="148" y="0" width="31" height="11" uuid="6d46b00c-7faf-4399-9508-a8eacb2ca8b9">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ElementGroupHeight" x="148" y="0" width="31" height="11" uuid="6d46b00c-7faf-4399-9508-a8eacb2ca8b9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{code}]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
-				<reportElement x="179" y="0" width="51" height="12" uuid="255404a7-eb47-4eb9-8666-f34f38c6cb0f">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ElementGroupHeight" x="179" y="0" width="51" height="11" uuid="255404a7-eb47-4eb9-8666-f34f38c6cb0f"/>
 				<textElement textAlignment="Right">
-					<font size="9"/>
+					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>

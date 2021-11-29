@@ -12,7 +12,7 @@
     		<p:growl id="msgArticle" showDetail="true" life="2000" />
     		<p:dialog widgetVar="dlgArticle" fitViewport="true" position="center top" header="Revenue Code" closable="true" resizable="true" responsive="true" showHeader="false" modal="true" closeOnEscape="true">
     		
-    		<p:card style="width: 100em">
+    		<p:card style="width: 125em">
     		
     		<p:tabView prependId="false" cache="true" id="tabRevenue">
     		
@@ -22,9 +22,12 @@
     			
     		<p:toolbar id="tbFormArticle">
     		<f:facet name="left">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
     			<p:inputText value="#{articleBean.searchArticle}" placeholder="Search..." style="width: 25em">
     				<p:ajax event="keyup" listener="#{articleBean.loadArticle}" update="dataRevenue" />
     			</p:inputText>
+    			</span>
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton value="Close" onclick="PF('dlgArticle').hide(1000);" />
@@ -79,9 +82,12 @@
     			
     		<p:toolbar id="tbFormArticleSub">
     		<f:facet name="left">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
     			<p:inputText value="#{articleBean.searchSubArticle}" placeholder="Search..." style="width: 25em">
     				<p:ajax event="keyup" listener="#{articleBean.loadArticle}" update="dataRevenue" />
     			</p:inputText>
+    			</span>
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton value="Close" onclick="PF('dlgArticle').hide(1000);" />
@@ -131,9 +137,12 @@
     			
     		<p:toolbar id="tbParticular">
     		<f:facet name="left">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
     			<p:inputText value="#{articleBean.searchParticular}" placeholder="Search..." style="width: 25em">
     				<p:ajax event="keyup" listener="#{articleBean.loadParticulars}" update="dataPart" />
     			</p:inputText>
+    			</span>
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton value="Close" onclick="PF('dlgArticle').hide(1000);" />
@@ -266,9 +275,12 @@
     			
     		<p:toolbar id="tbRev">
     		<f:facet name="left">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
     			<p:inputText value="#{articleBean.searchRevenueCode}" placeholder="Search..." style="width: 25em">
     				<p:ajax event="keyup" listener="#{articleBean.loadAll}" update="dataRev" delay="900"/>
     			</p:inputText>
+    			</span>
     		</f:facet>
     		<f:facet name="right">
     			<p:commandButton value="Close" onclick="PF('dlgArticle').hide(1000);" />

@@ -21,7 +21,7 @@ xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	<f:facet name="middle">
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputStylesheet name="css/resume.css" target="head"/>
-            
+             <h:outputStylesheet name="css/bodyconf.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputScript name="bootstrap/js/bootstrap.bundle.min.js" target="head"/>
             <h:outputScript name="jquery-easing/jquery.easing.min.js" target="head"/>
@@ -66,7 +66,7 @@ xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 		<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
       <a class="navbar-brand js-scroll-trigger" href="#page-top">
         <span class="d-none d-lg-block">
-         <p:graphicImage name="gif/version14.png" styleClass="img-fluid rounded-circle" />
+         <p:graphicImage name="gif/logo.png" style="width: 100%; height: 100%" styleClass="img-fluid rounded-circle" />
         </span>
         <p:outputLabel value="#{versionBean.copyright.currentversion} #{versionBean.copyright.appname}"/>
       </a>

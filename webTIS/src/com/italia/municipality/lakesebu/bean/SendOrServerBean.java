@@ -38,7 +38,7 @@ public class SendOrServerBean implements Serializable {
 		for (File file : listOfFiles) {
 			if(file.isFile()) {
 				Reports r = new Reports();
-				r.setF1(file.getName());
+				r.setF1(file.getName().replace(".xml", ""	));
 				data.add(r);
 			}
 		}

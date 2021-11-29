@@ -26,6 +26,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
+             <h:outputStylesheet name="css/bodyconf.css"/>
     </f:facet>
         
     <f:facet name="last">
@@ -70,6 +71,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
     <div class="p-grid sample-layout">
     
     <div class="p-col-12 p-md-5">
+    		<p:card style="width: 53em">
             <div class="ui-inputgroup" style="float:right">
     					<p:commandButton value="New" update=":formId:usercusId, :formId:pictureId" actionListener="#{businessOwnerBean.clearFields}"  icon="fa fa-file-o" title="Click this button to start new information"/>
     					<p:commandButton value="Clear" update="pictureId usercusId" icon="fa fa-trash" actionListener="#{businessOwnerBean.closePopup}" title="Click this button to clear information"/>
@@ -206,6 +208,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 			 			</p:outputLabel>
             		   	
     			 	</p:panelGrid> 
+    			 	</p:card>
         </div>
         <div class="p-col-12 p-md-7 p-col-nogutter">
             <div class="p-grid">

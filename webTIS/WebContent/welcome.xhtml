@@ -21,6 +21,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
             <h:outputStylesheet name="css/growl.css"/>
+             <h:outputStylesheet name="css/bodyconf.css"/>
             <h:outputStylesheet name="primeflex/primeflex.min.css" />
 			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
@@ -75,7 +76,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             
             
                 
-            
+            <p:card style="width: 80em">
             <p:panelGrid id="chequeDataId" layout="grid" columns="6" styleClass="ui-noborder">
 			
 			    
@@ -95,7 +96,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:inputText id="checkNoId" value="#{checkBean.bankCheckNo}" a:placeholder="0000000000" style="color: black;width:10em;font-size: 1em;font-weight: bold;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
 				
 				<p:outputLabel value="Date" style="font-size: 1em"/>
-            	<p:datePicker id="basic" value="#{checkBean.dateTime}" pattern="yyyy-MM-dd" inputStyle="color: black;width:10em;font-size: 1em;font-weight: bold;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
+            	<p:datePicker id="basic" value="#{checkBean.dateTime}" pattern="yyyy-MM-dd" inputStyle="width:10em;font-size: 1em;font-weight: bold;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
 			
 			</p:panelGrid>	
 			<p:panelGrid id="chequeDataId2" layout="grid" columns="1" styleClass="ui-noborder">	
@@ -174,7 +175,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					<p:inputText id="idRemarks" value="#{checkBean.remarks}" disabled="#{checkBean.enableRemarks}" a:placeholder="REMARKS"  style="color: black;width: 40em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
 				</p:outputLabel>
 			</p:panelGrid>
-            
+            </p:card>
             
         </div><!--end left side -->
         <div class="p-col-12 p-md-5 p-col-nogutter" id="idCenter">

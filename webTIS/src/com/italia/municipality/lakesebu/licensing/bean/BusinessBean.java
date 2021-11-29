@@ -9,18 +9,18 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.primefaces.PrimeFaces;
 
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.enm.DateFormat;
 import com.italia.municipality.lakesebu.licensing.controller.Barangay;
+import com.italia.municipality.lakesebu.licensing.controller.BusinessCustomer;
 import com.italia.municipality.lakesebu.licensing.controller.BusinessEngaged;
-import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.licensing.controller.Livelihood;
 import com.italia.municipality.lakesebu.licensing.controller.Municipality;
 import com.italia.municipality.lakesebu.licensing.controller.Province;
@@ -36,9 +36,9 @@ import com.italia.municipality.lakesebu.utils.Whitelist;
  * @since 07/06/2017
  *
  */
-@ManagedBean(name="bizBean", eager=true)
-@ViewScoped
 
+@Named
+@ViewScoped
 public class BusinessBean implements Serializable{
 
 	/**
@@ -55,7 +55,7 @@ public class BusinessBean implements Serializable{
 	private String areaMeter;
 	private String supportingDetails;
 	
-	private Customer customer;
+	private BusinessCustomer customer;
 	private String customerName;
 	private List<Livelihood> businesses = Collections.synchronizedList(new ArrayList<Livelihood>());
 	
@@ -69,7 +69,7 @@ public class BusinessBean implements Serializable{
 	private String searchName;
 	
 	private String searchTaxPayerName;
-	private List<Customer> customers = Collections.synchronizedList(new ArrayList<Customer>());
+	private List<BusinessCustomer> customers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
 	
 	private String searchProvince;
 	private String searchMunicipal;
@@ -206,7 +206,7 @@ public class BusinessBean implements Serializable{
 	
 	public void taxpayerLoad(){
 		System.out.println("taxpayerLoad>>> ");
-		customers = Collections.synchronizedList(new ArrayList<Customer>());
+		customers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
 		
 		/*Customer customer = new Customer();
 		customer.setIsactive(1);
@@ -221,7 +221,7 @@ public class BusinessBean implements Serializable{
 		if(getSearchTaxPayerName()!=null && !getSearchTaxPayerName().isEmpty()){
 			sql += " AND cus.fullname like '%"+ Whitelist.remove(getSearchTaxPayerName()) +"%'";
 		}
-		customers = Customer.retrieve(sql, params);
+		customers = BusinessCustomer.retrieve(sql, params);
 		Collections.reverse(customers);
 		
 		if(customers!=null && customers.size()==1) {
@@ -286,7 +286,7 @@ public class BusinessBean implements Serializable{
 		
 	}
 	
-	public void clickItemOwner(Customer customer){
+	public void clickItemOwner(BusinessCustomer customer){
 		setCustomer(customer);
 		setCustomerName(customer.getFullname());
 	}
@@ -468,10 +468,10 @@ public class BusinessBean implements Serializable{
 	public void setSupportingDetails(String supportingDetails) {
 		this.supportingDetails = supportingDetails;
 	}
-	public Customer getCustomer() {
+	public BusinessCustomer getCustomer() {
 		return customer;
 	}
-	public void setCustomer(Customer customer) {
+	public void setCustomer(BusinessCustomer customer) {
 		this.customer = customer;
 	}
 	public List getTypes() {
@@ -555,11 +555,11 @@ public class BusinessBean implements Serializable{
 		this.searchTaxPayerName = searchTaxPayerName;
 	}
 
-	public List<Customer> getCustomers() {
+	public List<BusinessCustomer> getCustomers() {
 		return customers;
 	}
 
-	public void setCustomers(List<Customer> customers) {
+	public void setCustomers(List<BusinessCustomer> customers) {
 		this.customers = customers;
 	}
 

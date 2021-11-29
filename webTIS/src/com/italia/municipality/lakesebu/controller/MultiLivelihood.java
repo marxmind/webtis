@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.italia.marxmind.ConnectDB;
 import com.italia.municipality.lakesebu.enm.ClearanceType;
+import com.italia.municipality.lakesebu.licensing.controller.BusinessCustomer;
 import com.italia.municipality.lakesebu.licensing.controller.Clearance;
 import com.italia.municipality.lakesebu.licensing.controller.Livelihood;
 import com.italia.municipality.lakesebu.utils.LogU;
@@ -102,7 +103,7 @@ public class MultiLivelihood {
 			try{live.setIsActive(rs.getInt("isactivelive"));}catch(NullPointerException e){}
 			try{live.setTimestamp(rs.getTimestamp("timestamplive"));}catch(NullPointerException e){}
 			
-			com.italia.municipality.lakesebu.licensing.controller.Customer cus = new com.italia.municipality.lakesebu.licensing.controller.Customer();
+			BusinessCustomer cus = new BusinessCustomer();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			live.setTaxPayer(cus);
 			

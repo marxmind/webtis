@@ -52,7 +52,7 @@ public class BusinessPermit {
 	private String empdtls;
 	private double grossAmount;
 	
-	private Customer customer;
+	private BusinessCustomer customer;
 	
 	//temp
 	private String capital;
@@ -148,7 +148,7 @@ public class BusinessPermit {
 		String tableBus="bz";
 		String tableCus="cuz";
 		
-		String sql = "SELECT * FROM businesspermit "+ tableBus + ", customer " + tableCus +" WHERE "
+		String sql = "SELECT * FROM businesspermit "+ tableBus + ", businesscustomer " + tableCus +" WHERE "
 				+ tableBus + ".customerid=" + tableCus + ".customerid ";
 				
 		
@@ -205,7 +205,7 @@ public class BusinessPermit {
 			}catch(Exception e) {}
 			
 			
-			Customer cus = new Customer();
+			BusinessCustomer cus = new BusinessCustomer();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
 			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
@@ -229,7 +229,7 @@ public class BusinessPermit {
 			}
 			
 			try{cus.setBirthdate(rs.getString("borndate"));}catch(NullPointerException e){}
-			try{Customer emergency = new Customer();
+			try{BusinessCustomer emergency = new BusinessCustomer();
 			emergency.setId(rs.getLong("emeperson"));
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}

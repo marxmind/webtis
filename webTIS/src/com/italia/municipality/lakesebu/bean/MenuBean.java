@@ -15,6 +15,7 @@ import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.UserAccessLevel;
 import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.enm.AppConf;
+import com.italia.municipality.lakesebu.utils.Application;
  
 /**
  * 
@@ -41,6 +42,11 @@ public class MenuBean implements Serializable{
 	
 	private static final String REPORT_FOLDER = AppConf.PRIMARY_DRIVE.getValue() + File.separator + 
 			AppConf.APP_CONFIG_FOLDER_NAME.getValue() + File.separator + "dailyreport" + File.separator;
+	
+	@PostConstruct
+	public void init() {
+		loadCountEmailNote();
+	}
 	
 	public UserDtls getUser() {
 		return Login.getUserLogin().getUserDtls();
@@ -81,6 +87,27 @@ public class MenuBean implements Serializable{
 		System.out.println("End run report....");
 		
 		}catch(Exception e) {e.printStackTrace();}
+	}
+	
+	public void onActiveMsg() {
+		checkEmail();
+	}
+	
+	public void onIdleMsg() {
+		checkEmail();
+	}
+	
+	private void checkEmail() {
+		String sql = " AND msgtype=1 AND isopen=0 AND isdeleted=0 AND personcpy=?";
+		String[] params = new String[1];
+		params[0] = getUser().getUserdtlsid()+"";
+		int count = Email.countNewEmail(sql, params);
+		if(count>0) {
+			//Application.addMessage(1, "Email Received", "You have " + (count>1? count + " emails received." : count + " email received."));
+			setTotalMsg("You have " + (count>1? count + " emails received." : count + " email received."));
+			PrimeFaces pf = PrimeFaces.current();
+			pf.executeScript("PF('dlgEmailNot').show(1000)");
+		}
 	}
 	
 	public void loadCountEmailNote() {

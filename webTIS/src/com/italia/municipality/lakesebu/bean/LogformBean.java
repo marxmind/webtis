@@ -1073,11 +1073,19 @@ public class LogformBean implements Serializable{
 	
 	public void clickItem(CollectionInfo in) {
 		
-		if(in.getReceivedDate().equalsIgnoreCase(DateUtils.getCurrentDateYYYYMMDD())) {
+		if(CollectionInfo.isGroupLatest(in.getRptGroup(), in.getCollector().getId(), in.getFundId())) {
 			setCurrentDate(true);
 		}else {
 			setCurrentDate(false);
 		}
+		
+		/*this lines of code was change by above codes
+		 * Reason: Instead of current date can be edit, now allowing most recent transaction
+		if(in.getReceivedDate().equalsIgnoreCase(DateUtils.getCurrentDateYYYYMMDD())) {
+			setCurrentDate(true);
+		}else {
+			setCurrentDate(false);
+		}*/
 		
 		setCashTicketData(in);
 		String sql = " AND frm.isactivecol=1 AND cl.isid=? AND frm.rptgroup=? AND frm.receiveddate=? AND frm.fundid=?";
@@ -1182,19 +1190,19 @@ public class LogformBean implements Serializable{
 		String dbDate = info.getReceivedDate();
 		
 		if(CollectionInfo.isGroupLatest(info.getRptGroup(), info.getCollector().getId(), info.getFundId())) {
-			System.out.println("Printing information from database");
+			/*System.out.println("Printing information from database");
 			if(today.equalsIgnoreCase(dbDate)) {
 				printForm(info);
 			}else {
 				System.out.println("Printing information from xml file parin");
 				if(isXmlFileExist(info)) {
 					printXML(info);
-				}else {
+				}else {*/
 					System.out.println("Creating xml file");
 					System.out.println("Gathering information from database for data");
 					printForm(info);
-				}
-			}
+				/*}
+			}*/
 		}else {
 			System.out.println("Printing information from xml file");
 			if(isXmlFileExist(info)) {

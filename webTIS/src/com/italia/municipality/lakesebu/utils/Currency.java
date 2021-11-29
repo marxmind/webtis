@@ -66,6 +66,10 @@ public class Currency {
 		return formatAmount(amount+"");
 	}
 	
+	public static String formatAmount(int amount){
+		return formatAmount(amount+"");
+	}
+	
 	/*
 	public static String formatAmount(String amount){
 		

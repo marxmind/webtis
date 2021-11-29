@@ -25,7 +25,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
-            
+             <h:outputStylesheet name="css/bodyconf.css"/>
     </f:facet>
         
     <f:facet name="last">
@@ -66,9 +66,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<div class="card">
     <div class="p-grid sample-layout">
     
-    <div class="p-col-12 p-md-7">
+    <div class="p-col-12 p-md-5">
     		<div class="p-col-12">
-            <p:toolbar id="tbDetails" style="#{skin.toolbar}">
+    		
+            <p:toolbar id="tbDetails">
     		<f:facet name="left">
     				<div class="ui-inputgroup">
     				<p:commandButton value="Add Responsibilty" oncomplete="PF('resDlg').show();" />
@@ -84,16 +85,19 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     			</p:commandButton>
     			</div>
     		</f:facet>
-			</p:toolbar> 
+			</p:toolbar>
+			
 			</div>
 			
 			
 			
+			
 			<div class="p-col-12">
-			<p:panelGrid id="vId" layout="grid" columns="6" >
+			<p:card style="width: 53em">
+			<p:panelGrid id="vId" layout="grid" columns="4" >
 				
 				<p:outputLabel value="Responsibility" style="#{skin.textInput}"/>
-				<p:selectOneMenu value="#{vrBean.resId}" style="width:12em;color: black;" filter="true" filterMatchMode="contains">
+				<p:selectOneMenu value="#{vrBean.resId}" style="width:12em;" filter="true" filterMatchMode="contains">
 								<f:selectItems value="#{vrBean.responsibility}"/>
 								<p:ajax event="change" listener="#{vrBean.loadCenterFromResponsibility}" update="departmentId payId"/>
 				</p:selectOneMenu>
@@ -102,7 +106,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:outputLabel/><p:outputLabel/>
 				
 				<p:outputLabel value="Date" style="#{skin.textInput}"/>
-            	<p:calendar value="#{vrBean.dateCreated}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="color: black;width:12em;">
+            	<p:calendar value="#{vrBean.dateCreated}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width:12em;">
             		<p:ajax event="dateSelect" listener="#{vrBean.onSeriesChange}" update="seriesId"/>
             	</p:calendar>
 				
@@ -111,7 +115,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				
 				
 				<p:outputLabel value="Series Month" style="#{skin.textInput}"/>
-				<p:selectOneMenu id="seriesId" value="#{vrBean.seriesMonthId}" style="width:12em;color: black;" filter="true" filterMatchMode="contains">
+				<p:selectOneMenu id="seriesId" value="#{vrBean.seriesMonthId}" style="width:12em;" filter="true" filterMatchMode="contains">
 								<f:selectItems value="#{vrBean.seriesMonths}"/>
 				</p:selectOneMenu>
 				
@@ -127,7 +131,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				</p:selectOneMenu>
 				
 				<p:outputLabel value="Check No" style="#{skin.textInput}"/>
-				<p:inputText id="chkId" value="#{vrBean.checkNo}" a:placeholder="Bank Check No" style="color: black;width:12em;"/>
+				<p:inputText id="chkId" value="#{vrBean.checkNo}" a:placeholder="Bank Check No" style="width:12em;"/>
 				
 				
 				<p:outputLabel id="payId" value="Payee" style="#{skin.textInput}"/>
@@ -141,41 +145,45 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				
 				
 				<p:outputLabel value="Gross Amount" style="#{skin.textInput}"/>
-				<p:inputNumber id="grossId" value="#{vrBean.grossAmount}" inputStyle="color: black;width:12em;">
+				<p:inputNumber id="grossId" value="#{vrBean.grossAmount}" inputStyle="width:12em;">
 					<p:ajax event="keyup" listener="#{vrBean.loadNetAmount}" update="netId"/>
 				</p:inputNumber>
 			
 				
 				<p:outputLabel value="Net Amount" style="#{skin.textInput}"/>
-				<p:inputNumber id="netId" value="#{vrBean.netAmount}" inputStyle="color: black;width:12em;"/>
+				<p:inputNumber id="netId" value="#{vrBean.netAmount}" inputStyle="width:12em;"/>
 				
 				
 				<p:outputLabel value="Center" style="#{skin.textInput}"/>
-				<p:selectOneMenu id="departmentId" value="#{vrBean.departmentId}" style="color: black;width: 12em" filter="true" filterMatchMode="contains">
+				<p:selectOneMenu id="departmentId" value="#{vrBean.departmentId}" style="width: 12em" filter="true" filterMatchMode="contains">
 	            	<f:selectItem itemLabel="Select..."/>
 	            	<f:selectItems value="#{vrBean.department}"/>
 	            </p:selectOneMenu>
 	            
 				
 				<p:outputLabel value="Sign by Treasurer's Office" style="#{skin.textInput}"/>
-	            <p:selectOneMenu value="#{vrBean.sig1}" style="width:12em;color: black;">
+	            <p:selectOneMenu value="#{vrBean.sig1}" style="width:12em;">
 					<f:selectItems value="#{vrBean.sigs1}"/>
 				</p:selectOneMenu>
 				
 				
 				<p:outputLabel value="Sign by Government Official" style="#{skin.textInput}"/>
-				<p:selectOneMenu value="#{vrBean.sig2}" style="width:12em;color: black;">
+				<p:selectOneMenu value="#{vrBean.sig2}" style="width:12em;">
 					<f:selectItems value="#{vrBean.sigs2}"/>
 				</p:selectOneMenu>
 				
 					
 			</p:panelGrid>
+			</p:card>
 			</div>
         </div>
-        <div class="p-col-12 p-md-5 p-col-nogutter">
+        
+        <div class="p-col-12 p-md-6 p-col-nogutter">
+        	
             <div class="p-grid">
-                <div class="p-col-12 p-col-nogutter">
-                    <p:toolbar id="tbVr" style="#{skin.toolbar}">
+             <div class="p-col-12 p-col-nogutter">
+            
+             <p:toolbar id="tbVr" style="#{skin.toolbar}">
     		<f:facet name="left">
     			<div class="ui-inputgroup">
     			<p:commandButton value="Printable" onclick="PF('dlgPrintable').show();"/>
@@ -190,19 +198,19 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     		</f:facet>
     		<f:facet name="right">
     		<div class="ui-inputgroup">
-    		<p:selectOneMenu id="mntId" value="#{vrBean.mondId}" style="color: black;width: 9em" filter="true" filterMatchMode="contains">
+    		<p:selectOneMenu id="mntId" value="#{vrBean.mondId}" style="width: 9em" filter="true" filterMatchMode="contains">
 	            		<f:selectItems value="#{vrBean.months}"/>
 	            		<p:ajax event="change" listener="#{vrBean.updateMonthSeriesSearch}" update="monthSearchId"/>
 	        </p:selectOneMenu>
-	        <p:selectOneMenu id="yrId" value="#{vrBean.yearId}" style="color: black;width: 6em" filter="true" filterMatchMode="contains">
+	        <p:selectOneMenu id="yrId" value="#{vrBean.yearId}" style="width: 6em" filter="true" filterMatchMode="contains">
 	            		<f:selectItems value="#{vrBean.years}"/>
 	            		<p:ajax event="change" listener="#{vrBean.updateMonthSeriesSearch}" update="monthSearchId"/>
 	        </p:selectOneMenu>
-			<p:selectOneMenu id="monthSearchId" value="#{vrBean.seriesMonthIdSearch}" style="width:10em;color: black;" filter="true" filterMatchMode="contains">
+			<p:selectOneMenu id="monthSearchId" value="#{vrBean.seriesMonthIdSearch}"  filter="true" filterMatchMode="contains">
     				<f:selectItem itemLabel="All"/>
 					<f:selectItems value="#{vrBean.seriesMonthsSearch}"/>
 				</p:selectOneMenu>
-				<p:selectOneMenu id="depSearchId" value="#{vrBean.departmentIdSearch}" style="color: black;width: 10em" filter="true" filterMatchMode="contains">
+				<p:selectOneMenu id="depSearchId" value="#{vrBean.departmentIdSearch}" style="width: 10em" filter="true" filterMatchMode="contains">
 	            		<f:selectItem itemLabel="All"/>
 	            		<f:selectItems value="#{vrBean.departmentSearch}"/>
 	            </p:selectOneMenu>
@@ -210,13 +218,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	            </div>
 			</f:facet>
 			</p:toolbar>
+			
                 </div>
                 <div class="p-col-12">
                     <div class="p-grid">
+                    	
                         <p:dataTable id="dataVr" value="#{vrBean.vrs}" var="vr" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
-                         rowsPerPageTemplate="5,10,15,20,50,100"
-                         style="#{skin.table}" paginatorPosition="top"
+                         rowsPerPageTemplate="5,10,15,20,50,100" scrollable="true" scrollWidth="900"
+                          paginatorPosition="top"
                          
                          >
                          
@@ -240,7 +250,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             					</p:commandButton>
             				</p:column>
             				
-							<p:column headerText="View" width="20" exportable="false">
+							<p:column headerText="View" width="40" exportable="false">
 								<p:commandButton icon="fa fa-search" update="dataVr vId" actionListener="#{vrBean.clickItem(vr)}"/>
 							</p:column>
 							
@@ -289,12 +299,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							<p:columnGroup type="footer">
 								<p:row>
 									<p:column colspan="8" style="text-align:right" footerText="Totals:"/>
-									<p:column footerText="#{vrBean.totalGross}" />
-									<p:column footerText="#{vrBean.totalNet}" />
+									<p:column footerText="Gross:#{vrBean.totalGross}" />
+									<p:column footerText="Net:#{vrBean.totalNet}" />
 								</p:row>
 							</p:columnGroup>
 							
 				</p:dataTable>
+					
                     </div>
                 </div>
             </div>
@@ -308,13 +319,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<p:dialog position="center center"  widgetVar="dlgPrintable" modal="false" draggable="false" closable="false" resizable="false" showHeader="true" width="800" height="800" closeOnEscape="true">
     	<p:toolbar id="tbMsg">
 			    		<f:facet name="left">
-			    				<p:selectOneMenu value="#{vrBean.mondIdR}" style="color: black;width: 9em" filter="true" filterMatchMode="contains">
+			    				<p:selectOneMenu value="#{vrBean.mondIdR}" style="width: 9em" filter="true" filterMatchMode="contains">
 			            		<f:selectItems value="#{vrBean.monthsR}"/>
 						        	</p:selectOneMenu>
-						        <p:selectOneMenu value="#{vrBean.yearIdR}" style="color: black;width: 6em" filter="true" filterMatchMode="contains">
+						        <p:selectOneMenu value="#{vrBean.yearIdR}" style="width: 6em" filter="true" filterMatchMode="contains">
 						            <f:selectItems value="#{vrBean.yearsR}"/>
 						        </p:selectOneMenu>
-						        <p:selectOneMenu value="#{vrBean.seriesMonthIdSearchPer}" style="width:10em;color: black;" filter="true" filterMatchMode="contains">
+						        <p:selectOneMenu value="#{vrBean.seriesMonthIdSearchPer}" style="width:10em;" filter="true" filterMatchMode="contains">
 									<f:selectItems value="#{vrBean.seriesMonthsSearchPer}"/>
 								</p:selectOneMenu>
 			    			   <p:commandButton value="Retrieve New Info" actionListener="#{vrBean.loadDepartmentExpense}" update="dataVP"/>

@@ -25,6 +25,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<h:outputStylesheet name="primeflex/layout.css" />
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
+             <h:outputStylesheet name="css/bodyconf.css"/>
     </f:facet>
         
     <f:facet name="last">
@@ -65,10 +66,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<div class="card">
     <div class="p-grid sample-layout">
     
-    <div class="p-col-5 p-md-5">
+    <div class="p-col-7 p-md-6">
     		<div class="p-col-12">
             	
-            	<p:toolbar id="tbForm" style="#{skin.toolbar}">
+            	<p:toolbar id="tbForm">
     		<f:facet name="left">
     				<p:commandButton value="Form Series History" onclick="PF('dlgCSeries').show()"/>
     				<p:commandButton value="Show Income Per Forms" actionListener="#{logformBean.loadFormDetails}" update="tbFormPer formData"/>
@@ -217,7 +218,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             </div>
             
         </div>
-        <div class="p-col-12 p-md-7 p-col-nogutter">
+        <div class="p-col-12 p-md-6 p-col-nogutter">
             <div class="p-grid">
                 <div class="p-col-12 p-col-nogutter">
                 
@@ -611,8 +612,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		</p:toolbar> 
 		
 		<p:dataTable id="formData" value="#{logformBean.formsInfo}" var="fm" stickyHeader="false"
-							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                         rowsPerPageTemplate="10,20,30,40,50,100"
+							rows="5" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,20,30,40,50,100"
                          scrollable="true" paginatorPosition="top" paginatorAlwaysVisible="true">
                          
                          <f:facet name="{Exporters}">
@@ -689,7 +690,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		
 	</p:dialog>
 	
-	
+	<p:commandButton title="Graph" icon="fa fa-th-large"  actionListener="#{graphIssuanceBean.loadGraph}" update="graphLineId graphBardId" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 30px;right: 7px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	<ui:include src="graphissuance.xhtml" />
 	<ui:include src="loader.xhtml" />
 	<ui:include src="menu.xhtml" />
 </h:form>		

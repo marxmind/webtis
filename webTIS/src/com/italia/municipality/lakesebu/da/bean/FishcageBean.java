@@ -123,6 +123,7 @@ public class FishcageBean implements Serializable {
 	private boolean enable2024;
 	private boolean enable2025;
 	private String totalAmountYear;
+	@Setter @Getter private boolean fromsave;
 	
 	public void onChange(TabChangeEvent event) {
 		if("Water Rentals".equalsIgnoreCase(event.getTab().getTitle())) {
@@ -625,8 +626,11 @@ public WaterRentalsPayment yearDtlsAmount(int id, WaterRentalsPayment w, FishCag
 		PrimeFaces pf = PrimeFaces.current();
 		if(cages.size()==1) {
 			loadPayments(cages.get(0));
-			
-			pf.executeScript("PF('paymentDlg').show()");
+			if(isFromsave()==false) {
+				pf.executeScript("PF('paymentDlg').show()");
+			}else {//this from save, set to false again
+				setFromsave(false);
+			}
 			//pf.executeScript("$(\"#tblPayment\").show(1000);");
 		}else {
 			//pf.executeScript("$(\"#tblPayment\").hide(1000);");
@@ -734,7 +738,7 @@ public WaterRentalsPayment yearDtlsAmount(int id, WaterRentalsPayment w, FishCag
 			clear();
 			
 			setSearchName(cage.getOwnerName());
-			
+			setFromsave(true);
 			init();
 			Application.addMessage(1, "Success", "Successfully saved.");
 		}else {
@@ -913,7 +917,7 @@ public WaterRentalsPayment yearDtlsAmount(int id, WaterRentalsPayment w, FishCag
 		try{param.put("PARAM_OWNER_NAME", py.getFishCage().getOwnerName());}catch(NullPointerException e) {}
 		try{param.put("PARAM_TENANT_NAME", py.getFishCage().getTenantOwner());}catch(NullPointerException e) {}
 		try{param.put("PARAM_CAGE_LOCATION", py.getFishCage().getLocation());}catch(NullPointerException e) {}
-		try{param.put("PARAM_DATE_ISSUED_CERT", "Issued on : "+py.getPaymentPaid());}catch(NullPointerException e) {}
+		try{param.put("PARAM_DATE_ISSUED_CERT", "Issued on : "  + DateUtils.convertDateToMonthDayYear(py.getPaymentPaid()));}catch(NullPointerException e) {}
 		try{param.put("PARAM_OR_NUMBER", py.getOrNumber());}catch(NullPointerException e) {}
 		try{param.put("PARAM_TOTAL_STOCK", py.getFishCage().getNoOfTotalStock()+"");}catch(NullPointerException e) {}
 		try{param.put("PARAM_ANNUAL_PROD", py.getFishCage().getNoOfAnnualProduction()+"");}catch(NullPointerException e) {}

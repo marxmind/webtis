@@ -16,6 +16,7 @@ public class GlobalVar {
 	public static final String APP_CONF_DIR = "C:"+SEP+APP_NAME+SEP+"conf"+SEP;
 	public static final String APP_DATABASE_CONF = "C:"+SEP+APP_NAME+SEP+"conf"+SEP+"dbconf.max";
 	public static final String LOG_FOLDER = "C:"+SEP+APP_NAME+SEP+"log"+SEP;
+	public static final String REPORT_FOLDER = "C:"+SEP+APP_NAME+SEP+"reports"+SEP;
 	public static final boolean LOG_ENABLE = true;
 	public static final String LICENSE_DATA_FILE = "C:"+SEP+APP_NAME+SEP+"conf"+SEP+"dbconf.max";
 	public static final String LICENSE_FILE_NAME= "C:"+SEP+APP_NAME+SEP+"conf"+SEP+"data.max";
@@ -29,6 +30,7 @@ public class GlobalVar {
 	public static final String OWNER_IMG_PATH="C:"+SEP+APP_NAME+SEP+"license"+SEP;
 	public static final String WATER_RENTAL_CERTIFICATE_RPT="water_rental_certificate";
 	public static final String WATER_RENTAL_PAYMENT_HISTORY_RPT="water_rental_ors";
+	public static final String WATER_RENTAL_PAYMENT_BILLING_RPT="water_rental_bill_statement";
 	public static final String MTO_OR_CEDULA_SIGNATORY="FERDINAND L. LOPEZ";
 	//public static final String CEDULA_LQ310_PRINT="cedula_LQ310";
 	//public static final String CEDULA_FX2175_PRINT="cedula_FX2175";
@@ -45,4 +47,5 @@ public class GlobalVar {
 	public static final String COMMIT_XML_UNPROCESSED = COMMIT_XML+"unprocessed"+SEP;
 	public static final String DOWNLOADED_DATA_FOLDER = "C:" + SEP + APP_NAME + SEP + "downloaded-data" + SEP ; //data from server
 	public static final String COMPLETED_DATA_FOLDER = DOWNLOADED_DATA_FOLDER + "completed-data" + SEP ; //data from server
+	
 }

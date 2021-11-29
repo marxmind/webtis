@@ -46,11 +46,11 @@ import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.DateFormat;
 import com.italia.municipality.lakesebu.licensing.controller.Barangay;
+import com.italia.municipality.lakesebu.licensing.controller.BusinessCustomer;
 import com.italia.municipality.lakesebu.licensing.controller.BusinessEngaged;
 import com.italia.municipality.lakesebu.licensing.controller.BusinessPermit;
 import com.italia.municipality.lakesebu.licensing.controller.BusinessRpt;
 import com.italia.municipality.lakesebu.licensing.controller.ClearanceRpt;
-import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.licensing.controller.DocumentFormatter;
 import com.italia.municipality.lakesebu.licensing.controller.DocumentPrinting;
 import com.italia.municipality.lakesebu.licensing.controller.Livelihood;
@@ -88,10 +88,10 @@ public class BusinessPermitBean implements Serializable{
 	private Date calendarFrom;
 	private Date calendarTo;
 	
-	private Customer taxPayer;
+	private BusinessCustomer taxPayer;
 	private String customerName;
 	private String searchTaxpayer;
-	private List<Customer> taxpayers = new ArrayList<Customer>();
+	private List<BusinessCustomer> taxpayers = new ArrayList<BusinessCustomer>();
 	private String photoId="camera";
 	private List<String> shots = new ArrayList<>();
 	
@@ -175,7 +175,7 @@ public class BusinessPermitBean implements Serializable{
 	}
 	
 	public void loadSearch() {
-		pmts = Collections.synchronizedList(new ArrayList<BusinessPermit>());
+		pmts = new ArrayList<BusinessPermit>();
 		
 		String sql = " AND bz.isactivebusiness=1 AND (bz.datetrans>=? AND bz.datetrans<=?) ";
 		String[] params = new String[2];
@@ -186,7 +186,10 @@ public class BusinessPermitBean implements Serializable{
 			int size = getSearchName().length();
 			
 			if(size>=4) {
-				sql += " AND cuz.fullname like '%"+ getSearchName().replace("--", "") +"%'";
+				sql +=" AND (";
+				sql += " cuz.fullname like '%"+ getSearchName().replace("--", "") +"%'";
+				sql += " OR bz.businessname like '%"+ getSearchName().replace("--", "") +"%'";
+				sql +=" )";
 				pmts = BusinessPermit.retrieve(sql, params);
 			}
 			
@@ -197,7 +200,7 @@ public class BusinessPermitBean implements Serializable{
 		Collections.reverse(pmts);
 	}
 	
-	public void clickItemOwner(Customer cuz){
+	public void clickItemOwner(BusinessCustomer cuz){
 		
 		clearFields();
 		
@@ -218,7 +221,7 @@ public class BusinessPermitBean implements Serializable{
 	}
 	
 	public void clickItem(BusinessPermit permit) {
-		Customer cuz = permit.getCustomer();
+		BusinessCustomer cuz = permit.getCustomer();
 		setTaxPayer(cuz);
 		setCustomerName(cuz.getFullname());
 		setPhotoId(cuz.getPhotoid());
@@ -401,7 +404,7 @@ public class BusinessPermitBean implements Serializable{
 	
 	public void loadTaxpayer(){
 		
-		taxpayers = Collections.synchronizedList(new ArrayList<Customer>());
+		taxpayers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
 		
 		//String sql = " AND cus.cusisactive=1 ";
 		
@@ -640,11 +643,11 @@ public class BusinessPermitBean implements Serializable{
 		this.customerName = customerName;
 	}
 
-	public Customer getTaxPayer() {
+	public BusinessCustomer getTaxPayer() {
 		return taxPayer;
 	}
 
-	public void setTaxPayer(Customer taxPayer) {
+	public void setTaxPayer(BusinessCustomer taxPayer) {
 		this.taxPayer = taxPayer;
 	}
 
@@ -656,11 +659,11 @@ public class BusinessPermitBean implements Serializable{
 		this.searchTaxpayer = searchTaxpayer;
 	}
 
-	public List<Customer> getTaxpayers() {
+	public List<BusinessCustomer> getTaxpayers() {
 		return taxpayers;
 	}
 
-	public void setTaxpayers(List<Customer> taxpayers) {
+	public void setTaxpayers(List<BusinessCustomer> taxpayers) {
 		this.taxpayers = taxpayers;
 	}
 
@@ -1101,21 +1104,23 @@ public void printPermit(BusinessPermit permit) {
 		int size = lData.size();
 		int cnt = 1;
 		for(String d : lData) {
-			if(cnt==1) {
-				eng = d;
-				System.out.println("1 " + eng);
-			}else {
-			
-				if(cnt==size) {
-					eng += " & " + d;
-					System.out.println("cnt == size " + size + "=" + eng);
+			if(!"brp".equalsIgnoreCase(d.trim())) {
+				if(cnt==1) {
+					eng = d;
+					System.out.println("1 " + eng);
 				}else {
-					eng += ", " + d;
-					System.out.println("cnt != size " + size + "=" + eng);
-				}
 				
+					if(cnt==size) {
+						eng += " & " + d;
+						System.out.println("cnt == size " + size + "=" + eng);
+					}else {
+						eng += ", " + d;
+						System.out.println("cnt != size " + size + "=" + eng);
+					}
+					
+				}
+				cnt++;
 			}
-			cnt++;
 		}
 		int countlent = eng!=null? eng.length() : 0;
 		//do not change location // this code is after OR
@@ -1263,7 +1268,8 @@ public void printPermit(BusinessPermit permit) {
 	
 	public void printAll() {
 		String REPORT_NAME = BUSINESS_REPORT;
-		
+		double capital_total=0d, gross_total=0d;
+		int number_of_employee=0;
 		HashMap param = new HashMap();
 		String path = REPORT_PATH;// + ReadConfig.value(Bris.BARANGAY_NAME).replace(" ", "") + Bris.SEPERATOR.getName();
 		
@@ -1290,6 +1296,10 @@ public void printPermit(BusinessPermit permit) {
 		int annually = 0;
 		
 		for(BusinessPermit p : rptsSort.values()) {
+			
+			//get number of employee
+			try { number_of_employee += Integer.valueOf(p.getEmpdtls().trim());}catch(Exception e) {}
+			
 			BusinessRpt r = new BusinessRpt();
 			r.setF1(p.getControlNo().split("-")[1]);
 			r.setF2(p.getCustomer().getFullname());
@@ -1336,6 +1346,7 @@ public void printPermit(BusinessPermit permit) {
 			
 			BusinessORTransaction forFire = null;
 			for(BusinessORTransaction or : sortedOR.values()) {
+				
 				String fire = or.getPurpose().toLowerCase().trim();
 				if(!"fire".equalsIgnoreCase(fire)) {
 					if(i==1) {
@@ -1355,7 +1366,8 @@ public void printPermit(BusinessPermit permit) {
 							
 							reports.add(r);
 							
-							
+							try{ capital_total += Double.valueOf(p.getCapital().trim().replace(",", ""));}catch(Exception e) {}
+							try{ gross_total += Double.valueOf(p.getGross().trim().replace(",", ""));}catch(Exception e) {}
 							
 					}else {
 							r = new BusinessRpt();
@@ -1374,9 +1386,11 @@ public void printPermit(BusinessPermit permit) {
 							if(or.getIscapital()==1) {
 								r.setF11(Currency.formatAmount(or.getGrossAmount()));//capital
 								r.setF12("");//gross sale
+								capital_total += or.getGrossAmount();
 							} else {
 								r.setF11("");//capital
 								r.setF12(Currency.formatAmount(or.getGrossAmount()));//gross sale
+								gross_total += or.getGrossAmount();
 							}
 							
 							//provide gross sale value if has value inputted
@@ -1399,6 +1413,7 @@ public void printPermit(BusinessPermit permit) {
 				}
 			}
 			
+			
 			if(forFire!=null) {
 				r = new BusinessRpt();
 				r.setF1("");
@@ -1417,14 +1432,17 @@ public void printPermit(BusinessPermit permit) {
 				r.setF12("");
 				r.setF13("");
 				r.setF14("");
-				
+				r.setLine("line");
 				reports.add(r);
+			}else {
+				reports.add(BusinessRpt.builder().line("line").build());
 			}
 			
 			
-			
+			/*change with setLine("line"); check on fire
 			if(cnt!=size) {
 				r = new BusinessRpt();
+				
 				r.setF1("------");//no
 				r.setF2("-----------------------------");//name
 				r.setF3("--------------------------------------------");//enganged
@@ -1439,8 +1457,9 @@ public void printPermit(BusinessPermit permit) {
 				r.setF12("----------------------");//gross
 				r.setF13("---------------");//emp
 				r.setF14("--------------------");//mode
+				
 				reports.add(r);
-			}
+			}*/
 			
 			cnt++;
 		}
@@ -1460,7 +1479,7 @@ public void printPermit(BusinessPermit permit) {
 				   cy = yearFrom + " to " + yearTo;
 			   }
 			   
-		param.put("PARAM_CY", "LIST OF BUSINESS ESTABLISHMENT CY. " + cy);
+		param.put("PARAM_CY", "LIST OF BUSINESS ESTABLISHMENTS CY. " + cy);
 		param.put("PARAM_GRAND_TOTAL", "Php"+ Currency.formatAmount(total));
 		
 		param.put("PARAM_NEW", newA+"");
@@ -1470,6 +1489,10 @@ public void printPermit(BusinessPermit permit) {
 		param.put("PARAM_QUARTERLY", quarterly+"");
 		param.put("PARAM_SEMI_ANNUALLY", semi_annual+"");
 		param.put("PARAM_ANNUALLY", annually+"");
+		
+		param.put("PARAM_CAPITAL", Currency.formatAmount(capital_total));
+		param.put("PARAM_GROSS", Currency.formatAmount(gross_total));
+		param.put("PARAM_EMPLOYEE_TOTAL", number_of_employee+"");
 		
 		//background
 				String backlogo = path + "businessrpt.png";

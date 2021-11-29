@@ -2,7 +2,6 @@ package com.italia.municipality.lakesebu.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -11,6 +10,9 @@ import javax.inject.Named;
 
 import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.utils.Application;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 
@@ -28,16 +30,16 @@ public class DepartmentBean implements Serializable{
 	 */
 	private static final long serialVersionUID = 546789876756431L;
 	
-	private String name;
-	private String code;
-	private String searchName;
-	private String departmentHead;
-	private Department depData;
-	private List<Department> deps = Collections.synchronizedList(new ArrayList<Department>());
+	@Setter @Getter private String name;
+	@Setter @Getter private String code;
+	@Setter @Getter private String searchName;
+	@Setter @Getter private String departmentHead;
+	@Setter @Getter private Department depData;
+	@Setter @Getter private List<Department> deps;
 	
 	@PostConstruct
 	public void init() {
-		deps = Collections.synchronizedList(new ArrayList<Department>());
+		deps = new ArrayList<Department>();
 		String[] params = new String[0];
 		String sql = "SELECT * FROM department WHERE isactivedep=1 ";
 		
@@ -108,46 +110,5 @@ public class DepartmentBean implements Serializable{
 		setCode(null);
 		setDepartmentHead(null);
 	}
-	
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getCode() {
-		return code;
-	}
-	public void setCode(String code) {
-		this.code = code;
-	}
-	public String getSearchName() {
-		return searchName;
-	}
-	public void setSearchName(String searchName) {
-		this.searchName = searchName;
-	}
-	public Department getDepData() {
-		return depData;
-	}
-	public void setDepData(Department depData) {
-		this.depData = depData;
-	}
-	public List<Department> getDeps() {
-		return deps;
-	}
-	public void setDeps(List<Department> deps) {
-		this.deps = deps;
-	}
-
-	public String getDepartmentHead() {
-		return departmentHead;
-	}
-
-	public void setDepartmentHead(String departmentHead) {
-		this.departmentHead = departmentHead;
-	}
-	
-	
 	
 }

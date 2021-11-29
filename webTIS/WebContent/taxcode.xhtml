@@ -10,20 +10,23 @@
     <ui:composition>
     		
     		<p:growl id="msgTax" showDetail="true" life="2000" />
-    		<p:dialog widgetVar="dlgTaxCode" width="1000" height="900" position="center top" header="Particular Settings" closable="true" modal="true">
-    		
+    		<p:dialog widgetVar="dlgTaxCode" fitViewport="true" position="center top" header="Particular Settings" closable="true" modal="true" closeOnEscape="true">
+    		<p:scrollPanel style="width:120em;height:650px" mode="native">
     		
     		<p:tabView prependId="false" cache="true" id="tabCodeId">
     		
     		<p:ajax event="tabChange" listener="#{paymentTaxCodeBean.onChange}" update="tabCodeId"/>
     		
-    		<p:tab title="Particular Code">
+    		<p:tab title="Particulars">
     			
     		<p:toolbar id="tbFormTaxCode">
     		<f:facet name="left">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
     			<p:inputText value="#{paymentTaxCodeBean.searchName}" placeholder="Search..." style="width: 25em">
     				<p:ajax event="keyup" listener="#{paymentTaxCodeBean.loadTaxCode}" update="dataTax dataGroup" />
     			</p:inputText>
+    			</span>
     		</f:facet>
     		<f:facet name="right"/>
 			</p:toolbar> 
@@ -77,7 +80,7 @@
     		
     		
     		
-    		<p:tab title="Accounting Group">
+    		<p:tab title="Accounting Code">
     				
     				 <p:dataTable id="dataAccountGroup" value="#{paymentTaxCodeBean.groupAccs}" var="gp" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -167,7 +170,7 @@
     			
     		</p:tab>
     		
-    		<p:tab title="Tax Collection">
+    		<p:tab title="Customization">
     				
     				 <p:dataTable id="dataGroup" value="#{paymentTaxCodeBean.groups}" var="gp" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -257,20 +260,24 @@
     			
     		</p:tab>
     		
-    		<p:tab title="Report Collection">
+    		<p:tab title="Issuance">
     				
     				<p:toolbar id="tbFormAcc">
 		    		<f:facet name="left">
-		    			<p:inputText value="#{paymentTaxCodeBean.searchGroup}" placeholder="Search..." style="width: 25em">
+		    			<span class="ui-input-icon-left">
+			    		<i class="pi pi-search" />
+		    			<p:inputText value="#{paymentTaxCodeBean.searchGroup}" placeholder="Search..." style="width: 30em">
 		    				<p:ajax event="keyup" listener="#{paymentTaxCodeBean.loadCollections}" update="dataGroupColl" delay="800" />
 		    			</p:inputText>
-		    			<p:datePicker id="range" selectionMode="range" value="#{paymentTaxCodeBean.rangeDate}" readonlyInput="true">
+		    			</span>
+		    			<p:datePicker id="range" selectionMode="range" value="#{paymentTaxCodeBean.rangeDate}" readonlyInput="true" inputStyle="width: 15em">
 		    				<p:ajax event="dateSelect" listener="#{paymentTaxCodeBean.loadCollections}" update="dataGroupColl"/>
 		    			</p:datePicker>
-		    			<p:selectOneMenu id="accGId" value="#{paymentTaxCodeBean.accountParticularId}" style="width: 15em" filter="true" filterMatchMode="contains">
+		    			<p:selectOneMenu id="accGId" value="#{paymentTaxCodeBean.accountParticularId}" style="width: 25em" filter="true" filterMatchMode="contains">
 							<f:selectItems value="#{paymentTaxCodeBean.accountingParticular}"/>
 							<p:ajax event="change" listener="#{paymentTaxCodeBean.loadCollections}" update="dataGroupColl"/>
 						</p:selectOneMenu>
+						
 		    		</f:facet>
 		    		<f:facet name="right"/>
 					</p:toolbar>
@@ -298,7 +305,7 @@
     		
     		</p:tabView>
     		
-    		
+    		</p:scrollPanel>
     		</p:dialog>
     		
     

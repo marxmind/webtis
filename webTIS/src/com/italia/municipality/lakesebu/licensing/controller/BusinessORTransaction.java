@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
-import com.italia.municipality.lakesebu.enm.Database;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
 
@@ -35,7 +34,7 @@ public class BusinessORTransaction {
 	private double grossAmount;
 	private String orStatus;
 	
-	private Customer customer;
+	private BusinessCustomer customer;
 	private UserDtls userDtls;
 	
 	private int cnt;
@@ -69,7 +68,7 @@ public class BusinessORTransaction {
 		return "0";
 	}
 	
-	public static BusinessORTransaction loadORIfExist(Customer cus){
+	public static BusinessORTransaction loadORIfExist(BusinessCustomer cus){
 		BusinessORTransaction ort = null;
 		String sql = " AND orl.ordate=? AND orl.oractive=1 AND orl.orstatus=1 AND cuz.customerid=" + cus.getId();
 		String[] params = new String[1];
@@ -108,7 +107,7 @@ public class BusinessORTransaction {
 			try{ort.setIscapital(rs.getInt("iscapital"));}catch(NullPointerException e){}
 			
 			try{ort.setOrStatus(ort.getStatus()==1? "Delivered" : "Cancelled");}catch(NullPointerException e){}
-			Customer cus = new Customer();
+			BusinessCustomer cus = new BusinessCustomer();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			ort.setCustomer(cus);
 			
@@ -132,7 +131,7 @@ public class BusinessORTransaction {
 		String tableCus = "cuz";
 		String tableUser = "usr";
 		
-		String sql = "SELECT * FROM businessorlisting " + tableOR + ", customer " + tableCus + ", userdtls " + tableUser + " WHERE " +
+		String sql = "SELECT * FROM businessorlisting " + tableOR + ", businesscustomer " + tableCus + ", userdtls " + tableUser + " WHERE " +
 				tableOR + ".customerid=" + tableCus + ".customerid AND " +
 				tableOR + ".userdtlsid=" + tableUser + ".userdtlsid ";
 		sql = sql + sqlAdd;		
@@ -171,7 +170,7 @@ public class BusinessORTransaction {
 			try{ort.setOrStatus(ort.getStatus()==1? "Delivered" : "Cancelled");}catch(NullPointerException e){}
 			try{ort.setIscapital(rs.getInt("iscapital"));}catch(NullPointerException e){}
 			
-			Customer cus = new Customer();
+			BusinessCustomer cus = new BusinessCustomer();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
 			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
 			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
@@ -195,7 +194,7 @@ public class BusinessORTransaction {
 			}
 			
 			try{cus.setBirthdate(rs.getString("borndate"));}catch(NullPointerException e){}
-			try{Customer emergency = new Customer();
+			try{BusinessCustomer emergency = new BusinessCustomer();
 			emergency.setId(rs.getLong("emeperson"));
 			cus.setEmergencyContactPerson(emergency);}catch(NullPointerException e){}
 			try{cus.setRelationship(rs.getInt("relid"));}catch(NullPointerException e){}

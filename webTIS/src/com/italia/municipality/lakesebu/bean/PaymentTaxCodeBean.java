@@ -326,13 +326,13 @@ public class PaymentTaxCodeBean implements Serializable{
 	public void onChange(TabChangeEvent event) {
 		//Tab activeTab = event.getTab();
 		//...
-		if("Particular Code".equalsIgnoreCase(event.getTab().getTitle())) {
+		if("Particulars".equalsIgnoreCase(event.getTab().getTitle())) {
 			loadTaxCode();
-		}else if("Accounting Group".equalsIgnoreCase(event.getTab().getTitle())){
+		}else if("Accounting Code".equalsIgnoreCase(event.getTab().getTitle())){
 			loadAccounts();
-		}else if("Tax Collection".equalsIgnoreCase(event.getTab().getTitle())){
+		}else if("Customization".equalsIgnoreCase(event.getTab().getTitle())){
 			loadTaxGroup();
-		}else if("Report Collection".equalsIgnoreCase(event.getTab().getTitle())){
+		}else if("Issuance".equalsIgnoreCase(event.getTab().getTitle())){
 			loadCollections();
 		}		
 	}

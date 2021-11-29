@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
-import javax.faces.annotation.ManagedProperty;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -50,6 +49,7 @@ import com.italia.municipality.lakesebu.controller.AppSetting;
 import com.italia.municipality.lakesebu.controller.Cedula;
 import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.Department;
+import com.italia.municipality.lakesebu.controller.FishcageBillingStatment;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.NumberToWords;
 import com.italia.municipality.lakesebu.controller.OR51;
@@ -61,9 +61,9 @@ import com.italia.municipality.lakesebu.controller.ReportFields;
 import com.italia.municipality.lakesebu.controller.Reports;
 import com.italia.municipality.lakesebu.controller.TaxCodeGroup;
 import com.italia.municipality.lakesebu.controller.UserDtls;
-import com.italia.municipality.lakesebu.database.Conf;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.CivilStatus;
+import com.italia.municipality.lakesebu.enm.FormORTypes;
 import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.enm.Months;
@@ -72,7 +72,6 @@ import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.licensing.controller.DocumentFormatter;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
-import com.italia.municipality.lakesebu.utils.CheckServerConnection;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.OrlistingXML;
@@ -99,128 +98,129 @@ public class ORListingBean implements Serializable{
 	 */
 	private static final long serialVersionUID = 645698875451L;
 	
-	private Date dateTrans;
-	private String orNumber;
-	private String payorName;
-	private String address;
-	private int formTypeId;
-	private List formTypes;
+	@Setter @Getter private Date dateTrans;
+	@Setter @Getter private String orNumber;
+	@Setter @Getter private String payorName;
+	@Setter @Getter private String address;
+	@Setter @Getter private int formTypeId;
+	@Setter @Getter private List formTypes;
 	
-	private List<PaymentName> namesData = new ArrayList<PaymentName>();//Collections.synchronizedList(new ArrayList<PaymentName>());
-	private List<PaymentName> suggestedData = new ArrayList<PaymentName>();//Collections.synchronizedList(new ArrayList<PaymentName>());
-	private List<PaymentName> namesDataSelected = new ArrayList<PaymentName>();//Collections.synchronizedList(new ArrayList<PaymentName>());
-	private Map<Long, PaymentName> selectedPaymentNameMap = new HashMap<Long, PaymentName>();//Collections.synchronizedMap(new HashMap<Long, PaymentName>());
-	private String totalAmount;
-	private String searchPayName;
+	@Setter @Getter private List<PaymentName> namesData = new ArrayList<PaymentName>();
+	@Setter @Getter private List<PaymentName> suggestedData = new ArrayList<PaymentName>();
+	@Setter @Getter private List<PaymentName> namesDataSelected = new ArrayList<PaymentName>();
+	@Setter @Getter private Map<Long, PaymentName> selectedPaymentNameMap = new HashMap<Long, PaymentName>();
+	@Setter @Getter private String totalAmount;
+	@Setter @Getter private String searchPayName;
 	
-	private ORListing orRecordData;
-	private List<ORNameList> ornameListData;
-	private List<ORListing> ors = new ArrayList<ORListing>();
-	private String totalCollection;
+	@Setter @Getter private ORListing orRecordData;
+	@Setter @Getter private List<ORNameList> ornameListData;
+	@Setter @Getter private List<ORListing> ors = new ArrayList<ORListing>();
+	@Setter @Getter private String totalCollection;
 	
-	private String searchName;
-	private int monthId;
-	private List months;
-	private int yearId;
-	private List years;
-	private int paymentId;
-	private List paymentTypes;
-	private int formTypeSearchId;
-	private List formTypeSearch;
+	@Setter @Getter private String searchName;
+	@Setter @Getter private int monthId;
+	@Setter @Getter private List months;
+	@Setter @Getter private int yearId;
+	@Setter @Getter private List years;
+	@Setter @Getter private int paymentId;
+	@Setter @Getter private List paymentTypes;
+	@Setter @Getter private int formTypeSearchId;
+	@Setter @Getter private List formTypeSearch;
 	
-	private List<Reports>  dtls = new ArrayList<Reports>();//Collections.synchronizedList(new ArrayList<Reports>());
-	private List<Reports>  rpts = new ArrayList<Reports>();//Collections.synchronizedList(new ArrayList<Reports>());
+	@Setter @Getter private List<Reports>  dtls = new ArrayList<Reports>();
+	@Setter @Getter private List<Reports>  rpts = new ArrayList<Reports>();
 	
-	private List collectors;
-	private int collectorId;
+	@Setter @Getter private List collectors;
+	@Setter @Getter private int collectorId;
 	
-	private List collectorsSearch;
-	private int collectorSearchId;
+	@Setter @Getter private List collectorsSearch;
+	@Setter @Getter private int collectorSearchId;
 	
-	private List sorts;
-	private int sortId;
+	@Setter @Getter private List sorts;
+	@Setter @Getter private int sortId;
 	
-	private int statusId;
-	private List status;
+	@Setter @Getter private int statusId;
+	@Setter @Getter private List status;
 	
-	private int statusSearchId;
-	private List statusSearch;
+	@Setter @Getter private int statusSearchId;
+	@Setter @Getter private List statusSearch;
 	
-	private boolean filtered;
-	private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
+	@Setter @Getter private boolean filtered;
 	
-	private String sumNames;
-	private String sumAmounts;
+	@Setter @Getter private String sumNames;
+	@Setter @Getter private String sumAmounts;
 	
-	private int depId;
-	private List departments;
+	@Setter @Getter private int depId;
+	@Setter @Getter private List departments;
 	
-	private String textContent;
-	private String rptSummary;
+	@Setter @Getter private String textContent;
+	@Setter @Getter private String rptSummary;
 	
-	List<Reports> rptsOnly = new ArrayList<Reports>();//Collections.synchronizedList(new ArrayList<Reports>());
-	private String totalAmountSummaryOnly;
+	@Setter @Getter List<Reports> rptsOnly = new ArrayList<Reports>();
+	@Setter @Getter private String totalAmountSummaryOnly;
 	
-	private String limitData;
+	@Setter @Getter private String limitData;
 	
-	private int selectOrTypeId;
-	private List selectOrTypes;
+	@Setter @Getter private int selectOrTypeId;
+	@Setter @Getter private List selectOrTypes;
 	
-	private boolean collectorsMode;
-	private String formInfo;
+	@Setter @Getter private boolean collectorsMode;
+	@Setter @Getter private String formInfo;
 	
 	//for ctc individual and corporation
-	private double label2;
-	private double label3;
-	private double label4;
-	private double amount1;
-	private double amount2;
-	private double amount3;
-	private double amount4;
-	private double amount5;
-	private double amount6;
-	private double amount7;
-	private String tinNo;
-	private String hieghtDateReg;
-	private String weight;
-	private String customerAddress;
+	@Setter @Getter private double label2;
+	@Setter @Getter private double label3;
+	@Setter @Getter private double label4;
+	@Setter @Getter private double amount1;
+	@Setter @Getter private double amount2;
+	@Setter @Getter private double amount3;
+	@Setter @Getter private double amount4;
+	@Setter @Getter private double amount5;
+	@Setter @Getter private double amount6;
+	@Setter @Getter private double amount7;
+	@Setter @Getter private String tinNo;
+	@Setter @Getter private String hieghtDateReg;
+	@Setter @Getter private String weight;
+	@Setter @Getter private String customerAddress;
 	//private String civilStatusOrganization;
-	private String professionBusinessNature;
-	private String signatory;
-	private String placeOfBirth;
-	private String citizenshipOrganization;
+	@Setter @Getter private String professionBusinessNature;
+	@Setter @Getter private String signatory;
+	@Setter @Getter private String placeOfBirth;
+	@Setter @Getter private String citizenshipOrganization;
 	
-	private int civilStatusId;
-	private List civilStatus;
+	@Setter @Getter private int civilStatusId;
+	@Setter @Getter private List civilStatus;
 	
-	private int genderId=1;
-	private List genders;
+	@Setter @Getter private int genderId;
+	@Setter @Getter private List genders;
 	
-	private Date birthdate;
-	private boolean enableBirthday=true;
+	@Setter @Getter private Date birthdate;
+	@Setter @Getter private boolean enableBirthday=true;
 	
-	private String qrcodeMsg="Please place the QRCOde on the camera";
-	private Customer customerDataSelected;
-	private Map<String, Customer> mapCustomer;
+	@Setter @Getter  private String qrcodeMsg="Please place the QRCOde on the camera";
+	@Setter @Getter private Customer customerDataSelected;
+	@Setter @Getter private Map<String, Customer> mapCustomer;
 	
-	private boolean alreadyRetrieve=false;
-	private int issuedCollectorId;
+	@Setter @Getter  private boolean alreadyRetrieve=false;
+	@Setter @Getter private int issuedCollectorId;
 	
-	private String firstName;
-	private String middleName;
-	private String lastName;
+	@Setter @Getter private String firstName;
+	@Setter @Getter private String middleName;
+	@Setter @Getter private String lastName;
 	
-	private String modeName="Collector Mode Off";
+	@Setter @Getter private String modeName="Collector Mode Off";
 	
-	@Setter @ Getter private List<TaxCodeGroup> groups;
-	@Setter @ Getter private String searchNameAll;
-	@Setter @ Getter private List<ORListing> orsAll;
-	@Setter @ Getter private String totalCollectionAll;
-	@Setter @ Getter private String notes;
+	@Setter @Getter private List<TaxCodeGroup> groups;
+	@Setter @Getter private String searchNameAll;
+	@Setter @Getter private List<ORListing> orsAll;
+	@Setter @Getter private String totalCollectionAll;
+	@Setter @Getter private String notes;
 	
 	
 	@PostConstruct
 	public void init() {
+		
+		
 		
 		if(collectorsMode==false) {
 			
@@ -233,21 +233,187 @@ public class ORListingBean implements Serializable{
 			}
 		}
 		
-		if(monthId==0) {
-			monthId = DateUtils.getCurrentMonth();
-		}
+		
 		System.out.println("Initialized....");
 		if(!alreadyRetrieve) {
 			issuedCollectorId = Login.getUserLogin().getCollectorId();
 			setCollectorSearchId(issuedCollectorId);
 			alreadyRetrieve=true;
 		}
+		loadOtherInfo();
 		setLimitData("10");
 		load();
 		
 		suggestedInfo();
 		
+		clearAllFlds();
+	}
+	
+	public void updateInfo() {
+		//if(orNumber==null) {
+			orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
+		//}
+		setLimitData("10");
+		load();
+		suggestedInfo();
 		
+		dateTrans = DateUtils.getDateToday();
+		address = "Lake Sebu, So. Cot.";
+	}
+	
+	private void loadOtherInfo() {
+		
+		//if(dateTrans==null) {
+			dateTrans = DateUtils.getDateToday();
+		//}
+		
+		
+		setFormTypeId(FormType.AF_51.getId());//default form
+		formTypes = new ArrayList<>();
+		formTypes.add(new SelectItem(0, "Select Forms"));
+		for(FormType form : FormType.values()) {
+			formTypes.add(new SelectItem(form.getId(), form.getName() + " " + form.getDescription()));
+		}
+		
+		//if(address==null) {
+			address = "Lake Sebu, So. Cot.";
+		//}
+		
+		/////
+		paymentTypes = new ArrayList<>();
+		paymentTypes.add(new SelectItem(0, "All Payment Names"));
+		for(PaymentName name : PaymentName.retrieve("", new String[0])) {
+			paymentTypes.add(new SelectItem(name.getId(), name.getName()));
+		}
+		
+		////month
+		if(monthId==0) {
+			monthId = DateUtils.getCurrentMonth();
+		}
+		
+		months = new ArrayList<>();
+		months.add(new SelectItem(0, "All Months"));
+		for(int month=1; month<=12; month++) {
+			months.add(new SelectItem(month, DateUtils.getMonthName(month)));
+		}
+		
+		/////year
+		if(yearId==0) {
+			yearId = DateUtils.getCurrentYear();
+		}
+		
+		years = new ArrayList<>();
+		years.add(new SelectItem(0, "All years"));
+		int lastYear=0;
+		for(int year=2019; year<=DateUtils.getCurrentYear(); year++) {
+			years.add(new SelectItem(year, year+""));
+			lastYear=year;
+		}
+		lastYear += 1;
+		years.add(new SelectItem(lastYear, lastYear+""));
+		///////////////
+		
+		
+		if(birthdate==null) {
+			birthdate = DateUtils.getDateToday();
+		}
+		if(civilStatusId==0) {
+			civilStatusId = 1;
+		}
+		
+		if(genderId==0) {
+			genderId=1;
+		}
+		
+		genders = new ArrayList<>();
+		genders.add(new SelectItem(1, "Male"));
+		genders.add(new SelectItem(2, "Female"));
+		
+		selectOrTypes = new ArrayList<>();
+		for(FormORTypes type : FormORTypes.values()) {
+			selectOrTypes.add(new SelectItem(type.getId(), type.getName()));
+		}
+		
+		civilStatus = new ArrayList<>();
+		for(CivilStatus s : CivilStatus.values()) {
+			civilStatus.add(new SelectItem(s.getId(), s.getName()));
+		}
+		
+		statusSearch = new ArrayList<>();
+		statusSearch.add(new SelectItem(0, "All Status"));
+		for(FormStatus s : FormStatus.values()) {
+			if(s.getId()==4 || s.getId()==5) {
+				statusSearch.add(new SelectItem(s.getId(), s.getName()));
+			}
+		}
+		
+		departments = new ArrayList<>();
+		departments.add(new SelectItem(0, "All Department"));
+		for(Department dep : Department.retrieve("SELECT * FROM department ORDER BY departmentname", new String[0])) {
+			departments.add(new SelectItem(dep.getDepid(), dep.getDepartmentName()));
+		}
+		
+		if(statusId==0) {
+			statusId = 4;
+		}
+		
+		status = new ArrayList<>();
+		for(FormStatus s : FormStatus.values()) {
+			if(s.getId()==4 || s.getId()==5) {
+				status.add(new SelectItem(s.getId(), s.getName()));
+			}
+		}
+		
+		sorts = new ArrayList<>();
+		sorts.add(new SelectItem(0, "Non Sort"));
+		sorts.add(new SelectItem(1, "Order by Date"));
+		sorts.add(new SelectItem(2, "Order by Collector"));
+		sorts.add(new SelectItem(3, "Order by Form Name"));
+		sorts.add(new SelectItem(4, "Order by OR Number"));
+		sorts.add(new SelectItem(5, "Order by Payor"));
+		
+		/////////////////////////////////////////////
+		collectorsSearch = new ArrayList<>();
+		String sql = " ORDER BY cl.collectorname";
+		
+		if(getIssuedCollectorId()>0) {
+			sql = " AND cl.isid="+ getIssuedCollectorId();
+		}
+		
+		for(Collector c : Collector.retrieve(sql, new String[0])) {
+			if(c.getId()==0) {
+				collectorsSearch.add(new SelectItem(0, "All Collector"));
+			}else {
+				collectorsSearch.add(new SelectItem(c.getId(), c.getName()));
+			}
+		}
+		
+		////////////
+		if(collectorId==0) {
+			collectorId = 1;
+		}
+		///////
+		sql = " ORDER BY cl.collectorname";
+		
+		if(getIssuedCollectorId()>0) {
+			sql = " AND cl.isid="+ getIssuedCollectorId();
+		}
+		collectors = new ArrayList<>();
+		for(Collector c : Collector.retrieve(sql, new String[0])) {
+			if(c.getId()>0) {
+				collectors.add(new SelectItem(c.getId(), c.getName()));
+			}
+		}
+		
+		formTypeSearch = new ArrayList<>();
+		formTypeSearch.add(new SelectItem(0, "All Forms"));
+		for(FormType form : FormType.values()) {
+			formTypeSearch.add(new SelectItem(form.getId(), form.getName() + " " + form.getDescription()));
+		}
+		//setSelectOrTypeId(FormORTypes.NEW.getId());//default OR
+		//if(orNumber==null) {
+		//	orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
+		//}
 	}
 	
 	public void loadAllOrs() {
@@ -348,7 +514,7 @@ public class ORListingBean implements Serializable{
 			
 		}
 		
-		System.out.println("Check filtered status : " + isFiltered());
+		//System.out.println("Check filtered status : " + isFiltered());
 		
 		if(!isFiltered()) {
 		
@@ -404,9 +570,6 @@ public class ORListingBean implements Serializable{
 			}
 		}
 		
-		System.out.println("getIssuedCollectorId()=" + getIssuedCollectorId());
-		System.out.println("getCollectorSearchId()=" + getCollectorSearchId());
-		
 		
 		if(getSortId()>0) {
 			sql += " ORDER By ";
@@ -434,7 +597,7 @@ public class ORListingBean implements Serializable{
 			sql += " LIMIT " + num;
 		}
 		
-		System.out.println("filetered >> " +sql);
+		//System.out.println("filetered >> " +sql);
 		
 		
 		if(getPaymentId()>0) {
@@ -761,6 +924,11 @@ public class ORListingBean implements Serializable{
 	
 	public List<String> payorNameSuggested(String query){
 		List<String> result = new ArrayList<>();
+		//if(!query.isBlank() && query.toLowerCase().contains("fs-")) {
+			//return FishcageBillingStatment.searchControlNumber(query);
+		//}
+		
+		
 		mapCustomer = new LinkedHashMap<String, Customer>();
 		if(query!=null && !query.isEmpty()) {
 			int size = query.length();
@@ -901,15 +1069,6 @@ public class ORListingBean implements Serializable{
 		
 	}
 	
-	
-	/*private Customer selectedCustomer() {
-		String sql = " AND cus.fullname like '%"+getPayorName()+"%'";
-		String[] params = new String[0];
-		for(Customer cz : Customer.retrieve(sql, params)) {
-			return cz;
-		}
-		return null;
-	}*/
 	
 	private com.italia.municipality.lakesebu.licensing.controller.Customer selectedCustomer(){
 		String sql = " AND cus.fullname like '%"+getPayorName()+"%'";
@@ -1250,170 +1409,6 @@ public class ORListingBean implements Serializable{
 		selectedPaymentNameMap = new HashMap<Long, PaymentName>();//Collections.synchronizedMap(new HashMap<Long, PaymentName>());
 	}
 	
-	/*public void saveData() {
-		Customer customer = selectedCustomer();
-		ORListing or = new ORListing();
-		
-		if(getOrRecordData()!=null) {
-			or = getOrRecordData();
-		}else {
-			or.setIsActive(1);
-		}
-		
-		if(customer==null) {
-			customer = new Customer();
-			customer.setFullName(getPayorName().toUpperCase());
-			customer.setAddress(getAddress());
-			customer.setContactNumber("0");
-			customer.setIsActive(1);
-			customer.setRegistrationDate(DateUtils.getCurrentDateYYYYMMDD());
-			UserDtls user = Login.getUserLogin().getUserDtls();
-			customer.setUserDtls(user);
-			customer = Customer.save(customer);
-		}else {
-			customer.setFullName(getPayorName().toUpperCase());
-			customer.setAddress(getAddress());
-			customer.setContactNumber("0");
-			customer.setIsActive(1);
-			customer.setRegistrationDate(DateUtils.getCurrentDateYYYYMMDD());
-			UserDtls user = Login.getUserLogin().getUserDtls();
-			customer.setUserDtls(user);
-			customer = Customer.save(customer);
-		}
-		boolean isOk = true;
-		if(getOrNumber()==null || getOrNumber().isEmpty()) {
-			isOk = false;
-			Application.addMessage(3, "Error", "Please provide official receipt");
-		}
-		if(getPayorName()==null || getPayorName().isEmpty()) {
-			isOk = false;
-			Application.addMessage(3, "Error", "Please provide payor name");
-		}
-		
-		if(getSelectedPaymentNameMap()==null) {
-			isOk = false;
-			Application.addMessage(3, "Error", "Please provide payment name");
-		}
-		
-		if(isOk) {
-			
-			if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
-				String val = "";
-				
-				val = getLabel2() + "<->";
-				val += getLabel3() + "<->";
-				val += getLabel4() + "<->";
-				val += getAmount1() + "<->";
-				val += getAmount2() + "<->";
-				val += getAmount3() + "<->";
-				val += getAmount4() + "<->";
-				val += getAmount5() + "<->";
-				val += getAmount6() + "<->";
-				val += getAmount7() + "<->";
-				val += getGenderId() + "<->";
-				val += getBirthdate()==null? "0<->" : DateUtils.convertDate(getBirthdate(), "yyyy-MM-dd") + "<->";
-				val += getTinNo().isEmpty()? "0<->" : getTinNo() + "<->";
-				val += getHieghtDateReg().isEmpty()? "0<->" : getHieghtDateReg() + "<->";
-				val += getWeight()!=null? getWeight() + "<->" : "0<->";  //   getWeight().isEmpty()? "0<->" : getWeight() + "<->";
-				val += getCustomerAddress().isEmpty()? "0<->" : getCustomerAddress() + "<->";
-				val += getCivilStatusId()==0? "0<->" : getCivilStatusId() + "<->";
-				val += getProfessionBusinessNature().isEmpty()? "0<->" : getProfessionBusinessNature() + "<->";
-				val += GlobalVar.MTO_OR_CEDULA_SIGNATORY + "<->";//signatory
-				val += getPlaceOfBirth().isEmpty()? "0<->" : getPlaceOfBirth() +"<->";
-				val += getCitizenshipOrganization().isEmpty()? "0" : getCitizenshipOrganization();
-				
-				or.setForminfo(val);
-			}
-			
-			
-			
-			
-			
-			or.setStatus(getStatusId());
-			or.setDateTrans(DateUtils.convertDate(getDateTrans(), "yyyy-MM-dd"));
-			or.setFormType(getFormTypeId());
-			or.setCustomer(customer);
-			try{or.setOrNumber(getOrNumber().trim());}catch(Exception e){}
-			Collector col = new Collector();
-			col.setId(getCollectorId());
-			or.setCollector(col);
-			or = ORListing.save(or);
-			
-			//delete first paynames attached in orlisting table
-			//this will ensure for duplication of data
-			ORNameList.delete("DELETE FROM ornamelist WHERE orid=" + or.getId(), new String[0]);
-			
-			List<PaymentName> tmpName = new ArrayList<PaymentName>();
-			Map<Long, PaymentName> tmpMap = new HashMap<Long, PaymentName>();
-			for(PaymentName name : getSelectedPaymentNameMap().values()) {
-				if(name.getAmount()>0) {
-					ORNameList o = new ORNameList();
-					o.setAmount(name.getAmount());
-					o.setOrList(or);
-					o.setCustomer(customer);
-					o.setIsActive(1);
-					o.setPaymentName(name);
-					o.save();
-					
-					name.setAmount(0);
-					tmpName.add(name);
-					tmpMap.put(name.getId(), name);
-				}
-			}
-			Application.addMessage(1, "Success", "Successfully saved.");
-			if(isCollectorsMode()) {
-				setSearchName(getPayorName());
-			}
-			
-			namesDataSelected = new ArrayList<PaymentName>();
-			selectedPaymentNameMap = new HashMap<Long, PaymentName>();
-			setPayorName(null);
-			setTotalAmount("0.00");
-			setOrRecordData(null);
-			setOrnameListData(null);
-			setSelectedPaymentNameMap(null);
-			setOrNumber(null);
-			init(); //do not load data to reduce loading
-			
-			setCollectorId(or.getCollector().getId());
-			
-			
-			//if(getSelectOrTypeId()>0) {
-				//namesDataSelected = tmpName;
-				//selectedPaymentNameMap = tmpMap;
-			//}
-			//forSaveOnly();
-			
-			if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId() || FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
-				setLabel2(0);
-				setLabel3(0);
-				setLabel4(0);
-				setAmount1(0);
-				setAmount2(0);
-				setAmount3(0);
-				setAmount4(0);
-				setAmount5(0);
-				setAmount6(0);
-				setAmount7(0);
-				setGenderId(1);
-				setBirthdate(null);
-				setTinNo(null);
-				setHieghtDateReg(null);
-				setWeight(null);
-				setCustomerAddress(null);
-				setCivilStatusId(1);
-				setProfessionBusinessNature(null);
-				setPlaceOfBirth(null);
-				setCitizenshipOrganization(null);
-				selectedOR();
-			}
-			
-			setFormTypeId(FormType.AF_51.getId());
-		}
-		
-	}*/
-	
-	
 	public void saveData() {
 		com.italia.municipality.lakesebu.licensing.controller.Customer customer = selectedCustomer();
 		ORListing or = new ORListing();
@@ -1605,8 +1600,7 @@ public class ORListingBean implements Serializable{
 			setOrNumber(null);
 			setCollectorId(or.getCollector().getId());
 			setNotes(null);
-			init(); //do not load data to reduce loading
-			
+			//init(); //do not load data to reduce loading
 			
 			
 			
@@ -1640,12 +1634,15 @@ public class ORListingBean implements Serializable{
 				selectedOR();
 			}
 			
+			
 			setFormTypeId(FormType.AF_51.getId());
+			updateInfo();//reduce data for reloading
 		}
 		
 	}
 	
 	public void clearAllFlds() {
+		//dateTrans = DateUtils.getDateToday();
 		namesDataSelected = new ArrayList<PaymentName>();
 		selectedPaymentNameMap = new HashMap<Long, PaymentName>();
 		setPayorName(null);
@@ -1653,7 +1650,7 @@ public class ORListingBean implements Serializable{
 		setOrRecordData(null);
 		setOrnameListData(null);
 		setSelectedPaymentNameMap(null);
-		setOrNumber(null);
+		
 		setCollectorId(issuedCollectorId);
 		//init();
 		
@@ -1682,7 +1679,11 @@ public class ORListingBean implements Serializable{
 			selectedOR();
 		}
 		
+		setSelectOrTypeId(FormORTypes.NEW.getId());
 		setFormTypeId(FormType.AF_51.getId());
+		setOrNumber(ORListing.getLatestORNumber(getFormTypeId(),getCollectorId()));
+		dateTrans = DateUtils.getDateToday();
+		address = "Lake Sebu, So. Cot.";
 	}
 	
 	private void ctcFlds(boolean enanleCTC) {
@@ -1791,6 +1792,38 @@ public class ORListingBean implements Serializable{
 		setTotalAmount(Currency.formatAmount(amount));
 	}
 	
+	public void clickItemCopy(ORListing or) {
+		clickItem(or);
+		setOrRecordData(null);
+		setOrNumber(null);
+	}
+	
+	public void clickItemFishCageBill(FishcageBillingStatment st) {
+		setNamesDataSelected(new ArrayList<PaymentName>());
+		setSelectedPaymentNameMap(new LinkedHashMap<Long, PaymentName>());
+		String fullname = st.getOwner().getOwnerName().toUpperCase();
+		setPayorName(fullname);
+		setFirstName(fullname);
+		setMiddleName(".");
+		setLastName(".");
+		if(st.getRemarks()!=null) {
+			setNotes("Fish cage: "+st.getRemarks());
+		}
+		setFormTypeId(FormType.AF_51.getId());
+		//setAddress(st.getOwner().getCageArea());
+		double amount = 0d;
+		
+		for(PaymentName name : st.getListparticulars()) {
+			if(!"Total".equalsIgnoreCase(name.getName())) {
+				namesDataSelected.add(name);
+				amount += name.getAmount();
+				getSelectedPaymentNameMap().put(name.getId(), name);
+			}
+		}
+		
+		setTotalAmount(Currency.formatAmount(amount));
+	}
+	
 	public void editPay(PaymentName names) {
 		setSearchPayName(names.getName());
 		loadPaymentNames();
@@ -1891,29 +1924,6 @@ public class ORListingBean implements Serializable{
 					
 					String[] val = py.getForminfo().split("<->");
 					
-					/*
-					setLabel2(Double.valueOf(val[0]));
-					setLabel3(Double.valueOf(val[1]));
-					setLabel4(Double.valueOf(val[2]));
-					setAmount1(Double.valueOf(val[3]));
-					setAmount2(Double.valueOf(val[4]));
-					setAmount3(Double.valueOf(val[5]));
-					setAmount4(Double.valueOf(val[6]));
-					setAmount5(Double.valueOf(val[7]));
-					setAmount6(Double.valueOf(val[8]));
-					setAmount7(Double.valueOf(val[9]));
-					setGenderId(Integer.valueOf(val[10]));
-					setBirthdate(val[11].equalsIgnoreCase("0")? null : DateUtils.convertDateString(val[11], "yyyy-MM-dd"));
-					setTinNo(val[12].equalsIgnoreCase("0")? "" : val[12]);
-					setHieghtDateReg(val[13].equalsIgnoreCase("0")? "" : val[13]);
-					setWeight(val[14].equalsIgnoreCase("0")? "" : val[14]);
-					setCustomerAddress(val[15].equalsIgnoreCase("0")? "" : val[15]);
-					setCivilStatusId(Integer.valueOf(val[16]));
-					setProfessionBusinessNature(val[17].equalsIgnoreCase("0")? "" : val[17]);
-					setSignatory(val[18].equalsIgnoreCase("0")? "" : val[18]);
-					setPlaceOfBirth(val[19].equalsIgnoreCase("0")? "" : val[19]);
-					setCitizenshipOrganization(val[20].equalsIgnoreCase("0")? "" : val[20]);
-					*/
 					
 					param.put("PARAM_LABEL2", Currency.formatAmount(Double.valueOf(val[0])));
 					param.put("PARAM_LABEL3", Currency.formatAmount(Double.valueOf(val[1])));
@@ -2025,17 +2035,17 @@ public class ORListingBean implements Serializable{
 		     BufferedOutputStream output = null;
 	  	    try {
 		  // Open file.
-	            input = new BufferedInputStream(new FileInputStream(file), DEFAULT_BUFFER_SIZE);
+	            input = new BufferedInputStream(new FileInputStream(file), GlobalVar.DEFAULT_BUFFER_SIZE);
 
 	            // Init servlet response.
 	            response.reset();
 	            response.setHeader("Content-Type", "application/pdf");
 	            response.setHeader("Content-Length", String.valueOf(file.length()));
 	            response.setHeader("Content-Disposition", "inline; filename=\"" + REPORT_NAME + ".pdf" + "\"");
-	            output = new BufferedOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE);
+	            output = new BufferedOutputStream(response.getOutputStream(), GlobalVar.DEFAULT_BUFFER_SIZE);
 
 	            // Write file contents to response.
-	            byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+	            byte[] buffer = new byte[GlobalVar.DEFAULT_BUFFER_SIZE];
 	            int length;
 	            while ((length = input.read(buffer)) > 0) {
 	                output.write(buffer, 0, length);
@@ -2082,17 +2092,17 @@ public class ORListingBean implements Serializable{
 	     try{
 	    	 
 	    	 // Open file.
-	            input = new BufferedInputStream(new FileInputStream(file), DEFAULT_BUFFER_SIZE);
+	            input = new BufferedInputStream(new FileInputStream(file), GlobalVar.DEFAULT_BUFFER_SIZE);
 
 	            // Init servlet response.
 	            response.reset();
 	            response.setHeader("Content-Type", "application/pdf");
 	            response.setHeader("Content-Length", String.valueOf(file.length()));
 	            response.setHeader("Content-Disposition", "inline; filename=\"" + REPORT_NAME + ".pdf" + "\"");
-	            output = new BufferedOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE);
+	            output = new BufferedOutputStream(response.getOutputStream(), GlobalVar.DEFAULT_BUFFER_SIZE);
 
 	            // Write file contents to response.
-	            byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+	            byte[] buffer = new byte[GlobalVar.DEFAULT_BUFFER_SIZE];
 	            int length;
 	            while ((length = input.read(buffer)) > 0) {
 	                output.write(buffer, 0, length);
@@ -2144,17 +2154,17 @@ public class ORListingBean implements Serializable{
 			     try{
 			    	 
 			    	 // Open file.
-			            input = new BufferedInputStream(new FileInputStream(file), DEFAULT_BUFFER_SIZE);
+			            input = new BufferedInputStream(new FileInputStream(file), GlobalVar.DEFAULT_BUFFER_SIZE);
 
 			            // Init servlet response.
 			            response.reset();
 			            response.setHeader("Content-Type", "application/pdf");
 			            response.setHeader("Content-Length", String.valueOf(file.length()));
 			            response.setHeader("Content-Disposition", "inline; filename=\"" + REPORT_NAME + ".pdf" + "\"");
-			            output = new BufferedOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE);
+			            output = new BufferedOutputStream(response.getOutputStream(), GlobalVar.DEFAULT_BUFFER_SIZE);
 
 			            // Write file contents to response.
-			            byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+			            byte[] buffer = new byte[GlobalVar.DEFAULT_BUFFER_SIZE];
 			            int length;
 			            while ((length = input.read(buffer)) > 0) {
 			                output.write(buffer, 0, length);
@@ -2338,17 +2348,17 @@ public class ORListingBean implements Serializable{
 		     try{
 		    	 
 		    	 // Open file.
-		            input = new BufferedInputStream(new FileInputStream(file), DEFAULT_BUFFER_SIZE);
+		            input = new BufferedInputStream(new FileInputStream(file), GlobalVar.DEFAULT_BUFFER_SIZE);
 
 		            // Init servlet response.
 		            response.reset();
 		            response.setHeader("Content-Type", "application/pdf");
 		            response.setHeader("Content-Length", String.valueOf(file.length()));
 		            response.setHeader("Content-Disposition", "inline; filename=\"" + REPORT_NAME + ".pdf" + "\"");
-		            output = new BufferedOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE);
+		            output = new BufferedOutputStream(response.getOutputStream(), GlobalVar.DEFAULT_BUFFER_SIZE);
 
 		            // Write file contents to response.
-		            byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+		            byte[] buffer = new byte[GlobalVar.DEFAULT_BUFFER_SIZE];
 		            int length;
 		            while ((length = input.read(buffer)) > 0) {
 		                output.write(buffer, 0, length);
@@ -2439,57 +2449,6 @@ private void close(Closeable resource) {
     }
 }
 
-	public Date getDateTrans() {
-		
-		if(dateTrans==null) {
-			dateTrans = DateUtils.getDateToday();
-		}
-		
-		return dateTrans;
-	}
-	public void setDateTrans(Date dateTrans) {
-		this.dateTrans = dateTrans;
-	}
-
-	public List<PaymentName> getNamesData() {
-		return namesData;
-	}
-
-	public void setNamesData(List<PaymentName> namesData) {
-		this.namesData = namesData;
-	}
-
-	public List<PaymentName> getNamesDataSelected() {
-		return namesDataSelected;
-	}
-
-	public void setNamesDataSelected(List<PaymentName> namesDataSelected) {
-		this.namesDataSelected = namesDataSelected;
-	}
-
-	public Map<Long, PaymentName> getSelectedPaymentNameMap() {
-		return selectedPaymentNameMap;
-	}
-
-	public void setSelectedPaymentNameMap(Map<Long, PaymentName> selectedPaymentNameMap) {
-		this.selectedPaymentNameMap = selectedPaymentNameMap;
-	}
-
-	public String getTotalAmount() {
-		return totalAmount;
-	}
-
-	public void setTotalAmount(String totalAmount) {
-		this.totalAmount = totalAmount;
-	}
-
-	public String getSearchPayName() {
-		return searchPayName;
-	}
-
-	public void setSearchPayName(String searchPayName) {
-		this.searchPayName = searchPayName;
-	}
 	
 	public void calculateCedula() {
 		
@@ -2541,7 +2500,7 @@ private void close(Closeable resource) {
 	}
 	
 	public void updateORNumber() {
-		orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
+		//orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
 		ctcFlds(false);
 		if(FormType.CT_2.getId()==getFormTypeId() || FormType.CT_5.getId()==getFormTypeId()) {
 			setPayorName("N/A");
@@ -2567,8 +2526,8 @@ private void close(Closeable resource) {
 		}else if(FormType.AF_58.getId()==getFormTypeId()) {
 			setSearchPayName("Death/Burial Income");
 		}
-		
-		if(getSelectOrTypeId()>0) {//show suggested if not NEW is selected
+		orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
+		if(getSelectOrTypeId()>0 && getCollectorId()==0) {//show suggested if not NEW is selected
 			loadLastORToSuggestForNewReceipt();
 		}
 		
@@ -2672,402 +2631,6 @@ private void close(Closeable resource) {
 		setAmount7(500 + interest);
 		
 		setTotalAmount(Currency.formatAmount(500 + interest));
-	}
-	
-	public String getOrNumber() {
-		if(orNumber==null) {
-			orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
-		}
-		return orNumber;
-	}
-
-	public void setOrNumber(String orNumber) {
-		this.orNumber = orNumber;
-	}
-	public int getFormTypeId() {
-		//if(formTypeId==0) {
-			//formTypeId=1;
-		//}
-		return formTypeId;
-	}
-	public void setFormTypeId(int formTypeId) {
-		this.formTypeId = formTypeId;
-	}
-	public List getFormTypes() {
-		formTypes = new ArrayList<>();
-		formTypes.add(new SelectItem(0, "Select Forms"));
-		for(FormType form : FormType.values()) {
-			formTypes.add(new SelectItem(form.getId(), form.getName() + " " + form.getDescription()));
-		}
-		
-		return formTypes;
-	}
-	public void setFormTypes(List formTypes) {
-		this.formTypes = formTypes;
-	}
-
-	public String getPayorName() {
-		return payorName;
-	}
-
-	public void setPayorName(String payorName) {
-		this.payorName = payorName;
-	}
-
-	public String getAddress() {
-		if(address==null) {
-			address = "Lake Sebu, So. Cot.";
-		}
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public ORListing getOrRecordData() {
-		return orRecordData;
-	}
-
-	public void setOrRecordData(ORListing orRecordData) {
-		this.orRecordData = orRecordData;
-	}
-
-	public List<ORListing> getOrs() {
-		return ors;
-	}
-
-	public void setOrs(List<ORListing> ors) {
-		this.ors = ors;
-	}
-
-	public String getTotalCollection() {
-		return totalCollection;
-	}
-
-	public void setTotalCollection(String totalCollection) {
-		this.totalCollection = totalCollection;
-	}
-
-	public int getPaymentId() {
-		return paymentId;
-	}
-
-	public void setPaymentId(int paymentId) {
-		this.paymentId = paymentId;
-	}
-
-	public List getPaymentTypes() {
-		
-		paymentTypes = new ArrayList<>();
-		paymentTypes.add(new SelectItem(0, "All Payment Names"));
-		for(PaymentName name : PaymentName.retrieve("", new String[0])) {
-			paymentTypes.add(new SelectItem(name.getId(), name.getName()));
-		}
-		
-		return paymentTypes;
-	}
-
-	public void setPaymentTypes(List paymentTypes) {
-		this.paymentTypes = paymentTypes;
-	}
-
-	public int getMonthId() {
-		return monthId;
-	}
-
-	public void setMonthId(int monthId) {
-		this.monthId = monthId;
-	}
-
-	public List getMonths() {
-		
-		months = new ArrayList<>();
-		months.add(new SelectItem(0, "All Months"));
-		for(int month=1; month<=12; month++) {
-			months.add(new SelectItem(month, DateUtils.getMonthName(month)));
-		}
-		return months;
-	}
-
-	public void setMonths(List months) {
-		this.months = months;
-	}
-
-	public int getYearId() {
-		if(yearId==0) {
-			yearId = DateUtils.getCurrentYear();
-		}
-		return yearId;
-	}
-
-	public void setYearId(int yearId) {
-		this.yearId = yearId;
-	}
-
-	public List getYears() {
-		
-		years = new ArrayList<>();
-		years.add(new SelectItem(0, "All years"));
-		int lastYear=0;
-		for(int year=2019; year<=DateUtils.getCurrentYear(); year++) {
-			years.add(new SelectItem(year, year+""));
-			lastYear=year;
-		}
-		lastYear += 1;
-		years.add(new SelectItem(lastYear, lastYear+""));
-		
-		return years;
-	}
-
-	public void setYears(List years) {
-		this.years = years;
-	}
-
-	public String getSearchName() {
-		return searchName;
-	}
-
-	public void setSearchName(String searchName) {
-		this.searchName = searchName;
-	}
-
-	public int getFormTypeSearchId() {
-		return formTypeSearchId;
-	}
-
-	public void setFormTypeSearchId(int formTypeSearchId) {
-		this.formTypeSearchId = formTypeSearchId;
-	}
-
-	public List getFormTypeSearch() {
-		formTypeSearch = new ArrayList<>();
-		formTypeSearch.add(new SelectItem(0, "All Forms"));
-		for(FormType form : FormType.values()) {
-			formTypeSearch.add(new SelectItem(form.getId(), form.getName()));
-		}
-		
-		return formTypeSearch;
-	}
-
-	public void setFormTypeSearch(List formTypeSearch) {
-		this.formTypeSearch = formTypeSearch;
-	}
-
-	public List<Reports> getDtls() {
-		return dtls;
-	}
-
-	public void setDtls(List<Reports> dtls) {
-		this.dtls = dtls;
-	}
-
-	public List getCollectors() {
-		String sql = " ORDER BY cl.collectorname";
-		
-		if(getIssuedCollectorId()>0) {
-			sql = " AND cl.isid="+ getIssuedCollectorId();
-		}
-		collectors = new ArrayList<>();
-		for(Collector c : Collector.retrieve(sql, new String[0])) {
-			if(c.getId()>0) {
-				collectors.add(new SelectItem(c.getId(), c.getName()));
-			}
-		}
-		
-		return collectors;
-	}
-
-	public void setCollectors(List collectors) {
-		this.collectors = collectors;
-	}
-
-	public int getCollectorId() {
-		if(collectorId==0) {
-			collectorId = 1;
-		}
-		return collectorId;
-	}
-
-	public void setCollectorId(int collectorId) {
-		this.collectorId = collectorId;
-	}
-
-	public List getCollectorsSearch() {
-		
-		collectorsSearch = new ArrayList<>();
-		String sql = " ORDER BY cl.collectorname";
-		
-		if(getIssuedCollectorId()>0) {
-			sql = " AND cl.isid="+ getIssuedCollectorId();
-		}
-		
-		for(Collector c : Collector.retrieve(sql, new String[0])) {
-			if(c.getId()==0) {
-				collectorsSearch.add(new SelectItem(0, "All Collector"));
-			}else {
-				collectorsSearch.add(new SelectItem(c.getId(), c.getName()));
-			}
-		}
-		
-		return collectorsSearch;
-	}
-
-	public void setCollectorsSearch(List collectorsSearch) {
-		this.collectorsSearch = collectorsSearch;
-	}
-
-	public int getCollectorSearchId() {
-		return collectorSearchId;
-	}
-
-	public void setCollectorSearchId(int collectorSearchId) {
-		this.collectorSearchId = collectorSearchId;
-	}
-
-	public List getSorts() {
-		sorts = new ArrayList<>();
-		sorts.add(new SelectItem(0, "Non Sort"));
-		sorts.add(new SelectItem(1, "Order by Date"));
-		sorts.add(new SelectItem(2, "Order by Collector"));
-		sorts.add(new SelectItem(3, "Order by Form Name"));
-		sorts.add(new SelectItem(4, "Order by OR Number"));
-		sorts.add(new SelectItem(5, "Order by Payor"));
-		return sorts;
-	}
-
-	public void setSorts(List sorts) {
-		this.sorts = sorts;
-	}
-
-	public int getSortId() {
-		return sortId;
-	}
-
-	public void setSortId(int sortId) {
-		this.sortId = sortId;
-	}
-
-	public List<ORNameList> getOrnameListData() {
-		return ornameListData;
-	}
-
-	public void setOrnameListData(List<ORNameList> ornameListData) {
-		this.ornameListData = ornameListData;
-	}
-
-	public int getStatusId() {
-		if(statusId==0) {
-			statusId = 4;
-		}
-		return statusId;
-	}
-
-	public void setStatusId(int statusId) {
-		this.statusId = statusId;
-	}
-
-	public List getStatus() {
-		status = new ArrayList<>();
-		
-		for(FormStatus s : FormStatus.values()) {
-			if(s.getId()==4 || s.getId()==5) {
-				status.add(new SelectItem(s.getId(), s.getName()));
-			}
-		}
-		
-		return status;
-	}
-
-	public void setStatus(List status) {
-		this.status = status;
-	}
-
-	public int getStatusSearchId() {
-		return statusSearchId;
-	}
-
-	public void setStatusSearchId(int statusSearchId) {
-		this.statusSearchId = statusSearchId;
-	}
-
-	public List getStatusSearch() {
-		
-		statusSearch = new ArrayList<>();
-		statusSearch.add(new SelectItem(0, "All Status"));
-		for(FormStatus s : FormStatus.values()) {
-			if(s.getId()==4 || s.getId()==5) {
-				statusSearch.add(new SelectItem(s.getId(), s.getName()));
-			}
-		}
-		
-		return statusSearch;
-	}
-
-	public void setStatusSearch(List statusSearch) {
-		this.statusSearch = statusSearch;
-	}
-
-	public boolean isFiltered() {
-		return filtered;
-	}
-
-	public void setFiltered(boolean filtered) {
-		this.filtered = filtered;
-	}
-
-	public List<Reports> getRpts() {
-		return rpts;
-	}
-
-	public void setRpts(List<Reports> rpts) {
-		this.rpts = rpts;
-	}
-
-	public String getSumNames() {
-		return sumNames;
-	}
-
-	public void setSumNames(String sumNames) {
-		this.sumNames = sumNames;
-	}
-
-	public String getSumAmounts() {
-		return sumAmounts;
-	}
-
-	public void setSumAmounts(String sumAmounts) {
-		this.sumAmounts = sumAmounts;
-	}
-
-	public List<PaymentName> getSuggestedData() {
-		return suggestedData;
-	}
-
-	public void setSuggestedData(List<PaymentName> suggestedData) {
-		this.suggestedData = suggestedData;
-	}
-
-	public int getDepId() {
-		return depId;
-	}
-
-	public void setDepId(int depId) {
-		this.depId = depId;
-	}
-
-	public List getDepartments() {
-		departments = new ArrayList<>();
-		departments.add(new SelectItem(0, "All Department"));
-		for(Department dep : Department.retrieve("SELECT * FROM department ORDER BY departmentname", new String[0])) {
-			departments.add(new SelectItem(dep.getDepid(), dep.getDepartmentName()));
-		}
-		
-		return departments;
-	}
-
-	public void setDepartments(List departments) {
-		this.departments = departments;
 	}
 
 	public void loadContent() {
@@ -3223,299 +2786,6 @@ private void close(Closeable resource) {
 		
 		
 		}catch(Exception e) {}
-	}
-	
-	public String getTextContent() {
-		return textContent;
-	}
-
-	public void setTextContent(String textContent) {
-		this.textContent = textContent;
-	}
-
-	public String getRptSummary() {
-		return rptSummary;
-	}
-
-	public void setRptSummary(String rptSummary) {
-		this.rptSummary = rptSummary;
-	}
-
-	public List<Reports> getRptsOnly() {
-		return rptsOnly;
-	}
-
-	public void setRptsOnly(List<Reports> rptsOnly) {
-		this.rptsOnly = rptsOnly;
-	}
-
-	public String getTotalAmountSummaryOnly() {
-		return totalAmountSummaryOnly;
-	}
-
-	public void setTotalAmountSummaryOnly(String totalAmountSummaryOnly) {
-		this.totalAmountSummaryOnly = totalAmountSummaryOnly;
-	}
-
-	public String getLimitData() {
-		return limitData;
-	}
-
-	public void setLimitData(String limitData) {
-		this.limitData = limitData;
-	}
-
-	public int getSelectOrTypeId() {
-		return selectOrTypeId;
-	}
-
-	public void setSelectOrTypeId(int selectOrTypeId) {
-		this.selectOrTypeId = selectOrTypeId;
-	}
-
-	public List getSelectOrTypes() {
-		
-		selectOrTypes = new ArrayList<>();
-		selectOrTypes.add(new SelectItem(0, "New"));
-		selectOrTypes.add(new SelectItem(1, "New Cedula"));
-		selectOrTypes.add(new SelectItem(2, "New OR"));
-		selectOrTypes.add(new SelectItem(3, "New Business OR"));
-		selectOrTypes.add(new SelectItem(4, "New Fish Cage OR"));
-		selectOrTypes.add(new SelectItem(5, "New Skylab Permit OR"));
-		return selectOrTypes;
-	}
-
-	public void setSelectOrTypes(List selectOrTypes) {
-		this.selectOrTypes = selectOrTypes;
-	}
-
-	public boolean isCollectorsMode() {
-		
-		return collectorsMode;
-	}
-
-	public void setCollectorsMode(boolean collectorsMode) {
-		this.collectorsMode = collectorsMode;
-	}
-
-	public String getFormInfo() {
-		return formInfo;
-	}
-
-	public void setFormInfo(String formInfo) {
-		this.formInfo = formInfo;
-	}
-
-	public double getLabel2() {
-		return label2;
-	}
-
-	public void setLabel2(double label2) {
-		this.label2 = label2;
-	}
-
-	public double getLabel3() {
-		return label3;
-	}
-
-	public void setLabel3(double label3) {
-		this.label3 = label3;
-	}
-
-	public double getLabel4() {
-		return label4;
-	}
-
-	public void setLabel4(double label4) {
-		this.label4 = label4;
-	}
-
-	public double getAmount1() {
-		return amount1;
-	}
-
-	public void setAmount1(double amount1) {
-		this.amount1 = amount1;
-	}
-
-	public double getAmount2() {
-		return amount2;
-	}
-
-	public void setAmount2(double amount2) {
-		this.amount2 = amount2;
-	}
-
-	public double getAmount3() {
-		return amount3;
-	}
-
-	public void setAmount3(double amount3) {
-		this.amount3 = amount3;
-	}
-
-	public double getAmount4() {
-		return amount4;
-	}
-
-	public void setAmount4(double amount4) {
-		this.amount4 = amount4;
-	}
-
-	public double getAmount5() {
-		return amount5;
-	}
-
-	public void setAmount5(double amount5) {
-		this.amount5 = amount5;
-	}
-
-	public double getAmount6() {
-		return amount6;
-	}
-
-	public void setAmount6(double amount6) {
-		this.amount6 = amount6;
-	}
-
-	public double getAmount7() {
-		return amount7;
-	}
-
-	public void setAmount7(double amount7) {
-		this.amount7 = amount7;
-	}
-
-	public Date getBirthdate() {
-		if(birthdate==null) {
-			birthdate = DateUtils.getDateToday();
-		}
-		return birthdate;
-	}
-
-	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
-	}
-
-	public String getTinNo() {
-		return tinNo;
-	}
-
-	public void setTinNo(String tinNo) {
-		this.tinNo = tinNo;
-	}
-
-	public String getHieghtDateReg() {
-		return hieghtDateReg;
-	}
-
-	public void setHieghtDateReg(String hieghtDateReg) {
-		this.hieghtDateReg = hieghtDateReg;
-	}
-
-	public String getWeight() {
-		return weight;
-	}
-
-	public void setWeight(String weight) {
-		this.weight = weight;
-	}
-
-	public String getCustomerAddress() {
-		return customerAddress;
-	}
-
-	public void setCustomerAddress(String customerAddress) {
-		this.customerAddress = customerAddress;
-	}
-
-	
-
-	public String getProfessionBusinessNature() {
-		return professionBusinessNature;
-	}
-
-	public void setProfessionBusinessNature(String professionBusinessNature) {
-		this.professionBusinessNature = professionBusinessNature;
-	}
-
-	public String getSignatory() {
-		return signatory;
-	}
-
-	public void setSignatory(String signatory) {
-		this.signatory = signatory;
-	}
-
-	public String getPlaceOfBirth() {
-		return placeOfBirth;
-	}
-
-	public void setPlaceOfBirth(String placeOfBirth) {
-		this.placeOfBirth = placeOfBirth;
-	}
-
-	public String getCitizenshipOrganization() {
-		return citizenshipOrganization;
-	}
-
-	public void setCitizenshipOrganization(String citizenship) {
-		this.citizenshipOrganization = citizenship;
-	}
-
-	public int getCivilStatusId() {
-		if(civilStatusId==0) {
-			civilStatusId = 1;
-		}
-		return civilStatusId;
-	}
-
-	public void setCivilStatusId(int civilStatusId) {
-		this.civilStatusId = civilStatusId;
-	}
-
-	public List getCivilStatus() {
-		
-		civilStatus = new ArrayList<>();
-		for(CivilStatus s : CivilStatus.values()) {
-			civilStatus.add(new SelectItem(s.getId(), s.getName()));
-		}
-		
-		return civilStatus;
-	}
-
-	public void setCivilStatus(List civilStatus) {
-		this.civilStatus = civilStatus;
-	}
-
-	public int getGenderId() {
-		if(genderId==0) {
-			genderId=1;
-		}
-		return genderId;
-	}
-
-	public void setGenderId(int genderId) {
-		this.genderId = genderId;
-	}
-
-	public List getGenders() {
-		genders = new ArrayList<>();
-		genders.add(new SelectItem(1, "Male"));
-		genders.add(new SelectItem(2, "Female"));
-		return genders;
-	}
-
-	public void setGenders(List genders) {
-		this.genders = genders;
-	}
-
-	public boolean isEnableBirthday() {
-		return enableBirthday;
-	}
-
-	public void setEnableBirthday(boolean enableBirthday) {
-		this.enableBirthday = enableBirthday;
 	}
 	
 	public void oncapture(CaptureEvent captureEvent) {
@@ -3694,37 +2964,7 @@ private void close(Closeable resource) {
 				ctcFlds(true);
 			}
 			completNameOfClient(getPayorName());
-			/*
-			String name = getPayorName();
-			if(name!=null && !name.isEmpty()) {
-				
-				if(name.contains(",")) {
-					String[] coma = name.split(",");
-						setLastName(coma[0]);
-					if(coma[1].contains(" ")) {
-						String[] space = coma[1].split(" ");
-						setFirstName(space[0]);
-						setMiddleName(space[1]);
-					}else {
-						setFirstName(coma[1]);
-						setMiddleName(".");
-					}
-				}else {
-					//detect company name
-					setFirstName(name);
-					setMiddleName(".");
-					setLastName(".");
-				}
-				
-			}else {
-				setFirstName(null);
-				setMiddleName(null);
-				setLastName(null);
-			}
-			*/
-			//pop window for proper name of client
-			//PrimeFaces pf = PrimeFaces.current();
-			//pf.executeScript("PF('dlgCustomerInfo').show(1000)");
+			
 		}
 		completNameOfClient(getPayorName());
 		
@@ -3878,80 +3118,5 @@ private void close(Closeable resource) {
 		}else {
 			pf.executeScript("PF('dlgFetch').show(1000)");
 		}
-	}
-	
-	
-	
-	public String getQrcodeMsg() {
-		return qrcodeMsg;
-	}
-
-	public void setQrcodeMsg(String qrcodeMsg) {
-		this.qrcodeMsg = qrcodeMsg;
-	}
-
-	public com.italia.municipality.lakesebu.licensing.controller.Customer getCustomerDataSelected() {
-		return customerDataSelected;
-	}
-
-	public void setCustomerDataSelected(
-			com.italia.municipality.lakesebu.licensing.controller.Customer customerDataSelected) {
-		this.customerDataSelected = customerDataSelected;
-	}
-
-	public boolean isAlreadyRetrieve() {
-		return alreadyRetrieve;
-	}
-
-	public void setAlreadyRetrieve(boolean alreadyRetrieve) {
-		this.alreadyRetrieve = alreadyRetrieve;
-	}
-
-	public int getIssuedCollectorId() {
-		return issuedCollectorId;
-	}
-
-	public void setIssuedCollectorId(int issuedCollectorId) {
-		this.issuedCollectorId = issuedCollectorId;
-	}
-
-	public Map<String, Customer> getMapCustomer() {
-		return mapCustomer;
-	}
-
-	public void setMapCustomer(Map<String, Customer> mapCustomer) {
-		this.mapCustomer = mapCustomer;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getModeName() {
-		return modeName;
-	}
-
-	public void setModeName(String modeName) {
-		this.modeName = modeName;
 	}
 }
