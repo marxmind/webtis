@@ -72,7 +72,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             	<div class="ui-inputgroup" style="float:right; position: fixed;z-index: 1500;">
 		    				<p:commandButton update="clearFldId pictureId orId bzId tb"  value="New" actionListener="#{businessPermitBean.clearNew}" icon="fa fa-file-o" title="Click this button to start new information"/>
 		    				<p:commandButton update="clearFldId pictureId orId bzId tb" value="Clear" icon="fa fa-trash" actionListener="#{businessPermitBean.clearNew}" title="Click this button to clear information"/>
-		    				<p:commandButton update="cusId clearFldId pictureId orId bzId tb msg" value="Save"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{businessPermitBean.saveData}">
+		    				<p:commandButton update="cusId clearFldId pictureId orId bzId tb cal1 cal2 searchId msg" value="Save"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{businessPermitBean.saveData}">
 		        				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
 		        			</p:commandButton>
 		    		
@@ -191,12 +191,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			    			<div class="ui-inputgroup">
 			    			<span class="ui-input-icon-left">
 			    			<i class="pi pi-search" />
-			        		<p:inputText value="#{businessPermitBean.searchName}" a:placeholder="Search..." style="width: 20em">
+			        		<p:inputText id="searchId" value="#{businessPermitBean.searchName}" a:placeholder="Search..." style="width: 20em">
 			    					<f:ajax event="keyup" listener="#{businessPermitBean.loadSearch}" render="clearFldId pictureId cusId"/>
 			    			</p:inputText>
 			    			</span>
-							<p:calendar value="#{businessPermitBean.calendarFrom}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
-			    			<p:calendar value="#{businessPermitBean.calendarTo}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
+							<p:calendar id="cal1" value="#{businessPermitBean.calendarFrom}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
+			    			<p:calendar id="cal2" value="#{businessPermitBean.calendarTo}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
 							<p:commandButton update="clearFldId pictureId cusId" icon="fa fa-search" actionListener="#{businessPermitBean.loadSearch}"/>
 							</div>
 			        	</f:facet>

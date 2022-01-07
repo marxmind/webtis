@@ -206,8 +206,8 @@
 				</textElement>
 				<text><![CDATA[Address]]></text>
 			</staticText>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="0" y="362" width="555" height="20" forecolor="#D40B04" uuid="4e80e3c2-094a-43a1-ae74-10a5d506f9de">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="0" y="356" width="560" height="20" forecolor="#D40B04" uuid="4e80e3c2-094a-43a1-ae74-10a5d506f9de">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
 				<textElement textAlignment="Center">
@@ -288,7 +288,7 @@
 				<textElement textAlignment="Justified">
 					<font size="11" isBold="false" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[With Home Address at LAKE SEBU SOUTH COTABATO Subject  to  the Condition  Specified   hereunder  this   Permit]]></text>
+				<text><![CDATA[With Home Address at LAKE SEBU SOUTH COTABATO subject  to  the condition  specified   hereunder,  this   permit]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="-6" y="446" width="70" height="16" forecolor="#000203" uuid="885effed-3321-4dbf-a67a-246fc3352902">
@@ -297,7 +297,7 @@
 				<textElement textAlignment="Justified">
 					<font size="11" isBold="false" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[is Valid up to]]></text>
+				<text><![CDATA[is valid up to]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="174" y="446" width="410" height="16" forecolor="#000203" uuid="1066f877-e14b-41c8-aecf-050afd9a7ee8">
@@ -324,7 +324,7 @@
 				<textElement textAlignment="Justified">
 					<font size="11" isBold="false" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[on the matter, Issued on]]></text>
+				<text><![CDATA[on the matter. Issued on]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="230" y="477" width="294" height="16" forecolor="#000203" uuid="fec87e21-c454-4433-8813-0001beab7702">
@@ -622,7 +622,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PARAM_OIC}]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="392" y="645" width="171" height="16" forecolor="#D40B04" uuid="d50e7d25-4d8d-449e-a293-1a2014d9868d"/>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true" isUnderline="true"/>
@@ -683,8 +683,8 @@
 			<line>
 				<reportElement x="62" y="458" width="115" height="1" forecolor="#4E7851" uuid="c525fcfe-b04e-4985-bebb-76defc2a3944"/>
 			</line>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="5" y="325" width="555" height="20" forecolor="#D40B04" uuid="72e1a2f1-8c98-4416-a53d-dbf48a7c781f">
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement stretchType="ElementGroupHeight" x="1" y="335" width="559" height="20" forecolor="#D40B04" uuid="72e1a2f1-8c98-4416-a53d-dbf48a7c781f">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
 				<textElement textAlignment="Center">
@@ -740,7 +740,7 @@
 				<textElement textAlignment="Justified">
 					<font size="8" isBold="false" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[2. This permit shall be refused to any person; 1. Whose business establishment or undertaking does not conform with zoning regulation and safety, health and other requirements of the Municipality; 2 That has unsettled obligation and, 3 That is disqualified under the provision of the law or ordinance to establish or operate business.]]></text>
+				<text><![CDATA[2. This permit shall be refused to any person: 1. Whose business establishment or undertaking does not conform with zoning regulation and safety, health and other requirements of the Municipality; 2. That has unsettled obligation and 3. That is disqualified under the provision of the law or ordinance to establish or operate business.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="72" width="572" height="31" forecolor="#000203" uuid="6cd45797-5743-4e70-924a-0350aa43ef37">
@@ -749,7 +749,7 @@
 				<textElement textAlignment="Justified">
 					<font size="8" isBold="false" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[3. This permit shall revoked when a person doing business violates any or the provision of Article A, Section. 3A 09: Refuses to pay any indebtness or liability to the municipality; abuses his/her privilege to do business to the injury of public moral or peace or when a such business is established is being conducted in the disorderly or unlawful manner, hazardous to health, is a nuisance or permitted to be used as a resort for disorderly conduct, criminals or women of ill repute.]]></text>
+				<text><![CDATA[3. This permit shall be revoked when a person doing business violates any or the provision of Article A, Section 3A 09; Refuses to pay any indebtness or liability to the municipality; abuses his/her privilege to do business to the injury of public moral or peace or when such business established is being conducted in the disorderly or unlawful manner, hazardous to health, is a nuisance or permitted to be used as a resort for disorderly conduct, criminals or women of ill repute.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="102" width="572" height="37" forecolor="#000203" uuid="de21e10d-8081-486e-a1f7-c53241606427">
@@ -758,7 +758,7 @@
 				<textElement textAlignment="Justified">
 					<font size="8" isBold="false" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[4. This permit shall be posted in a conspicious place inside the business or office. If the permit has no place of business or office he/she shall keep the permit in his person and shall be immediately produced and presented upon demand by the Municipal Mayor, Municipal Treasurer or any of their duly authorized representatives.]]></text>
+				<text><![CDATA[4. This permit shall be posted in a conspicuous place inside the business or office. If the permit has no place of business or office, he/she shall keep the permit in his person and shall be immediately produced and presented upon demand by the Municipal Mayor, Municipal Treasurer or any of their duly authorized representatives.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="135" width="572" height="21" forecolor="#000203" uuid="7800b446-5ada-43e3-9be7-227ba19e569b">
@@ -767,7 +767,7 @@
 				<textElement textAlignment="Justified">
 					<font size="8" isBold="false" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[5. Any violation of the provisions of the ordinance shall be punished by and administrative fines or imprisonment in accordance with Section 3A 11 Art. A. Ord. No. 9 Series of 1992.]]></text>
+				<text><![CDATA[5. Any violation of the provisions of the ordinance shall be punished by administrative fines or imprisonment in accordance with Section 3A 11 Art. A. Ord. No. 9 Series of 1992.]]></text>
 			</staticText>
 		</band>
 	</summary>

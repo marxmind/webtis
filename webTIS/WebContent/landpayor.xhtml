@@ -121,7 +121,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						              <p:cellEditor>
 						              	  <f:facet name="output"><h:outputText value="#{rpt.fullName}" /></f:facet>
 						                  <f:facet name="input">
-						                  <p:inputText  a:placeholder="Last Name, First Name" value="#{rpt.fullName}"  style="width:120%;color:black"/>
+						                  <p:inputText  a:placeholder="Last Name, First Name" value="#{rpt.fullName}"  style="width:120%"/>
 						                  </f:facet>
 						              </p:cellEditor>
 						       </p:column>
@@ -130,7 +130,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						              <p:cellEditor>
 						              	  <f:facet name="output"><h:outputText value="#{rpt.barangay.name}" /></f:facet>
 						                  <f:facet name="input">
-						                  <p:selectOneMenu  value="#{payorBean.barangayId}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
+						                  <p:selectOneMenu  value="#{payorBean.barangayId}" style="width:100%;" filter="true" filterMatchMode="contains">
 						                       <f:selectItem itemLabel="Select..."/>
 						                       <f:selectItems value="#{payorBean.barangayList}" var="man" itemLabel="#{man}" itemValue="#{man}" />
 						                   </p:selectOneMenu>
@@ -142,7 +142,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						              <p:cellEditor>
 						              	  <f:facet name="output"><h:outputText value="#{rpt.address}" /></f:facet>
 						                  <f:facet name="input">
-						                  <p:inputText  a:placeholder="Complete address" value="#{rpt.address}"  style="width:100%;color:black"/>
+						                  <p:inputText  a:placeholder="Complete address" value="#{rpt.address}"  style="width:100%;"/>
 						                  </f:facet>
 						              </p:cellEditor>
 						       </p:column>
@@ -227,7 +227,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	            		</f:view>
               	  </f:facet>
                   <f:facet name="input">
-                  <p:selectOneMenu  value="#{payorBean.imrovedId}" style="width:100%;color:black">
+                  <p:selectOneMenu  value="#{payorBean.imrovedId}" style="width:100%;">
                   	   <f:selectItem itemLabel="Select..."/>
                        <f:selectItems value="#{payorBean.improves}" var="man" itemLabel="#{man}" itemValue="#{man}" />
                    </p:selectOneMenu>
@@ -249,7 +249,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	            		</f:view>
               	  </f:facet>
                   <f:facet name="input">
-                  <p:selectOneMenu  value="#{payorBean.landStatusId}" style="width:100%;color:black">
+                  <p:selectOneMenu  value="#{payorBean.landStatusId}" style="width:100%;">
                   	   <f:selectItem itemLabel="Select..."/>
                        <f:selectItems value="#{payorBean.landStatus}" var="man" itemLabel="#{man}" itemValue="#{man}" />
                    </p:selectOneMenu>
@@ -261,7 +261,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.taxDeclarionNo}" /></f:facet>
                   <f:facet name="input">
-                  <p:inputText  a:placeholder="TD NO" value="#{prop.taxDeclarionNo}"  style="width:100%;color:black"/>
+                  <p:inputText  a:placeholder="TD NO" value="#{prop.taxDeclarionNo}"  style="width:100%;"/>
                   </f:facet>
               </p:cellEditor>
        </p:column>
@@ -270,7 +270,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.lotNo}" /></f:facet>
                   <f:facet name="input">
-                  <p:inputText  a:placeholder="LOT NO" value="#{prop.lotNo}"  style="width:100%;color:black"/>
+                  <p:inputText  a:placeholder="LOT NO" value="#{prop.lotNo}"  style="width:100%;"/>
                   </f:facet>
               </p:cellEditor>
        </p:column>
@@ -279,7 +279,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.landType.landType}" /></f:facet>
                   <f:facet name="input">
-                  <p:selectOneMenu  value="#{payorBean.landTypeId}" style="width:100%;color:black">
+                  <p:selectOneMenu  value="#{payorBean.landTypeId}" style="width:100%;">
                   	   <f:selectItem itemLabel="Select..."/>
                        <f:selectItems value="#{payorBean.landTypes}" var="man" itemLabel="#{man}" itemValue="#{man}" />
                    </p:selectOneMenu>
@@ -291,7 +291,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.landValue}" /></f:facet>
                   <f:facet name="input">
-                  <p:inputText  a:placeholder="0.00" value="#{prop.landValue}" a:type="number"  style="width:100%;color:black"/>
+                  <p:inputText  a:placeholder="0.00" value="#{prop.landValue}" a:type="number"  style="width:100%;"/>
                   </f:facet>
               </p:cellEditor>
        </p:column>
@@ -300,7 +300,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.barangay.name}" /></f:facet>
                   <f:facet name="input">
-                  <p:selectOneMenu  value="#{payorBean.barangayIdLand}" style="width:100%;color:black" filter="true" filterMatchMode="contains">
+                  <p:selectOneMenu  value="#{payorBean.barangayIdLand}" style="width:100%;" filter="true" filterMatchMode="contains">
                        <f:selectItem itemLabel="Select..."/>
                        <f:selectItems value="#{payorBean.barangayListLand}" var="man" itemLabel="#{man}" itemValue="#{man}" />
                    </p:selectOneMenu>
@@ -312,7 +312,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.address}" /></f:facet>
                   <f:facet name="input">
-                  <p:inputText  a:placeholder="Complete address" value="#{prop.address}"  style="width:100%;color:black"/>
+                  <p:inputText  a:placeholder="Complete address" value="#{prop.address}"  style="width:100%;"/>
                   </f:facet>
               </p:cellEditor>
        </p:column>
@@ -321,7 +321,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
               <p:cellEditor>
               	  <f:facet name="output"><h:outputText value="#{prop.remarks}" /></f:facet>
                   <f:facet name="input">
-                  <p:inputText  a:placeholder="Remarks" value="#{prop.remarks}"  style="width:100%;color:black"/>
+                  <p:inputText  a:placeholder="Remarks" value="#{prop.remarks}"  style="width:100%;"/>
                   </f:facet>
               </p:cellEditor>
        </p:column>

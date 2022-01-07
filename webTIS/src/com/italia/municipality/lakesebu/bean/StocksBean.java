@@ -68,7 +68,7 @@ public class StocksBean implements Serializable{
 		try{series = Long.valueOf(getSeriesFrom().replace(",", ""));}catch(Exception e) {}
 		System.out.println("Form type " + FormType.nameId(getFormTypeId()));
 		System.out.println(">>> stab " + getNumberOfStab());
-		if(getFormTypeId()<=8) {
+		if(getFormTypeId()<=8 || getFormTypeId()>=11) {
 			System.out.println("If " + getFormTypeId());
 			if(getNumberOfStab()>1) {
 				

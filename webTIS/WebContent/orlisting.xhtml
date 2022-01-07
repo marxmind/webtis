@@ -132,11 +132,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 								<f:selectItems value="#{oRListingBean.collectors}"/>
 								<p:ajax event="change" listener="#{oRListingBean.updateORNumber}" update="oridd idPayd idSearchPname"/>
 					</p:selectOneMenu>
+					
 					<p:autoComplete id="idPayd" placeholder="Lastname, Firstname Middlename"  value="#{oRListingBean.payorName}" completeMethod="#{oRListingBean.payorNameSuggested}"  queryDelay="800" effect="fade" maxResults="10" inputStyle="width:15em">
 						<p:ajax event="change" update="fldId2 dataSelectedId totalId" listener="#{oRListingBean.supplyCustomerInfo}" />
 					</p:autoComplete>
-					
-					<p:keyboard id="oridd" value="#{oRListingBean.orNumber}" placeholder="OR No/CTC No" style="width: 15em" layout="custom" layoutTemplate="rocks-close,faces-clear,prime-back" keypadOnly="true"/>
+					<p:keyboard id="oridd" value="#{oRListingBean.orNumber}" placeholder="OR No/CTC No" style="width: 15em" dir="rtl" layout="custom" layoutTemplate="rocks-close,faces-clear,prime-back" keypadOnly="true"/>
 					
 					<p:inputText placeholder="Address" value="#{oRListingBean.address}" style="width: 15em"/>
 					
@@ -598,7 +598,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		
 			<p:panelGrid columns="1" layout="grid">
 		
-				<video id="video" width="500" height="500" style="border: 1px solid gray"/>
+				<video id="video" width="700" height="500" style="border: 1px solid gray"/>
 		
 				
         
@@ -609,7 +609,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	
 	<p:remoteCommand name="loadResult"
-                      action="#{oRListingBean.findQRCode}" update="msg"
+                      action="#{oRListingBean.findQRCode}" update="idCitSel msg"
                       />
 	<h:outputScript>
 	
@@ -718,15 +718,16 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	</h:outputScript>
 	
 	
-	<p:dialog widgetVar="dlgSelection" position="center center" modal="true" draggable="false" closable="false" closeOnEscape="true" resizable="false" showHeader="false" width="400" height="500" >
+	<p:dialog widgetVar="dlgSelection" position="center center" modal="true" draggable="false" closable="false" closeOnEscape="true" resizable="false" showHeader="false" width="600" height="500" >
 		
-		<p:panelGrid columns="1" layout="grid">
+		<p:panelGrid columns="2" layout="grid">
 	        <p:commandButton value="Close Selection" id="resetButton2" oncomplete="PF('dlgSelection').hide()"/>
+	        <p:commandButton value="Rescan QR" onclick="PF('dlgCam').show();PF('dlgSelection').hide();" />
         </p:panelGrid>
 		
 		<p:panelGrid columns="1" layout="grid">
-		<p:outputLabel value="Please select transaction on below selection" />
-	
+		<p:outputLabel value="Please select below selection" />
+	    <p:outputLabel id="idCitSel" value="#{oRListingBean.fullnameQR}" style="font-size: 3em"/>
 		<p:commandButton id="resetButton3" value="Individual Cedula" actionListener="#{oRListingBean.acceptSelection('individual')}" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId"/>
 		<p:commandButton id="resetButton4"  value="Corporation Cedula" actionListener="#{oRListingBean.acceptSelection('corporation')}" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId"/>
 		<p:commandButton id="resetButton5" value="Form 51" actionListener="#{oRListingBean.acceptSelection('51')}" update="dataSelectedId dataOrId fldId fldId2 dtlsId totalId"/>

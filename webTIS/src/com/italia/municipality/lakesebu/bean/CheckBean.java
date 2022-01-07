@@ -1500,10 +1500,10 @@ public class CheckBean implements Serializable{
 		//loadDepartment();
 		Voucher voucher = null;
 		try{voucher = Voucher.retrieve("SELECT * FROM voucher WHERE checkno="+ chk.getCheckNo(), new String[0]).get(0);}catch(Exception e){}
-		setNatureOfPayment(voucher.getNaturePayment());
+		try{setNatureOfPayment(voucher.getNaturePayment());}catch(Exception e){}
 		Department dep = null;
-		dep = Department.department(voucher.getDepartment().getDepid()+"");
-		setDepartmentId(dep.getDepid());
+		try{dep = Department.department(voucher.getDepartment().getDepid()+"");}catch(Exception e) {}
+		try{setDepartmentId(dep.getDepid());}catch(Exception e) {}
 		
 		setChequedtlsData(chk);
 		setBankCheckNo(chk.getCheckNo());

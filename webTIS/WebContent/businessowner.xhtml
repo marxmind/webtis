@@ -27,6 +27,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
              <h:outputStylesheet name="css/bodyconf.css"/>
+             <h:outputScript name="zxing/zxing.js" target="head"/>
     </f:facet>
         
     <f:facet name="last">
@@ -73,6 +74,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
     <div class="p-col-12 p-md-5">
     		<p:card style="width: 53em">
             <div class="ui-inputgroup" style="float:right">
+            			<p:commandButton id="openCam" value="Scan QR"  onclick="PF('dlgCam').show(1000);" icon="fa fa-file-o" title="Click this button to start scanning qr code"/>
     					<p:commandButton value="New" update=":formId:usercusId, :formId:pictureId" actionListener="#{businessOwnerBean.clearFields}"  icon="fa fa-file-o" title="Click this button to start new information"/>
     					<p:commandButton value="Clear" update="pictureId usercusId" icon="fa fa-trash" actionListener="#{businessOwnerBean.closePopup}" title="Click this button to clear information"/>
 						<p:commandButton value="Save" update="cusId usercusId pictureId msg"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{businessOwnerBean.save}">
@@ -469,6 +471,94 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		
 	</p:dialog>	
 	
+	
+	<p:dialog widgetVar="dlgCam" visible="false" fitViewport="true" position="center center" modal="true" draggable="false" closable="false" closeOnEscape="false" resizable="false" showHeader="false" >
+		
+		
+		<p:panelGrid columns="1" layout="grid">
+	        <p:commandButton value="Close Camera" id="resetButton" oncomplete="PF('dlgCam').hide()"/>
+        </p:panelGrid>
+		
+		<p:separator/>
+		<label>Change video source:</label>
+        <select id="sourceSelect" style="max-width:400px"/>
+		<div id="sourceSelectPanel" style="display:none">
+		
+			<p:panelGrid columns="1" layout="grid">
+		
+				<video id="video" width="700" height="500" style="border: 1px solid gray"/>
+		
+				
+        
+			</p:panelGrid>
+		</div>
+		
+	</p:dialog>
+	
+	<p:remoteCommand name="loadResult"
+                      action="#{businessOwnerBean.findQRCode}" update="usercusId pictureId qrCodeElem msg"
+                      />
+	<h:outputScript>
+	
+	window.addEventListener('load', function () {
+      let selectedDeviceId;
+      const codeReader = new ZXing.BrowserMultiFormatReader()
+      console.log('ZXing code reader initialized')
+      codeReader.listVideoInputDevices()
+        .then((videoInputDevices) => {
+          const sourceSelect = document.getElementById('sourceSelect')
+          selectedDeviceId = videoInputDevices[0].deviceId
+          if (videoInputDevices.length >= 1) {
+            videoInputDevices.forEach((element) => {
+              const sourceOption = document.createElement('option')
+              sourceOption.text = element.label
+              sourceOption.value = element.deviceId
+              sourceSelect.appendChild(sourceOption)
+            })
+
+            sourceSelect.onchange = () => {
+              selectedDeviceId = sourceSelect.value;
+            };
+
+            const sourceSelectPanel = document.getElementById('sourceSelectPanel')
+            sourceSelectPanel.style.display = 'block'
+          }
+
+          document.getElementById('openCam').addEventListener('click', () => {
+            codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+              if (result) {
+                console.log(result)
+                
+                
+                loadResult([{
+			        name: 'qrcode',
+			        value: result.text
+			      }]);
+                
+              }
+              
+            })
+            console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
+          })
+
+          
+
+			document.getElementById('openCam').addEventListener('click', () => {
+	            codeReader.reset()
+	            document.getElementById('result').textContent = '';
+	            console.log('Reset.')
+	          })	
+			
+			
+		
+			
+        })
+        .catch((err) => {
+          console.error(err)
+        })
+    })
+	
+	</h:outputScript>
 	
 	<ui:include src="loader.xhtml" />
 	<ui:include src="menulic.xhtml" />

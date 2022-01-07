@@ -216,6 +216,7 @@ public class ORListingBean implements Serializable{
 	@Setter @Getter private String totalCollectionAll;
 	@Setter @Getter private String notes;
 	
+	@Setter @Getter private String fullnameQR;
 	
 	@PostConstruct
 	public void init() {
@@ -3077,6 +3078,133 @@ private void close(Closeable resource) {
                 .get("qrcode");
 		
 		System.out.println("jsondata: " + jsonData);
+		PrimeFaces pf = PrimeFaces.current();
+		if(jsonData!=null && !jsonData.isEmpty() && jsonData.contains("PLS")) {
+			String sql = "";
+			Customer cs = null;
+			String fullname = jsonData;
+			
+			String cardno = "";
+			String first = "";
+			String middle = "";
+			String last = "";
+			String address = "";
+			String birthdate = DateUtils.getCurrentDateYYYYMMDD();
+			String gender = "1";
+			String civilStatus = "1";
+			
+			if(jsonData.contains(":")) {
+			
+			String[] name = jsonData.split(":");
+			
+			
+			try {cardno = name[0];}catch(IndexOutOfBoundsException e) {}
+			try {first = name[1];}catch(IndexOutOfBoundsException e) {}
+			try {middle = name[2];}catch(IndexOutOfBoundsException e) {}
+			try {last = name[3];}catch(IndexOutOfBoundsException e) {}
+			try {address = name[4];}catch(IndexOutOfBoundsException e) {}
+			try {birthdate = name[5];}catch(IndexOutOfBoundsException e) {}
+			try {gender = name[7];}catch(IndexOutOfBoundsException e) {}
+			try {civilStatus = name[8];}catch(IndexOutOfBoundsException e) {}
+			
+			fullname = name[3] + ", " + name[1] + " " + name[2];
+			
+			
+			System.out.println("fullname " + fullname);
+			
+			sql = " AND cus.cuscardno like '%"+ cardno.trim() +"%' ";
+			
+				
+			setFullnameQR(fullname);
+			
+			}else {
+				sql = " AND cus.cuscardno  like '%"+ jsonData.trim() +"%' ";
+			}
+				
+			List<PoblacionCustomer> cus = PoblacionCustomer.retrieve(sql, new String[0]);
+			if(cus!=null && cus.size()>0) {
+				PoblacionCustomer pc = cus.get(0);
+						cs = Customer.builder()
+						.firstname(pc.getFirstname())
+						.middlename(pc.getMiddlename())
+						.lastname(pc.getLastname())
+						.birthdate(pc.getBirthdate())
+						.gender(pc.getGender())
+						.civilStatus(pc.getCivilStatus())
+						.fullname(pc.getFullname())
+						.age(pc.getAge())
+						.contactno(pc.getContactno())
+						.cardno(pc.getCardno())
+						.dateregistered(pc.getDateregistered())
+						.completeAddress(pc.getCompleteAddress())
+						.build();
+			
+				setCustomerDataSelected(cs);
+				pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
+			}else {
+				//Application.addMessage(1, "Error", "This QRCode is not yet registered... Please register it first in Citizen Registration Page");
+				
+				
+				/*completNameOfClient(fullname);
+				
+				cs = Customer.builder()
+						.firstname(getFirstName())
+						.middlename(getMiddleName())
+						.lastname(getLastName())
+						.fullname(fullname)
+						.build();*/
+				
+				cs = Customer.builder()
+						.firstname(first)
+						.middlename(middle)
+						.lastname(last)
+						.birthdate(birthdate)
+						.gender(gender)
+						.civilStatus(Integer.valueOf(civilStatus))
+						.fullname(last + ", " + first + " " + middle)
+						.completeAddress(address)
+						.build();
+				setFullnameQR(last + ", " + first + " " + middle);
+				setCustomerDataSelected(cs);
+				pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
+			}
+			
+			/*
+			String first = "";
+			String middle = "";
+			String last = "";
+			String address = "";
+			String birthdate = DateUtils.getCurrentDateYYYYMMDD();
+			String gender = "1";
+			String civilStatus = "1";
+			
+			try {first = name[0];}catch(IndexOutOfBoundsException e) {}
+			try {middle = name[1];}catch(IndexOutOfBoundsException e) {}
+			try {last = name[2];}catch(IndexOutOfBoundsException e) {}
+			try {address = name[3];}catch(IndexOutOfBoundsException e) {}
+			try {birthdate = name[4];}catch(IndexOutOfBoundsException e) {}
+			try {gender = name[5];}catch(IndexOutOfBoundsException e) {}
+			try {civilStatus = name[6];}catch(IndexOutOfBoundsException e) {}
+			
+			try {
+			System.out.println("firstname: " + first +"\nmiddlename: " + middle +
+					"\nlastname: " + last + "\naddress: " + address + "\nbirthdate: " + birthdate + "\ngender: " + gender + "\nStatus: " + civilStatus
+					);
+			}catch(Exception e) {}
+			
+			Customer cus = Customer.builder()
+					.firstname(first)
+					.middlename(middle)
+					.lastname(last)
+					.birthdate(birthdate)
+					.gender(gender)
+					.civilStatus(Integer.valueOf(civilStatus))
+					.fullname(last + ", " + first + " " + middle)
+					.build();
+					*/
+			
+		}else {
+		
 		
 		
 		String sql = " AND (cus.qrcode like '%"+ jsonData +"%' OR ";
@@ -3085,16 +3213,17 @@ private void close(Closeable resource) {
 		String[] params = new String[0];
 		
 		List<com.italia.municipality.lakesebu.licensing.controller.Customer> cust = com.italia.municipality.lakesebu.licensing.controller.Customer.retrieve(sql, params);
-		PrimeFaces pf = PrimeFaces.current();
+		
 		if(cust!=null && cust.size()>0) {
 			setCustomerDataSelected(cust.get(0));
+			setFullnameQR(cust.get(0).getFullname());
 	    	pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
 		}else {
 			Application.addMessage(1, "Error", "This QRCode is not yet registered... Please register it first in Citizen Registration Page");
 		}
 		
 		
-		
+		}
 		
 	}
 	

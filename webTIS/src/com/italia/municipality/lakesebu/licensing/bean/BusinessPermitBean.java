@@ -551,6 +551,12 @@ public class BusinessPermitBean implements Serializable{
 		
 		permit.save();
 		//init();
+		
+		//set specific permit
+		setSearchName(permit.getCustomer().getFullname());
+		setCalendarFrom(getIssuedDate());
+		setCalendarTo(getIssuedDate());
+		
 		loadSearch();
 		clearFields();
 		Application.addMessage(1, "Success", "Successfully saved.");
@@ -937,7 +943,7 @@ public void printPermit(BusinessPermit permit) {
 		ReportCompiler compiler = new ReportCompiler();
 		String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, path);
 		
-		List<ClearanceRpt> reports = Collections.synchronizedList(new ArrayList<ClearanceRpt>());
+		List<ClearanceRpt> reports = new ArrayList<ClearanceRpt>();
 		ClearanceRpt rpt = new ClearanceRpt();
 		reports.add(rpt);
 		
@@ -949,6 +955,8 @@ public void printPermit(BusinessPermit permit) {
 		param.put("PARAM_YEAR", permit.getYear());
 		param.put("PARAM_TYPE", permit.getType());
 		param.put("PARAM_BARANGAY", permit.getBarangay().toUpperCase());
+		
+		
 		
 		String name = permit.getCustomer().getFirstname() + " " + permit.getCustomer().getLastname();
 		try {
@@ -979,8 +987,7 @@ public void printPermit(BusinessPermit permit) {
 		BusinessORTransaction ors = null;
 		
 		String[] sp = permit.getOrs().split("/");
-		//Map<Double, ORTransaction> unSort = Collections.synchronizedMap(new HashMap<Double, ORTransaction>());
-		Map<String, BusinessORTransaction> unSort = Collections.synchronizedMap(new HashMap<String, BusinessORTransaction>());
+		Map<String, BusinessORTransaction> unSort = new HashMap<String, BusinessORTransaction>();
 		for(int i=0; i<sp.length; i++) {
 			sql = " AND orl.oractive=1 AND orl.orno=? AND cuz.customerid=? ";
 			params = new String[2];
@@ -1001,7 +1008,7 @@ public void printPermit(BusinessPermit permit) {
 		int count = sortedOR.size();
 		
 		BusinessORTransaction fireData = new BusinessORTransaction();
-		List<String> lData = Collections.synchronizedList(new ArrayList<String>());
+		List<String> lData = new ArrayList<String>();
 		boolean hasFire=false;
 		for(BusinessORTransaction or : sortedOR.values()) {
 			String fire = or.getPurpose().toLowerCase().trim();
@@ -1111,7 +1118,7 @@ public void printPermit(BusinessPermit permit) {
 				}else {
 				
 					if(cnt==size) {
-						eng += " & " + d;
+						eng += " and " + d;
 						System.out.println("cnt == size " + size + "=" + eng);
 					}else {
 						eng += ", " + d;
@@ -1124,6 +1131,25 @@ public void printPermit(BusinessPermit permit) {
 		}
 		int countlent = eng!=null? eng.length() : 0;
 		//do not change location // this code is after OR
+		
+		System.out.println("engagement: " + eng);
+		
+		if(eng!=null && !eng.isEmpty()) {
+			//eng = eng.trim();
+			if(eng.contains(", and") || eng.contains(" and ")) {
+				eng = eng.replace(",  and", "");
+			//}
+				System.out.println("pasok ..... " + eng);
+				
+				String[] xx = eng.split(" and");
+				try {
+					if(xx[1].trim().isEmpty()) {
+						eng = eng.replace(" and ", "");
+					}
+				}catch(Exception e) {}
+			}	
+		}
+		
 		if(countlent<=45) {
 			param.put("PARAM_BUSINESS_TYPE", eng.toUpperCase());
 		}else {
@@ -1131,6 +1157,8 @@ public void printPermit(BusinessPermit permit) {
 		}
 		param.put("PARAM_OIC", permit.getOic());
 		param.put("PARAM_MAYOR", permit.getMayor());
+		
+		
 		
 		//certificate
 		String certificate = path + "businesspermit.png";

@@ -1221,7 +1221,7 @@ public class FormBean implements Serializable{
 	
 	public void stocksSelected(Stocks st) {
 		setFormTypeId(st.getFormType());
-		if(st.getFormType()<=8) {
+		if(st.getFormType()<=8 || getFormTypeId()>=11) {
 			setBeginningNo(Long.valueOf(st.getSeriesFrom()));
 			setEndingNo(Long.valueOf(st.getSeriesTo()));
 			setQuantity(50);
@@ -1248,7 +1248,7 @@ public class FormBean implements Serializable{
 	
 	public void calculateEndingNo() {
 		
-		if(getFormTypeId()<=8) {
+		if(getFormTypeId()<=8 || getFormTypeId()>=11) {
 			
 			long ending = (getBeginningNo()) + (getQuantity()==0? 0 : getQuantity()-1);
 			System.out.println("begin: " + getBeginningNo() + " pcs: " + getQuantity());
@@ -1342,7 +1342,7 @@ public class FormBean implements Serializable{
 			form.setFormType(getFormTypeId());
 			form.setPcs(getQuantity());
 			
-			if(getFormTypeId()<=8) {
+			if(getFormTypeId()<=8 || getFormTypeId()>=11) {
 				form.setBeginningNo(getBeginningNo());
 				form.setEndingNo(getEndingNo());
 			}else {

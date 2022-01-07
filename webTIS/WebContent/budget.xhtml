@@ -109,26 +109,26 @@ html{
 							
 							 <p:column>
 							 	<f:facet name="header">Budget Amount</f:facet>
-					              <p:outputLabel value="#{rpt.budgetAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
+					              <p:outputLabel value="#{rpt.budgetAmount}" style="font-family: Arial; font-weight: bold; font-size: 2em"/>
 					            <f:facet name="footer">Php #{budgetBean.total}</f:facet>  
 					       </p:column>
 					       
 					       <p:column>
 					       		 <f:facet name="header">Used Amount</f:facet>
-					              <p:outputLabel value="#{rpt.usedAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
+					              <p:outputLabel value="#{rpt.usedAmount}" style="font-family: Arial; font-weight: bold; font-size: 2em"/>
 					              <f:facet name="footer">Php #{budgetBean.totalUsed}</f:facet>
 					       </p:column>
 					       
 					       <p:column>
 					       	      <f:facet name="header">Remaining Amount</f:facet>
-					              <p:outputLabel value="#{rpt.remainingAmount}" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/>
+					              <p:outputLabel value="#{rpt.remainingAmount}" style="font-family: Arial; font-weight: bold; font-size: 2em"/>
 					              <f:facet name="footer">Php #{budgetBean.totalRem}</f:facet>
 					       </p:column>
 							
 							
 						  <p:column headerText="Limit Amount">
 					              <p:cellEditor>
-					                  <f:facet name="output"><p:outputLabel value="#{rpt.limitAmountTmp}" a:placeholder="0.00" style="color: black; font-family: Arial; font-weight: bold; font-size: 2em"/></f:facet>
+					                  <f:facet name="output"><p:outputLabel value="#{rpt.limitAmountTmp}" a:placeholder="0.00" style="font-family: Arial; font-weight: bold; font-size: 2em"/></f:facet>
 					                  <f:facet name="input"><p:inputText  value="#{rpt.limitAmount}" a:type="number" a:placeholder="0.00" style="width:96%;"/></f:facet>
 					              </p:cellEditor>
 					       </p:column>

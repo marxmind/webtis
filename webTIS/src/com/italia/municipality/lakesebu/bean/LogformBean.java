@@ -611,7 +611,7 @@ public class LogformBean implements Serializable{
 			setIssuedData(info.getIssuedForm());
 			
 			
-			if(getFormTypeId()>8) {
+			if(getFormTypeId()==9 || getFormTypeId()==10) {
 				System.out.println("Retrieved in Collection Cash Ticket>> ");
 				long beg =   info.getBeginningNo();
 				long to =  info.getEndingNo();
@@ -647,7 +647,8 @@ public class LogformBean implements Serializable{
 			setTmpQty(forms.get(0).getPcs());
 			setIssuedData(forms.get(0));
 			
-			if(getFormTypeId()>8) {
+			//if(getFormTypeId()>8) {
+			if(getFormTypeId()==9 || getFormTypeId()==10) {
 				long beg =   forms.get(0).getBeginningNo();
 				long to =  forms.get(0).getEndingNo();
 				
@@ -678,7 +679,7 @@ public class LogformBean implements Serializable{
 	
 	public void calculateEndingNo() {
 			
-		if(getFormTypeId()<=8) {
+		if(getFormTypeId()<=8 || getFormTypeId()>=11) {
 			if(getQuantity()>getTmpQty()) {
 				setQuantity(getTmpQty());
 				Application.addMessage(3, "Error", "You have inputed more than the allowed quantity, series will now reset on default end series");

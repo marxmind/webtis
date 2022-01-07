@@ -72,7 +72,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	    		<f:facet name="right">
 	    			<div class="ui-inputgroup">
 	    			<p:commandButton update="formDataId,form56Id,grandId,wordId" value="Calculate" icon="ui-icon-note"  action="#{form56Bean.updateTotal}"/>
-	    			<p:commandButton update="formDataId,form56Id,dataTransId,wordId,paySearchId,yearSelId,caseId,msg" value="Save" icon="ui-icon-note" actionListener="#{form56Bean.saveData}" >
+	    			<p:commandButton update="formDataId,form56Id,dataTransId,wordId,paySearchId,yearSelId,caseId,msg,searchNameId,cal1,cal2" value="Save" icon="ui-icon-note" actionListener="#{form56Bean.saveData}" >
 	    				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save this data?" icon="ui-icon-alert" />
 	    			</p:commandButton>
 	    			</div>
@@ -91,9 +91,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
         		<p:inputText id="scId" value="#{form56Bean.scNo}" disabled="false" a:placeholder="OR NO:0000000" style="#{skin.textInput};width: 150px;color:red"/>
 				
 				<p:outputLabel  value="Date : " style="#{skin.textInput}"/>
-				<p:calendar value="#{form56Bean.tmpTransDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" style="#{skin.calendar}">
-					<f:ajax event="change" listener="#{form56Bean.dateSelected}" render="formDataId"/>
-				</p:calendar>
+				<p:calendar value="#{form56Bean.tmpTransDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" style="#{skin.calendar}"/>
 				
 		        <p:outputLabel value="Status" style="#{skin.textInput}"/>	
 			    <p:selectOneMenu id="statId" value="#{form56Bean.statusId}"  style="#{skin.textInput};width:150px;">
@@ -130,7 +128,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	    			<p:outputLabel id="grandId" value="Total Php#{form56Bean.grandTotal}" style="font-size: 20px"/>
 	    		</f:facet>
 				</p:toolbar>
-				<p:dataTable id="formDataId" var="rpt" value="#{form56Bean.receipts}" editable="true" style="#{skin.table}"
+				<p:dataTable id="formDataId" var="rpt" value="#{form56Bean.receipts}" editable="true"
 			       editMode="cell" widgetVar="cellTrans" rowKey="#{rpt.cnt}" scrollable="true" selection="#{form56Bean.receiptSelected}" selectionMode="single" >
 					
 					
@@ -168,13 +166,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					</p:column>       
        				
        				<p:column headerText="From Year">
-		               <h:outputText value="#{rpt.fromYear}" />
+		               <p:outputLabel value="#{rpt.fromYear}" />
 			       </p:column>
 			       <p:column headerText="To Year">
-						<h:outputText value="#{rpt.toYear}" />
+						<p:outputLabel value="#{rpt.toYear}" />
 			       </p:column>
        			   <p:column headerText="Type">
-						<h:outputText value="#{rpt.installmentType}" />
+						<p:outputLabel value="#{rpt.installmentType}" />
 		       	   </p:column>
 		       	   <p:column headerText="Case">
                   	<p:selectBooleanCheckbox value="#{rpt.isCase}">
@@ -189,25 +187,25 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			       <p:column headerText="Fullpayment">
 			              <p:cellEditor>
 			                  <f:facet name="output"><h:outputText value="#{rpt.fullPayment}"><f:convertNumber currencySymbol="" type="currency"/></h:outputText></f:facet>
-			                  <f:facet name="input"><p:inputText value="#{rpt.fullPayment}" a:type="number" a:placeholder="0.00"  style="color:black" disabled="#{form56Bean.disAbleFullPenalty}"/></f:facet>
+			                  <f:facet name="input"><p:inputText value="#{rpt.fullPayment}" a:type="number" a:placeholder="0.00"  disabled="#{form56Bean.disAbleFullPenalty}"/></f:facet>
 			              </p:cellEditor>
 			       </p:column>
 			       <p:column headerText="Penalty">
 			              <p:cellEditor>
 			                  <f:facet name="output"><h:outputText value="#{rpt.penaltyPercent}"><f:convertNumber currencySymbol="" type="currency"/></h:outputText></f:facet>
-			                  <f:facet name="input"><p:inputText value="#{rpt.penaltyPercent}" a:type="number" a:placeholder="0.00"  style="color:black" disabled="#{form56Bean.disAbleFullPenalty}"/></f:facet>
+			                  <f:facet name="input"><p:inputText value="#{rpt.penaltyPercent}" a:type="number" a:placeholder="0.00"  disabled="#{form56Bean.disAbleFullPenalty}"/></f:facet>
 			              </p:cellEditor>
 			       </p:column>
 			       <p:column headerText="Total">
 			              <p:cellEditor>
 			                  <f:facet name="output"><h:outputText value="#{rpt.overallTotal}"><f:convertNumber currencySymbol="" type="currency"/></h:outputText> </f:facet>
-			                  <f:facet name="input"><p:inputText value="#{rpt.overallTotal}" a:type="number" a:placeholder="0.00" style="width:96%;color:black"/></f:facet>
+			                  <f:facet name="input"><p:inputText value="#{rpt.overallTotal}" a:type="number" a:placeholder="0.00" style="width:96%"/></f:facet>
 			              </p:cellEditor>
 			       </p:column>
 			       <p:column headerText="Remarks">
 			              <p:cellEditor>
-			                  <f:facet name="output"><h:outputText value="#{rpt.remarks}"/></f:facet>
-			                  <f:facet name="input"><h:inputText value="#{rpt.remarks}" style="width:96%;color:black"></h:inputText></f:facet>
+			                  <f:facet name="output"><p:outputLabel value="#{rpt.remarks}"/></f:facet>
+			                  <f:facet name="input"><p:inputText value="#{rpt.remarks}" style="width:96%"/></f:facet>
 			              </p:cellEditor>
 			       </p:column>
        			</p:dataTable>
@@ -228,8 +226,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<div class="ui-inputgroup">
     			<p:autoComplete id="searchNameId" a:placeholder="Search..." value="#{form56Bean.findName}" completeMethod="#{form56Bean.autoPayorName}" effect="fade"/>
     			
-    			<p:calendar value="#{form56Bean.findFromDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 10em"/>
-		    	<p:calendar value="#{form56Bean.findToDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 10em"/>
+    			<p:calendar id="cal1" value="#{form56Bean.findFromDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 10em"/>
+		    	<p:calendar id="cal2" value="#{form56Bean.findToDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 10em"/>
     			
     			<p:commandButton id="findId" update="dataTransId"  icon="fa fa-search" value="Load All" actionListener="#{form56Bean.search}" />
     			</div>	

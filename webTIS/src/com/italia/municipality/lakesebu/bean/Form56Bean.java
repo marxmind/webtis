@@ -281,7 +281,7 @@ public class Form56Bean implements Serializable{
 		
 		for(ITaxPayorTrans tran : TaxPayorTrans.retrieve(sql, params)){
 			tran.setLandPayor(paidFor(tran));
-			System.out.println("Land owner: " + tran.getLandPayor().getPayor().getFullName());
+			//System.out.println("Land owner: " + tran.getLandPayor().getPayor().getFullName());
 			trans.add(tran);
 		}
 		Collections.reverse(trans);
@@ -1257,8 +1257,8 @@ public class Form56Bean implements Serializable{
 			trans.setIsSpecialCase(getSpecialCase()==true? 1 : 0);
 			trans.setSigned1(getSigned1());
 			trans.setSigned2(getSigned2());
-			System.out.println("saving date: " + getTransDate());
-			trans.setTransDate(getTransDate());
+			System.out.println("saving date: " + DateUtils.convertDate(getTmpTransDate(), "yyyy-MM-dd"));
+			trans.setTransDate(DateUtils.convertDate(getTmpTransDate(), "yyyy-MM-dd"));
 			trans.setAmountInWords(getAmountInWords());
 			trans.setScNo(getScNo());
 			trans.setAccountFormNo(56);
@@ -1327,9 +1327,22 @@ public class Form56Bean implements Serializable{
 				rpt.setUserDtls(Login.getUserLogin().getUserDtls());
 				rpt.save();
 				
+				
+				
 				//clickItem(trans);
 			}
-			saveLoad(getScNo(), getTransDate());
+			
+			///
+			String today = DateUtils.getCurrentDateYYYYMMDD();
+			setTransDate(trans.getTransDate());
+			if(!today.equalsIgnoreCase(getTransDate())) {
+				setFindName(getReceiveFrom());
+				setFindFromDate(DateUtils.convertDateString(trans.getTransDate(), "yyyy-MM-dd"));
+				setFindToDate(DateUtils.convertDateString(trans.getTransDate(), "yyyy-MM-dd"));
+				search();
+			}else {
+				saveLoad(getScNo(), getTransDate());
+			}
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Information has been successfully saved", "");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			newForm();
@@ -1483,9 +1496,11 @@ public class Form56Bean implements Serializable{
 			
 			if(rpt.getAssValueImprv()==0) {
 				report.setF5(Currency.formatAmount(rpt.getAssValueLand()+""));
-				report.setF6(Currency.formatAmount("0.00"));
+				//report.setF6(Currency.formatAmount("0.00"));
+				report.setF6("");
 			}else {
-				report.setF5(Currency.formatAmount("0.00"));
+				//report.setF5(Currency.formatAmount("0.00"));
+				report.setF5("");
 				report.setF6(Currency.formatAmount(rpt.getAssValueImprv()+""));     //rpt.getAssValueImprv()+""));
 			}
 			
@@ -2830,8 +2845,9 @@ private void close(Closeable resource) {
 	}
 
 	public List getYearSelectedFroms() {
+		int current = DateUtils.getCurrentYear() + 1;
 		yearSelectedFroms = new ArrayList<>();
-		for(int year=1985; year<=DateUtils.getCurrentYear(); year++) {
+		for(int year=1985; year<=current; year++) {
 			yearSelectedFroms.add(new SelectItem(year, year+""));
 		}
 		return yearSelectedFroms;
@@ -2853,8 +2869,9 @@ private void close(Closeable resource) {
 	}
 
 	public List getYearSelectedTos() {
+		int current = DateUtils.getCurrentYear() + 1;
 		yearSelectedTos = new ArrayList<>();
-		for(int year=1985; year<=DateUtils.getCurrentYear(); year++) {
+		for(int year=1985; year<=current; year++) {
 			yearSelectedTos.add(new SelectItem(year, year+""));
 		}
 		return yearSelectedTos;

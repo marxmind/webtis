@@ -29,6 +29,7 @@ public class GlobalVar {
 	public static final String OWNER_IMG_FOLDER="C:"+SEP+APP_NAME+SEP+"license"+SEP+"img"+SEP;
 	public static final String OWNER_IMG_PATH="C:"+SEP+APP_NAME+SEP+"license"+SEP;
 	public static final String WATER_RENTAL_CERTIFICATE_RPT="water_rental_certificate";
+	public static final String TRANSPO="transpo_clearance";
 	public static final String WATER_RENTAL_PAYMENT_HISTORY_RPT="water_rental_ors";
 	public static final String WATER_RENTAL_PAYMENT_BILLING_RPT="water_rental_bill_statement";
 	public static final String MTO_OR_CEDULA_SIGNATORY="FERDINAND L. LOPEZ";

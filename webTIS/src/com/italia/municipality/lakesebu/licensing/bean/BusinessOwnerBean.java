@@ -30,8 +30,12 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
+
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.CaptureEvent;
 import org.primefaces.event.FileUploadEvent;
+
+import com.italia.municipality.lakesebu.bean.PoblacionCustomer;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.QRCodeCitizen;
 import com.italia.municipality.lakesebu.enm.AppConf;
@@ -40,6 +44,7 @@ import com.italia.municipality.lakesebu.enm.Relationships;
 import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.licensing.controller.Barangay;
 import com.italia.municipality.lakesebu.licensing.controller.BusinessCustomer;
+import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.licensing.controller.Municipality;
 import com.italia.municipality.lakesebu.licensing.controller.Province;
 import com.italia.municipality.lakesebu.licensing.controller.Purok;
@@ -47,6 +52,8 @@ import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.glxn.qrgen.QRCode;
 import net.glxn.qrgen.image.ImageType;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -142,6 +149,7 @@ public class BusinessOwnerBean implements Serializable{
     
     private List<BusinessCustomer> selectedQRCode;
 	
+   
 	@PostConstruct
 	public void init(){
 		
@@ -436,7 +444,7 @@ public class BusinessOwnerBean implements Serializable{
 			if(getCustomer()!=null){
 				cus = getCustomer();
 			}else{
-				cus.setDateregistered(DateUtils.getCurrentDateYYYYMMDD());
+				cus.setIsactive(1);
 			}
 			
 			boolean isOk = true;
@@ -495,9 +503,8 @@ public class BusinessOwnerBean implements Serializable{
 				}else{
 					cus.setContactno(getContactno());
 				}
-				
 			
-				
+			cus.setDateregistered(getDateregistered());
 			//cus.setAddress(getAddress());	
 			cus.setPhotoid(getPhotoId());	
 			cus.setFirstname(getFirstname().trim());
@@ -1157,6 +1164,196 @@ private void close(Closeable resource) {
     			}catch(IOException e){}
 		
 		}catch(IOException e){}
+	}
+	
+	
+	public void findQRCode() {
+		System.out.println("now looking the qrcode......");
+		final String jsonData = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequestParameterMap()
+                .get("qrcode");
+		
+		System.out.println("jsondata: " + jsonData);
+		PrimeFaces pf = PrimeFaces.current();
+		if(jsonData!=null && !jsonData.isEmpty() && jsonData.contains("PLS")) {
+			String sql = "";
+			BusinessCustomer cs = null;
+			String fullname = jsonData;
+			
+			String cardno = "";
+			String first = "";
+			String middle = "";
+			String last = "";
+			String address = "";
+			String birthdate = DateUtils.getCurrentDateYYYYMMDD();
+			String gender = "1";
+			String civilStatus = "1";
+			
+			if(jsonData.contains(":")) {
+			
+			String[] name = jsonData.split(":");
+			
+			
+			try {cardno = name[0];}catch(IndexOutOfBoundsException e) {}
+			try {first = name[1];}catch(IndexOutOfBoundsException e) {}
+			try {middle = name[2];}catch(IndexOutOfBoundsException e) {}
+			try {last = name[3];}catch(IndexOutOfBoundsException e) {}
+			try {address = name[4];}catch(IndexOutOfBoundsException e) {}
+			try {birthdate = name[5];}catch(IndexOutOfBoundsException e) {}
+			try {gender = name[7];}catch(IndexOutOfBoundsException e) {}
+			try {civilStatus = name[8];}catch(IndexOutOfBoundsException e) {}
+			
+			fullname = name[3] + ", " + name[1] + " " + name[2];
+			
+			
+			System.out.println("fullname " + fullname);
+			
+			sql = " AND cus.cuscardno like '%"+ cardno.trim() +"%' ";
+			
+				
+			setSearchCustomer(fullname);
+			
+			}else {
+				sql = " AND cus.cuscardno  like '%"+ jsonData.trim() +"%' ";
+			}
+			
+			/////
+			if(checkBusinessCustomerIfExist(first,last)) {
+				pf.executeScript("PF('dlgCam').hide()");
+			}else {
+				
+			List<PoblacionCustomer> cus = PoblacionCustomer.retrieve(sql, new String[0]);
+			if(cus!=null && cus.size()>0) {
+				PoblacionCustomer pc = cus.get(0);
+						cs = BusinessCustomer.builder()
+						.firstname(pc.getFirstname())
+						.middlename(pc.getMiddlename())
+						.lastname(pc.getLastname())
+						.birthdate(pc.getBirthdate())
+						.gender(pc.getGender())
+						.civilStatus(pc.getCivilStatus())
+						.fullname(pc.getFullname())
+						.age(pc.getAge())
+						.contactno(pc.getContactno())
+						.cardno(pc.getCardno())
+						.dateregistered(pc.getDateregistered())
+						.completeAddress(pc.getCompleteAddress())
+						.build();
+			
+						provideCustomerDataFromQRCode(cs,false);
+						
+				pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
+			}else {
+				cs = BusinessCustomer.builder()
+						.firstname(first)
+						.middlename(middle)
+						.lastname(last)
+						.birthdate(birthdate)
+						.gender(gender)
+						.civilStatus(Integer.valueOf(civilStatus))
+						.fullname(last + ", " + first + " " + middle)
+						.completeAddress(address)
+						.build();
+				
+				
+				provideCustomerDataFromQRCode(cs,false);
+				pf.executeScript("PF('dlgCam').hide()");
+			}
+			
+			}
+			
+		}else {
+		
+		
+		
+		String sql = " AND (cus.qrcode like '%"+ jsonData +"%' OR ";
+		sql += " cus.fullname like '%"+ jsonData +"%' ";
+		sql += " )";
+		String[] params = new String[0];
+		
+		List<BusinessCustomer> cust = BusinessCustomer.retrieve(sql, params);
+		
+		if(cust!=null && cust.size()>0) {
+			provideCustomerDataFromQRCode(cust.get(0),true);
+	    	pf.executeScript("PF('dlgCam').hide();");
+		}else {
+			Application.addMessage(1, "Error", "This QRCode is not yet registered... Please register it first in Citizen Registration Page");
+		}
+		
+		
+		}
+		
+	}
+	
+	private boolean checkBusinessCustomerIfExist(String first, String last) {
+		
+		String sql = " AND cus.cusfirstname ="+ first +"' AND cus.cuslastname = " + last;
+		String[] params = new String[0];
+		
+		List<BusinessCustomer> cust = BusinessCustomer.retrieve(sql, params);
+		
+		if(cust!=null && cust.size()>0) {
+			provideCustomerDataFromQRCode(cust.get(0),true);
+	    	return true;
+		}
+		
+		return false;
+	}
+	
+	private void provideCustomerDataFromQRCode(BusinessCustomer cs, boolean isOld) {
+		setCustomer(cs);
+		setCardnumber(cs.getCardno()==null? BusinessCustomer.cardNumber() : cs.getCardno());
+		setDateregistered(cs.getDateregistered()==null? DateUtils.getCurrentDateMonthDayYear() : cs.getDateregistered());
+		setFirstname(cs.getFirstname());
+		setMiddlename(cs.getMiddlename());
+		setLastname(cs.getLastname());
+		setClivilId(cs.getCivilStatus());
+		setBirthdate(DateUtils.convertDateString(cs.getBirthdate(), "yyyy-MM-dd"));
+		try{setAge(DateUtils.calculateAge(cs.getBirthdate()));}catch(Exception e){setAge(cs.getAge());}
+		setGenderId(cs.getGender());
+		setCitizenship(cs.getCitizenship());
+		defaultValueAddress();
+		
+		if(isOld) {
+		///////
+		
+		setContactno(cs.getContactno());
+		
+		setEmergencyContactPerson(cs.getEmergencyContactPerson());
+		if(cs.getEmergencyContactPerson()!=null){
+			BusinessCustomer person = BusinessCustomer.customer(cs.getEmergencyContactPerson().getId());	
+		setEmergencyContactPersonName(person.getFullname());
+		setRelationshipId(cs.getRelationship());
+		}else{
+			setRelationshipId(0);
+		}
+		if(cs.getPhotoid()!=null){
+			copyPhoto(cs.getPhotoid()); 
+			getShots().add(cs.getPhotoid());
+		}
+		
+		setProvinceSelected(cs.getProvince());
+		setMunicipalSelected(cs.getMunicipality());
+		setBarangaySelected(cs.getBarangay());
+		setPurokSelected(cs.getPurok());
+		
+		setBornplace(cs.getBornplace());
+		setWeight(cs.getWeight());
+		setHeight(cs.getHeight());
+		setWork(cs.getWork());
+		setCitizenship(cs.getCitizenship());
+		setQrCode(cs.getQrcode());
+		setNationalId(cs.getNationalId());
+		
+		}
+	}
+	
+	private void defaultValueAddress() {
+		setProvinceSelected(Province.builder().id(1).name("South Cotabato").isActive(1).build());
+		setMunicipalSelected(Municipality.builder().id(1).name("Lake Sebu").isActive(1).build());
+		setBarangaySelected(Barangay.builder().id(0).name("N/A").isActive(1).build());
+		setPurokSelected(Purok.builder().id(0).purokName("N/A").isActive(1).build());
 	}
 	
 	public List<String> autoFirst(String query){

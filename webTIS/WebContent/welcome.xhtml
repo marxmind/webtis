@@ -93,7 +93,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				</p:selectOneMenu>
 	           
 				<p:outputLabel value="Check No" style="font-size: 1em"/>
-				<p:inputText id="checkNoId" value="#{checkBean.bankCheckNo}" a:placeholder="0000000000" style="color: black;width:10em;font-size: 1em;font-weight: bold;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
+				<p:inputText id="checkNoId" value="#{checkBean.bankCheckNo}" a:placeholder="0000000000" style="width:10em;font-size: 1em;font-weight: bold;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
 				
 				<p:outputLabel value="Date" style="font-size: 1em"/>
             	<p:datePicker id="basic" value="#{checkBean.dateTime}" pattern="yyyy-MM-dd" inputStyle="width:10em;font-size: 1em;font-weight: bold;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
@@ -102,7 +102,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:panelGrid id="chequeDataId2" layout="grid" columns="1" styleClass="ui-noborder">	
 				
 	            	<p:inputTextarea id="idpayto" completeMethod="#{checkBean.completeBankCheckPayTo}" rows="1" cols="2" value="#{checkBean.bankCheckPayTo}" a:placeholder="Pay To The Order Of" queryDelay="750" minQueryLength="4"
-	            		 style="color: black;width: 34em;font-weight: bold; align-text: left;font-size: 2em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
+	            		 style="width: 34em;font-weight: bold; align-text: left;font-size: 2em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
 					</p:inputTextarea>
 					
 			</p:panelGrid>
@@ -110,7 +110,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:panelGrid id="chequeDataId3" layout="grid" columns="1" styleClass="ui-noborder">	
 			
 					<p:inputTextarea id="idnature" completeMethod="#{checkBean.completeNaturePayment}" rows="1" cols="2" value="#{checkBean.natureOfPayment}" a:placeholder="Nature of Payment" queryDelay="750" minQueryLength="2" 
-	            		 style="color: black;width: 34em;font-weight: bold; align-text: left;font-size: 2em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
+	            		 style="width: 34em;font-weight: bold; align-text: left;font-size: 2em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
 					</p:inputTextarea>
 				
 			</p:panelGrid>
@@ -118,7 +118,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			<p:panelGrid id="chequeDataId4" layout="grid" columns="1" styleClass="ui-noborder">	
 			
 				<p:outputLabel value="Php: " style="font-size: 2em">
-					<p:inputText id="amntId" value="#{checkBean.inputAmount}" placeholder="000,000,000.00" style="color: blue;font-weight: bold; width:10em;font-size: 2em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
+					<p:inputText id="amntId" value="#{checkBean.inputAmount}" placeholder="000,000,000.00" style="font-weight: bold; width:10em;font-size: 2em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
 						<f:ajax  event="keyup" render="inwordsId" listener="#{checkBean.generateWords}"/>
 					</p:inputText>
 				</p:outputLabel>
@@ -126,14 +126,14 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	         
 	         
 	         <p:panelGrid id="chequeDataId5" layout="grid" columns="1" >
-	         	 <p:outputLabel id="inwordsId" value="In words: #{checkBean.numberInToWords}" style="font-size: 2em; color: red; font-weight:  bold"/>	
+	         	 <p:outputLabel id="inwordsId" value="#{checkBean.numberInToWords}" style="font-size: 2em; color: red; font-weight:  bold"/>	
 	         </p:panelGrid>
 	         
 	         <p:panelGrid id="chequeDataId6" layout="grid" columns="1" styleClass="ui-noborder">   
 				
 				<div class="ui-inputgroup">
 				<p:outputLabel value="Department" style="font-size: 1em"/>
-				<p:selectOneMenu id="departmentId" value="#{checkBean.departmentId}" style="color: black;width: 30em;font-size: 1em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;" filter="true" filterMatchMode="contains">
+				<p:selectOneMenu id="departmentId" value="#{checkBean.departmentId}" style="width: 30em;font-size: 1em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;" filter="true" filterMatchMode="contains">
 	            		<f:selectItem itemLabel="Select..."/>
 	            		<f:selectItems value="#{checkBean.department}"/>
 	            </p:selectOneMenu>
@@ -141,7 +141,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	            
 	            <div class="ui-inputgroup">
 	            	<p:outputLabel value="Status" style="font-size: 1em"/>	
-	            	<p:selectOneMenu value="#{checkBean.statusId}"  style="width:20em;color: black;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
+	            	<p:selectOneMenu value="#{checkBean.statusId}"  style="width:20em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
 							<f:selectItem itemLabel="Select"/>
 							<f:selectItems value="#{checkBean.statusList}"/>
 							<f:ajax event="change" listener="#{checkBean.assignRemarks}" render="idRemarks"/>
@@ -155,14 +155,14 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             	
             	<div class="ui-inputgroup">
 				<p:outputLabel value="Treasurer" style="font-size: 1em"/>
-	            	<p:selectOneMenu value="#{checkBean.sig1}" style="width:20em;color: black;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"> 
+	            	<p:selectOneMenu value="#{checkBean.sig1}" style="width:20em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"> 
 								<f:selectItem itemLabel="#{checkBean.sig1Label}"/>
 								<f:selectItems value="#{checkBean.data}"/>
 					</p:selectOneMenu>
 				</div>
 				<div class="ui-inputgroup">
 				<p:outputLabel value="Mayor" style="font-size: 1em"/>
-					<p:selectOneMenu value="#{checkBean.sig2}" style="width:20em;color: black;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
+					<p:selectOneMenu value="#{checkBean.sig2}" style="width:20em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;">
 								<f:selectItem itemLabel="#{checkBean.sig2Label}"/>
 								<f:selectItems value="#{checkBean.data1}"/>
 					</p:selectOneMenu>
@@ -172,7 +172,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 			<p:panelGrid id="chequeDataId8" layout="grid" columns="1" styleClass="ui-noborder">   	
 			<p:outputLabel value="Remarks" style="font-size: 2em">
-					<p:inputText id="idRemarks" value="#{checkBean.remarks}" disabled="#{checkBean.enableRemarks}" a:placeholder="REMARKS"  style="color: black;width: 40em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
+					<p:inputText id="idRemarks" value="#{checkBean.remarks}" disabled="#{checkBean.enableRemarks}" a:placeholder="REMARKS"  style="width: 40em;border-bottom: 3px solid black;border-top:none; border-left:none; border-right:none;"/>
 				</p:outputLabel>
 			</p:panelGrid>
             </p:card>
@@ -264,23 +264,23 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							</p:column>
 							
 							<p:column headerText="Check No" width="40">
-            						<p:outputLabel value="#{rpt.checkNo}" style="color: black; font-family: Arial; font-weight: bold;"/>
+            						<p:outputLabel value="#{rpt.checkNo}"/>
             				</p:column>
             				
             				<p:column headerText="Account" width="70" resizable="true" >
-            						<p:outputLabel value="#{rpt.accntName}" style="color: black; font-family: Arial; font-weight: bold;"/>
+            						<p:outputLabel value="#{rpt.accntName}"/>
             				</p:column>
             				
             				<p:column headerText="Pay To" width="70" resizable="true" >
-            						<p:outputLabel  value="#{rpt.payToTheOrderOf}" style="color: black; font-family: Arial; font-weight: bold;"/>
+            						<p:outputLabel  value="#{rpt.payToTheOrderOf}"/>
             				</p:column>
             				
             				<p:column width="50">
             					<f:facet name="header">Amount</f:facet>
-            						<p:outputLabel  value="#{rpt.amount}" style="color: black; font-family: Arial; font-weight: bold;">
+            						<p:outputLabel  value="#{rpt.amount}">
             							<f:convertNumber currencySymbol="" type="currency"/>
             						</p:outputLabel>
-            					<f:facet name="footer"><p:outputLabel value="#{checkBean.grandTotal}" style="color: black; font-family: Arial; font-weight: bold;"/></f:facet>	
+            					<f:facet name="footer"><p:outputLabel value="#{checkBean.grandTotal}"/></f:facet>	
             				</p:column>
             				
             				
