@@ -31,6 +31,7 @@ public enum AppConf {
 	SECURITY_ENCRYPTION_FORMAT("utf-8"),
 	PRIMARY_DRIVE(System.getenv("SystemDrive")),
 	APP_CONFIG_FOLDER_NAME("webtis"),
+	//APP_CONFIG_FOLDER_NAME("webtis2"),
 	APP_CONFIG_SETTING_FOLDER("conf"),
 	APP_CONFIG_SETTING_FILE_NAME("application.xml"),
 	APP_LICENSE_FILE_NAME("license.xml"),

@@ -7,6 +7,7 @@
 xmlns:p="http://primefaces.org/ui" 
 xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 xmlns:my="http://java.sun.com/jsf/composite/my"  
+
   >
 <h:head>
 <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
@@ -90,6 +91,14 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>General Municipal Income Recording</title>
 
+<script type="text/javascript">
+    function handleDrop(event, ui) {
+        var droppedOrder = ui.draggable;
+ 
+        droppedOrder.fadeOut('fast');
+    }
+</script>
+
 </h:head>
 <h:body>
 <ui:include src="header.xhtml" />
@@ -114,7 +123,90 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<div class="card">
     <div class="p-grid sample-layout">
     
-    <div class="p-col-12 p-md-4">
+    <script>
+    	
+    function showDrop(){
+    	$('#dropId').show(1000);
+    	$('#mainId').hide(1000);
+    }
+    function hideDrop(){
+    	$('#dropId').hide(1000);
+    	$('#mainId').show(1000);
+    }
+    
+    </script>
+    
+    
+    <div class="p-col-12 p-md-4" id="dropId" style="display: none" >
+    	
+    	
+    	<p:toolbar id="tbDetailsSelected">
+    		<f:facet name="left">
+    				
+    		</f:facet>
+    		<f:facet name="right">
+    			<div class="ui-inputgroup">
+    				<p:commandButton id="totalSelectedId" type="button" value="#{oRListingBean.totalSelectedAmount}"  style="color: red; font-weight: bold; font-size: 1em; text-align:right" />
+		    		<p:selectOneMenu id="rptId" value="#{oRListingBean.orsReportsId}" style="text-align: right">
+								<f:selectItems value="#{oRListingBean.orsReports}"/>
+								<p:ajax event="change" listener="#{oRListingBean.loadSelectedGroupRpt('PARTIAL')}" update="selectedCarsTable" />
+					</p:selectOneMenu>
+					<p:commandButton value="Load All" update="selectedCarsTable" actionListener="#{oRListingBean.loadSelectedGroupRpt('FULL')}"/>
+    			</div>
+    		</f:facet>
+			</p:toolbar>
+    	
+		<p:fieldset id="selectedCars" style="margin-top:5px" legend="Selected Forms">
+						
+				        <p:outputPanel id="dropArea" >
+				            <h:outputText value="!!!Drop Forms here!!!" rendered="#{empty oRListingBean.selectedCollection}" style="font-size:100px;" />
+				            <p:dataTable id="selectedCarsTable" var="fd" value="#{oRListingBean.selectedCollection}" rendered="#{not empty oRListingBean.selectedCollection}"
+				            rows="10" paginator="true" paginatorPosition="top" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				            >
+				            
+				            	<f:facet name="{Exporters}">
+            						<h:commandLink title="Export Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="selectedCarsTable" fileName="GeneralCollectionReportsExtracted" />
+            						</h:commandLink>
+            						<h:commandLink title="Summary with details reports" target="_blank" ajax="false" immediate="false"  actionListener="#{oRListingBean.printFinal('CURRENT')}">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+            						</h:commandLink>
+            						<h:commandLink title="Summary Only" target="_blank" ajax="false" immediate="false"  actionListener="#{oRListingBean.printSelected('CURRENT')}">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+            						</h:commandLink>
+            					</f:facet>
+				            
+				            
+				                <p:column headerText="Sub" width="15">
+				                	<p:commandButton icon="fa fa-trash" actionListener="#{oRListingBean.commandActionDelete(fd)}" update="selectedCarsTable totalSelectedId"/>
+				                </p:column>
+				                <p:column headerText="Form" width="50">
+				                    <h:outputText value="#{fd.formName}"/>
+				                </p:column>
+				 
+				                <p:column headerText="OR Number" width="50">
+				                    <h:outputText value="#{fd.orNumber}"/>
+				                </p:column>
+				 
+				 				<p:column headerText="Name" width="100">
+				                    <h:outputText value="#{fd.customer.fullname}"/>
+				                </p:column>
+				 				
+				                <p:column headerText="Amount" width="50">
+				                    <h:outputText value="#{fd.amount}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column> 
+				            </p:dataTable>
+				            
+				        </p:outputPanel>
+				        
+				    </p:fieldset>
+    	
+    </div>
+    
+    <div class="p-col-12 p-md-4" id="mainId" >
             <p:panelGrid id="fldId" columns="2" layout="grid">
 					<p:selectOneMenu value="#{oRListingBean.selectOrTypeId}"  filter="true" filterMatchMode="contains" styleClass="js-tilt" style="width: 15em">
 					      			<f:selectItems value="#{oRListingBean.selectOrTypes}"/>
@@ -175,22 +267,76 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					
 					<p:outputLabel value="Basic Tax(5/500)"/>
 					<p:inputNumber value="#{oRListingBean.amount1}" inputStyle="width: 15em" readonly="true"/>
-						
-					<p:inputNumber value="#{oRListingBean.label2}" placeholder="Gross/RPTax" style="width: 15em"/>
-					<p:inputNumber value="#{oRListingBean.amount2}" inputStyle="width: 15em">
-						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand dataSelectedId totalId"/>
+					
+					<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<small class="p-d-block" style="text-align: left">Gross receipt or earning from business</small>
+					<p:inputNumber value="#{oRListingBean.monthlyIncome}" placeholder="Monthly Rate" inputStyle="width: 7.5em">
+						<p:ajax event="keyup" listener="#{oRListingBean.calculateGrossRptax}" update="grossId idBGross idTotal idInterest idGrand dataSelectedId totalId"/>
 					</p:inputNumber>
 					
-					<p:inputText value="#{oRListingBean.label3}" placeholder="Salaries/Gross Receipts" style="width: 15em"/>
-					<p:inputNumber value="#{oRListingBean.amount3}" inputStyle="width: 15em">
+					<p:inputNumber id="idBGross" value="#{oRListingBean.label2}" readonly="true" placeholder="Business/RPTax" inputStyle="width: 7.5em"/>
+					</div>
+					</div>
+					</p:outputLabel>
+					
+					<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<small class="p-d-block" style="text-align: left">Gross/1,000.00</small>
+					<p:inputNumber id="grossId" value="#{oRListingBean.amount2}" inputStyle="width: 15em">
 						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand dataSelectedId totalId"/>
 					</p:inputNumber>
+					</div>
+					</div>
+					</p:outputLabel>
 					
+					<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<small class="p-d-block" style="text-align: left">Salaries or earning from profession</small>
+					<p:inputNumber value="#{oRListingBean.monthlySal}" placeholder="Monthly Rate" inputStyle="width: 7.5em">
+						<p:ajax event="keyup" listener="#{oRListingBean.calculateSalariesGross}" update="salGrossId idSal idTotal idInterest idGrand dataSelectedId totalId"/>
+					</p:inputNumber>
+					<p:inputNumber id="idSal" value="#{oRListingBean.label3}" readonly="true" placeholder="Salaries/Gross Receipts" inputStyle="width: 7.5em"/>
+					</div>
+					</div>
+					</p:outputLabel>
 					
-					<p:inputText value="#{oRListingBean.label4}" placeholder="Income from RPT TAX/CTC" style="width: 15em"/>
-					<p:inputNumber value="#{oRListingBean.amount4}" inputStyle="width: 15em">
+					<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<small class="p-d-block" style="text-align: left">Gross/1,000.00</small>
+					<p:inputNumber id="salGrossId" value="#{oRListingBean.amount3}" inputStyle="width: 15em">
 						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand dataSelectedId totalId"/>
 					</p:inputNumber>
+					</div>
+					</div>
+					</p:outputLabel>
+					
+					<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<small class="p-d-block" style="text-align: left">Income from real property</small>
+					<p:inputNumber value="#{oRListingBean.monthlyTax}" placeholder="Monthly Rate" inputStyle="width: 7.5em">
+						<p:ajax event="keyup" listener="#{oRListingBean.calculateTaxGross}" update="taxId idTaxYear idTotal idInterest idGrand dataSelectedId totalId"/>
+					</p:inputNumber>
+					<p:inputNumber id="idTaxYear" value="#{oRListingBean.label4}" readonly="true" placeholder="Income from RPT TAX/CTC" inputStyle="width: 7.5em"/>
+					</div>
+					</div>
+					</p:outputLabel>
+					
+					<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<small class="p-d-block" style="text-align: left">Gross/1,000.00</small>
+					<p:inputNumber id="taxId" value="#{oRListingBean.amount4}" inputStyle="width: 15em">
+						<p:ajax event="change" listener="#{oRListingBean.calculateCedula}" update="idTotal idInterest idGrand dataSelectedId totalId"/>
+					</p:inputNumber>
+					</div>
+					</div>
+					</p:outputLabel>
 					
 					<p:outputLabel  value="Total"/>
 					<p:inputNumber id="idTotal" value="#{oRListingBean.amount5}" inputStyle="width: 15em" readonly="true"/>
@@ -262,7 +408,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							offLabel="Filtered - ASC" onIcon="ui-icon-check" offIcon="ui-icon-close" >
 								<p:ajax event="change" listener="#{oRListingBean.load}" update="dataOrId dtlsId"/>
 							</p:selectBooleanButton>
-							<p:commandButton value="Reload Data" actionListener="#{oRListingBean.load}" update="dataOrId dtlsId" style="float: right" />
+							<p:commandButton value="Reload Data" actionListener="#{oRListingBean.load}" update="dataOrId dtlsId dataOrSelectionId" style="float: right" />
                 	</div>
                 	
                 	
@@ -294,6 +440,9 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							<p:selectOneMenu id="frmDep" value="#{oRListingBean.depId}" style="width: 15em" filterMatchMode="contains" filter="true">
 								<f:selectItems value="#{oRListingBean.departments}"/>
 							</p:selectOneMenu>
+							<p:selectOneMenu id="rptGroupCombId" value="#{oRListingBean.rptsCombId}" style="width: 15em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{oRListingBean.rptsCombos}"/>
+							</p:selectOneMenu>
 								
                     	</div>
                     	
@@ -305,13 +454,16 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                     <div class="p-grid">
                         <p:tabView prependId="false" cache="true">
 				
-					<p:ajax event="tabChange" listener="#{oRListingBean.onChange}" update="dataOrId dtlsId"/>
+					<p:ajax event="tabChange" listener="#{oRListingBean.onChange}" update="dataOrId dtlsId dataOrSelectionId dropArea selectedCarsTable totalSelectedId rptId idDrop"/>
 					
 					<p:tab title="Reports Viewing">
+					
+						
+					
 						<p:dataTable id="dataOrId" value="#{oRListingBean.ors}" var="ors" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="false" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false"
+                         scrollable="false"  paginatorPosition="top" paginatorAlwaysVisible="false" reflow="true"
 							>
 							
 							<p:column headerText="" width="5" exportable="false">
@@ -323,7 +475,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 							</p:column>
 							
 							<p:column headerText="" width="10" exportable="false">
-								<p:commandButton icon="fa fa-search" update="dataOrId dataSelectedId fldId fldId2 totalId fldNoteId" actionListener="#{oRListingBean.clickItem(ors)}"/>
+								<p:commandButton icon="fa fa-search" update="dataOrId dataSelectedId fldId fldId2 totalId fldNoteId msg" actionListener="#{oRListingBean.clickItem(ors)}"/>
 							</p:column>
 							
 							<p:column headerText="" width="10" exportable="false">
@@ -390,12 +542,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             				</p:columnGroup>
             				
             		</p:dataTable>
+            		
+            		
+            		
 					</p:tab>
 					<p:tab title="Details/Extract">
 						<p:dataTable id="dtlsId" value="#{oRListingBean.dtls}" var="dt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="false" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="true"
+                         scrollable="false" paginatorPosition="top" paginatorAlwaysVisible="true" reflow="true"
 							>
 							
 							<f:facet name="{Exporters}">
@@ -438,6 +593,56 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             				
             			</p:dataTable>	
 					</p:tab>
+					
+					<p:tab title="Selection Reports">
+						
+						<p:fieldset id="availableCarsField" legend="Selection Forms">
+						
+						
+						<p:dataTable id="dataOrSelectionId" value="#{oRListingBean.selections}" var="ox" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false" paginatorPosition="top" paginatorAlwaysVisible="true" reflow="true"
+							>	             
+						
+							<p:column style="width:20px">
+			                    <h:outputText id="dragIcon" styleClass="ui-icon pi pi-plus"/>
+			                    <p:draggable for="dragIcon" revert="true" helper="clone"/>
+			                </p:column>
+						
+							<p:column headerText="Date" width="70">
+            						<p:outputLabel value="#{ox.dateTrans}"/>
+            				</p:column>
+            				<p:column headerText="Status" width="50" style="text-align: left">
+            						<p:outputLabel value="#{ox.statusName}"/>
+            				</p:column>
+            				<p:column headerText="Collector" width="150" style="text-align: left">
+            						<p:outputLabel value="#{ox.collector.name}"/>
+            				</p:column>
+            				<p:column headerText="Form" width="50" style="text-align: left">
+            						<p:outputLabel value="#{ox.formName}"/>
+            				</p:column>
+            				<p:column headerText="OR No." width="50" style="text-align: left">
+            						<p:outputLabel value="#{ox.orNumber}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Name" width="200" style="text-align: left">
+            						<p:outputLabel value="#{ox.customer.fullname}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Amount" width="70" style="text-align: right">
+            						<p:outputLabel value="#{ox.amount}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+						
+						
+						</p:dataTable>
+					
+					</p:fieldset>
+						
+					</p:tab>
+					
 				</p:tabView>
                     </div>
                 </div>
@@ -840,6 +1045,84 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 <p:commandButton title="Official Receipt" icon="fa fa-euro" oncomplete="PF('dlgAllOrs').show(1000);" actionListener="#{oRListingBean.loadAllOrs}" update="dataOrAllId" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 30px;right: 104px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>			
 <p:commandButton title="Graph" icon="fa fa-th-large"  actionListener="#{graphCollectionBean.loadGraph}" update="graphId" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 30px;right: 135px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 <ui:include src="graphcol.xhtml" />
+
+<p:droppable for="selectedCars" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="dataOrSelectionId" onDrop="handleDrop" id="idDrop" >
+        <p:ajax listener="#{oRListingBean.onORDrop}" update="dropArea dataOrSelectionId selectedCarsTable totalSelectedId msg" />
+</p:droppable>
+
+
+<p:commandButton title="Reports" icon="fa fa-briefcase"  actionListener="#{oRListingBean.loadFinalSelectedRpt}" update="dataOrFinalId totalSelectedFinalId rptFinalId" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 30px;right: 167px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+<p:dialog widgetVar="dlgFinalRpt" position="top center" width="900" height="600" header="Reports Selected">
+		
+		
+		<p:toolbar id="tbDetailsFinal">
+    		<f:facet name="left">
+    				<div class="ui-inputgroup">
+	    				<p:selectOneMenu id="rptFinalId" value="#{oRListingBean.reportId}" style="text-align: right">
+							<f:selectItems value="#{oRListingBean.reports}"/>
+							<p:ajax event="change" listener="#{oRListingBean.loadFinalGroupRpt}" update="dataOrFinalId totalSelectedFinalId" />
+						</p:selectOneMenu>
+    				</div>
+    		</f:facet>
+    		<f:facet name="right">
+    			<div class="ui-inputgroup">
+    				<p:commandButton id="totalSelectedFinalId" type="button" value="#{oRListingBean.selectedFinalAmount}"  style="color: red; font-weight: bold; font-size: 1em; text-align:right" />
+    			</div>
+    		</f:facet>
+			</p:toolbar>
+		
+		<p:dataTable id="dataOrFinalId" value="#{oRListingBean.finalRpts}" var="ot" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false" paginatorPosition="top" paginatorAlwaysVisible="true" reflow="true"
+							>	             
+							
+							<f:facet name="{Exporters}">
+							
+									<h:commandLink title="Summary with details reports" target="_blank" ajax="false" immediate="false"  actionListener="#{oRListingBean.printFinal('DIRECT')}">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+            						</h:commandLink>
+									
+            						<h:commandLink title="Export Report in excel format">
+                						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
+                							<p:dataExporter type="xls" target="dataOrFinalId" fileName="GeneralCollectionReportsExtracted" />
+            						</h:commandLink>
+            						
+            						<h:commandLink title="Summary Only" target="_blank" ajax="false" immediate="false"  actionListener="#{oRListingBean.printSelected('DIRECT')}">
+                						    <p:graphicImage name="img/pdf.jpg" width="24" height="24"/>
+            						</h:commandLink>
+            				</f:facet>
+							
+							<p:column headerText="Date" width="70">
+            						<p:outputLabel value="#{ot.dateTrans}"/>
+            				</p:column>
+            				<p:column headerText="Status" width="50" style="text-align: left">
+            						<p:outputLabel value="#{ot.statusName}"/>
+            				</p:column>
+            				<p:column headerText="Collector" width="150" style="text-align: left">
+            						<p:outputLabel value="#{ot.collector.name}"/>
+            				</p:column>
+            				<p:column headerText="Form" width="50" style="text-align: left">
+            						<p:outputLabel value="#{ors.formName}"/>
+            				</p:column>
+            				<p:column headerText="OR No." width="50" style="text-align: left">
+            						<p:outputLabel value="#{ot.orNumber}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Name" width="200" style="text-align: left">
+            						<p:outputLabel value="#{ot.customer.fullname}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Amount" width="70" style="text-align: right">
+            						<p:outputLabel value="#{ot.amount}">
+            							<f:convertNumber currencySymbol="" type="currency"/>
+            						</p:outputLabel>
+            				</p:column>
+						
+						
+						</p:dataTable>
+
+</p:dialog>
 
 </h:form>
 </h:body>

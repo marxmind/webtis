@@ -223,6 +223,58 @@ public class ORNameList {
 		return mapYear;
 	}
 	
+	public static Object[] retrieveORNames(long orId) {
+		Object[] obj = new Object[2];
+		List<ORNameList> orns = new ArrayList<ORNameList>();
+		double amount = 0d;
+		String tableNameList = "nameL";
+		String tableName = "pay";
+		String sql = "SELECT * FROM ornamelist "+ tableNameList +" ,paymentname "+ tableName +"  WHERE  "+tableNameList+".isactiveol=1 AND " + 
+				tableNameList +".pyid=" + tableName + ".pyid AND " + 
+				tableNameList + ".orid=" + orId; 
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			ORNameList orn = new ORNameList();
+			try{orn.setId(rs.getLong("olid"));}catch(NullPointerException e){}
+			try{orn.setAmount(rs.getDouble("olamount"));}catch(NullPointerException e){}
+			try{orn.setIsActive(rs.getInt("isactiveol"));}catch(NullPointerException e){}
+			
+			PaymentName name = new PaymentName();
+			try{name.setId(rs.getLong("pyid"));}catch(NullPointerException e){}
+			try{name.setDateTrans(rs.getString("pydatetrans"));}catch(NullPointerException e){}
+			try{name.setAccountingCode(rs.getString("pyaccntcode"));}catch(NullPointerException e){}
+			try{name.setName(rs.getString("pyname"));}catch(NullPointerException e){}
+			try{name.setAmount(rs.getDouble("pyamount"));}catch(NullPointerException e){}
+			try{name.setIsActive(rs.getInt("isactivepy"));}catch(NullPointerException e){}
+			orn.setPaymentName(name);
+			
+			orns.add(orn);
+			
+			amount += orn.getAmount();
+			
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		obj[0] = amount;
+		obj[1] = orns;
+		
+		return obj;
+	}
+	
+	
 	public static List<ORNameList> retrieve(String sqlAdd, String[] params){
 		List<ORNameList> orns = new ArrayList<ORNameList>();
 		

@@ -9,18 +9,30 @@
  
     <ui:composition>
     		
+    		<style type="text/css">
+			    .ui-chart {
+			        margin-bottom: 50px;
+			    }
+			</style>
     		
     		<p:dialog widgetVar="dlgGraph" fitViewport="true" position="center top" header="Graph" closable="true" modal="true" closeOnEscape="true">
     		<p:card style="width: 120em">
     		<p:scrollPanel style="width:120em;height:650px" mode="native">
+    		
+    		
+    		<p:tabView prependId="false">
+    		
+            <p:tab title="Reported Collection">
+    		
     		<p:toolbar id="tbGraph">
     		<f:facet name="left">
+    			<div class="ui-inputgroup">
     			<span class="ui-input-icon-left">
 			    <i class="pi pi-search" />
     			<p:selectCheckboxMenu id="grapYearId" value="#{graphIssuanceBean.selectedYear}" label="Select Year" updateLabel="true" filterMatchMode="contains" filter="true" style="width: 20em">
 					<f:selectItems value="#{graphIssuanceBean.years}" />
 				</p:selectCheckboxMenu>
-				<p:selectCheckboxMenu id="grapCollectorId" value="#{graphIssuanceBean.selectedCollector}" label="Select Collector" updateLabel="true" filterMatchMode="contains" filter="true" style="width: 60em">
+				<p:selectCheckboxMenu id="grapCollectorId" value="#{graphIssuanceBean.selectedCollector}" label="Select Collector" updateLabel="true" filterMatchMode="contains" filter="true" style="width: 50em">
 					<f:selectItems value="#{graphIssuanceBean.collectors}" />
 				</p:selectCheckboxMenu>
 				<p:selectOneMenu id="grapFormId" value="#{graphIssuanceBean.selectedForm}" label="Select Forms" updateLabel="true" filterMatchMode="contains" filter="true" style="width: 30em">
@@ -28,16 +40,13 @@
 				</p:selectOneMenu>
 				<p:commandButton icon="fa fa-search" update="graphLineId graphBardId" actionListener="#{graphIssuanceBean.selectedGraph}"/>
     			</span>
+    			</div>
     		</f:facet>
     		<f:facet name="right"/>
 			</p:toolbar> 
     		
     		
-    		<style type="text/css">
-			    .ui-chart {
-			        margin-bottom: 50px;
-			    }
-			</style>
+    		
 			
 				
 			<p:tabView prependId="false" cache="true" id="tabRevenue">
@@ -57,6 +66,37 @@
     			
     			
     		</p:tabView>	
+	        
+	        </p:tab>
+	        
+	        
+	        <p:tab title="Per Account Collection">
+	        	
+	        <p:toolbar id="tbGraphRun">
+    		<f:facet name="left">
+    			<div class="ui-inputgroup">
+    			<span class="ui-input-icon-left">
+			    <i class="pi pi-search" />
+    			<p:selectCheckboxMenu id="grapAccountYearId" value="#{graphIssuanceBean.accountSelectedYear}" label="Select Year" updateLabel="true" filterMatchMode="contains" filter="true" style="width: 20em">
+					<f:selectItems value="#{graphIssuanceBean.accountYears}" />
+				</p:selectCheckboxMenu>
+				<p:selectCheckboxMenu id="grapAccountId" value="#{graphIssuanceBean.accountSelected}" label="Select Account" updateLabel="true" filterMatchMode="contains" filter="true" style="width: 50em">
+					<f:selectItems value="#{graphIssuanceBean.accounts}" />
+				</p:selectCheckboxMenu>
+				<p:commandButton icon="fa fa-search" update="graphAccBardId" actionListener="#{graphIssuanceBean.reportAcc}"/>
+				</span>
+    			</div>
+    			
+    			<p:barChart id="graphAccBardId" model="#{graphIssuanceBean.barModel3}" style="width: 100%; height: 500px;"/>
+    			
+    		</f:facet>
+    		<f:facet name="right"/>
+			</p:toolbar> 
+	        	
+	        	
+	        </p:tab>
+	        
+	        </p:tabView>
 	        	
     		</p:scrollPanel>
     		</p:card>

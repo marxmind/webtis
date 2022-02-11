@@ -3,6 +3,7 @@ package com.italia.municipality.lakesebu.utils;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
@@ -10,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import com.italia.municipality.lakesebu.enm.FormType;
 /**
@@ -20,6 +22,27 @@ import com.italia.municipality.lakesebu.enm.FormType;
  *
  */
 public class DateUtils {
+	
+	public static long getNumberOfDays(String dateFrom, String dateTo) {
+		SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+		
+
+		try {
+			Date date1 = myFormat.parse(dateFrom);
+		    Date date2 = myFormat.parse(dateTo);
+		    long diff = date2.getTime() - date1.getTime();
+		   
+		    //System.out.println ("Days: " + TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
+		    return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		return 0l;
+	}
+	
+	public static long getNumberyDaysNow(String dateValue) {
+		return getNumberOfDays(dateValue, DateUtils.getCurrentDateYYYYMMDD());
+	}
 	
 	public static String dayNaming(String date){
 		String result = "";

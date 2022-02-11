@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="water_rental_certificate" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="15ef2226-ab30-4d40-a13b-e761d1675b3c">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<parameter name="PARAM_SURVEY_NO" class="java.lang.String"/>
@@ -187,15 +187,6 @@
 				<text><![CDATA[Name of Owner:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="31" y="75" width="130" height="16" uuid="d6b2ed70-df4d-44ce-a221-84c435566237">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement>
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[Date of Birth:]]></text>
-			</staticText>
-			<staticText>
 				<reportElement x="31" y="91" width="178" height="16" uuid="11140525-8220-4515-a3bb-b08f93a98064">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -330,15 +321,6 @@
 				<textFieldExpression><![CDATA[$P{PARAM_OWNER_NAME}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="161" y="75" width="119" height="16" uuid="ae725014-4c92-4ea8-86ca-3e357cac46b8">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Left">
-					<font isUnderline="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{PARAM_BIRTH_DATE}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
 				<reportElement x="31" y="107" width="349" height="16" uuid="76613841-337c-4374-a994-89b1b0bcaebe">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -435,7 +417,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{PARAM_FUNCTIONAL}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{PARAM_NON_FUNCTIONAL}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="503" y="139" width="41" height="16" uuid="b1498064-3b86-4d11-9e32-2ab62ecc868d">

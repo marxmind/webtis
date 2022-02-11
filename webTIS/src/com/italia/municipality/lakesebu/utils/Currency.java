@@ -63,11 +63,21 @@ public class Currency {
 	}
 	
 	public static String formatAmount(double amount){
+		amount = roundOf(amount, 2);
 		return formatAmount(amount+"");
 	}
 	
 	public static String formatAmount(int amount){
 		return formatAmount(amount+"");
+	}
+	
+	private static double roundOf(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    long factor = (long) Math.pow(10, places);
+	    value = value * factor;
+	    long tmp = Math.round(value);
+	    return (double) tmp / factor;
 	}
 	
 	/*

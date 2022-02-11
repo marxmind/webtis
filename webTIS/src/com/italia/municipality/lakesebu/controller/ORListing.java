@@ -53,6 +53,8 @@ public class ORListing {
 	private String formName;
 	private String statusName;
 	
+	private long genCollection;
+	
 	public static String getLatestORNumber(int formType, int collector) {
 		String orNumber = "0000000";
 		
@@ -213,6 +215,7 @@ public class ORListing {
 			try{or.setStatusName(FormStatus.nameId(or.getStatus()));}catch(NullPointerException e){}
 			try{or.setForminfo(rs.getString("forminfo"));}catch(NullPointerException e){}
 			try{or.setNotes(rs.getString("notes"));}catch(NullPointerException e){}
+			try{or.setGenCollection(rs.getLong("genid"));}catch(NullPointerException e){}
 			
 			Customer cus = new Customer();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
@@ -259,6 +262,106 @@ public class ORListing {
 		return ors;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static Object[] retrieveGenReportGroup(long id, String limit){
+		//return retrieve(" AND orl.genid="+id + " ORDER BY orl.ornumber", new String[0]);
+		Object[] objs = new Object[2];
+		
+		if(id==0) {
+			objs[0] = 0.0;
+			objs[1] = new ArrayList<ORListing>();
+			return objs;
+		}
+		
+		List<ORListing> ors = new ArrayList<ORListing>();
+		double totalamount = 0d;
+		String tableOr = "orl";
+		String tableCus = "cuz";
+		String tableColl = "col";
+		String sql = "SELECT * FROM orlisting "+tableOr+", customer "+ tableCus +", issuedcollector "+ tableColl +"  WHERE  "+tableOr+".isactiveor=1 AND " + 
+				tableOr +".customerid=" + tableCus + ".customerid AND " +
+				tableOr +".isid=" + tableColl + ".isid AND " +
+				tableOr +".genid=" + id;
+		
+		sql = sql + " ORDER BY " + tableOr + ".ornumber ";
+		if(limit!=null && !limit.isEmpty()) {
+			sql += limit;
+		}
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		System.out.println("ORLISTING SQL " + ps.toString());
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			
+			ORListing or = new ORListing();
+			try{or.setId(rs.getLong("orid"));}catch(NullPointerException e){}
+			try{or.setDateTrans(rs.getString("ordatetrans"));}catch(NullPointerException e){}
+			try{or.setOrNumber(rs.getString("ornumber"));}catch(NullPointerException e){}
+			try{or.setFormType(rs.getInt("aform"));}catch(NullPointerException e){}
+			try{or.setIsActive(rs.getInt("isactiveor"));}catch(NullPointerException e){}
+			try{or.setFormName(FormType.nameId(or.getFormType()));}catch(NullPointerException e){}
+			try{or.setStatus(rs.getInt("orstatus"));}catch(NullPointerException e){}
+			try{or.setStatusName(FormStatus.nameId(or.getStatus()));}catch(NullPointerException e){}
+			try{or.setForminfo(rs.getString("forminfo"));}catch(NullPointerException e){}
+			try{or.setNotes(rs.getString("notes"));}catch(NullPointerException e){}
+			try{or.setGenCollection(rs.getLong("genid"));}catch(NullPointerException e){}
+			
+			Customer cus = new Customer();
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setFirstname(rs.getString("cusfirstname"));}catch(NullPointerException e){}
+			try{cus.setMiddlename(rs.getString("cusmiddlename"));}catch(NullPointerException e){}
+			try{cus.setLastname(rs.getString("cuslastname"));}catch(NullPointerException e){}
+			try{cus.setFullname(rs.getString("fullname"));}catch(NullPointerException e){}
+			try{cus.setGender(rs.getString("cusgender"));}catch(NullPointerException e){}
+			
+			UserDtls user = new UserDtls();
+			try{user.setUserdtlsid(rs.getLong("userdtlsid"));}catch(NullPointerException e){}
+			cus.setUserDtls(user);
+			
+			or.setCustomer(cus);
+			
+			
+			Object[] obj = ORNameList.retrieveORNames(or.getId());
+			double amount = (Double)obj[0];
+			List<ORNameList> orn = (ArrayList<ORNameList>)obj[1];
+			or.setAmount(amount);
+			or.setOrNameList(orn);
+			
+			Collector col = new Collector();
+			try{col.setId(rs.getInt("isid"));}catch(NullPointerException e){}
+			try{col.setName(rs.getString("collectorname"));}catch(NullPointerException e){}
+			try{col.setIsActive(rs.getInt("isactivecollector"));}catch(NullPointerException e){}
+			try{col.setIsResigned(rs.getInt("isresigned"));}catch(NullPointerException e){}
+			
+			Department dep = new Department();
+			try{dep.setDepid(rs.getInt("departmentid"));}catch(NullPointerException e){}
+			col.setDepartment(dep);
+			or.setCollector(col);
+			
+			ors.add(or);
+			
+			totalamount += amount;
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		objs[0] = totalamount;
+		objs[1] = ors;
+		
+		return objs;
+		
+	}
+	
 	public static List<ORListing> retrieve(String sqlAdd, String[] params){
 		List<ORListing> ors = new ArrayList<ORListing>();
 		
@@ -301,6 +404,7 @@ public class ORListing {
 			try{or.setStatusName(FormStatus.nameId(or.getStatus()));}catch(NullPointerException e){}
 			try{or.setForminfo(rs.getString("forminfo"));}catch(NullPointerException e){}
 			try{or.setNotes(rs.getString("notes"));}catch(NullPointerException e){}
+			try{or.setGenCollection(rs.getLong("genid"));}catch(NullPointerException e){}
 			
 			Customer cus = new Customer();
 			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
@@ -316,6 +420,7 @@ public class ORListing {
 			
 			or.setCustomer(cus);
 			
+			/*
 			sql = " AND nameL.isactiveol=1 AND nameL.orid="+or.getId();
 			params = new String[0];
 			List<ORNameList> orn = Collections.synchronizedList(new ArrayList<ORNameList>());
@@ -324,6 +429,12 @@ public class ORListing {
 				amount += o.getAmount();
 				orn.add(o);
 			}
+			or.setAmount(amount);
+			or.setOrNameList(orn);
+			*/
+			Object[] obj = ORNameList.retrieveORNames(or.getId());
+			double amount = (Double)obj[0];
+			List<ORNameList> orn = (ArrayList<ORNameList>)obj[1];
 			or.setAmount(amount);
 			or.setOrNameList(orn);
 			
@@ -437,8 +548,9 @@ public class ORListing {
 				+ "isid,"
 				+ "orstatus,"
 				+ "forminfo,"
-				+ "notes)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?)";
+				+ "notes,"
+				+ "genid)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -470,6 +582,7 @@ public class ORListing {
 		ps.setInt(cnt++, name.getStatus());
 		ps.setString(cnt++, name.getForminfo());
 		ps.setString(cnt++, name.getNotes());
+		ps.setLong(cnt++, name.getGenCollection());
 		
 		LogU.add(name.getDateTrans());
 		LogU.add(name.getOrNumber());
@@ -480,6 +593,7 @@ public class ORListing {
 		LogU.add(name.getStatus());
 		LogU.add(name.getForminfo());
 		LogU.add(name.getNotes());
+		LogU.add(name.getGenCollection());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -505,8 +619,9 @@ public class ORListing {
 				+ "isid,"
 				+ "orstatus,"
 				+ "forminfo,"
-				+ "notes)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?)";
+				+ "notes,"
+				+ "genid)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -538,6 +653,7 @@ public class ORListing {
 		ps.setInt(cnt++, getStatus());
 		ps.setString(cnt++, getForminfo());
 		ps.setString(cnt++, getNotes());
+		ps.setLong(cnt++, getGenCollection());
 		
 		LogU.add(getDateTrans());
 		LogU.add(getOrNumber());
@@ -548,6 +664,7 @@ public class ORListing {
 		LogU.add(getStatus());
 		LogU.add(getForminfo());
 		LogU.add(getNotes());
+		LogU.add(getGenCollection());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -571,7 +688,8 @@ public class ORListing {
 				+ "isid=?,"
 				+ "orstatus=?,"
 				+ "forminfo=?,"
-				+ "notes=?" 
+				+ "notes=?,"
+				+ "genid=?" 
 				+ " WHERE orid=?";
 		
 		PreparedStatement ps = null;
@@ -593,6 +711,7 @@ public class ORListing {
 		ps.setInt(cnt++, name.getStatus());
 		ps.setString(cnt++, name.getForminfo());
 		ps.setString(cnt++, name.getNotes());
+		ps.setLong(cnt++, name.getGenCollection());
 		ps.setLong(cnt++, name.getId());
 		
 		LogU.add(name.getDateTrans());
@@ -603,6 +722,7 @@ public class ORListing {
 		LogU.add(name.getStatus());
 		LogU.add(name.getForminfo());
 		LogU.add(name.getNotes());
+		LogU.add(name.getGenCollection());
 		LogU.add(name.getId());
 		
 		LogU.add("executing for saving...");
@@ -627,7 +747,8 @@ public class ORListing {
 				+ "isid=?,"
 				+ "orstatus=?,"
 				+ "forminfo=?,"
-				+ "notes=?" 
+				+ "notes=?,"
+				+ "genid=?" 
 				+ " WHERE orid=?";
 		
 		PreparedStatement ps = null;
@@ -650,6 +771,7 @@ public class ORListing {
 		ps.setInt(cnt++, getStatus());
 		ps.setString(cnt++, getForminfo());
 		ps.setString(cnt++, getNotes());
+		ps.setLong(cnt++, getGenCollection());
 		ps.setLong(cnt++, getId());
 		
 		LogU.add(getDateTrans());
@@ -660,6 +782,7 @@ public class ORListing {
 		LogU.add(getStatus());
 		LogU.add(getForminfo());
 		LogU.add(getNotes());
+		LogU.add(getGenCollection());
 		LogU.add(getId());
 		
 		LogU.add("executing for saving...");
@@ -752,6 +875,8 @@ public class ORListing {
 		return result;
 	}
 	
+	
+	
 	public static void delete(String sql, String[] params){
 		
 		Connection conn = null;
@@ -801,7 +926,34 @@ public class ORListing {
 		}catch(SQLException s){}
 		
 	}
-
+	
+	/**
+	 * 
+	 * @param isAdded true adding to group id else removing group id
+	 * @param orId
+	 * @param groupId
+	 */
+	public static void updateGenGoup(boolean isAdded, long orId, long groupId){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection conn = null;
+		boolean result = false;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		if(isAdded) {
+			ps = conn.prepareStatement("UPDATE orlisting SET genid="+ groupId +" WHERE orid="+orId);
+		}else {
+			ps = conn.prepareStatement("UPDATE orlisting SET genid=0 WHERE orid="+orId + " AND genid="+ groupId);
+		}
+		ps.executeUpdate();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		System.out.println("Update successfully gen collection group = " + groupId);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+	}
 	
 	
 }

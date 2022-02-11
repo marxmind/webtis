@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CaptureEvent;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.DragDropEvent;
 import org.primefaces.event.TabChangeEvent;
 
 import com.google.zxing.BinaryBitmap;
@@ -50,6 +51,7 @@ import com.italia.municipality.lakesebu.controller.Cedula;
 import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.controller.FishcageBillingStatment;
+import com.italia.municipality.lakesebu.controller.GenCollection;
 import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.NumberToWords;
 import com.italia.municipality.lakesebu.controller.OR51;
@@ -74,6 +76,7 @@ import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
+import com.italia.municipality.lakesebu.utils.Numbers;
 import com.italia.municipality.lakesebu.utils.OrlistingXML;
 
 import lombok.Getter;
@@ -115,6 +118,7 @@ public class ORListingBean implements Serializable{
 	@Setter @Getter private ORListing orRecordData;
 	@Setter @Getter private List<ORNameList> ornameListData;
 	@Setter @Getter private List<ORListing> ors = new ArrayList<ORListing>();
+	@Setter @Getter private List<ORListing> selections = new ArrayList<ORListing>();
 	@Setter @Getter private String totalCollection;
 	
 	@Setter @Getter private String searchName;
@@ -185,8 +189,8 @@ public class ORListingBean implements Serializable{
 	//private String civilStatusOrganization;
 	@Setter @Getter private String professionBusinessNature;
 	@Setter @Getter private String signatory;
-	@Setter @Getter private String placeOfBirth;
-	@Setter @Getter private String citizenshipOrganization;
+	@Setter @Getter private String placeOfBirth="Lake Sebu";
+	@Setter @Getter private String citizenshipOrganization="FILIPINO";
 	
 	@Setter @Getter private int civilStatusId;
 	@Setter @Getter private List civilStatus;
@@ -194,7 +198,7 @@ public class ORListingBean implements Serializable{
 	@Setter @Getter private int genderId;
 	@Setter @Getter private List genders;
 	
-	@Setter @Getter private Date birthdate;
+	@Setter @Getter private Date birthdate = DateUtils.getDateToday();
 	@Setter @Getter private boolean enableBirthday=true;
 	
 	@Setter @Getter  private String qrcodeMsg="Please place the QRCOde on the camera";
@@ -217,6 +221,61 @@ public class ORListingBean implements Serializable{
 	@Setter @Getter private String notes;
 	
 	@Setter @Getter private String fullnameQR;
+	
+	@Setter @Getter  private List<ORListing> selectedCollection;
+	
+	@Setter @Getter private String tabCurrent="first";
+	
+	@Setter @Getter private double totalSelectedAmount;
+	
+	@Setter @Getter private long orsReportsId;
+	@Setter @Getter private List orsReports;
+	//@Setter @Getter private long genReportId;
+	
+	@Setter @Getter private long reportId;
+	@Setter @Getter private List reports;
+	@Setter @Getter private List<ORListing> finalRpts;
+	@Setter @Getter private double selectedFinalAmount;
+	
+	@Setter @Getter private long rptsCombId;
+	@Setter @Getter private List rptsCombos;
+	
+	@Setter @Getter private double monthlyIncome;
+	@Setter @Getter private double monthlySal;
+	@Setter @Getter private double monthlyTax;
+	
+	public void loadFinalSelectedRpt() {
+		PrimeFaces pf = PrimeFaces.current();
+		int month = DateUtils.getCurrentMonth();
+		int year = DateUtils.getCurrentYear();
+		String valorsReportsId = month>9? month+"" : "0"+month; 
+		valorsReportsId += "-" + year;
+		List<GenCollection> cols = GenCollection.retrieve("", new String[0]);
+		reports = new ArrayList<>();
+		if(cols!=null && cols.size()>0) {
+			for(GenCollection gen : cols){
+				reports.add(new SelectItem(gen.getId(), gen.getMonthYear()));
+				if(valorsReportsId.equalsIgnoreCase(gen.getMonthYear())) {
+					setReportId(gen.getId());
+				}
+			}
+			loadFinalGroupRpt();
+			pf.executeScript("PF('dlgFinalRpt').show()");
+		}	
+	}
+	
+	public void loadFinalGroupRpt() {
+		finalRpts = new ArrayList<ORListing>();
+		
+		Object[] obj = ORListing.retrieveGenReportGroup(getReportId(),null);
+		double tmpAmount = (Double)obj[0];
+		finalRpts = (ArrayList<ORListing>)obj[1];
+		/*for(ORListing or : ORListing.retrieveGenReportGroup(getReportId())) {
+			tmpAmount += or.getAmount();
+			finalRpts.add(or);
+		}*/
+		setSelectedFinalAmount(Numbers.roundOf(tmpAmount, 2));
+	}
 	
 	@PostConstruct
 	public void init() {
@@ -248,12 +307,16 @@ public class ORListingBean implements Serializable{
 		suggestedInfo();
 		
 		clearAllFlds();
+		
+		
+		
+		
 	}
 	
 	public void updateInfo() {
-		//if(orNumber==null) {
-			orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
-		//}
+		
+		orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
+		
 		setLimitData("10");
 		load();
 		suggestedInfo();
@@ -411,6 +474,12 @@ public class ORListingBean implements Serializable{
 		for(FormType form : FormType.values()) {
 			formTypeSearch.add(new SelectItem(form.getId(), form.getName() + " " + form.getDescription()));
 		}
+		
+		rptsCombId = 0;
+		rptsCombos = new ArrayList<>();
+		rptsCombos.add(new SelectItem(0, "Unreported"));
+		rptsCombos.add(new SelectItem(1, "Reported"));
+		rptsCombos.add(new SelectItem(2, "Both"));
 		//setSelectOrTypeId(FormORTypes.NEW.getId());//default OR
 		//if(orNumber==null) {
 		//	orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
@@ -591,6 +660,12 @@ public class ORListingBean implements Serializable{
 			sql += " AND orl.orstatus=" + getStatusSearchId();
 		}
 		
+		if(getRptsCombId()==0) {
+			sql += " AND orl.genid=0";
+		}else if (getRptsCombId()==1) {
+			sql += " AND orl.genid>0";
+		}
+		
 		if(getLimitData()!=null && !getLimitData().isEmpty()) {
 			String num = getLimitData();
 			num = num.replace(".0", "");
@@ -657,6 +732,13 @@ public class ORListingBean implements Serializable{
 		
 		//detailsData();
 		setTotalCollection(Currency.formatAmount(amount));
+		
+		
+		if("second".equalsIgnoreCase(getTabCurrent())) {
+			detailsData();
+		}else if("third".equalsIgnoreCase(getTabCurrent())) {
+			selectedItems();
+		}
 	}
 	
 	
@@ -914,12 +996,344 @@ public class ORListingBean implements Serializable{
 		setTotalAmountSummaryOnly(Currency.formatAmount(sumAmount));
 	}
 	
-	public void onChange(TabChangeEvent event) {
-		if("Reports Viewing".equalsIgnoreCase(event.getTab().getTitle())) {
-			init();
-		}else if("Details/Extract".equalsIgnoreCase(event.getTab().getTitle())) {
-			detailsData();
+	
+	private void selectedItems() {
+		selections = Collections.synchronizedList(new ArrayList<ORListing>());
+		for(ORListing or : getOrs()) {
+			if(or.getGenCollection()==0) {//only non group will be display on the list
+				selections.add(or);
+			}
 		}
+		
+	}
+	public void printSelected(String val) {
+		
+		if("DIRECT".equalsIgnoreCase(val)) {
+			setSelectedCollection(getFinalRpts());
+		}
+		
+		rpts = new ArrayList<Reports>();
+		dtls = new ArrayList<Reports>();
+		
+		Map<Long, PaymentName> mapData = new HashMap<Long, PaymentName>();
+		double grandTotal = 0d;
+		Reports rpt = new Reports();
+		double grandcancelledAmnt = 0d;
+		double barangayctcamount = 0d;
+		double mtoctcamount = 0d;
+		double ctctotal = 0d;
+		for(ORListing or : getSelectedCollection()) {
+			rpt = new Reports();
+			rpt.setF8(or.getStatusName());
+			rpt.setF1(or.getDateTrans());
+			rpt.setF2(or.getOrNumber());
+			rpt.setF3(or.getCustomer().getFullname());
+			rpt.setF4(or.getFormName());
+			rpt.setF5("");
+			rpt.setF6("");
+			rpt.setF7(or.getCollector().getName());
+			dtls.add(rpt);
+			rpts.add(rpt);
+			
+			double amount = 0d;
+			double canAmount = 0d;
+			boolean isCTC = false;
+			
+			if(or.getFormType()==FormType.CTC_INDIVIDUAL.getId()) {
+				isCTC = true;
+			}
+			
+			
+			Department dep = or.getCollector().getDepartment();
+			boolean isbarangayCtc = false;
+			if(dep.getDepid()>=62 && dep.getDepid()<=80) {//barangay cedula
+				isbarangayCtc = true;
+			}
+			
+			
+			for(ORNameList n : or.getOrNameList()) {
+				rpt = new Reports();
+				rpt.setF1("");
+				rpt.setF2("");
+				rpt.setF3("");
+				rpt.setF4("");
+				rpt.setF5(n.getPaymentName().getName());
+				rpt.setF6(Currency.formatAmount(n.getAmount()));
+				rpt.setF7("");
+				dtls.add(rpt);
+				rpts.add(rpt);
+				if(FormStatus.CANCELLED.getId()!=or.getStatus()) {
+					amount += n.getAmount();
+					if(isCTC) {
+						ctctotal += n.getAmount();
+						if(isbarangayCtc) {
+							barangayctcamount += n.getAmount();
+						}else {
+							mtoctcamount += n.getAmount();
+						}
+					}
+				}else {
+					grandcancelledAmnt += n.getAmount();
+					canAmount += n.getAmount();
+				}
+				
+				
+				//for report summary only
+				//do not remove
+				
+				long key = n.getPaymentName().getId();	
+				if(mapData!=null && mapData.containsKey(key)) {
+					double amnt = mapData.get(key).getAmount();
+					amnt += n.getAmount();
+					PaymentName na = n.getPaymentName();
+					na.setAmount(amnt);
+					mapData.put(key, na);
+				}else {
+					PaymentName na = n.getPaymentName();
+					na.setAmount(n.getAmount());
+					mapData.put(key, na);
+				}
+				
+			}
+			rpt = new Reports();
+			rpt.setF1("Total");
+			rpt.setF2("");
+			rpt.setF3("");
+			rpt.setF4("");
+			rpt.setF5("");
+			if(FormStatus.CANCELLED.getId()!=or.getStatus()) {
+				rpt.setF6(Currency.formatAmount(amount));
+			}else {
+				rpt.setF6("("+Currency.formatAmount(canAmount)+")");
+			}
+			rpt.setF7("");
+			dtls.add(rpt);
+			//rpts.add(rpt);
+			grandTotal += amount;
+		}
+		rpt = new Reports();
+		rpt.setF1("Grand Total");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("");
+		rpt.setF6(Currency.formatAmount(grandTotal));
+		dtls.add(rpt);
+		rpts.add(rpt);
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("");
+		rpt.setF6("");
+		dtls.add(rpt);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("Summary Details");
+		rpt.setF6("");
+		dtls.add(rpt);
+		
+		rptsOnly = new ArrayList<Reports>();
+		
+		double sumAmount = 0d;
+		String sumN="";
+		String sumA="";
+		Reports rss = new Reports();
+		for(PaymentName nem : mapData.values()) {
+			rpt = new Reports();
+			rpt.setF1("");
+			rpt.setF2("");
+			rpt.setF3("");
+			rpt.setF4("");
+			rpt.setF5(nem.getName());
+			sumAmount += nem.getAmount();
+			rpt.setF6(Currency.formatAmount(nem.getAmount()));
+			dtls.add(rpt);
+			sumN += rpt.getF5() + "\n";
+			sumA += rpt.getF6() + "\n";
+			
+			rss = new Reports();
+			rss.setF1(nem.getName());
+			rss.setF2(Currency.formatAmount(nem.getAmount()));
+			rptsOnly.add(rss);
+		}
+		
+		sumAmount -= grandcancelledAmnt;
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("Minus Cancelled OR");
+		rpt.setF6("("+Currency.formatAmount(grandcancelledAmnt)+")");
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		rss = new Reports();
+		rss.setF1("Minus Cancelled OR");
+		rss.setF2("("+Currency.formatAmount(grandcancelledAmnt)+")");
+		rptsOnly.add(rss);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("CTC Collection" + "("+Currency.formatAmount(ctctotal)+")");
+		rpt.setF6("");
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		rss = new Reports();
+		rss.setF1("CTC Collection" + "("+Currency.formatAmount(ctctotal)+")");
+		rss.setF2("");
+		rptsOnly.add(rss);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("MTO CTC Collection" + "("+Currency.formatAmount(mtoctcamount)+")");
+		rpt.setF6("");
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		rss = new Reports();
+		rss.setF1("MTO CTC Collection" + "("+Currency.formatAmount(mtoctcamount)+")");
+		rss.setF2("");
+		rptsOnly.add(rss);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("Barangay CTC Collection" + "("+Currency.formatAmount(barangayctcamount)+")");
+		rpt.setF6("");
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		rss = new Reports();
+		rss.setF1("Barangay CTC Collection" + "("+Currency.formatAmount(barangayctcamount)+")");
+		rss.setF2("");
+		rptsOnly.add(rss);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		double sharedAmount = barangayctcamount * 0.50;
+		rpt.setF5("Barangay Shared CTC Amount(50%) (" + Currency.formatAmount(sharedAmount)+")");
+		rpt.setF6("");
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		rss = new Reports();
+		rss.setF1("Barangay Shared CTC Amount(50%) (" + Currency.formatAmount(sharedAmount)+")");
+		rss.setF2("");
+		rptsOnly.add(rss);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("Grand Total");
+		rpt.setF6(Currency.formatAmount(sumAmount));
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		setSumNames(sumN);
+		setSumAmounts(sumA);
+		
+		setTotalAmountSummaryOnly(Currency.formatAmount(sumAmount));
+		
+		printSummaryOnly();
+	}
+	
+	public void onChange(TabChangeEvent event) {
+		
+		PrimeFaces pf = PrimeFaces.current();
+		
+		
+		if("Reports Viewing".equalsIgnoreCase(event.getTab().getTitle())) {
+			setTabCurrent("first");
+			init();
+			pf.executeScript("hideDrop()");
+			setSelectedCollection(new ArrayList<ORListing>());
+		}else if("Details/Extract".equalsIgnoreCase(event.getTab().getTitle())) {
+			setTabCurrent("second");
+			detailsData();
+			pf.executeScript("hideDrop()");
+			setSelectedCollection(new ArrayList<ORListing>());
+		}else if("Selection Reports".equalsIgnoreCase(event.getTab().getTitle())) {
+			setTabCurrent("third");
+			selectedItems();
+			
+			
+			
+			int month = DateUtils.getCurrentMonth();
+			int year = DateUtils.getCurrentYear();
+			String valorsReportsId = month>9? month+"" : "0"+month; 
+			valorsReportsId += "-" + year;
+			
+			List<GenCollection> cols = GenCollection.retrieve("", new String[0]);
+			orsReports = new ArrayList<>();
+			boolean hasFoundLatestGroup = false;
+			if(cols!=null && cols.size()>0) {
+				for(GenCollection gen : cols){
+					orsReports.add(new SelectItem(gen.getId(), gen.getMonthYear()));
+					if(valorsReportsId.equalsIgnoreCase(gen.getMonthYear())) {
+						hasFoundLatestGroup = true;
+						setOrsReportsId(gen.getId());
+						loadSelectedGroupRpt("PARTIAL");
+					}
+				}
+			}else {//group for the first time
+				hasFoundLatestGroup = true;
+				GenCollection.saveGen(GenCollection.builder()
+						.dateTrans(DateUtils.getCurrentDateYYYYMMDD())
+						.monthYear(valorsReportsId)
+						.isActive(1)
+						.build());
+				orsReports.add(new SelectItem(1, valorsReportsId));
+				setOrsReportsId(1);
+				loadSelectedGroupRpt("PARTIAL");
+			}
+			
+			if(!hasFoundLatestGroup) {//adding new group if not yet on the database
+				GenCollection gen = GenCollection.saveGen(GenCollection.builder()
+						.dateTrans(DateUtils.getCurrentDateYYYYMMDD())
+						.monthYear(valorsReportsId)
+						.isActive(1)
+						.build());
+				orsReports.add(new SelectItem(gen.getId(), gen.getMonthYear()));
+				setOrsReportsId(gen.getId());
+				loadSelectedGroupRpt("PARTIAL");
+			}
+			//System.out.println("check listing of group : " + getSelectedCollection().size());
+			pf.executeScript("showDrop()");
+			/*GenCollection gen = GenCollection.retrieveSelected(valorsReportsId);
+			selectedCollection = ORListing.retrieve(" AND genid="+gen.getId(), new String[0]);
+			if(selectedCollection!=null && selectedCollection.size()>0) {
+				setOrsReportsId(selectedCollection.get(0).getGenCollection());
+				loadSelectedGroupRpt();
+			}*/
+		}
+		
 			
 	}
 	
@@ -1369,6 +1783,10 @@ public class ORListingBean implements Serializable{
 	
 	public void clearFlds() {
 		
+		setMonthlyIncome(0);
+		setMonthlySal(0);
+		setMonthlyTax(0);
+		
 		setStatusId(4);
 		setStatusSearchId(0);
 		setCollectorId(0);
@@ -1395,7 +1813,7 @@ public class ORListingBean implements Serializable{
 		setAmount6(0);
 		setAmount7(0);
 		setGenderId(1);
-		setBirthdate(null);
+		
 		setTinNo(null);
 		setHieghtDateReg(null);
 		setWeight(null);
@@ -1403,14 +1821,17 @@ public class ORListingBean implements Serializable{
 		//setCivilStatusOrganization(null);
 		setProfessionBusinessNature(null);
 		setSignatory(null);
-		setPlaceOfBirth(null);
-		setCitizenshipOrganization(null);
+		
+		setBirthdate(DateUtils.getDateToday());
+		setPlaceOfBirth("Lake Sebu");
+		setCitizenshipOrganization("FILIPINO");
 		
 		namesDataSelected = new ArrayList<PaymentName>();//Collections.synchronizedList(new ArrayList<PaymentName>());
 		selectedPaymentNameMap = new HashMap<Long, PaymentName>();//Collections.synchronizedMap(new HashMap<Long, PaymentName>());
 	}
 	
 	public void saveData() {
+		boolean isCashTicket=false;
 		com.italia.municipality.lakesebu.licensing.controller.Customer customer = selectedCustomer();
 		ORListing or = new ORListing();
 		
@@ -1436,7 +1857,11 @@ public class ORListingBean implements Serializable{
 			Application.addMessage(3, "Error", "Please provide payment name");
 		}
 		
-		if(isOk && customer==null) {
+		if(FormType.CT_2.getId()==getFormTypeId() || FormType.CT_5.getId()==getFormTypeId()) {
+			isCashTicket = true;
+		}
+		
+		if(isOk && customer==null && !isCashTicket) {
 			customer = new com.italia.municipality.lakesebu.licensing.controller.Customer();
 			
 			if(getMapCustomer()!=null && getMapCustomer().size()>0) {
@@ -1599,12 +2024,12 @@ public class ORListingBean implements Serializable{
 			setOrnameListData(null);
 			setSelectedPaymentNameMap(null);
 			setOrNumber(null);
-			setCollectorId(or.getCollector().getId());
+			//setCollectorId(or.getCollector().getId());
 			setNotes(null);
 			//init(); //do not load data to reduce loading
 			
-			
-			
+			System.out.println("check collector id : " + getCollectorId());
+			int collectorTemp = or.getCollector().getId();//temporary assigen collector due to method on cedula clearing all fields
 			//if(getSelectOrTypeId()>0) {
 				//namesDataSelected = tmpName;
 				//selectedPaymentNameMap = tmpMap;
@@ -1633,16 +2058,42 @@ public class ORListingBean implements Serializable{
 				setPlaceOfBirth(null);
 				setCitizenshipOrganization(null);
 				selectedOR();
+				
+				if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {
+					setAmount1(5.00);
+					setSearchPayName("ctc");
+					ctcFlds(true);
+					enableBirthday=false;
+					cedulaInterest();
+				}else if(FormType.CTC_CORPORATION.getId()==getFormTypeId()) {
+					setAmount1(500.00);
+					setSearchPayName("ctc");
+					ctcFlds(true);
+					enableBirthday=true;
+					cedulaCorporation();
+				}
+				
+				setBirthdate(DateUtils.getDateToday());
 			}
 			
 			
-			setFormTypeId(FormType.AF_51.getId());
+			
+			
+			setCollectorId(collectorTemp);
+			//setFormTypeId(FormType.AF_51.getId());
+			setFormTypeId(getFormTypeId());
+			
 			updateInfo();//reduce data for reloading
 		}
 		
 	}
 	
 	public void clearAllFlds() {
+		
+		setMonthlyIncome(0);
+		setMonthlySal(0);
+		setMonthlyTax(0);
+		
 		//dateTrans = DateUtils.getDateToday();
 		namesDataSelected = new ArrayList<PaymentName>();
 		selectedPaymentNameMap = new HashMap<Long, PaymentName>();
@@ -1668,15 +2119,15 @@ public class ORListingBean implements Serializable{
 			setAmount6(0);
 			setAmount7(0);
 			setGenderId(1);
-			setBirthdate(null);
+			setBirthdate(DateUtils.getDateToday());
 			setTinNo(null);
 			setHieghtDateReg(null);
 			setWeight(null);
 			setCustomerAddress(null);
 			setCivilStatusId(1);
 			setProfessionBusinessNature(null);
-			setPlaceOfBirth(null);
-			setCitizenshipOrganization(null);
+			setPlaceOfBirth("Lake Sebu");
+			setCitizenshipOrganization("FILIPINO");
 			selectedOR();
 		}
 		
@@ -1699,6 +2150,9 @@ public class ORListingBean implements Serializable{
 	}
 	
 	public void clickItem(ORListing or) {
+		
+		if(or.getGenCollection()==0) {
+		
 		setSelectedPaymentNameMap(new HashMap<Long, PaymentName>());//empty the temporary data location
 		setOrRecordData(or);
 		setStatusId(or.getStatus());
@@ -1791,12 +2245,22 @@ public class ORListingBean implements Serializable{
 			getSelectedPaymentNameMap().put(on.getPaymentName().getId(), name);
 		}
 		setTotalAmount(Currency.formatAmount(amount));
+		
+		}else {
+			clearAllFlds();
+			Application.addMessage(2, "Not Allowed", "Editing for this Official Receipt is no longer allowed");
+		}
 	}
 	
 	public void clickItemCopy(ORListing or) {
+		or.setGenCollection(0);//reset report group
 		clickItem(or);
 		setOrRecordData(null);
-		setOrNumber(null);
+		
+		orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
+		
+		dateTrans = DateUtils.getDateToday();
+		address = "Lake Sebu, So. Cot.";
 	}
 	
 	public void clickItemFishCageBill(FishcageBillingStatment st) {
@@ -1913,7 +2377,7 @@ public class ORListingBean implements Serializable{
 	  		amnt = amnt.replace(",", "");
 	  		param.put("PARAM_WORDS", numberToWords.changeToWords(amnt).toUpperCase().replace("/", " / ") );
 	  		param.put("PARAM_CASHCHECK", "CASH");
-	  		param.put("PARAM_COLLECTING_OFFICER", "FERDINAND L. LOPEZ");
+	  		param.put("PARAM_COLLECTING_OFFICER", "FERDINAND L. LOPEZ\n" + DateUtils.getCurrentDateMMDDYYYYTIME());
 			
 	  		List<OR51> ors = new ArrayList<OR51>();
 			if(FormType.CTC_INDIVIDUAL.getId()==py.getFormType() || FormType.CTC_CORPORATION.getId()==py.getFormType()) {
@@ -2066,7 +2530,6 @@ public class ORListingBean implements Serializable{
 			}
 		
 	}
-	
 	
 	public void print() {
 		//List<Reports> rpts = Collections.synchronizedList(new ArrayList<Reports>());
@@ -2449,7 +2912,33 @@ private void close(Closeable resource) {
         }
     }
 }
-
+	public void calculateTaxGross() {
+		double yearly = getMonthlyTax() * GlobalVar.YEARLY;
+		setLabel4(yearly);
+		//double tax = getLabel4();
+		double payable = yearly / GlobalVar.CEDULA_DIVEDEND;
+		
+		setAmount4(payable);
+		calculateCedula();
+	}
+	public void calculateSalariesGross() {
+		double yearly = getMonthlySal() * GlobalVar.YEARLY;
+		setLabel3(yearly);
+		//double salaries = getLabel3();
+		double payable = yearly / GlobalVar.CEDULA_DIVEDEND;
+		setAmount3(payable);
+		calculateCedula();
+	}
+	
+	public void calculateGrossRptax() {
+		double yearly = getMonthlyIncome() * GlobalVar.YEARLY; 
+		setLabel2(yearly);
+		//double gross = getLabel2();
+		double payable = yearly / GlobalVar.CEDULA_DIVEDEND;
+		setAmount2(payable);
+		
+		calculateCedula();
+	}
 	
 	public void calculateCedula() {
 		
@@ -2507,7 +2996,7 @@ private void close(Closeable resource) {
 			setPayorName("N/A");
 			setOrNumber("0");
 			setSearchPayName("cash");
-			cedulaInterest();
+			//cedulaInterest();
 		}else if(FormType.CTC_INDIVIDUAL.getId()==getFormTypeId()) {
 			setAmount1(5.00);
 			setSearchPayName("ctc");
@@ -3247,5 +3736,319 @@ private void close(Closeable resource) {
 		}else {
 			pf.executeScript("PF('dlgFetch').show(1000)");
 		}
+	}
+	
+	public void loadSelectedGroupRpt(String partial) {
+		setSelectedCollection(new ArrayList<ORListing>());
+		/*double tmpAmount = 0d;
+		for(ORListing or : ORListing.retrieveGenReportGroup(getOrsReportsId())) {
+			tmpAmount += or.getAmount();
+			selectedCollection.add(or);
+		}*/
+		if("PARTIAL".equalsIgnoreCase(partial)) {
+			partial = " LIMIT 10";
+		}else {
+			partial = null;
+		}
+		
+		
+		Object[] obj = ORListing.retrieveGenReportGroup(getReportId(),partial);
+		double tmpAmount = (Double)obj[0];
+		selectedCollection = (ArrayList<ORListing>)obj[1];
+		setTotalSelectedAmount(Numbers.roundOf(tmpAmount, 2));
+		
+	}
+	
+	public void onORDrop(DragDropEvent<ORListing> ddEvent) {
+		ORListing ors = ddEvent.getData();
+		System.out.println("Adding OR: " + ors.getOrNumber() + " groupId: " + getOrsReportsId() + " ORID: " + ors.getId());
+		if(ors.getGenCollection()==0) {
+		
+		double amount = ors.getAmount();
+		double tmpAmount = getTotalSelectedAmount();
+		setTotalSelectedAmount(Numbers.roundOf(tmpAmount + amount, 2));
+		
+		//ors.setGenCollection(getOrsReportsId());
+		ORListing.updateGenGoup(true,ors.getId(), getOrsReportsId());
+		selections.remove(ors);
+		getSelectedCollection().add(ors);
+        //loadSelectedGroupRpt();
+        
+		}else {
+			Application.addMessage(2, "Warning", "Accountable form is Already on the group.");
+		}
+    }
+	public void commandActionDelete(ORListing orsel) {
+		getSelectedCollection().remove(orsel);
+		ORListing.updateGenGoup(false,orsel.getId(), getOrsReportsId());
+		double amount = orsel.getAmount();
+		double tmpAmount = getTotalSelectedAmount();
+		setTotalSelectedAmount(Numbers.roundOf(tmpAmount - amount, 2));
+		//loadSelectedGroupRpt();
+	}
+	
+	public void printFinal(String val) {
+		List<ORListing> orselected = new ArrayList<ORListing>();
+		if("DIRECT".equalsIgnoreCase(val)) {
+			orselected = getFinalRpts();
+		}else {
+			orselected = getSelectedCollection();
+		}
+
+		rpts = new ArrayList<Reports>();//Collections.synchronizedList(new ArrayList<Reports>());
+		dtls = new ArrayList<Reports>();//Collections.synchronizedList(new ArrayList<Reports>());
+		//init();//get the data from init
+		Map<Long, PaymentName> mapData = new HashMap<Long, PaymentName>();//Collections.synchronizedMap(new HashMap<Long, PaymentName>());
+		double grandTotal = 0d;
+		Reports rpt = new Reports();
+		double grandcancelledAmnt = 0d;
+		double barangayctcamount = 0d;
+		double mtoctcamount = 0d;
+		double ctctotal = 0d;
+		for(ORListing or : orselected) {
+			rpt = new Reports();
+			rpt.setF8(or.getStatusName());
+			rpt.setF1(or.getDateTrans());
+			rpt.setF2(or.getOrNumber());
+			rpt.setF3(or.getCustomer().getFullname());
+			rpt.setF4(or.getFormName());
+			rpt.setF5("");
+			rpt.setF6("");
+			rpt.setF7(or.getCollector().getName());
+			dtls.add(rpt);
+			rpts.add(rpt);
+			
+			double amount = 0d;
+			double canAmount = 0d;
+			boolean isCTC = false;
+			//if(or.getFormType()==FormType.CTC_CORPORATION.getId() || or.getFormType()==FormType.CTC_INDIVIDUAL.getId()) {
+			if(or.getFormType()==FormType.CTC_INDIVIDUAL.getId()) {
+				isCTC = true;
+			}
+			
+			//this line of code has been change. check below codes
+			//boolean isbarangayCtc = or.getCollector().getDepartment().getDepid()>=62? true : false; //62-80 = barangay
+			
+			//revise above condition for barangay
+			Department dep = or.getCollector().getDepartment();
+			boolean isbarangayCtc = false;
+			if(dep.getDepid()>=62 && dep.getDepid()<=80) {//barangay cedula
+				isbarangayCtc = true;
+			}
+			
+			
+			for(ORNameList n : or.getOrNameList()) {
+				rpt = new Reports();
+				rpt.setF1("");
+				rpt.setF2("");
+				rpt.setF3("");
+				rpt.setF4("");
+				rpt.setF5(n.getPaymentName().getName());
+				rpt.setF6(Currency.formatAmount(n.getAmount()));
+				rpt.setF7("");
+				dtls.add(rpt);
+				rpts.add(rpt);
+				if(FormStatus.CANCELLED.getId()!=or.getStatus()) {
+					amount += n.getAmount();
+					if(isCTC) {
+						ctctotal += n.getAmount();
+						if(isbarangayCtc) {
+							barangayctcamount += n.getAmount();
+						}else {
+							mtoctcamount += n.getAmount();
+						}
+					}
+				}else {
+					grandcancelledAmnt += n.getAmount();
+					canAmount += n.getAmount();
+				}
+				
+				
+				//for report summary only
+				//do not remove
+				
+				long key = n.getPaymentName().getId();	
+				if(mapData!=null && mapData.containsKey(key)) {
+					double amnt = mapData.get(key).getAmount();
+					amnt += n.getAmount();
+					PaymentName na = n.getPaymentName();
+					na.setAmount(amnt);
+					mapData.put(key, na);
+				}else {
+					PaymentName na = n.getPaymentName();
+					na.setAmount(n.getAmount());
+					mapData.put(key, na);
+				}
+				
+			}
+			rpt = new Reports();
+			rpt.setF1("Total");
+			rpt.setF2("");
+			rpt.setF3("");
+			rpt.setF4("");
+			rpt.setF5("");
+			if(FormStatus.CANCELLED.getId()!=or.getStatus()) {
+				rpt.setF6(Currency.formatAmount(amount));
+			}else {
+				rpt.setF6("("+Currency.formatAmount(canAmount)+")");
+			}
+			rpt.setF7("");
+			dtls.add(rpt);
+			//rpts.add(rpt);
+			grandTotal += amount;
+		}
+		rpt = new Reports();
+		rpt.setF1("Grand Total");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("");
+		rpt.setF6(Currency.formatAmount(grandTotal));
+		dtls.add(rpt);
+		rpts.add(rpt);
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("");
+		rpt.setF6("");
+		dtls.add(rpt);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("Summary Details");
+		rpt.setF6("");
+		dtls.add(rpt);
+		
+		rptsOnly = new ArrayList<Reports>();//Collections.synchronizedList(new ArrayList<Reports>());
+		
+		double sumAmount = 0d;
+		String sumN="";
+		String sumA="";
+		Reports rss = new Reports();
+		for(PaymentName nem : mapData.values()) {
+			rpt = new Reports();
+			rpt.setF1("");
+			rpt.setF2("");
+			rpt.setF3("");
+			rpt.setF4("");
+			rpt.setF5(nem.getName());
+			sumAmount += nem.getAmount();
+			rpt.setF6(Currency.formatAmount(nem.getAmount()));
+			dtls.add(rpt);
+			sumN += rpt.getF5() + "\n";
+			sumA += rpt.getF6() + "\n";
+			
+			rss = new Reports();
+			rss.setF1(nem.getName());
+			rss.setF2(Currency.formatAmount(nem.getAmount()));
+			rptsOnly.add(rss);
+		}
+		
+		sumAmount -= grandcancelledAmnt;
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("Minus Cancelled OR");
+		rpt.setF6("("+Currency.formatAmount(grandcancelledAmnt)+")");
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		rss = new Reports();
+		rss.setF1("Minus Cancelled OR");
+		rss.setF2("("+Currency.formatAmount(grandcancelledAmnt)+")");
+		rptsOnly.add(rss);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("CTC Collection" + "("+Currency.formatAmount(ctctotal)+")");
+		rpt.setF6("");
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		rss = new Reports();
+		rss.setF1("CTC Collection" + "("+Currency.formatAmount(ctctotal)+")");
+		rss.setF2("");
+		rptsOnly.add(rss);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("MTO CTC Collection" + "("+Currency.formatAmount(mtoctcamount)+")");
+		rpt.setF6("");
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		rss = new Reports();
+		rss.setF1("MTO CTC Collection" + "("+Currency.formatAmount(mtoctcamount)+")");
+		rss.setF2("");
+		rptsOnly.add(rss);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("Barangay CTC Collection" + "("+Currency.formatAmount(barangayctcamount)+")");
+		rpt.setF6("");
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		rss = new Reports();
+		rss.setF1("Barangay CTC Collection" + "("+Currency.formatAmount(barangayctcamount)+")");
+		rss.setF2("");
+		rptsOnly.add(rss);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		double sharedAmount = barangayctcamount * 0.50;
+		rpt.setF5("Barangay Shared CTC Amount(50%) (" + Currency.formatAmount(sharedAmount)+")");
+		rpt.setF6("");
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		rss = new Reports();
+		rss.setF1("Barangay Shared CTC Amount(50%) (" + Currency.formatAmount(sharedAmount)+")");
+		rss.setF2("");
+		rptsOnly.add(rss);
+		
+		rpt = new Reports();
+		rpt.setF1("");
+		rpt.setF2("");
+		rpt.setF3("");
+		rpt.setF4("");
+		rpt.setF5("Grand Total");
+		rpt.setF6(Currency.formatAmount(sumAmount));
+		dtls.add(rpt);
+		sumN += rpt.getF5() + "\n";
+		sumA += rpt.getF6() + "\n";
+		
+		setSumNames(sumN);
+		setSumAmounts(sumA);
+		
+		setTotalAmountSummaryOnly(Currency.formatAmount(sumAmount));
+	
+		
+		
+		print();
 	}
 }

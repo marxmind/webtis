@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.Currency;
@@ -57,6 +59,60 @@ public class BusinessPermit {
 	//temp
 	private String capital;
 	private String gross;
+	
+	public static Map<String, Map<String, Double>>  getPerType(String param) {
+		
+		
+		Map<String, Map<String, Double>> years = new LinkedHashMap<String, Map<String, Double>>();
+		Map<String, Double> types = new LinkedHashMap<String, Double>();
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement("SELECT year,typeof,memotype, count(*) as total FROM businesspermit WHERE isactivebusiness=1 AND ("+ param +") group by year, typeof,memotype");
+		
+		rs = ps.executeQuery();
+		String year = "";
+		String type = "";
+		double count = 0d;
+		while(rs.next()){
+			
+			year = rs.getString("year");
+			type = rs.getString("typeof") + "-" + rs.getString("memotype");
+			count = rs.getDouble("total");
+			
+			System.out.println("Year: " + year + "\tType: " + type + "\tTotal: " + count);
+			
+			if(years!=null) {
+				if(years.containsKey(year)) {
+					if(years.get(year).containsKey(type)) {
+						years.get(year).put(type, count);
+					}else {
+						years.get(year).put(type, count);
+					}
+				}else {
+					types = new LinkedHashMap<String, Double>();
+					types.put(type, count);
+					years.put(year, types);
+				}
+			}else {
+				types.put(type, count);
+				years.put(year, types);
+			}
+			
+			
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return years;
+	}
+	
 	
 	public static String getNewPlateNo() {
 		String sql = "SELECT businessplateno FROM businesspermit WHERE isactivebusiness=1 ORDER BY bid DESC limit 1";

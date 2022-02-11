@@ -2,6 +2,8 @@ package com.italia.municipality.lakesebu.global;
 
 import java.io.File;
 
+import com.italia.municipality.lakesebu.enm.AppConf;
+
 /**
  * 
  * @author Mark Italia
@@ -11,7 +13,9 @@ import java.io.File;
  */
 public class GlobalVar {
 	
-	public static final String APP_NAME = "webtis";
+	public static final double YEARLY = 12.0;
+	public static final double CEDULA_DIVEDEND = 1000.00;
+	public static final String APP_NAME =  AppConf.APP_CONFIG_FOLDER_NAME.getValue();// "webtis";
 	public static final String SEP = File.separator;
 	public static final String APP_CONF_DIR = "C:"+SEP+APP_NAME+SEP+"conf"+SEP;
 	public static final String APP_DATABASE_CONF = "C:"+SEP+APP_NAME+SEP+"conf"+SEP+"dbconf.max";

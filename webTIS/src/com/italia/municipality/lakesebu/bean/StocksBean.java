@@ -9,11 +9,19 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import com.italia.municipality.lakesebu.controller.CollectionInfo;
+import com.italia.municipality.lakesebu.controller.Collector;
+import com.italia.municipality.lakesebu.controller.Form11Report;
+import com.italia.municipality.lakesebu.controller.IssuedForm;
 import com.italia.municipality.lakesebu.controller.Stocks;
 import com.italia.municipality.lakesebu.enm.FormType;
+import com.italia.municipality.lakesebu.enm.FundType;
 import com.italia.municipality.lakesebu.enm.StockStatus;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.DateUtils;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 
@@ -37,7 +45,7 @@ public class StocksBean implements Serializable{
 	private String seriesTo;
 	private int stabNo;
 	private Stocks stockData;
-	private List<Stocks> stocks = new ArrayList<Stocks>();//Collections.synchronizedList(new ArrayList<Stocks>());
+	private List<Stocks> stocks = new ArrayList<Stocks>();
 	
 	private int formTypeId;
 	private List formType;
@@ -45,9 +53,17 @@ public class StocksBean implements Serializable{
 	private int formTypeIdSearch;
 	private List formTypeSearch;
 	
+	@Getter @Setter private int fundId;
+	@Getter @Setter private List funds;
+	@Getter @Setter private int collectorId;
+	@Getter @Setter private List collectors;
+	@Getter @Setter List<Form11Report> forms;
+	@Getter @Setter private String searchSeries;
+	
 	@PostConstruct
 	public void init() {
-		stocks = new ArrayList<Stocks>();//Collections.synchronizedList(new ArrayList<Stocks>());
+		stocks = new ArrayList<Stocks>();
+		forms = new ArrayList<Form11Report>();
 		
 		String sql = " AND cl.isid=0 AND st.isactivestock=1 AND (st.statusstock="+ StockStatus.NOT_HANDED.getId() +" OR st.statusstock="+ StockStatus.PARTIAL_ISSUED.getId() + ")";
 		String[] params = new String[0];
@@ -59,6 +75,134 @@ public class StocksBean implements Serializable{
 		sql +=" ORDER BY st.datetrans ASC";
 		
 		stocks = Stocks.retrieve(sql, params);
+		
+		loadOthers();
+	}
+	
+	
+	
+	
+	private void loadOthers() {
+		collectors = new ArrayList<>();
+		//collectors.add(new SelectItem(0, "Select Collector"));
+		String sql = "";
+		for(Collector col : Collector.retrieve(sql, new String[0])) {
+			collectors.add(new SelectItem(col.getId(), col.getDepartment().getDepartmentName()+"/"+col.getName()));
+		}
+		
+		funds = new ArrayList<>();
+		setFundId(1);
+		//funds.add(new SelectItem(0, "All Funds"));
+		for(FundType f : FundType.values()) {
+			funds.add(new SelectItem(f.getId(), f.getName()));
+		}
+	}
+	
+	public void loadIssuedForm() {
+		String sql = " AND frm.fundid=? AND frm.formstatus=1 AND cl.isid=?";
+		String[] params = new String[2];
+		params[0] = getFundId()+"";
+		params[1] = getCollectorId()+"";
+		
+		/*
+		 * if(getCollectorId()==0) { sql = " AND frm.fundid=? AND frm.formstatus=1 ";
+		 * params = new String[1]; params[0] = getFundId()+""; }
+		 */
+		
+		if(getSearchSeries()!=null && !getSearchSeries().isEmpty()) {
+			sql += " AND ( frm.beginningNoLog like '%"+ getSearchSeries() +"%' OR frm.endingNoLog like '%"+ getSearchSeries() +"%' OR cl.collectorname like '%"+ getSearchSeries() +"%')";
+		}
+		
+		forms = new ArrayList<Form11Report>();
+		List<IssuedForm> iss = IssuedForm.retrieve(sql, params);
+		if(iss!=null && iss.size()>1) {
+			for(IssuedForm form : iss) {
+				loadLatestSeries(form.getId(),form.getEndingNo(), forms);
+			}
+		}else if(iss!=null && iss.size()==1) {
+				IssuedForm form = iss.get(0);
+				loadLatestSeries(form.getId(),form.getEndingNo(),forms);
+		}		
+	}
+	
+	public void loadLatestSeries(long issuedId, long beginnngNo,List<Form11Report> forms) {
+		String sql = " AND frm.fundid=? AND cl.isid=? AND sud.logid=? ORDER BY frm.colid DESC limit 1";
+		
+		String[] params = new String[3];
+		params[0] = getFundId()+"";
+		params[1] = getCollectorId()+"";
+		params[2] = issuedId+"";
+		Form11Report form11 = new Form11Report();
+		List<CollectionInfo> infos = CollectionInfo.retrieve(sql, params);
+		if(infos!=null && infos.size()>0) {
+			CollectionInfo info = infos.get(0);
+			form11.setF6(info.getIssuedForm().getIssuedDate() + " (" + DateUtils.getNumberyDaysNow(info.getIssuedForm().getIssuedDate()) + " days)");
+			form11.setF1(info.getCollector().getName());
+			form11.setF2(FormType.nameId(info.getFormType()));
+			long start = info.getEndingNo()+1;
+			form11.setF3(start+"");
+			form11.setF4(info.getIssuedForm().getEndingNo()+"");
+			long qty =  info.getIssuedForm().getEndingNo() - start;  //info.getIssuedForm().getEndingNo() - beginnngNo;
+			qty +=1;
+			form11.setF5(qty+"");
+			
+			if(getFormTypeId()==9 || getFormTypeId()==10) {
+				
+				long beg =   info.getBeginningNo();
+				long to =  info.getEndingNo();
+				
+				qty = 0;
+				
+				if(FormType.CT_2.getId()==info.getFormType()) {
+					qty = beg / 2;
+				}else if(FormType.CT_5.getId()==info.getFormType()) {
+					qty = beg / 5;
+				} 
+				
+				form11.setF3(beg+"");
+				form11.setF4(to+"");
+				form11.setF5(qty+"");
+			}
+			
+		}else {
+			
+			sql = " AND frm.fundid=? AND frm.formstatus=1 AND cl.isid=? AND frm.logid=?";
+			params = new String[3];
+			params[0] = getFundId()+"";
+			params[1] = getCollectorId()+"";
+			params[2] = issuedId+"";
+			
+			List<IssuedForm> isforms = IssuedForm.retrieve(sql, params);
+			
+			IssuedForm isfrm = isforms.get(0);
+			form11.setF6(isfrm.getIssuedDate() + " (" + DateUtils.getNumberyDaysNow(isfrm.getIssuedDate()) + " days)");
+			form11.setF1(isfrm.getCollector().getName());
+			form11.setF2(FormType.nameId(isfrm.getFormType()));
+			
+			form11.setF3(isfrm.getBeginningNo()+"");
+			form11.setF4(isfrm.getEndingNo()+"");
+			form11.setF5(isfrm.getPcs()+"");
+			
+			//if(getFormTypeId()>8) {
+			if(getFormTypeId()==9 || getFormTypeId()==10) {
+				long beg =   isfrm.getBeginningNo();
+				long to =  isfrm.getEndingNo();
+				
+				long qty = 0;
+				
+				if(FormType.CT_2.getId()==isfrm.getFormType()) {
+					qty = beg / 2;
+				}else if(FormType.CT_5.getId()==isfrm.getFormType()) {
+					qty = beg / 5;
+				} 
+				
+				form11.setF3(beg+"");
+				form11.setF4(to+"");
+				form11.setF5(qty+"");
+				
+			}
+		}
+		forms.add(form11);
 	}
 	
 	public void generateSeries() {

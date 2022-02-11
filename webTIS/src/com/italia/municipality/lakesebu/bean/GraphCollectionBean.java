@@ -53,6 +53,10 @@ public class GraphCollectionBean implements Serializable{
 	
 	@PostConstruct
 	public void init() {
+		
+		
+		
+		
 		collectorMap = new LinkedHashMap<Integer, Collector>();
 		
 		loadDummyData();

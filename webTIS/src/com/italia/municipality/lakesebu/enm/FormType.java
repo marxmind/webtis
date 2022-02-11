@@ -8,7 +8,7 @@ package com.italia.municipality.lakesebu.enm;
  */
 public enum FormType {
 	
-	CTC_INDIVIDUAL(1, "C.T.","Form 0016"),
+	CTC_INDIVIDUAL(1, "C.T.C","Form 0016"),
 	CTC_CORPORATION(2, "C & C1","Form 0017"),
 	AF_51(3, "AF-51","Form 51"),
 	AF_52(4, "AF-52","Form 52"),

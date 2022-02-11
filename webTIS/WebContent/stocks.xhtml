@@ -68,6 +68,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     
     <div class="p-col-12 p-md-3">
             <div class="ui-inputgroup" style="float:right">
+            	<p:commandButton value="Show Forms Remaining" oncomplete="PF('dlgForms').show(1000)" />
             	<p:commandButton update="gridId" value="New" icon="fa fa-file-o" actionListener="#{stocksBean.createNew}"/>
     			<p:commandButton update="gridId" value="Clear" icon="fa fa-trash" action="#{stocksBean.createNew}"/>
     			<p:commandButton update="gridId dataForm msg" value="Save" icon="fa fa-floppy-o" actionListener="#{stocksBean.saveData}">
@@ -190,6 +191,75 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     </div>
 	
 	</div><!-- card -->	
+	
+	<p:dialog widgetVar="dlgForms"  width="900" height="600" position="center top" header="Collector Forms Available">
+	
+			<div class="ui-inputgroup" style="float:right">
+           				<p:commandButton value="Close" oncomplete="PF('dlgForms').hide(1000)"/>
+    		</div>
+    		
+    		<p:panelGrid columns="3" layout="grid">
+    		
+    			<p:inputText value="#{stocksBean.searchSeries}" placeholder="Search start or ending series of stab" style="width: 20em">
+    				<p:ajax event="keyup" listener="#{stocksBean.loadIssuedForm}" update="formsDataId" delay="800"/>
+    			</p:inputText>
+    		
+    			<p:selectOneMenu id="fundIdx" value="#{stocksBean.fundId}" style="width: 20em">
+					<f:selectItems value="#{stocksBean.funds}"/>
+					<p:ajax event="change" listener="#{stocksBean.loadIssuedForm}" update="formsDataId"/>
+				</p:selectOneMenu>
+    			
+    			 <p:selectOneMenu id="colIdx" value="#{stocksBean.collectorId}" style="width: 20em" filter="true" filterMatchMode="contains">
+						<f:selectItems value="#{stocksBean.collectors}"/>
+						<p:ajax event="change" listener="#{stocksBean.loadIssuedForm}" update="formsDataId"/>
+				</p:selectOneMenu>
+    			
+    		</p:panelGrid>
+    		
+    		<p:dataTable id="formsDataId" value="#{stocksBean.forms}" var="fm" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" paginatorPosition="top" reflow="true" 
+                         
+                         >
+                         
+                         <f:facet name="{Exporters}">
+                         			<p:menuButton value="Exports" style="float: left">
+										<p:menuitem value="Export Excel" ajax="false" immediate="true" icon="fa fa-file-excel-o">
+											<p:dataExporter type="xls" target="formsDataId" fileName="formsData"/> 
+										</p:menuitem>
+										<p:menuitem value="Export PDF" ajax="false" immediate="true" icon="fa fa-file-pdf-o">
+											<p:dataExporter type="pdf" target="formsDataId" fileName="formsData"/> 
+										</p:menuitem>
+									</p:menuButton> 
+            			 </f:facet>	
+                         
+                         <p:column headerText="Issued Date" width="100">
+            						<p:outputLabel value="#{fm.f6}"/>
+            		     </p:column>
+                         
+                         <p:column headerText="Accountable" width="100">
+            						<p:outputLabel value="#{fm.f1}"/>
+            		     </p:column>
+                         <p:column headerText="Forms" width="50">
+            						<p:outputLabel value="#{fm.f2}"/>
+            		     </p:column>
+            		     
+            		     <p:column headerText="Beginning" width="50">
+            						<p:outputLabel value="#{fm.f3}"/>
+            		     </p:column>
+            		     <p:column headerText="Ending" width="50">
+            						<p:outputLabel value="#{fm.f4}"/>
+            		     </p:column>
+            		     
+            		     <p:column headerText="Pieces" width="50">
+            						<p:outputLabel value="#{fm.f5}"/>
+            		     </p:column>
+                         
+            </p:dataTable>             
+    			
+	
+	</p:dialog>
 	
 	
 	<ui:include src="loader.xhtml" />

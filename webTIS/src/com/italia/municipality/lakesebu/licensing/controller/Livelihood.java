@@ -53,7 +53,7 @@ public class Livelihood {
 	private UserDtls userDtls;
 	
 	private String businessLabel;
-	private static final String WEBTIS = Database.WEBTIS.getName();
+	//private static final String WEBTIS = Database.WEBTIS.getName();
 	
 	
 	public static String getNewPlateNo() {
@@ -105,7 +105,7 @@ public class Livelihood {
 		String tableMun = "mun";
 		String tableProv = "prov";
 		String tableUser = "usr";
-		String sql = "SELECT * FROM livelihood " + tableLive + ", businesscustomer " + tableCus +", barangay " + tableBar + ", municipality " + tableMun + ", province " + tableProv + ", "+WEBTIS+".userdtls " + tableUser + " WHERE " +
+		String sql = "SELECT * FROM livelihood " + tableLive + ", businesscustomer " + tableCus +", barangay " + tableBar + ", municipality " + tableMun + ", province " + tableProv + ", userdtls " + tableUser + " WHERE " +
 				tableLive + ".customerid=" + tableCus + ".customerid AND " +
 				tableLive + ".bgid=" + tableBar + ".bgid AND " + 
 				tableLive + ".munid=" + tableMun + ".munid AND " +

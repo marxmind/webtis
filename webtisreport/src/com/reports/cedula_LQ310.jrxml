@@ -123,7 +123,7 @@
 				<textFieldExpression><![CDATA[$P{PARAM_WORDS}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
-				<reportElement x="484" y="229" width="150" height="16" uuid="f5757181-43fc-4c9f-ad94-2fc44ce676fd"/>
+				<reportElement x="484" y="210" width="150" height="35" uuid="f5757181-43fc-4c9f-ad94-2fc44ce676fd"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>

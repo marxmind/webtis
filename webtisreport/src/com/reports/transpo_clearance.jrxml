@@ -215,15 +215,6 @@
 				</textElement>
 				<text><![CDATA[Quantity]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="460" y="10" width="50" height="13" uuid="bad2a7a2-07d7-44a3-8023-ccf50320e3df">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Amount]]></text>
-			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -250,13 +241,6 @@
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{f3}]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement x="400" y="0" width="110" height="13" uuid="222ff8d2-985b-48a8-ace0-0c8df844a427"/>
-				<textElement textAlignment="Right">
-					<font size="10"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{f4}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

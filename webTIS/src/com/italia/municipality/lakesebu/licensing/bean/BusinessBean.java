@@ -57,7 +57,7 @@ public class BusinessBean implements Serializable{
 	
 	private BusinessCustomer customer;
 	private String customerName;
-	private List<Livelihood> businesses = Collections.synchronizedList(new ArrayList<Livelihood>());
+	private List<Livelihood> businesses = new ArrayList<Livelihood>();
 	
 	private List types;
 	private int typeId;
@@ -69,15 +69,15 @@ public class BusinessBean implements Serializable{
 	private String searchName;
 	
 	private String searchTaxPayerName;
-	private List<BusinessCustomer> customers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
+	private List<BusinessCustomer> customers = new ArrayList<BusinessCustomer>();
 	
 	private String searchProvince;
 	private String searchMunicipal;
 	private String searchBarangay;
 	
-	private List<Province> provinces = Collections.synchronizedList(new ArrayList<Province>());
-	private List<Municipality> municipals = Collections.synchronizedList(new ArrayList<Municipality>());
-	private List<Barangay> barangays = Collections.synchronizedList(new ArrayList<Barangay>());
+	private List<Province> provinces = new ArrayList<Province>();
+	private List<Municipality> municipals = new ArrayList<Municipality>();
+	private List<Barangay> barangays = new ArrayList<Barangay>();
 	
 	private Province provinceSelected;
 	private Municipality municipalSelected;
@@ -90,14 +90,14 @@ public class BusinessBean implements Serializable{
 	
 	private long purokId;
 	private List purokList;
-	private Map<Long, Purok> purokMap = Collections.synchronizedMap(new HashMap<Long, Purok>());
+	private Map<Long, Purok> purokMap = new HashMap<Long, Purok>();
 	
 	@PostConstruct
 	public void init(){
 		
 		
 			
-		businesses = Collections.synchronizedList(new ArrayList<Livelihood>());
+		businesses = new ArrayList<Livelihood>();
 		String sql = " AND live.isactivelive=1 AND live.livelihoodtype!=1 ";
 		
 		try{

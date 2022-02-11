@@ -44,10 +44,12 @@ import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.enm.AppConf;
+import com.italia.municipality.lakesebu.enm.BFilter;
 import com.italia.municipality.lakesebu.enm.DateFormat;
 import com.italia.municipality.lakesebu.licensing.controller.Barangay;
 import com.italia.municipality.lakesebu.licensing.controller.BusinessCustomer;
 import com.italia.municipality.lakesebu.licensing.controller.BusinessEngaged;
+import com.italia.municipality.lakesebu.licensing.controller.BusinessFilter;
 import com.italia.municipality.lakesebu.licensing.controller.BusinessPermit;
 import com.italia.municipality.lakesebu.licensing.controller.BusinessRpt;
 import com.italia.municipality.lakesebu.licensing.controller.ClearanceRpt;
@@ -931,9 +933,11 @@ private static List<BusinessORTransaction> readXLSFileOR(File file,int sheetNo) 
 		
 }
 
+
+
 public void printPermit(BusinessPermit permit) {
-	
-		System.out.println("Business: " + permit.getBusinessName());
+		
+		//System.out.println("Business: " + permit.getBusinessName());
 	
 		String REPORT_NAME = BUSINESS_REPORT_PERMIT;
 		
@@ -962,14 +966,14 @@ public void printPermit(BusinessPermit permit) {
 		try {
 			String middleName = permit.getCustomer().getMiddlename().trim();
 			if(middleName.contains(".")) {
-				name = permit.getCustomer().getFirstname().replace(".", "") + " " + permit.getCustomer().getLastname().replace(".", "");
+				name = permit.getCustomer().getFirstname() + " " + permit.getCustomer().getLastname();//permit.getCustomer().getLastname().replace(".", "");
 			}else {
 				name = permit.getCustomer().getFirstname() + " " + middleName.substring(0, 1) + ". " + permit.getCustomer().getLastname();
 			}
 			
 		}catch(Exception e) {}
 		
-		param.put("PARAM_REQUESTOR_NAME", name);
+		param.put("PARAM_REQUESTOR_NAME", name.toUpperCase());
 		param.put("PARAM_BUSINESS_NAME", permit.getBusinessName().toUpperCase());
 		param.put("PARAM_BUSINESS_ADDRESS", permit.getBusinessAddress().toUpperCase());
 		param.put("PARAM_BUSINESS_MUNICIPALITY_ADDRESS", "Lake Sebu, South Cotabato to operate the following Business");
@@ -1010,10 +1014,13 @@ public void printPermit(BusinessPermit permit) {
 		BusinessORTransaction fireData = new BusinessORTransaction();
 		List<String> lData = new ArrayList<String>();
 		boolean hasFire=false;
+		String[] filters = BusinessFilter.filter(BFilter.EXCEPTION);
 		for(BusinessORTransaction or : sortedOR.values()) {
 			String fire = or.getPurpose().toLowerCase().trim();
 			System.out.println("Start Check " + or.getPurpose() + " php " + or.getAmount());
-			if(!"fire".equalsIgnoreCase(fire.trim())) {//do not include fire
+			
+			if(!BusinessFilter.checkFilter(fire, filters)) {
+			//if(!"fire".equalsIgnoreCase(fire.trim())) {//do not include fire
 				lData.add(or.getPurpose());
 				System.out.println("Not fire " + or.getPurpose() + " php " + or.getAmount());
 				if(i==1) {
@@ -1052,7 +1059,26 @@ public void printPermit(BusinessPermit permit) {
 					param.put("PARAM_20", or.getDateTrans());
 					param.put("PARAM_21", Currency.formatAmount(or.getAmount()));
 				}
-				
+				if(i==8) {
+					param.put("PARAM_22", or.getOrNumber());
+					param.put("PARAM_23", or.getDateTrans());
+					param.put("PARAM_24", Currency.formatAmount(or.getAmount()));
+				}
+				if(i==9) {
+					param.put("PARAM_25", or.getOrNumber());
+					param.put("PARAM_26", or.getDateTrans());
+					param.put("PARAM_27", Currency.formatAmount(or.getAmount()));
+				}
+				if(i==10) {
+					param.put("PARAM_28", or.getOrNumber());
+					param.put("PARAM_29", or.getDateTrans());
+					param.put("PARAM_30", Currency.formatAmount(or.getAmount()));
+				}
+				if(i==11) {
+					param.put("PARAM_31", or.getOrNumber());
+					param.put("PARAM_32", or.getDateTrans());
+					param.put("PARAM_33", Currency.formatAmount(or.getAmount()));
+				}
 				
 				//i--;
 				i++;
@@ -1104,25 +1130,47 @@ public void printPermit(BusinessPermit permit) {
 				param.put("PARAM_20", fireData.getDateTrans());
 				param.put("PARAM_21", Currency.formatAmount(fireData.getAmount()));
 			}
+			if(count==8) {
+				param.put("PARAM_22", fireData.getOrNumber());
+				param.put("PARAM_23", fireData.getDateTrans());
+				param.put("PARAM_24", Currency.formatAmount(fireData.getAmount()));
+			}
+			if(count==9) {
+				param.put("PARAM_25", fireData.getOrNumber());
+				param.put("PARAM_26", fireData.getDateTrans());
+				param.put("PARAM_27", Currency.formatAmount(fireData.getAmount()));
+			}
+			if(count==10) {
+				param.put("PARAM_28", fireData.getOrNumber());
+				param.put("PARAM_29", fireData.getDateTrans());
+				param.put("PARAM_30", Currency.formatAmount(fireData.getAmount()));
+			}
+			if(count==11) {
+				param.put("PARAM_31", fireData.getOrNumber());
+				param.put("PARAM_32", fireData.getDateTrans());
+				param.put("PARAM_33", Currency.formatAmount(fireData.getAmount()));
+			}
 		}
 		
+		filters = BusinessFilter.filter(BFilter.ENGAGEMENT);
 		//Collections.reverse(lData);
 		String eng = "";
 		int size = lData.size();
 		int cnt = 1;
 		for(String d : lData) {
-			if(!"brp".equalsIgnoreCase(d.trim())) {
+			if(!BusinessFilter.checkFilter(d, filters)) {
+			//if(!"brp".equalsIgnoreCase(d.trim())) {
 				if(cnt==1) {
 					eng = d;
-					System.out.println("1 " + eng);
+					//System.out.println("1 " + eng);
 				}else {
 				
 					if(cnt==size) {
 						eng += " and " + d;
-						System.out.println("cnt == size " + size + "=" + eng);
+						//System.out.println("cnt == size " + size + "=" + eng);
 					}else {
 						eng += ", " + d;
-						System.out.println("cnt != size " + size + "=" + eng);
+						//System.out.println("cnt != size " + size + "=" + eng);
 					}
 					
 				}
@@ -1132,14 +1180,14 @@ public void printPermit(BusinessPermit permit) {
 		int countlent = eng!=null? eng.length() : 0;
 		//do not change location // this code is after OR
 		
-		System.out.println("engagement: " + eng);
+		//System.out.println("engagement: " + eng);
 		
 		if(eng!=null && !eng.isEmpty()) {
 			//eng = eng.trim();
 			if(eng.contains(", and") || eng.contains(" and ")) {
 				eng = eng.replace(",  and", "");
 			//}
-				System.out.println("pasok ..... " + eng);
+				//System.out.println("pasok ..... " + eng);
 				
 				String[] xx = eng.split(" and");
 				try {
@@ -1148,6 +1196,24 @@ public void printPermit(BusinessPermit permit) {
 					}
 				}catch(Exception e) {}
 			}	
+			
+			if(eng.contains(",")) {
+				//System.out.println("has comma " + eng);
+				
+				String[] splitComma = eng.split(",");
+				try {
+					if(!splitComma[0].isEmpty()) {
+						System.out.println(" is not empty 0:"+splitComma[0]);
+					}
+					if(!splitComma[1].trim().isEmpty()) {
+						System.out.println("is not empty 1"+splitComma[1]);
+					}else {
+						eng = splitComma[0];
+					}
+				}catch(Exception e) {}
+				
+			}
+			
 		}
 		
 		if(countlent<=45) {
@@ -1304,13 +1370,13 @@ public void printPermit(BusinessPermit permit) {
 		ReportCompiler compiler = new ReportCompiler();
 		String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, path);
 		
-		List<BusinessRpt> reports = Collections.synchronizedList(new ArrayList<BusinessRpt>());
+		List<BusinessRpt> reports = new ArrayList<BusinessRpt>();
 		
 		int cnt = 1;
 		double total = 0d;
 		int size = getPmts().size();
 		
-		Map<String, BusinessPermit> rptsUnsort = Collections.synchronizedMap(new HashMap<String, BusinessPermit>());
+		Map<String, BusinessPermit> rptsUnsort = new HashMap<String, BusinessPermit>();
 		for(BusinessPermit p : getPmts()) {
 			rptsUnsort.put(p.getControlNo(), p);
 		}
@@ -1322,7 +1388,7 @@ public void printPermit(BusinessPermit permit) {
 		int quarterly = 0;
 		int semi_annual = 0;
 		int annually = 0;
-		
+		String[] filters = BusinessFilter.filter(BFilter.EXCEPTION);
 		for(BusinessPermit p : rptsSort.values()) {
 			
 			//get number of employee
@@ -1336,7 +1402,7 @@ public void printPermit(BusinessPermit permit) {
 			r.setF5(p.getBusinessAddress());
 			
 			String[] sp = p.getOrs().split("/");
-			Map<String, BusinessORTransaction> unSort = Collections.synchronizedMap(new HashMap<String, BusinessORTransaction>());
+			Map<String, BusinessORTransaction> unSort = new HashMap<String, BusinessORTransaction>();
 			BusinessORTransaction ors = null;
 			for(int i=0; i<sp.length; i++) {
 				String sql = " AND orl.oractive=1 AND orl.orno=? AND cuz.customerid=? ";
@@ -1376,7 +1442,8 @@ public void printPermit(BusinessPermit permit) {
 			for(BusinessORTransaction or : sortedOR.values()) {
 				
 				String fire = or.getPurpose().toLowerCase().trim();
-				if(!"fire".equalsIgnoreCase(fire)) {
+				if(!BusinessFilter.checkFilter(fire, filters)) {
+				//if(!"fire".equalsIgnoreCase(fire)) {
 					if(i==1) {
 						
 							r.setF3(or.getPurpose());
