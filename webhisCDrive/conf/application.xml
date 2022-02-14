@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <application>
 	<databaseBank>bank_cheque</databaseBank>
-	<databaseTax>taxation2</databaseTax>
+	<databaseTax>taxation</databaseTax>
 	<databaseWebTis>webtis</databaseWebTis>
 	<databaseCash>cashbook</databaseCash>
 	<licensing>bls</licensing>
@@ -33,4 +33,5 @@
 	<dtr>dtr</dtr>
 	<form11>form11</form11>
 	<reports>C:\webtis\reports\</reports>
+	<server-local>true</server-local>
 </application>

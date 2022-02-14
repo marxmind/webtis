@@ -9,19 +9,20 @@ This file applicable only start from WEBTIS version 14 and above
 
 
 initialize version
-documentContentSource=C:/bls/conf/wordsV6.bris
+documentContentSource=C:/webtis/conf/wordsV6.bris
 documentLayout=V6
 
 document V6
 C:/bls/conf/wordsV6.bris
 clearance/certificate
-v6_business-permit=businesspermitV7
+v6_business-permit=businesspermitV8
 v6_fishcage-permit=cageclearanceV6
 
 cheques
 v6_transmittal_letter=transmittalV6-long
 
 v7_fishcage-payment-history=cageclearanceV7
+v7_fishcage-billing-statement=water_rental_bill_statement
 
 for fish cage
 mto-fishery-display-person=false

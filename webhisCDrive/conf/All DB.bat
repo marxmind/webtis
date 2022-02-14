@@ -4,7 +4,7 @@ set dt=%date:~7,2%-%date:~4,2%-%date:~10,4%_%time:~0,2%_%time:~3,2%_%time:~6,2%
 echo Backup database.....
 echo %dt%
 C:
-cd C:\Program Files\MariaDB 10.6\bin 
+cd C:\Program Files\MariaDB 10.5\bin 
 
 echo Creating dir if not exist
 if not exist "C:\webtis\databasebackup" mkdir C:\webtis\databasebackup
@@ -45,7 +45,7 @@ echo.%Date% %Time% Location: C:\webtis\databasebackup >>"%MyLogFile%"
 echo.%Date% %Time% Backup has been successfully proccessed with the file name of 'taxation_%dt%.sql' >>"%MyLogFile%"
 echo.%Date% %Time% Location: C:\webtis\databasebackup\taxation_%dt%.sql >>"%MyLogFile%"
 
-mysqldump.exe -e -uroot -poctober181986* -hlocalhost bank_cheque > C:\webtis\databasebackup\bank_cheque.sql
+mysqldump.exe -e -uroot -poctober181986* -hlocalhost bank_cheque1 > C:\webtis\databasebackup\bank_cheque.sql
 echo.%Date% %Time% Preparing to save the backup >>"%MyLogFile%"
 echo.%Date% %Time% Location: C:\webtis\databasebackup >>"%MyLogFile%"
 echo.%Date% %Time% Backup has been successfully proccessed with the file name of 'bank_cheque_%dt%.sql' >>"%MyLogFile%"

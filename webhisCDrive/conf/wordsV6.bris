@@ -11,9 +11,14 @@ activate-multipurpose=on
 activate-all=on
 
 mayor=FLORO S. GANDAM
-oic=ARTHUR S. BAUTISTA
+official-position=Municipal Mayor
+oic=CHARLOTTE J. LUCERO
+license-officer-pos=OIC License Officer
 types=NEW,RENEW,ADDITIONAL
 memotype=ANNUALLY,SEMI-ANNUAL,QUARTERLY
+
+menro=ARNULFO S. MANA-AY
+menro-officer-pos=MENRO Officer
 
 
 BARANGAY TAG LINE
