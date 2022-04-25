@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 
@@ -24,7 +24,7 @@ import com.italia.municipality.lakesebu.utils.LogU;
 import com.italia.municipality.lakesebu.utils.Whitelist;
 
 @Named
-@SessionScoped
+@ViewScoped
 public class LoginBean implements Serializable{
 
 	private static final long serialVersionUID = 1094801825228386363L;
@@ -33,6 +33,9 @@ public class LoginBean implements Serializable{
 	private String password;
 	private String errorMessage;
 	private String keyPress;
+	
+	private String themeId="vela";
+	private List themes;
 	
 	private int moduleId;
 	private List modules;
@@ -76,13 +79,14 @@ public class LoginBean implements Serializable{
 		
 		String result="login";
 		LogU.add("Guest with username : " + name + " and password ******** is trying to log in the system.");
-		System.out.println("validating .... " + name + " - " + password);
+		
 		if(in!=null){
 			String val = ReadConfig.value(AppConf.SERVER_LOCAL);
 	        HttpSession session = SessionBean.getSession();
 	        session.setAttribute("username", name);
 			session.setAttribute("userid", in.getLogid());
 			session.setAttribute("server-local", val);
+			session.setAttribute("theme", getThemeId());
 			/*
 			 * switch(in.getAccessLevel().getLevel()){ case 1: {result="main.xhtml"; break;}
 			 * case 2: { result="main.xhtml"; break;} case 3: {
@@ -132,6 +136,7 @@ public class LoginBean implements Serializable{
 					case 13: result="mainacc.xhtml"; break;
 					case 14: result="orlisting.xhtml"; break;
 					case 15: result="form56.xhtml"; break;
+					case 16: result="mainpersonnel.xhtml"; break;
 				}
 				
 			}
@@ -333,5 +338,25 @@ private void logUserOut(){
 	}
 	public void setModules(List modules) {
 		this.modules = modules;
+	}
+	
+	public String getThemeId() {
+		return themeId;
+	}
+
+	public void setThemeId(String themeId) {
+		this.themeId = themeId;
+	}
+
+	public List getThemes() {
+		themes = new ArrayList<>();
+		themes.add(new SelectItem("arya", "ARYA"));
+		themes.add(new SelectItem("saga", "SAGA"));
+		themes.add(new SelectItem("vela", "VELA"));
+		return themes;
+	}
+
+	public void setThemes(List themes) {
+		this.themes = themes;
 	}
 }

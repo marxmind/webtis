@@ -98,62 +98,142 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             				</p:column>
             				
      					</p:dataTable>
-				<p:panelGrid id="clearFldId" columns="4" layout="grid">
+				<p:panelGrid id="clearFldId" columns="4" layout="grid" style="text-align: left">
 						
-						<p:outputLabel value="Issued:" style="#{skin.label}" />
-						<p:calendar  value="#{businessPermitBean.issuedDate}"  required="true" pattern="yyyy-MM-dd" effect="slideDown"/>
-						
-						<p:outputLabel value="Requestor:" style="#{skin.label}"/>
-		            	<p:outputLabel value="#{businessPermitBean.customerName}" style="color: black;#{skin.label}">
-		            	<p:commandButton style="#{skin.button}" update="idSearchTax ownerId" icon="fa fa-search" actionListener="#{businessPermitBean.loadTaxpayer}" onclick="PF('multiDialogOwner').show()"/>
-		            	</p:outputLabel>
+						<p:outputLabel value="Issued">
+							<div class="ui-inputgroup">
+							<div class="p-field">
+								<p:calendar  value="#{businessPermitBean.issuedDate}"  required="true" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
+							</div>
+							</div>
+						</p:outputLabel>	
 							
-		        		 <p:outputLabel for="d0" value="Control No" style="#{skin.label}" />
-						 <p:inputText id="d0" value="#{businessPermitBean.controlNo}" style="width: 11em;#{skin.textInput}"/>	
+						<p:outputLabel value="Requestor">
+							<div class="ui-inputgroup">
+							<div class="p-field">
+			            	<p:outputLabel value="#{businessPermitBean.customerName}" style="color: black;">
+			            	<p:commandButton style="width: 15em" update="idSearchTax ownerId" icon="fa fa-search" actionListener="#{businessPermitBean.loadTaxpayer}" onclick="PF('multiDialogOwner').show()"/>
+			            	</p:outputLabel>
+			            	</div>
+			            	</div>
+						</p:outputLabel>
+							
+		        		 <p:outputLabel value="Control No">
+		        		 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 		<p:inputText id="d0" value="#{businessPermitBean.controlNo}" style="width: 15em;"/>	
+		        			</div>
+		        			</div>
+		        		</p:outputLabel>
 		        			
-		        		 <p:outputLabel for="d00" value="Plate No" style="#{skin.label}" />
-						 <p:inputText id="d00" value="#{businessPermitBean.plateNo}" style="width: 11em;#{skin.textInput}"/>
+		        		 <p:outputLabel value="Plate No">
+		        		 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 		<p:inputText id="d00" value="#{businessPermitBean.plateNo}" style="width: 15em;"/>
+						 	</div>
+						 	</div>
+						 </p:outputLabel>	
+						 	
+						 <p:outputLabel value="Issued On">
+						 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 		<p:inputText id="d000" value="#{businessPermitBean.issuedOn}" style="width: 15em;"/>
+						 	</div>
+						 	</div>
+						 </p:outputLabel>		
 						 
-						 <p:outputLabel for="d000" value="Issued On" style="#{skin.label}" />
-						 <p:inputText id="d000" value="#{businessPermitBean.issuedOn}" style="width: 11em;#{skin.textInput}"/>
-						 
-						 <p:outputLabel for="d0000" value="Valid Until" style="#{skin.label}" />
-						 <p:inputText id="d0000" value="#{businessPermitBean.validUntil}" style="width: 11em;#{skin.textInput}"/>
+						 <p:outputLabel value="Valid Until">
+						 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 		<p:inputText id="d0000" value="#{businessPermitBean.validUntil}" style="width: 15em;"/>
+						 	</div>
+						 	</div>	
+		        		 </p:outputLabel>
 		        		 
-		        		 <p:outputLabel for="d1" value="Type" style="#{skin.label}"/>
-		        		 <p:selectOneMenu id="d1" value="#{businessPermitBean.typeId}" style="width: 11em;#{skin.select}">
-		                	<f:selectItems value="#{businessPermitBean.types}"/>
-		            	</p:selectOneMenu>
+		        		 <p:outputLabel value="Type">
+		        		 	<div class="ui-inputgroup">
+							<div class="p-field">
+				        		 <p:selectOneMenu id="d1" value="#{businessPermitBean.typeId}" style="width: 15em;">
+				                	<f:selectItems value="#{businessPermitBean.types}"/>
+				            	</p:selectOneMenu>
+		            	 	</div>
+		            	 	</div>
+		            	 </p:outputLabel>
 		            	 	
-		        		 <p:outputLabel for="d2" value="Memo:" style="#{skin.label}"/>
-		        		 <p:selectOneMenu id="d2" value="#{businessPermitBean.memoTypeId}" style="width: 11em;#{skin.select}">
-		                	<f:selectItems value="#{businessPermitBean.memos}"/>
-		            	</p:selectOneMenu>
+		        		 <p:outputLabel value="Memo">
+		        		 	<div class="ui-inputgroup">
+							<div class="p-field">
+				        		 <p:selectOneMenu id="d2" value="#{businessPermitBean.memoTypeId}" style="width: 15em;">
+				                	<f:selectItems value="#{businessPermitBean.memos}"/>
+				            	</p:selectOneMenu>
+		            		</div>
+		            		</div>
+		            	</p:outputLabel>
 		            	
-		        		 <p:outputLabel for="d3" value="Business Name" style="#{skin.label}" />
-						 <p:inputTextarea id="d3" value="#{businessPermitBean.businessName}" style="width: 11em;#{skin.textInput}"/>  	
+		        		 <p:outputLabel value="Business Name">
+		        		 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 		<p:inputTextarea id="d3" value="#{businessPermitBean.businessName}" style="width: 15em;"/>  	
+						 	</div>
+						 	</div>
+						 </p:outputLabel>
 						 
-						 <p:outputLabel for="d4" value="Business Engaged" style="#{skin.label}" />
-						 <p:inputTextarea id="d4" value="#{businessPermitBean.businessEngage}" style="width: 11em;#{skin.textInput}"/>
+						 <p:outputLabel value="Business Engaged">
+						 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 		<p:inputTextarea id="d4" value="#{businessPermitBean.businessEngage}" style="width: 15em;"/>
+						 	</div>
+						 	</div>
+						 </p:outputLabel>
+						 	
+						 <p:outputLabel value="Address">
+						 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 	<p:inputTextarea id="d5" value="#{businessPermitBean.businessAddress}" style="width: 15em;"/>
+						 	</div>
+						 	</div>
+						 </p:outputLabel>
 						 
-						 <p:outputLabel for="d5" value="Address" style="#{skin.label}" />
-						 <p:inputText id="d5" value="#{businessPermitBean.businessAddress}" style="width: 11em;#{skin.textInput}"/>
-						 
-						 <p:outputLabel for="d6" value="Barangay Located" style="#{skin.label}" />
-						 <p:autoComplete id="d6" value="#{businessPermitBean.barangay}" placeholder="Barangay" completeMethod="#{businessPermitBean.autoBarangay}" effect="fade" dropdownMode="true" style="width: 11em;#{skin.textInput}"/>
-						 
-						 <p:outputLabel for="d9" value="Capital/Gross" style="#{skin.label}" />
-						 <p:inputNumber id="d9" value="#{businessPermitBean.grossAmount}" style="width: 11em;#{skin.textInput}"/>
-						 
-						 <p:outputLabel for="d10" value="Employee Details" style="#{skin.label}" />
-						 <p:inputText id="d10" value="#{businessPermitBean.employeeDtls}" style="width: 11em;#{skin.textInput}"/>
-						 
-						 <p:outputLabel for="d7" value="OIC Licensing" style="#{skin.label}" />
-						 <p:inputText id="d7" value="#{businessPermitBean.oic}" style="width: 11em;#{skin.textInput}"/>
-						 
-						 <p:outputLabel for="d8" value="Mayor" style="#{skin.label}" />
-						 <p:inputText id="d8" value="#{businessPermitBean.mayor}" style="width: 11em;#{skin.textInput}"/>
-						 
+						 <p:outputLabel value="Barangay Located">
+						 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 	<p:autoComplete id="d6" value="#{businessPermitBean.barangay}" placeholder="Barangay" completeMethod="#{businessPermitBean.autoBarangay}" effect="fade" dropdownMode="true" inputStyle="width: 15em;"/>
+						 	</div>
+						 	</div>
+						 </p:outputLabel>
+						 	
+						 <p:outputLabel value="Capital/Gross">
+						 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 	<p:inputNumber id="d9" value="#{businessPermitBean.grossAmount}" style="width: 15em;"/>
+						 	</div>
+						 	</div>
+						 </p:outputLabel>
+						 	
+						 <p:outputLabel value="Employee Details">
+						 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 	<p:inputText id="d10" value="#{businessPermitBean.employeeDtls}" style="width: 15em;"/>
+						 	</div>
+						 	</div>
+						 </p:outputLabel>
+						 	
+						 <p:outputLabel value="OIC Licensing">
+						 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 	<p:inputText id="d7" value="#{businessPermitBean.oic}" style="width: 15em;"/>
+						 	</div>
+						 	</div>
+						 </p:outputLabel>	
+						 	
+						 <p:outputLabel value="Mayor">
+						 	<div class="ui-inputgroup">
+							<div class="p-field">
+						 	<p:inputText id="d8" value="#{businessPermitBean.mayor}" style="width: 15em;"/>
+						 	</div>
+							</div>						 	
+						 </p:outputLabel>
+						 	
 		     		</p:panelGrid> 
 	 				
 	 				<p:dataTable id="orId" value="#{businessPermitBean.ors}" var="ct" stickyHeader="false"

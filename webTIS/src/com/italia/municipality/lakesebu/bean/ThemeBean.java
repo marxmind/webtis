@@ -2,11 +2,9 @@ package com.italia.municipality.lakesebu.bean;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-
-import com.italia.municipality.lakesebu.controller.ReadConfig;
-import com.italia.municipality.lakesebu.enm.AppConf;
+import javax.servlet.http.HttpSession;
 
 /**
  * 
@@ -17,8 +15,8 @@ import com.italia.municipality.lakesebu.enm.AppConf;
  */
 
 @Named
-@SessionScoped
-public class ThemBean implements Serializable{
+@ViewScoped
+public class ThemeBean implements Serializable{
 
 	/**
 	 * 
@@ -27,8 +25,11 @@ public class ThemBean implements Serializable{
 
 	public String getApplicationTheme(){
 		System.out.println("Appliying theme....");
-		String value = "none";
-		try{value = ReadConfig.value(AppConf.THEME_STYLE);
+		String value = "saga";
+		try{
+			//value = ReadConfig.value(AppConf.THEME_STYLE);
+			HttpSession session = SessionBean.getSession();
+			value = session.getAttribute("theme").toString();
 		System.out.println("Theme "+ value + " has been applied....");
 		}catch(Exception e){}
 		return value;

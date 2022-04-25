@@ -190,12 +190,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             						<h:outputText  value="#{rpt.areaMeter}"/>
             				</p:column>
             				
-                         	<p:column headerText="Business" width="150" sortable="false" sortBy="#{rpt.businessName}">
-            						<h:outputText  value="#{rpt.businessName}"/>
+                         	<p:column headerText="Business" width="150" sortable="false" sortBy="#{rpt.businessName}" style="text-align: left; font-weight: bold">
+            						<h:outputText  value="#{rpt.businessName}" />
             				</p:column>
                          	
-            				<p:column headerText="Address" width="200" sortable="false" sortBy="#{rpt.purokName}, #{rpt.barangay.name}, #{rpt.municipality.name},  #{rpt.province.name}">
-            						<h:outputText  value="#{rpt.purokName}, #{rpt.barangay.name}, #{rpt.municipality.name},  #{rpt.province.name}"/>
+            				<p:column style="text-align: left" headerText="Address" width="200" sortable="false" sortBy="#{rpt.purokName}, #{rpt.barangay.name}, #{rpt.municipality.name},  #{rpt.province.name}">
+            						<h:outputText   value="#{rpt.purokName}, #{rpt.barangay.name}, #{rpt.municipality.name},  #{rpt.province.name}"/>
             				</p:column>
             				
             				<p:rowExpansion>

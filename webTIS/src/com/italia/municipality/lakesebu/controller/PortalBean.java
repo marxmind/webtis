@@ -32,6 +32,7 @@ public class PortalBean implements Serializable {
 		String val = ReadConfig.value(AppConf.SERVER_LOCAL);
         HttpSession session = SessionBean.getSession();
 		session.setAttribute("server-local", val);
+		session.setAttribute("theme", "saga");
 		System.out.println("assigning local: " + val);
 	}
 	
@@ -78,5 +79,7 @@ public class PortalBean implements Serializable {
 		return "dilg";//getPortal(Department.DILG);
 	}
 	
-	
+	public String personnel() {
+		return getPortal(Department.PERSONNEL);
+	}
 }

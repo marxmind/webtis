@@ -67,6 +67,8 @@ public class TranspoBean implements Serializable {
 	@Setter @Getter Date dateCreated;
 	@Setter @Getter String searchName;
 	@Setter @Getter TranspoItems itemDataSelected;
+	@Setter @Getter String orNumber;
+	@Setter @Getter String amount;
 	
 	@PostConstruct
 	public void init() {
@@ -123,6 +125,21 @@ public class TranspoBean implements Serializable {
 		trans.setItems(items);
 		
 		setTranspo(trans);
+		
+		if(trans.getOrNumber()!=null) {
+			if(trans.getOrNumber().contains("-")) {
+				
+				String[] val = trans.getOrNumber().split("-");
+				
+				setOrNumber(val[0]);
+				setAmount(val[1]);
+			}else {
+				setOrNumber(trans.getOrNumber());
+				setAmount("0.00");
+			}
+		}
+		
+		
 	}
 	
 	public void save() {
@@ -132,6 +149,10 @@ public class TranspoBean implements Serializable {
 			trans.setIsActive(1);
 			trans.setDateTrans(DateUtils.convertDate(getDateCreated(), "yyyy-MM-dd"));
 			trans.setUserDtls(getUser());
+			
+			String val = (getOrNumber()!=null? getOrNumber() : "0000000") + "-" + (getAmount()!=null? getAmount() : "0.00");
+			
+			trans.setOrNumber(val);
 			trans = Transpo.save(trans);
 			
 			TranspoItems.delete(trans.getId());
@@ -193,6 +214,8 @@ public class TranspoBean implements Serializable {
 		setTranspo(null);
 		setDateCreated(DateUtils.getDateToday());
 		defaultValue();
+		setOrNumber(null);
+		setAmount(null);
 		System.out.println("clearing....");
 	}
 	
@@ -281,9 +304,9 @@ public class TranspoBean implements Serializable {
 		List<TranspoRpt> rpts = new ArrayList<TranspoRpt>();
 		
 		List<TranspoItems> items = TranspoItems.retrieveById(trans.getId());
-		double amount = 0d;
+		//double amount = 0d;
 		for(TranspoItems item : items) {
-			amount += item.getAmount();
+			//amount += item.getAmount();
 			rpts.add(
 					TranspoRpt.builder()
 					.f1(item.getName())
@@ -294,6 +317,7 @@ public class TranspoBean implements Serializable {
 					);
 		}
 		
+		
 		if(items==null && items.size()==0) {
 			rpts.add(new TranspoRpt());
 		}
@@ -302,8 +326,23 @@ public class TranspoBean implements Serializable {
 		
 		HashMap param = new HashMap();
 		
+		String ornumber="";
+		String oramount="";
+		if(trans.getOrNumber()!=null) {
+			if(trans.getOrNumber().contains("-")) {
+				
+				String[] val = trans.getOrNumber().split("-");
+				
+				ornumber=val[0];
+				oramount=val[1];
+			}else {
+				ornumber = trans.getOrNumber();
+				oramount = "0.00";
+			}
+		}
+		
 		try{param.put("PARAM_CONTROLNO", "Control No: "+trans.getControlNo());}catch(NullPointerException e) {}
-		try{param.put("PARAM_ORNUMBER", "OR No.:"+trans.getOrNumber() + " Php" + Currency.formatAmount(amount));}catch(NullPointerException e) {}
+		try{param.put("PARAM_ORNUMBER", "OR No.:"+ornumber + " Php" + Currency.formatAmount(oramount));}catch(NullPointerException e) {}
 		try{param.put("PARAM_REQUESTOR", trans.getRequestor().toUpperCase());}catch(NullPointerException e) {}
 		try{param.put("PARAM_ADDRESS", trans.getAddress().toUpperCase());}catch(NullPointerException e) {}
 		try{param.put("PARAM_FROM_TO", trans.getFromAndTo().toUpperCase());}catch(NullPointerException e) {}

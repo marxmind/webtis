@@ -114,21 +114,22 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:outputLabel  value="Issued Date:" style="#{skin.label}"/>
 				<p:calendar value="#{orBean.issuedDate}" pattern="yyyy-MM-dd" effect="slideDown" style="#{skin.calendar}"/>
 				
-				<p:outputLabel  value="Status: " style="#{skin.label}"/>
+				<p:outputLabel  value="Status:"  style="#{skin.label}"/>
             	<p:selectOneMenu value="#{orBean.statId}" style="width: 11em;#{skin.select}">
                 	<f:selectItems value="#{orBean.stats}"/>
             	</p:selectOneMenu>
 				
 				<p:outputLabel  value="OR Number: " style="#{skin.label}"/>
-				<p:inputText value="#{orBean.orNumber}" a:placeholder="000000000000" style="#{skin.textInput}"/>
 				
-				<p:outputLabel  value="Issued Address: " style="#{skin.label}"/>
+				<p:keyboard id="oridd" value="#{orBean.orNumber}" placeholder="0000000" style="#{skin.textInput}"  layout="custom" layoutTemplate="rocks-close,faces-clear,prime-back" keypadOnly="true"/>
+				
+				<p:outputLabel  value="Issued Address: " style="#{skin.label}"/>	
 				<p:inputTextarea value="#{orBean.issuedAddress}" a:placeholder="Address" style="#{skin.textInput}"/>
 				
 				<p:outputLabel  value="Purpose: " style="#{skin.label}"/>
 				<p:inputTextarea value="#{orBean.purpose}" a:placeholder="Purpose of OR" style="#{skin.textInput}"/>
 				
-				<p:outputLabel  value="Full Name: " style="#{skin.label}"/>
+				<p:outputLabel  value="Full Name: "  style="#{skin.label}"/>
 				<p:outputLabel>
 					<p:outputLabel id="idName" value="#{orBean.citizenName}"/> &nbsp;
 					<p:commandButton update="ownerId idSearchTax" icon="fa fa-search" actionListener="#{orBean.loadTaxpayer}" onclick="PF('multiDialogOwner').show()"/>

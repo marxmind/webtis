@@ -82,42 +82,99 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 			
 			<p:panelGrid id="usercusId" columns="4" layout="grid" style="text-align: left">
 			
-			<p:outputLabel value="Date" />
-			<p:calendar value="#{transpoBean.dateCreated}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
+			<p:outputLabel>
+				<div class="ui-inputgroup">
+				<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Date</medium>
+					<p:calendar value="#{transpoBean.dateCreated}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>	
 			
-			<p:outputLabel value="Contol No" />
-			<p:inputText value="#{transpoBean.transpo.controlNo}" placeholder="year-month-series" style="width: 15em"/>
+			<p:outputLabel>
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<medium class="p-d-block" style="text-align: left">Control No</medium>
+				<p:inputText value="#{transpoBean.transpo.controlNo}" placeholder="year-month-series" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
 			
-			<p:outputLabel value="OR No" />
-			<p:inputText value="#{transpoBean.transpo.orNumber}" placeholder="0000000" style="width: 15em"/>
+			<p:outputLabel >
+				<div class="ui-inputgroup">
+				<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">OR Number  and  Amount</medium>
+					<p:inputText value="#{transpoBean.orNumber}" placeholder="0000000" style="width: 7.5em"/>
+				
+					<p:inputText value="#{transpoBean.amount}" placeholder="00.00" style="width: 5em; text-align: right"/>
+				</div>
+				</div>
+			</p:outputLabel>	
+				
+			<p:outputLabel value="Requestor">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:autoComplete value="#{transpoBean.transpo.requestor}" placeholder="Requestor Name" completeMethod="#{transpoBean.payorNameSuggested}" autoHighlight="true" autoSelection="true" emptyMessage="Name is not existing"   queryDelay="800" effect="fade" maxResults="10" inputStyle="width:15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
 			
-			<p:outputLabel value="Requestor" />
-			<p:autoComplete value="#{transpoBean.transpo.requestor}" placeholder="Requestor Name" completeMethod="#{transpoBean.payorNameSuggested}" autoHighlight="true" autoSelection="true" emptyMessage="Name is not existing"   queryDelay="800" effect="fade" maxResults="10" inputStyle="width:15em"/>
+			<p:outputLabel value="Address">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.address}" placeholder="Address" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>	
 			
-			<p:outputLabel value="Address" />
-			<p:inputText value="#{transpoBean.transpo.address}" placeholder="Address" style="width: 15em"/>
+			<p:outputLabel value="From and To">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.fromAndTo}" placeholder="from and to delivery" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>	
 			
-			<p:outputLabel value="From and To" />
-			<p:inputText value="#{transpoBean.transpo.fromAndTo}" placeholder="from and to delivery" style="width: 15em"/>
+			<p:outputLabel value="Purpose">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.purpose}" placeholder="Purpose" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
 			
-			<p:outputLabel value="Purpose" />
-			<p:inputText value="#{transpoBean.transpo.purpose}" placeholder="Purpose" style="width: 15em"/>
+			<p:outputLabel value="Delivery Date">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.deliveredDate}" placeholder="Delivered to" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
+				
+			<p:outputLabel value="Issued Date">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.issuedDay}" placeholder="Issued Date" style="width: 15em"/>
+				</div>
+				</div>			
+			</p:outputLabel>
 			
-			<p:outputLabel value="Delivery Date" />
-			<p:inputText value="#{transpoBean.transpo.deliveredDate}" placeholder="Delivered to" style="width: 15em"/>
+			<p:outputLabel value="Issued Month">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.issuedMonth}" placeholder="Issued Month" style="width: 15em"/>
+				</div>
+				</div>			
+			</p:outputLabel>
 			
-			<p:outputLabel value="Issued Date" />
-			<p:inputText value="#{transpoBean.transpo.issuedDay}" placeholder="Issued Date" style="width: 15em"/>
-			
-			<p:outputLabel value="Issued Month" />
-			<p:inputText value="#{transpoBean.transpo.issuedMonth}" placeholder="Issued Month" style="width: 15em"/>
+			<p:outputLabel/>
+			<p:outputLabel/>
 			
 			<p:outputLabel value="Issuance Department"/>
 			<p:outputLabel value="Business License"/>
 			
 			<p:inputText value="#{transpoBean.transpo.licenseOfficerPosition}" placeholder="License Officer Position"/>
 			<p:inputText value="#{transpoBean.transpo.licenseOfficer}" placeholder="License Officer Name" style="width: 15em"/>
-			
 			
 			<p:outputLabel value="Noted Department"/>
 			<p:outputLabel value="DA/MENRO Officer"/>
@@ -233,7 +290,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		            						<p:outputLabel  value="#{rpt.dateTrans}"/>
 		            				</p:column>
 		            				
-		            				<p:column headerText="OR" width="50">
+		            				<p:column headerText="OR/Amount" width="70">
 		            						<p:outputLabel  value="#{rpt.orNumber}"/>
 		            				</p:column>
 		            				

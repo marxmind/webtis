@@ -301,7 +301,8 @@ public class ORListingBean implements Serializable{
 			alreadyRetrieve=true;
 		}
 		loadOtherInfo();
-		setLimitData("10");
+		//setLimitData("10");
+		setLimitData("1");
 		load();
 		
 		suggestedInfo();
@@ -317,9 +318,9 @@ public class ORListingBean implements Serializable{
 		
 		orNumber = ORListing.getLatestORNumber(getFormTypeId(),getCollectorId());
 		
-		setLimitData("10");
+		setLimitData("1");
 		load();
-		suggestedInfo();
+		//suggestedInfo(); temporary disabled 03/04/2022 due to slow loading... when saving
 		
 		dateTrans = DateUtils.getDateToday();
 		address = "Lake Sebu, So. Cot.";
@@ -1420,6 +1421,9 @@ public class ORListingBean implements Serializable{
 			
 		}
 		loadTaxGroup();
+		
+		//ADDED
+		suggestedInfo();
 	}
 	
 	public void loadTaxGroup() {

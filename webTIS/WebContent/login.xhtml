@@ -105,6 +105,11 @@ xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
           
           	<p:panelGrid columns="2" id="idUName" styleClass="text-primary">
           	
+          	<p:outputLabel for="themeId" value="Themes" style="#{skin.label}"/>
+          	<p:selectOneMenu id="themeId" value="#{loginBean.themeId}" style="width: 15em" styleClass="form-control text-primary"  filter="true" filterMatchMode="contains">
+				<f:selectItems value="#{loginBean.themes}"/>
+			</p:selectOneMenu>
+          	
           	<p:outputLabel for="uname" value="Username:" style="#{skin.label}"/>
         	<p:inputText style="width: 15em;#{skin.textInput}" styleClass="form-control" a:placeholder="MARXMIND"  id="uname" value="#{loginBean.name}"/>
         	

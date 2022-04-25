@@ -406,7 +406,7 @@ public class BusinessPermitBean implements Serializable{
 	
 	public void loadTaxpayer(){
 		
-		taxpayers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
+		taxpayers = new ArrayList<BusinessCustomer>();
 		
 		//String sql = " AND cus.cusisactive=1 ";
 		

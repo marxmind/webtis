@@ -432,12 +432,12 @@
 				<text><![CDATA[Name and Signature]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="53" y="249" width="118" height="15" uuid="af0f45d1-3446-4d76-939b-0e8fcfcf40a4"/>
+				<reportElement x="5" y="249" width="210" height="15" uuid="af0f45d1-3446-4d76-939b-0e8fcfcf40a4"/>
 				<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0">
 					<pen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<text><![CDATA[Liquidating Officer]]></text>
+				<text><![CDATA[Acting Asst. Mun. Treasurer/Liquidating Officer]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="219" y="242" width="88" height="15" uuid="6431cc90-30bc-41b2-a473-b608854eae04"/>

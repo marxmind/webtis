@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"  
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Main</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
+			 <h:outputStylesheet name="css/bodyconf.css"/>
+    		<h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Main</title>
+ 
+ <style>
+<!-- 
+body{
+	background-color: linear-gradient(red, yellow);
+}
+ -->
+ </style>
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Main</title>
+
+</h:head>
+<h:body>
+
+<ui:include src="header.xhtml" />
+
+<h:form prependId="false" id="formId" style="background-color: #8fdbf5">
+
+	<p:growl id="msg" life="2000" />
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+        	<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    	 </p:confirmDialog>
+
+
+
+	 
+	 	<p:commandButton id="showNoteId" value="#{menuBean.total}" action="email.xhtml" icon="fa fa-envelope-o" style="#{notiBean.styleButton}#{skin.emailButton}" title="This is where your email or notification messages save" />
+	 
+	
+	<p:dialog widgetVar="dlgMain" closable="false" draggable="false" modal="true" showEffect="fade" visible="true"  showHeader="false" position="center center" styleClass="menuDlg">
+		
+		<p:panelGrid columns="3" styleClass="ui-noborder">
+				
+				<h:outputStylesheet>
+								
+								.button {
+								  background-color: #008CBA; /* blue */
+								  border: none;
+								  color: white;
+								  padding: 15px 32px;
+								  text-align: center;
+								  text-decoration: none;
+								  display: inline-block;
+								  font-size: 16px;
+								  margin: 4px 2px;
+								  cursor: pointer;
+								  width: 100%;
+								  -webkit-transition-duration: 0.4s; /* Safari */
+								  transition-duration: 0.4s;
+								  cursor: pointer;
+								}
+								.ui-button.button:hover {
+								  background-color: #e7e7e7; /* gray */
+								  color: black;
+								}  
+							</h:outputStylesheet>
+						
+							<p:commandButton icon="fa fa-money" action="employeemain.xhtml" value="Employee" styleClass="button" immediate="false" ajax="false"/>
+							
+				             <p:commandButton icon="fa  fa-power-off" action="portal" value="Logout" styleClass="button" actionListener="#{loginBean.logout}" immediate="false" ajax="false"/>
+				             <p:outputLabel/>
+			
+		</p:panelGrid>
+		
+	</p:dialog>
+	
+	<ui:include src="loader.xhtml" />	
+
+</h:form>
+</h:body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+	
