@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"
+xmlns:pe="http://primefaces.org/ui/extensions"    
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Employee</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+             <h:outputStylesheet name="css/bodyconf.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Employee Payroll Prep</title>
+
+<style>
+<!-- 
+
+ -->
+ </style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Employee Payroll Prep</title>
+
+</h:head>
+
+<h:body>
+	
+	<ui:include src="header.xhtml" />
+	
+	<h:form prependId="false" id="formId" >
+	
+	 
+	 
+	 
+	<p:growl id="msg" showDetail="true"/>
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+        </p:confirmDialog>
+	
+	<p:confirmPopup global="true">
+            <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirm-popup-yes" />
+    </p:confirmPopup>
+	
+	<div class="card">
+    <div class="p-grid sample-layout">
+    
+    <div class="p-col-12 p-md-5">
+    		
+       <p:panelGrid id="empdtlsId" columns="3" layout="grid" style="text-align: left">
+       		
+       		<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Series</medium>
+					<p:inputText value="#{payrollPrepBean.series}" placeholder="year-month-series no" style="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+       		
+       		<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+						<medium class="p-d-block" style="text-align: left">Date</medium>
+						<p:calendar value="#{payrollPrepBean.payData.dateTrans}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+       		
+       		<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Designation</medium>
+					<p:inputText value="#{payrollPrepBean.payData.designation}" placeholder="Designation" style="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Rate</medium>
+					<p:inputNumber value="#{payrollPrepBean.payData.rate}" placeholder="00.00" inputStyle="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Gross</medium>
+					<p:inputNumber value="#{payrollPrepBean.payData.gross}" placeholder="00.00" inputStyle="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Net</medium>
+					<p:inputNumber value="#{payrollPrepBean.payData.net}" placeholder="00.00" inputStyle="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+       		
+       		<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">EE</medium>
+					<p:inputNumber value="#{payrollPrepBean.payData.ee}" placeholder="00.00" inputStyle="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">ER</medium>
+					<p:inputNumber value="#{payrollPrepBean.payData.er}" placeholder="00.00" inputStyle="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Withholding Tax</medium>
+					<p:inputNumber value="#{payrollPrepBean.payData.tax}" placeholder="00.00" inputStyle="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">COOP</medium>
+					<p:inputNumber value="#{payrollPrepBean.payData.coop}" placeholder="00.00" inputStyle="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Working Days</medium>
+					<p:inputNumber value="#{payrollPrepBean.payData.numberOfWork}" placeholder="00.00" inputStyle="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Working Days</medium>
+					<p:inputNumber value="#{payrollPrepBean.payData.numberOfWork}" placeholder="00.00" inputStyle="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+						<medium class="p-d-block" style="text-align: left">Month</medium>
+						<p:selectOneMenu value="#{payrollPrepBean.payData.month}" style="width: 15em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{payrollPrepBean.months}"/>
+						</p:selectOneMenu>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+						<medium class="p-d-block" style="text-align: left">Year</medium>
+						<p:selectOneMenu value="#{payrollPrepBean.payData.year}" style="width: 15em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{payrollPrepBean.years}"/>
+						</p:selectOneMenu>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+						<medium class="p-d-block" style="text-align: left">Year</medium>
+						<p:selectOneMenu value="#{payrollPrepBean.payData.status}" style="width: 15em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{payrollPrepBean.stats}"/>
+						</p:selectOneMenu>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			
+       		
+       </p:panelGrid>
+					
+   </div>
+        <div class="p-col-12 p-md-7 p-col-nogutter">
+            <div class="p-grid">
+                <div class="p-col-12 p-col-nogutter">
+                	<div class="p-col-12">
+                		<div class="ui-inputgroup" style="float:left">
+                	
+                	<span class="ui-input-icon-left">
+			    	<i class="pi pi-search" />
+                    
+                    </span>
+                    
+                    </div>
+                	</div>
+                    
+                </div>
+                <div class="p-col-12">
+                    <div class="p-grid">
+                        
+                         
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    
+    
+    </div>
+	
+	</div><!-- card -->	
+	
+		
+
+
+	
+	<ui:include src="loader.xhtml" />
+	<ui:include src="menuper.xhtml" />
+</h:form>		
+</h:body>
+</html>
+		

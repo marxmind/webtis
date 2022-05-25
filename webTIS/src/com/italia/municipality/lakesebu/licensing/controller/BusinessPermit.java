@@ -60,6 +60,56 @@ public class BusinessPermit {
 	private String capital;
 	private String gross;
 	
+	public static boolean isCertificateAlreadyCreated(String controlNo, String businessplateno, long customerId) {
+		
+
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement("SELECT controlno FROM businesspermit WHERE isactivebusiness=1 AND controlno='"+ controlNo.trim() +"' AND customerid="+ customerId + " AND businessplateno='"+businessplateno.trim()+"'");
+		System.out.println("iscert present: "+ps.toString());
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			return true;
+		}
+		
+
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return false;
+	}
+	
+	public static boolean isExistControlNumber(String controlNo, long customerId) {
+		
+
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement("SELECT controlno FROM businesspermit WHERE isactivebusiness=1 AND controlno='"+ controlNo +"' AND customerid!="+ customerId);
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			return true;
+		}
+		
+
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return false;
+	}
+	
 	public static Map<String, Map<String, Double>>  getPerType(String param) {
 		
 		

@@ -63,6 +63,8 @@ import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -151,6 +153,8 @@ public class BusinessPermitBean implements Serializable{
 	private String typeId;
 	private List types;
 	
+	@Setter @Getter private List businessStatus;
+	@Setter @Getter private String businessStatusId;
 	
 	@PostConstruct
 	public void init() {
@@ -162,9 +166,12 @@ public class BusinessPermitBean implements Serializable{
 	
 	public void loadTypes() {
 		types = new ArrayList<>();
+		businessStatus = new ArrayList<>();
 		String[] typs = Words.getTagName("types").split(",");
+		businessStatus.add(new SelectItem("All", "All"));
 		for(String t : typs) {
 			types.add(new SelectItem(t, t));
+			businessStatus.add(new SelectItem(t, t));
 		}
 	}
 	
@@ -183,6 +190,10 @@ public class BusinessPermitBean implements Serializable{
 		String[] params = new String[2];
 		params[0] = DateUtils.convertDate(getCalendarFrom(), DateFormat.YYYY_MM_DD());
 		params[1] = DateUtils.convertDate(getCalendarTo(), DateFormat.YYYY_MM_DD());
+		
+		if(!"All".equalsIgnoreCase(getBusinessStatusId())) {
+			sql += " AND  bz.typeof='"+ getBusinessStatusId() +"' ";
+		}
 		
 		if(getSearchName()!=null && !getSearchName().isBlank()) {
 			int size = getSearchName().length();
@@ -498,9 +509,11 @@ public class BusinessPermitBean implements Serializable{
 	public void saveData() {
 		
 		BusinessPermit permit = new BusinessPermit();
+		boolean isNew = false;
 		if(getBusinessData()!=null) {
 			permit = getBusinessData();
 		}else {
+			isNew = true;
 			permit.setIsActive(1);
 		}
 		
@@ -516,19 +529,29 @@ public class BusinessPermitBean implements Serializable{
 			isOk = false;
 		}
 		
+		if(BusinessPermit.isExistControlNumber(getControlNo(), getTaxPayer().getId())) {
+			Application.addMessage(3, "Error", "Controll Number already in use");
+			isOk = false;
+		}
+		
+		if(isNew && BusinessPermit.isCertificateAlreadyCreated(getControlNo(), getPlateNo() ,getTaxPayer().getId())) {
+			Application.addMessage(3, "Error", "This certification is already created. Check your previous transaction");
+			isOk = false;
+		}
+		
 		if(isOk) {
 		permit.setCustomer(getTaxPayer());
 		String det = DateUtils.convertDate(getIssuedDate(), "yyyy-MM-dd");
 		String year = det.split("-")[0];
 		permit.setYear(year);	
 		permit.setDateTrans(det);
-		permit.setControlNo(getControlNo());
+		permit.setControlNo(getControlNo().trim());
 		permit.setType(getTypeId());
-		permit.setBusinessName(getBusinessName());
+		permit.setBusinessName(getBusinessName().trim());
 		permit.setBusinessEngage(getBusinessEngage());
 		permit.setBusinessAddress(getBusinessAddress());
 		permit.setBarangay(getBarangay());
-		permit.setPlateNo(getPlateNo());
+		permit.setPlateNo(getPlateNo().trim());
 		permit.setValidUntil(getValidUntil());
 		permit.setIssuedOn(getIssuedOn());
 		permit.setMemoType(getMemoTypeId());

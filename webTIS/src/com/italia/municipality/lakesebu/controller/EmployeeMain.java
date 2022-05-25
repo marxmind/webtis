@@ -56,6 +56,9 @@ public class EmployeeMain {
 	private String emergecnyContactDtls;
 	private Department department;
 	private String photoid;
+	private int rateType;
+	private double rate;
+	private int withHoldingTax;
 	
 	private Date tempRegDate;
 	private Date tempBirthDate;
@@ -174,6 +177,9 @@ public class EmployeeMain {
 					.emergecnyContactDtls(rs.getString("emergencycontactdtls"))
 					.photoid(rs.getString("photoid"))
 					.department(dep)
+					.rateType(rs.getInt("ratetype"))
+					.rate(rs.getDouble("rate"))
+					.withHoldingTax(rs.getInt("taxable"))
 					.build();
 			
 			emps.add(emp);
@@ -248,8 +254,11 @@ public class EmployeeMain {
 				+ "isresigned,"
 				+ "isactiveemployee,"
 				+ "emergencycontactdtls,"
-				+ "photoid)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "photoid,"
+				+ "ratetype,"
+				+ "rate,"
+				+ "taxable)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -292,6 +301,9 @@ public class EmployeeMain {
 		ps.setInt(cnt++, st.getIsActiveEmployee());
 		ps.setString(cnt++, st.getEmergecnyContactDtls());
 		ps.setString(cnt++, st.getPhotoid());
+		ps.setInt(cnt++, st.getRateType());
+		ps.setDouble(cnt++, st.getRate());
+		ps.setInt(cnt++, st.getWithHoldingTax());
 		
 		LogU.add(st.getRegDate());
 		LogU.add(st.getEmployeeId());
@@ -313,6 +325,9 @@ public class EmployeeMain {
 		LogU.add(st.getIsActiveEmployee());
 		LogU.add(st.getEmergecnyContactDtls());
 		LogU.add(st.getPhotoid());
+		LogU.add(st.getRateType());
+		LogU.add(st.getRate());
+		LogU.add(st.getWithHoldingTax());
 		
 		
 		LogU.add("executing for saving...");
@@ -348,7 +363,10 @@ public class EmployeeMain {
 				+ "signatureid=?,"
 				+ "isresigned=?,"
 				+ "emergencycontactdtls=?,"
-				+ "photoid=?" 
+				+ "photoid=?,"
+				+ "ratetype=?,"
+				+ "rate=?,"
+				+ "taxable=?" 
 				+ " WHERE eid=?";
 		
 		PreparedStatement ps = null;
@@ -382,6 +400,9 @@ public class EmployeeMain {
 		ps.setInt(cnt++, st.getIsResigned());
 		ps.setString(cnt++, st.getEmergecnyContactDtls());
 		ps.setString(cnt++, st.getPhotoid());
+		ps.setInt(cnt++, st.getRateType());
+		ps.setDouble(cnt++, st.getRate());
+		ps.setInt(cnt++, st.getWithHoldingTax());
 		ps.setLong(cnt++, st.getId());
 		
 		LogU.add(st.getRegDate());
@@ -403,6 +424,9 @@ public class EmployeeMain {
 		LogU.add(st.getIsResigned());
 		LogU.add(st.getEmergecnyContactDtls());
 		LogU.add(st.getPhotoid());
+		LogU.add(st.getRateType());
+		LogU.add(st.getRate());
+		LogU.add(st.getWithHoldingTax());
 		LogU.add(st.getId());
 		
 		

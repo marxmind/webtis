@@ -13,6 +13,7 @@ import com.italia.municipality.lakesebu.enm.AppConf;
  */
 public class GlobalVar {
 	
+	public static final String PRIMARY_DRIVE=System.getenv("SystemDrive");
 	public static final double YEARLY = 12.0;
 	public static final double CEDULA_DIVEDEND = 1000.00;
 	public static final String APP_NAME =  AppConf.APP_CONFIG_FOLDER_NAME.getValue();// "webtis";
@@ -52,5 +53,7 @@ public class GlobalVar {
 	public static final String COMMIT_XML_UNPROCESSED = COMMIT_XML+"unprocessed"+SEP;
 	public static final String DOWNLOADED_DATA_FOLDER = "C:" + SEP + APP_NAME + SEP + "downloaded-data" + SEP ; //data from server
 	public static final String COMPLETED_DATA_FOLDER = DOWNLOADED_DATA_FOLDER + "completed-data" + SEP ; //data from server
-	
+	public static final String EMPLOYEE_IMAGE_PATH = PRIMARY_DRIVE + SEP + APP_NAME + SEP + "employee-img" + SEP;
+	public static final String EMPLOYEE_IMAGE_PATH_SIG = EMPLOYEE_IMAGE_PATH + "signature" + SEP;
+	public static final String EMPLOYEE_IMAGE_PATH_PHOTO = EMPLOYEE_IMAGE_PATH + "photo" + SEP;
 }

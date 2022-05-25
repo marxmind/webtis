@@ -277,6 +277,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			    			</span>
 							<p:calendar id="cal1" value="#{businessPermitBean.calendarFrom}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
 			    			<p:calendar id="cal2" value="#{businessPermitBean.calendarTo}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
+							
+							<p:selectOneMenu value="#{businessPermitBean.businessStatusId}" style="width: 10em;">
+				                	<f:selectItems value="#{businessPermitBean.businessStatus}"/>
+				            </p:selectOneMenu>
+				            	
 							<p:commandButton update="clearFldId pictureId cusId" icon="fa fa-search" actionListener="#{businessPermitBean.loadSearch}"/>
 							</div>
 			        	</f:facet>

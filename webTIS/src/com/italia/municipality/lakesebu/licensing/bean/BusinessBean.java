@@ -293,12 +293,13 @@ public class BusinessBean implements Serializable{
 	
 	public void saveData(){
 		
-		
+			boolean isNew = false;
 			Livelihood li = new Livelihood();
 			if(getSelectedData()!=null){
 				li = getSelectedData();
 			}else{
 				li.setIsActive(1);
+				isNew = true;
 			}
 			
 			boolean isOk = true;
@@ -330,11 +331,16 @@ public class BusinessBean implements Serializable{
 				isOk= false;
 			}
 			
+			if(isNew && Livelihood.isExistingBusiness(getBusinessName().toUpperCase(), getCustomer().getId())) {
+				Application.addMessage(3, "Erro", "Business name is already exist");
+				isOk= false;
+			}
+			
 			if(isOk){
 				if(getTypeId()==1){
 					li.setBusinessName("Fish Cage");
 				}else{
-					li.setBusinessName(getBusinessName());
+					li.setBusinessName(getBusinessName().toUpperCase().trim());
 					li.setAreaMeter(getAreaMeter());
 				}
 

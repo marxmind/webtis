@@ -12,12 +12,25 @@ import java.util.List;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * 
  * @author mark italia
  * @since 09/27/2016
  *
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
+@ToString
 public class Department {
 
 	private int depid;
@@ -28,21 +41,14 @@ public class Department {
 	private Timestamp timestamp;
 	private int isActive;
 	private String departmentHead;
-	public Department(){}
+	/* public Department(){} */
 	
-	public Department(
-			int depid,
-			String departmentName,
-			UserDtls userDtls,
-			String code,
-			Company company
-			){
-		this.depid = depid;
-		this.departmentName = departmentName;
-		this.userDtls = userDtls;
-		this.company = company;
-		this.code = code;
-	}
+	/*
+	 * public Department( int depid, String departmentName, UserDtls userDtls,
+	 * String code, Company company ){ this.depid = depid; this.departmentName =
+	 * departmentName; this.userDtls = userDtls; this.company = company; this.code =
+	 * code; }
+	 */
 	
 	public static String departmentSQL(String tablename,Department dep){
 		String sql="";
@@ -461,7 +467,7 @@ public class Department {
 		
 	}
 	
-	
+	/*
 	public int getDepid() {
 		return depid;
 	}
@@ -516,6 +522,6 @@ public class Department {
 	public void setDepartmentHead(String departmentHead) {
 		this.departmentHead = departmentHead;
 	}
-	
+	*/
 }
 

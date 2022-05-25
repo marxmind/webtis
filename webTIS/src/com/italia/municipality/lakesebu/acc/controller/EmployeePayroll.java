@@ -1,13 +1,14 @@
-package com.italia.municipality.lakesebu.controller;
+package com.italia.municipality.lakesebu.acc.controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import com.italia.municipality.lakesebu.controller.Department;
+import com.italia.municipality.lakesebu.controller.EmployeeMain;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
 
@@ -21,38 +22,47 @@ import lombok.ToString;
 /**
  * 
  * @author Mark Italia
+ * @since 05/13/2022
  * @version 1.0
- * @since 03/15/2022
  *
  */
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
 @Builder
 @ToString
-public class Card {
+public class EmployeePayroll {
 
 	private long id;
-	private String name;
-	private String number;
-	private String validFrom;
-	private String validTo;
+	private String dateTrans;
+	private String designation;
+	private double rate;
+	private double gross;
+	private double net;
+	private double ee;
+	private double er;
+	private double tax;
+	private double coop;
+	private double numberOfWork;
+	private int month;
+	private int year;
 	private int isActive;
-	private EmployeeMain employee;
+	private int status;
+	private PayrollGroupSeries group;
+	private EmployeeMain employeeMain;
 	
-	private Date tempDateFrom;
-	private Date tempDateTo;
-	
-	public static List<Card> retrieve(String sql, String[] params){
-		List<Card> cards = new ArrayList<Card>();
+	public static List<EmployeePayroll> retrieve(String sql, String[] params){
+		List<EmployeePayroll> emps = new ArrayList<EmployeePayroll>();
 		
-		String tableCard = "card";
 		String tableEmp = "emp";
+		String tablePay = "py";
+		String tableGp = "gp";
 		
-		String sqlTemp = "SELECT * FROM employeecard "+ tableCard  +", employee "+ tableEmp +" WHERE " + tableCard + ".isactivecard=1 " +
-				" AND " + tableCard +".eid=" +  tableEmp + ".eid";
-		
+		String sqlTemp = "SELECT * FROM employeepayroll  "+ tablePay + ", employee, "+ tableEmp +" payrollgroup "+ tablePay +" WHERE " + tablePay + ".isactivepay=1 " + 
+		 " AND " + tablePay + ".eid=" + tableEmp + ".eid AND "
+		 		+ tablePay + ".gid=" + tableGp + ".gid ";
 		
 		sql = sqlTemp + sql;
 		
@@ -70,10 +80,18 @@ public class Card {
 			}
 			
 		}
-		System.out.println("Card SQL " + ps.toString());
+		System.out.println("employeepayroll SQL " + ps.toString());
 		rs = ps.executeQuery();
 		
 		while(rs.next()){
+			
+			PayrollGroupSeries gp = PayrollGroupSeries.builder()
+					.id(rs.getLong("gid"))
+					.dateTrans(rs.getString("gdate"))
+					.series(rs.getString("gseries"))
+					.isActive(rs.getInt("isactiveg"))
+					.status(rs.getInt("gstatus"))
+					.build();
 			
 			EmployeeMain emp = EmployeeMain.builder()
 					.id(rs.getLong("eid"))
@@ -96,22 +114,33 @@ public class Card {
 					.isActiveEmployee(rs.getInt("isactiveemployee"))
 					.emergecnyContactDtls(rs.getString("emergencycontactdtls"))
 					.photoid(rs.getString("photoid"))
+					.department(Department.builder().depid(rs.getInt("departmentid")).build())
 					.rateType(rs.getInt("ratetype"))
 					.rate(rs.getDouble("rate"))
 					.withHoldingTax(rs.getInt("taxable"))
 					.build();
 			
-			Card card = Card.builder()
-					.id(rs.getLong("cardid"))
-					.name(rs.getString("cardname"))
-					.number(rs.getString("cardno"))
-					.validFrom(rs.getString("validfrom"))
-					.validTo(rs.getString("validto"))
-					.isActive(rs.getInt("isactivecard"))
-					.employee(emp)
+			EmployeePayroll py = EmployeePayroll.builder()
+					.id(rs.getLong("pyid"))
+					.dateTrans(rs.getString("pydate"))
+					.designation(rs.getString("designation"))
+					.rate(rs.getDouble("pyrate"))
+					.gross(rs.getDouble("pygross"))
+					.net(rs.getDouble("pynet"))
+					.ee(rs.getDouble("pyee"))
+					.er(rs.getDouble("pyer"))
+					.tax(rs.getDouble("pytax"))
+					.coop(rs.getDouble("pycoop"))
+					.numberOfWork(rs.getDouble("dayswork"))
+					.month(rs.getInt("monthperiod"))
+					.year(rs.getInt("yearperiod"))
+					.isActive(rs.getInt("isactivepay"))
+					.status(rs.getInt("pystatus"))
+					.employeeMain(emp)
+					.group(gp)
 					.build();
 			
-			cards.add(card);
+			emps.add(py);
 		}
 		
 		
@@ -121,23 +150,23 @@ public class Card {
 		
 		}catch(Exception e){e.getMessage();}
 		
-		return cards;
+		return emps;
 	}
 	
-	public static Card save(Card st){
+	public static EmployeePayroll save(EmployeePayroll st){
 		if(st!=null){
 			
-			long id = Card.getInfo(st.getId() ==0? Card.getLatestId()+1 : st.getId());
+			long id = EmployeePayroll.getInfo(st.getId() ==0? EmployeePayroll.getLatestId()+1 : st.getId());
 			LogU.add("checking for new added data");
 			if(id==1){
 				LogU.add("insert new Data ");
-				st = Card.insertData(st, "1");
+				st = EmployeePayroll.insertData(st, "1");
 			}else if(id==2){
 				LogU.add("update Data ");
-				st = Card.updateData(st);
+				st = EmployeePayroll.updateData(st);
 			}else if(id==3){
 				LogU.add("added new Data ");
-				st = Card.insertData(st, "3");
+				st = EmployeePayroll.insertData(st, "3");
 			}
 			
 		}
@@ -150,27 +179,37 @@ public class Card {
 		LogU.add("checking for new added data");
 		if(id==1){
 			LogU.add("insert new Data ");
-			Card.insertData(this, "1");
+			EmployeePayroll.insertData(this, "1");
 		}else if(id==2){
 			LogU.add("update Data ");
-			Card.updateData(this);
+			EmployeePayroll.updateData(this);
 		}else if(id==3){
 			LogU.add("added new Data ");
-			Card.insertData(this, "3");
+			EmployeePayroll.insertData(this, "3");
 		}
 		
- }
+	}
 	
-	public static Card insertData(Card st, String type){
-		String sql = "INSERT INTO employeecard ("
-				+ "cardid,"
-				+ "cardname,"
-				+ "cardno,"
-				+ "validfrom,"
-				+ "validto,"
-				+ "isactivecard,"
+	public static EmployeePayroll insertData(EmployeePayroll st, String type){
+		String sql = "INSERT INTO employeepayroll ("
+				+ "pyid,"
+				+ "pydate,"
+				+ "designation,"
+				+ "pyrate,"
+				+ "pygross,"
+				+ "pynet,"
+				+ "pyee,"
+				+ "pyer,"
+				+ "pytax,"
+				+ "pycoop," 
+				+ "dayswork,"
+				+ "monthperiod,"
+				+ "yearperiod,"
+				+ "isactivepay,"
+				+ "pystatus,"
+				+ "gid,"
 				+ "eid)" 
-				+ " VALUES(?,?,?,?,?,?,?)";
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -181,7 +220,7 @@ public class Card {
 		long id =1;
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table employeecard");
+		LogU.add("inserting data into table employee");
 		if("1".equalsIgnoreCase(type)){
 			ps.setLong(cnt++, id);
 			st.setId(id);
@@ -193,20 +232,39 @@ public class Card {
 			LogU.add("id: " + id);
 		}
 		
-		ps.setString(cnt++, st.getName());
-		ps.setString(cnt++, st.getNumber());
-		ps.setString(cnt++, st.getValidFrom());
-		ps.setString(cnt++, st.getValidTo());
+		ps.setString(cnt++, st.getDateTrans());
+		ps.setString(cnt++, st.getDesignation());
+		ps.setDouble(cnt++, st.getRate());
+		ps.setDouble(cnt++, st.getGross());
+		ps.setDouble(cnt++, st.getNet());
+		ps.setDouble(cnt++, st.getEe());
+		ps.setDouble(cnt++, st.getEr());
+		ps.setDouble(cnt++, st.getTax());
+		ps.setDouble(cnt++, st.getCoop());
+		ps.setDouble(cnt++, st.getNumberOfWork());
+		ps.setInt(cnt++, st.getMonth());
+		ps.setInt(cnt++, st.getYear());
 		ps.setInt(cnt++, st.getIsActive());
-		ps.setLong(cnt++, st.getEmployee().getId());
+		ps.setInt(cnt++, st.getStatus());
+		ps.setLong(cnt++, st.getGroup().getId());
+		ps.setLong(cnt++, st.getEmployeeMain().getId());
 		
-		LogU.add(st.getName());
-		LogU.add(st.getNumber());
-		LogU.add(st.getValidFrom());
-		LogU.add(st.getValidTo());
+		LogU.add(st.getDateTrans());
+		LogU.add(st.getDesignation());
+		LogU.add(st.getRate());
+		LogU.add(st.getGross());
+		LogU.add(st.getNet());
+		LogU.add(st.getEe());
+		LogU.add(st.getEr());
+		LogU.add(st.getTax());
+		LogU.add(st.getCoop());
+		LogU.add(st.getNumberOfWork());
+		LogU.add(st.getMonth());
+		LogU.add(st.getYear());
 		LogU.add(st.getIsActive());
-		LogU.add(st.getEmployee().getId());
-		
+		LogU.add(st.getStatus());
+		LogU.add(st.getGroup().getId());
+		LogU.add(st.getEmployeeMain().getId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -221,14 +279,24 @@ public class Card {
 		return st;
 	}
 	
-	public static Card updateData(Card st){
-		String sql = "UPDATE employeecard SET "
-				+ "cardname=?,"
-				+ "cardno=?,"
-				+ "validfrom=?,"
-				+ "validto=?,"
+	public static EmployeePayroll updateData(EmployeePayroll st){
+		String sql = "UPDATE employeepayroll SET "
+				+ "pydate=?,"
+				+ "designation=?,"
+				+ "pyrate=?,"
+				+ "pygross=?,"
+				+ "pynet=?,"
+				+ "pyee=?,"
+				+ "pyer=?,"
+				+ "pytax=?,"
+				+ "pycoop=?," 
+				+ "dayswork=?,"
+				+ "monthperiod=?,"
+				+ "yearperiod=?,"
+				+ "pystatus=?,"
+				+ "gid=?,"
 				+ "eid=?" 
-				+ " WHERE cardid=?";
+				+ " WHERE pyid=?";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -236,25 +304,45 @@ public class Card {
 		try{
 		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
-		
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table employeecard");
+		LogU.add("updating data into table employeepayroll");
 		
-		ps.setString(cnt++, st.getName());
-		ps.setString(cnt++, st.getNumber());
-		ps.setString(cnt++, st.getValidFrom());
-		ps.setString(cnt++, st.getValidTo());
-		ps.setLong(cnt++, st.getEmployee().getId());
+		
+		ps.setString(cnt++, st.getDateTrans());
+		ps.setString(cnt++, st.getDesignation());
+		ps.setDouble(cnt++, st.getRate());
+		ps.setDouble(cnt++, st.getGross());
+		ps.setDouble(cnt++, st.getNet());
+		ps.setDouble(cnt++, st.getEe());
+		ps.setDouble(cnt++, st.getEr());
+		ps.setDouble(cnt++, st.getTax());
+		ps.setDouble(cnt++, st.getCoop());
+		ps.setDouble(cnt++, st.getNumberOfWork());
+		ps.setInt(cnt++, st.getMonth());
+		ps.setInt(cnt++, st.getYear());
+		ps.setInt(cnt++, st.getStatus());
+		ps.setLong(cnt++, st.getGroup().getId());
+		ps.setLong(cnt++, st.getEmployeeMain().getId());
 		ps.setLong(cnt++, st.getId());
 		
-		LogU.add(st.getName());
-		LogU.add(st.getNumber());
-		LogU.add(st.getValidFrom());
-		LogU.add(st.getValidTo());
-		LogU.add(st.getEmployee().getId());
+		LogU.add(st.getDateTrans());
+		LogU.add(st.getDesignation());
+		LogU.add(st.getRate());
+		LogU.add(st.getGross());
+		LogU.add(st.getNet());
+		LogU.add(st.getEe());
+		LogU.add(st.getEr());
+		LogU.add(st.getTax());
+		LogU.add(st.getCoop());
+		LogU.add(st.getNumberOfWork());
+		LogU.add(st.getMonth());
+		LogU.add(st.getYear());
+		LogU.add(st.getIsActive());
+		LogU.add(st.getStatus());
+		LogU.add(st.getGroup().getId());
+		LogU.add(st.getEmployeeMain().getId());
 		LogU.add(st.getId());
-		
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -263,100 +351,11 @@ public class Card {
 		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error inserting data to employee : " + s.getMessage());
+			LogU.add("error updating data to employeepayroll : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		return st;
 	}
-	
-	public static EmployeeMain updateData(EmployeeMain st){
-		String sql = "UPDATE employee SET "
-				+ "regdate=?,"
-				+ "employeeid=?,"
-				+ "firstname=?,"
-				+ "middlename=?,"
-				+ "lastname=?,"
-				+ "fullname=?,"
-				+ "birthdate=?,"
-				+ "civilstatus=?,"
-				+ "empposition=?"
-				+ "departmentid=?,"
-				+ "cctsid=?,"
-				+ "employeetype=?,"
-				+ "address=?,"
-				+ "gender=?,"
-				+ "contactno=?,"
-				+ "signatureid=?,"
-				+ "isresigned=?,"
-				+ "emergencycontactdtls=?" 
-				+ " WHERE eid=?";
-		
-		PreparedStatement ps = null;
-		Connection conn = null;
-		
-		try{
-		conn = WebTISDatabaseConnect.getConnection();
-		ps = conn.prepareStatement(sql);
-		
-		int cnt = 1;
-		LogU.add("===========================START=========================");
-		LogU.add("updatibg data into table employee");
-		
-		
-		ps.setString(cnt++, st.getRegDate());
-		ps.setString(cnt++, st.getEmployeeId());
-		ps.setString(cnt++, st.getFirstName());
-		ps.setString(cnt++, st.getMiddleName());
-		ps.setString(cnt++, st.getLastName());
-		ps.setString(cnt++, st.getFullName());
-		ps.setString(cnt++, st.getBirthDate());
-		ps.setInt(cnt++, st.getCivilStatus());
-		ps.setString(cnt++, st.getPosition());
-		ps.setInt(cnt++, st.getDepartment().getDepid());
-		ps.setString(cnt++, st.getCctsId());
-		ps.setInt(cnt++, st.getEmployeeType());
-		ps.setString(cnt++, st.getAddress());
-		ps.setInt(cnt++, st.getGender());
-		ps.setString(cnt++, st.getContactNo());
-		ps.setString(cnt++, st.getSignatureid());
-		ps.setInt(cnt++, st.getIsResigned());
-		ps.setString(cnt++, st.getEmergecnyContactDtls());
-		ps.setLong(cnt++, st.getId());
-		
-		LogU.add(st.getRegDate());
-		LogU.add(st.getEmployeeId());
-		LogU.add(st.getFirstName());
-		LogU.add(st.getMiddleName());
-		LogU.add(st.getLastName());
-		LogU.add(st.getFullName());
-		LogU.add(st.getBirthDate());
-		LogU.add(st.getCivilStatus());
-		LogU.add(st.getPosition());
-		LogU.add(st.getDepartment().getDepid());
-		LogU.add(st.getCctsId());
-		LogU.add(st.getEmployeeType());
-		LogU.add(st.getAddress());
-		LogU.add(st.getGender());
-		LogU.add(st.getContactNo());
-		LogU.add(st.getSignatureid());
-		LogU.add(st.getIsResigned());
-		LogU.add(st.getEmergecnyContactDtls());
-		LogU.add(st.getId());
-		
-		
-		LogU.add("executing for saving...");
-		ps.execute();
-		LogU.add("closing...");
-		ps.close();
-		WebTISDatabaseConnect.close(conn);
-		LogU.add("data has been successfully update...");
-		}catch(SQLException s){
-			LogU.add("error inserting data to employee : " + s.getMessage());
-		}
-		LogU.add("===========================END=========================");
-		return st;
-	}
-	
 	
 	public static long getLatestId(){
 		long id =0;
@@ -365,13 +364,13 @@ public class Card {
 		ResultSet rs = null;
 		String sql = "";
 		try{
-		sql="SELECT cardid FROM employeecard ORDER BY cardid DESC LIMIT 1";	
+		sql="SELECT pyid FROM employeepayroll ORDER BY pyid DESC LIMIT 1";	
 		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
 		while(rs.next()){
-			id = rs.getLong("cardid");
+			id = rs.getLong("pyid");
 		}
 		
 		rs.close();
@@ -418,7 +417,7 @@ public class Card {
 		boolean result = false;
 		try{
 		conn = WebTISDatabaseConnect.getConnection();
-		ps = conn.prepareStatement("SELECT cardid FROM employeecard WHERE cardid=?");
+		ps = conn.prepareStatement("SELECT pyid FROM employeepayroll WHERE pyid=?");
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
 		
@@ -462,7 +461,7 @@ public class Card {
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
-		String sql = "UPDATE employeecard set isactivecard=0 WHERE cardid=?";
+		String sql = "UPDATE employeepayroll set isactivepay=0 WHERE pyid=?";
 		
 		String[] params = new String[1];
 		params[0] = getId()+"";
@@ -484,5 +483,7 @@ public class Card {
 		}catch(SQLException s){}
 		
 	}
+	
+	
 	
 }

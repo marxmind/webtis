@@ -198,6 +198,12 @@ public class DateUtils {
 		return month;
 	}
 	
+	public static int monthStartWeek(int month,int year) {
+		Calendar cal = new GregorianCalendar(year, month-1, 1);
+		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+		return dayOfWeek;
+	}
+	
 	public static String getFirstDayOfTheMonth(String dateFormat,String dateInputed, Locale locale){
 		String date="";
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateFormat, locale);
@@ -208,6 +214,15 @@ public class DateUtils {
 		return start.toString();
 	}
 	
+	public static int getFirstDay(int month, int year, Locale locale){
+		String dateInputed = year + "-" + (month<10? "0"+month : month) + "-01";
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", locale);
+		LocalDate now = LocalDate.parse(dateInputed, dateTimeFormatter);
+		LocalDate initial = now.of(year, month, 13);
+		LocalDate start = initial.withDayOfMonth(1);
+		return start.getDayOfMonth();
+	}
+	
 	public static String getLastDayOfTheMonth(String dateFormat,String dateInputed, Locale locale){
 		String date="";
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateFormat, locale);
@@ -216,6 +231,15 @@ public class DateUtils {
 		//LocalDate start = initial.withDayOfMonth(1);
 		LocalDate end = initial.withDayOfMonth(initial.lengthOfMonth());
 		return end.toString();
+	}
+	
+	public static int getLastDay(int month, int year, Locale locale){
+		String dateInputed = year + "-" + (month<10? "0"+month : month) + "-01";
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", locale);
+		LocalDate now = LocalDate.parse(dateInputed, dateTimeFormatter);
+		LocalDate initial = now.of(year, month, 13);
+		LocalDate end = initial.withDayOfMonth(initial.lengthOfMonth());
+		return end.getDayOfMonth();
 	}
 	
 	public static String getLastDayOfTheMonth(String dateFormat,String dateInputed, Locale locale, int year, int month){

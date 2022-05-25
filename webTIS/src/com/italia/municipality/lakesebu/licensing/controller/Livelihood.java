@@ -55,6 +55,28 @@ public class Livelihood {
 	private String businessLabel;
 	//private static final String WEBTIS = Database.WEBTIS.getName();
 	
+	public static boolean isExistingBusiness(String name, long costumerId) {
+		String sql = "SELECT count(*) FROM livelihood WHERE isactivelive=1 AND customerid="+ costumerId + " AND livename='"+ name.trim() +"'";
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			return true;
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return false;
+	}
 	
 	public static String getNewPlateNo() {
 		String sql = "SELECT liveareameter FROM livelihood WHERE isactivelive=1 ORDER BY livelihoodid DESC limit 1";
