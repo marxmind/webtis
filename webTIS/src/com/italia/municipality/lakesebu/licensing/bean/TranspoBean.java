@@ -158,7 +158,7 @@ public class TranspoBean implements Serializable {
 			TranspoItems.delete(trans.getId());
 			
 			for(TranspoItems item : trans.getItems()) {
-				if(item.getAmount()>0 && item.getQuantity()>0) {
+				if(item.getQuantity()>0) {
 					item.setIsActive(1);
 					item.setTranspo(trans);
 					item.save();
@@ -262,9 +262,9 @@ public class TranspoBean implements Serializable {
 		if(val.getQuantity()==0) {
 			isOk = false;
 		}
-		if(val.getAmount()==0) {
-			isOk = false;
-		}
+		//if(val.getAmount()==0) {
+		//	isOk = false;
+		//}
 		
 		if("Item Name".equalsIgnoreCase(val.getName()) || "Unit".equalsIgnoreCase(val.getName())) {
 			isOk = false;

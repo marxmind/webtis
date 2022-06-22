@@ -46,7 +46,10 @@ public class PayrollGroupSeries {
 	
 	public static String getLatestSeriesId(EmployeeType type) {
 		String employeeNo = null;
+		String payCode = "PAY|";
 		int year = DateUtils.getCurrentYear();
+		int mnt = DateUtils.getCurrentMonth();
+		String month = (mnt<10? "0"+mnt : ""+mnt);
 		Connection conn = null;
 		ResultSet rs = null;
 		PreparedStatement ps = null;
@@ -61,30 +64,38 @@ public class PayrollGroupSeries {
 		}
 		
 		if(employeeNo==null) {
-			employeeNo = type.getCode() + "-" + year + "-00001";
+			employeeNo = payCode+type.getCode() + "-" + year +"-"+ month +"-00001";
 		}else {
 			
 			String[] vals = employeeNo.split("-");
 			int tmpYear = Integer.valueOf(vals[1]);
 			//if(year.equalsIgnoreCase(vals[1])) {
 			if(year == tmpYear) {	
-				int number = Integer.valueOf(vals[2]);
-				number += 1; //add 1
+				int number = Integer.valueOf(vals[3]);
+				
+				//if same year and month no movement on series
+				if(month.equalsIgnoreCase(vals[2])) {
+					
+				}else {
+					number += 1; //add 1
+				}
+				
+				
 				
 				String newSeries = number + "";
 				int len = newSeries.length();
 				
 				switch(len) {
-					case 1 : employeeNo = type.getCode() + "-" + year + "-0000" + newSeries;  break;
-					case 2 : employeeNo = type.getCode() + "-" + year + "-000" + newSeries; break;
-					case 3 : employeeNo = type.getCode() + "-" + year + "-00" + newSeries; break;
-					case 4 : employeeNo = type.getCode() + "-" + year + "-0" + newSeries; break;
-					case 5 : employeeNo = type.getCode() + "-" + year + "-" + newSeries; break;
+					case 1 : employeeNo = payCode+type.getCode() + "-" + year +"-"+ month + "-0000" + newSeries;  break;
+					case 2 : employeeNo = payCode+type.getCode() + "-" + year +"-"+ month + "-000" + newSeries; break;
+					case 3 : employeeNo = payCode+type.getCode() + "-" + year +"-"+ month + "-00" + newSeries; break;
+					case 4 : employeeNo = payCode+type.getCode() + "-" + year +"-"+ month + "-0" + newSeries; break;
+					case 5 : employeeNo = payCode+type.getCode() + "-" + year +"-"+ month + "-" + newSeries; break;
 				}
 				
 				
 			}else {//not equal to current year
-				employeeNo = type.getCode() + "-" + year + "-00001";
+				employeeNo = payCode+type.getCode() + "-" + year +"-"+ month +"-00001";
 			}
 			
 			
@@ -98,6 +109,84 @@ public class PayrollGroupSeries {
 		}catch(Exception e){e.getMessage();}
 		
 		return employeeNo;
+	}
+	
+	public static PayrollGroupSeries retrieveSeries(String series){
+		
+		PayrollGroupSeries gp = null;
+		String sql = "SELECT * FROM payrollgroup WHERE isactiveg=1 AND gseries='"+ series.trim() + "'";
+		 
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		
+		System.out.println("retrieveSeries SQL " + ps.toString());
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			
+			 gp = PayrollGroupSeries.builder()
+					.id(rs.getLong("gid"))
+					.dateTrans(rs.getString("gdate"))
+					.series(rs.getString("gseries"))
+					.isActive(rs.getInt("isactiveg"))
+					.status(rs.getInt("gstatus"))
+					.type(rs.getInt("emtype"))
+					.build();
+		}
+		
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		
+		}catch(Exception e){e.getMessage();}
+		
+		return gp;
+	}
+	
+	public static PayrollGroupSeries retrieveGroup(long groupId, int employeeType){
+		
+		PayrollGroupSeries gp = null;
+		String sql = "SELECT * FROM payrollgroup WHERE isactiveg=1 AND gid="+ groupId + " AND emtype="+employeeType;
+		 
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		
+		System.out.println("retrieveGroup SQL " + ps.toString());
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			
+			 gp = PayrollGroupSeries.builder()
+					.id(rs.getLong("gid"))
+					.dateTrans(rs.getString("gdate"))
+					.series(rs.getString("gseries"))
+					.isActive(rs.getInt("isactiveg"))
+					.status(rs.getInt("gstatus"))
+					.type(rs.getInt("emtype"))
+					.build();
+		}
+		
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		
+		}catch(Exception e){e.getMessage();}
+		
+		return gp;
 	}
 	
 	public static List<PayrollGroupSeries> retrieve(String sql, String[] params){

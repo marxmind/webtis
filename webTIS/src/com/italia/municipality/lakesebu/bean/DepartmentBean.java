@@ -35,6 +35,7 @@ public class DepartmentBean implements Serializable{
 	@Setter @Getter private String searchName;
 	@Setter @Getter private String departmentHead;
 	@Setter @Getter private Department depData;
+	@Setter @Getter private String abrevation;
 	@Setter @Getter private List<Department> deps;
 	
 	@PostConstruct
@@ -45,7 +46,8 @@ public class DepartmentBean implements Serializable{
 		
 		if(getSearchName()!=null) {
 			sql += " AND (departmentname LIKE '%"+ getSearchName() +"%' OR ";
-			sql += " code LIKE '%"+ getSearchName() +"%')";
+			sql += " code LIKE '%"+ getSearchName() +"%' OR ";
+			sql += " abr LIKE '%"+ getSearchName() +"%')";
 		}
 		
 		sql += " ORDER BY departmentid DESC LIMIT 10";
@@ -77,11 +79,18 @@ public class DepartmentBean implements Serializable{
 			Application.addMessage(3, "Error", "Please provide department head");
 		}
 		
+		if(getAbrevation()==null) {
+			isOk=false;
+			Application.addMessage(3, "Error", "Please provide code name");
+		}
+		
+		
 		if(isOk) {
 			dep.setIsActive(1);
 			dep.setDepartmentName(getName());
 			dep.setCode(getCode());
 			dep.setDepartmentHead(getDepartmentHead());
+			dep.setAbrevation(getAbrevation());
 			dep.save();
 			init();
 			clear();
@@ -96,6 +105,7 @@ public class DepartmentBean implements Serializable{
 		setName(dep.getDepartmentName());
 		setCode(dep.getCode());
 		setDepartmentHead(dep.getDepartmentHead());
+		setAbrevation(dep.getAbrevation());
 	}
 	
 	public void deleteRow(Department dep) {
@@ -109,6 +119,7 @@ public class DepartmentBean implements Serializable{
 		setName(null);
 		setCode(null);
 		setDepartmentHead(null);
+		setAbrevation(null);
 	}
 	
 }

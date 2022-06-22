@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.controller.EmployeeMain;
+import com.italia.municipality.lakesebu.controller.PayrollFund;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
 
@@ -50,7 +51,8 @@ public class EmployeePayroll {
 	private int year;
 	private int isActive;
 	private int status;
-	private PayrollGroupSeries group;
+	private PayrollFund fund;
+	//private PayrollGroupSeries group;
 	private EmployeeMain employeeMain;
 	
 	public static List<EmployeePayroll> retrieve(String sql, String[] params){
@@ -58,11 +60,11 @@ public class EmployeePayroll {
 		
 		String tableEmp = "emp";
 		String tablePay = "py";
-		String tableGp = "gp";
+		String tableFund = "fn";
 		
-		String sqlTemp = "SELECT * FROM employeepayroll  "+ tablePay + ", employee, "+ tableEmp +" payrollgroup "+ tablePay +" WHERE " + tablePay + ".isactivepay=1 " + 
+		String sqlTemp = "SELECT * FROM employeepayroll  "+ tablePay + ", employee "+ tableEmp +", payrollfund "+ tableFund +" WHERE " + tablePay + ".isactivepay=1 " + 
 		 " AND " + tablePay + ".eid=" + tableEmp + ".eid AND "
-		 		+ tablePay + ".gid=" + tableGp + ".gid ";
+		 		+ tablePay + ".fid=" + tableFund + ".fid ";
 		
 		sql = sqlTemp + sql;
 		
@@ -85,12 +87,18 @@ public class EmployeePayroll {
 		
 		while(rs.next()){
 			
-			PayrollGroupSeries gp = PayrollGroupSeries.builder()
+			/*PayrollGroupSeries gp = PayrollGroupSeries.builder()
 					.id(rs.getLong("gid"))
 					.dateTrans(rs.getString("gdate"))
 					.series(rs.getString("gseries"))
 					.isActive(rs.getInt("isactiveg"))
 					.status(rs.getInt("gstatus"))
+					.build();*/
+			PayrollFund fund = PayrollFund.builder()
+					.id(rs.getLong("fid"))
+					.name(rs.getString("fundname"))
+					.amount(rs.getDouble("amount"))
+					.isActive(rs.getInt("isactivef"))
 					.build();
 			
 			EmployeeMain emp = EmployeeMain.builder()
@@ -137,7 +145,7 @@ public class EmployeePayroll {
 					.isActive(rs.getInt("isactivepay"))
 					.status(rs.getInt("pystatus"))
 					.employeeMain(emp)
-					.group(gp)
+					.fund(fund)
 					.build();
 			
 			emps.add(py);
@@ -151,6 +159,137 @@ public class EmployeePayroll {
 		}catch(Exception e){e.getMessage();}
 		
 		return emps;
+	}
+	
+	/**
+	 * 
+	 * @param sql
+	 * @param params
+	 * @return obj[tax],obj[gross],obj[net],obj[ee],obj[er],obj[coop] obj[List<EmployeePayroll>]
+	 */
+	public static Object[] retrieveData(String sql, String[] params){
+		List<EmployeePayroll> emps = new ArrayList<EmployeePayroll>();
+		Object[] obj = new Object[7];
+		double tax=0d, gross=0d, net=0d,ee=0d,er=0d,coop=0d;
+		String tableEmp = "emp";
+		String tablePay = "py";
+		String tableFund = "fn";
+		
+		String sqlTemp = "SELECT * FROM employeepayroll  "+ tablePay + ", employee "+ tableEmp +", payrollfund "+ tableFund +" WHERE " + tablePay + ".isactivepay=1 " + 
+		 " AND " + tablePay + ".eid=" + tableEmp + ".eid AND "
+		 		+ tablePay + ".fid=" + tableFund + ".fid ";
+		
+		sql = sqlTemp + sql;
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		if(params!=null && params.length>0){
+		
+			for(int i=0; i<params.length; i++){
+				ps.setString(i+1, params[i]);
+			}
+			
+		}
+		System.out.println("employeepayroll SQL " + ps.toString());
+		rs = ps.executeQuery();
+		
+		
+		
+		
+		while(rs.next()){
+			
+			/*PayrollGroupSeries gp = PayrollGroupSeries.builder()
+					.id(rs.getLong("gid"))
+					.dateTrans(rs.getString("gdate"))
+					.series(rs.getString("gseries"))
+					.isActive(rs.getInt("isactiveg"))
+					.status(rs.getInt("gstatus"))
+					.build();*/
+			PayrollFund fund = PayrollFund.builder()
+					.id(rs.getLong("fid"))
+					.name(rs.getString("fundname"))
+					.amount(rs.getDouble("amount"))
+					.isActive(rs.getInt("isactivef"))
+					.build();
+			
+			EmployeeMain emp = EmployeeMain.builder()
+					.id(rs.getLong("eid"))
+					.regDate(rs.getString("regdate"))
+					.employeeId(rs.getString("employeeid"))
+					.firstName(rs.getString("firstname"))
+					.middleName(rs.getString("middlename"))
+					.lastName(rs.getString("lastname"))
+					.fullName(rs.getString("fullname"))
+					.birthDate(rs.getString("birthdate"))
+					.civilStatus(rs.getInt("civilstatus"))
+					.position(rs.getString("empposition"))
+					.cctsId(rs.getString("cctsid"))
+					.employeeType(rs.getInt("employeetype"))
+					.address(rs.getString("address"))
+					.gender(rs.getInt("gender"))
+					.contactNo(rs.getString("contactno"))
+					.signatureid(rs.getString("signatureid"))
+					.isResigned(rs.getInt("isresigned"))
+					.isActiveEmployee(rs.getInt("isactiveemployee"))
+					.emergecnyContactDtls(rs.getString("emergencycontactdtls"))
+					.photoid(rs.getString("photoid"))
+					.department(Department.builder().depid(rs.getInt("departmentid")).build())
+					.rateType(rs.getInt("ratetype"))
+					.rate(rs.getDouble("rate"))
+					.withHoldingTax(rs.getInt("taxable"))
+					.build();
+			
+			EmployeePayroll py = EmployeePayroll.builder()
+					.id(rs.getLong("pyid"))
+					.dateTrans(rs.getString("pydate"))
+					.designation(rs.getString("designation"))
+					.rate(rs.getDouble("pyrate"))
+					.gross(rs.getDouble("pygross"))
+					.net(rs.getDouble("pynet"))
+					.ee(rs.getDouble("pyee"))
+					.er(rs.getDouble("pyer"))
+					.tax(rs.getDouble("pytax"))
+					.coop(rs.getDouble("pycoop"))
+					.numberOfWork(rs.getDouble("dayswork"))
+					.month(rs.getInt("monthperiod"))
+					.year(rs.getInt("yearperiod"))
+					.isActive(rs.getInt("isactivepay"))
+					.status(rs.getInt("pystatus"))
+					.employeeMain(emp)
+					.fund(fund)
+					.build();
+			
+			tax += rs.getDouble("pytax");
+			gross += rs.getDouble("pygross");
+			net += rs.getDouble("pynet");
+			ee += rs.getDouble("pyee");
+			er += rs.getDouble("pyer");
+			coop += rs.getDouble("pycoop");
+			
+			emps.add(py);
+		}
+		
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		
+		}catch(Exception e){e.getMessage();}
+		
+		obj[0] = tax;
+		obj[1] = gross;
+		obj[2] = net;
+		obj[3] = ee;
+		obj[4] = er;
+		obj[5] = coop;
+		obj[6] = emps;
+		
+		return obj;
 	}
 	
 	public static EmployeePayroll save(EmployeePayroll st){
@@ -207,7 +346,7 @@ public class EmployeePayroll {
 				+ "yearperiod,"
 				+ "isactivepay,"
 				+ "pystatus,"
-				+ "gid,"
+				+ "fid,"
 				+ "eid)" 
 				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
@@ -220,7 +359,7 @@ public class EmployeePayroll {
 		long id =1;
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table employee");
+		LogU.add("inserting data into table employeepayroll");
 		if("1".equalsIgnoreCase(type)){
 			ps.setLong(cnt++, id);
 			st.setId(id);
@@ -246,7 +385,7 @@ public class EmployeePayroll {
 		ps.setInt(cnt++, st.getYear());
 		ps.setInt(cnt++, st.getIsActive());
 		ps.setInt(cnt++, st.getStatus());
-		ps.setLong(cnt++, st.getGroup().getId());
+		ps.setLong(cnt++, st.getFund().getId());
 		ps.setLong(cnt++, st.getEmployeeMain().getId());
 		
 		LogU.add(st.getDateTrans());
@@ -263,7 +402,7 @@ public class EmployeePayroll {
 		LogU.add(st.getYear());
 		LogU.add(st.getIsActive());
 		LogU.add(st.getStatus());
-		LogU.add(st.getGroup().getId());
+		LogU.add(st.getFund().getId());
 		LogU.add(st.getEmployeeMain().getId());
 		
 		LogU.add("executing for saving...");
@@ -273,7 +412,7 @@ public class EmployeePayroll {
 		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error inserting data to employee : " + s.getMessage());
+			LogU.add("error inserting data to employeepayroll : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		return st;
@@ -294,7 +433,7 @@ public class EmployeePayroll {
 				+ "monthperiod=?,"
 				+ "yearperiod=?,"
 				+ "pystatus=?,"
-				+ "gid=?,"
+				+ "fid=?,"
 				+ "eid=?" 
 				+ " WHERE pyid=?";
 		
@@ -322,7 +461,7 @@ public class EmployeePayroll {
 		ps.setInt(cnt++, st.getMonth());
 		ps.setInt(cnt++, st.getYear());
 		ps.setInt(cnt++, st.getStatus());
-		ps.setLong(cnt++, st.getGroup().getId());
+		ps.setLong(cnt++, st.getFund().getId());
 		ps.setLong(cnt++, st.getEmployeeMain().getId());
 		ps.setLong(cnt++, st.getId());
 		
@@ -340,7 +479,7 @@ public class EmployeePayroll {
 		LogU.add(st.getYear());
 		LogU.add(st.getIsActive());
 		LogU.add(st.getStatus());
-		LogU.add(st.getGroup().getId());
+		LogU.add(st.getFund().getId());
 		LogU.add(st.getEmployeeMain().getId());
 		LogU.add(st.getId());
 		

@@ -41,6 +41,7 @@ public class Department {
 	private Timestamp timestamp;
 	private int isActive;
 	private String departmentHead;
+	private String abrevation;
 	/* public Department(){} */
 	
 	/*
@@ -89,12 +90,16 @@ public class Department {
 		rs = ps.executeQuery();
 		
 		while(rs.next()){
-			Department dep = new Department();
-			try{dep.setDepid(rs.getInt("departmentid"));}catch(NullPointerException e){}
-			try{dep.setDepartmentName(rs.getString("departmentname"));}catch(NullPointerException e){}
-			try{dep.setCode(rs.getString("code"));}catch(NullPointerException e){}
-			try{dep.setDepartmentHead(rs.getString("dephead"));}catch(NullPointerException e){}
-			deps.add(dep);
+			
+			Department dp = Department.builder()
+					.depid(rs.getInt("departmentid"))
+					.departmentName(rs.getString("departmentname"))
+					.code(rs.getString("code"))
+					.departmentHead(rs.getString("dephead"))
+					.abrevation(rs.getString("abr"))
+					.build();
+			
+			deps.add(dp);
 		}
 		rs.close();
 		ps.close();
@@ -158,8 +163,9 @@ public class Department {
 				+ "departmentname,"
 				+ "code,"
 				+ "isactivedep,"
-				+ "dephead)" 
-				+ "values(?,?,?,?,?)";
+				+ "dephead,"
+				+ "abr)" 
+				+ "values(?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -186,11 +192,13 @@ public class Department {
 		ps.setString(cnt++, dep.getCode());
 		ps.setInt(cnt++, dep.getIsActive());
 		ps.setString(cnt++, dep.getDepartmentHead());
+		ps.setString(cnt++, dep.getAbrevation());
 		
 		LogU.add(dep.getDepartmentName());
 		LogU.add(dep.getCode());
 		LogU.add(dep.getIsActive());
 		LogU.add(dep.getDepartmentHead());
+		LogU.add(dep.getAbrevation());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -211,8 +219,9 @@ public class Department {
 				+ "departmentname,"
 				+ "code,"
 				+ "isactivedep,"
-				+ "dephead)" 
-				+ "values(?,?,?,?,?)";
+				+ "dephead,"
+				+ "abr)" 
+				+ "values(?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -239,11 +248,13 @@ public class Department {
 		ps.setString(cnt++, getCode());
 		ps.setInt(cnt++, getIsActive());
 		ps.setString(cnt++, getDepartmentHead());
+		ps.setString(cnt++, getAbrevation());
 		
 		LogU.add(getDepartmentName());
 		LogU.add(getCode());
 		LogU.add(getIsActive());
 		LogU.add(getDepartmentHead());
+		LogU.add(getAbrevation());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -262,7 +273,8 @@ public class Department {
 		String sql = "UPDATE department SET "
 				+ " departmentname=?,"
 				+ " code=?,"
-				+ "dephead=? " 
+				+ "dephead=?,"
+				+ "abr=? " 
 				+ " WHERE departmentid=?";
 		
 		PreparedStatement ps = null;
@@ -279,11 +291,13 @@ public class Department {
 		ps.setString(cnt++, dep.getDepartmentName());
 		ps.setString(cnt++, dep.getCode());
 		ps.setString(cnt++, dep.getDepartmentHead());
+		ps.setString(cnt++, dep.getAbrevation());
 		ps.setInt(cnt++, dep.getDepid());
 		
 		LogU.add(dep.getDepartmentName());
 		LogU.add(dep.getCode());
 		LogU.add(dep.getDepartmentHead());
+		LogU.add(dep.getAbrevation());
 		LogU.add(dep.getDepid());
 		
 		LogU.add("executing for saving...");
@@ -303,7 +317,8 @@ public class Department {
 		String sql = "UPDATE department SET "
 				+ " departmentname=?,"
 				+ " code=?,"
-				+ "dephead=? " 
+				+ "dephead=?,"
+				+ "abr=? " 
 				+ " WHERE departmentid=?";
 		
 		PreparedStatement ps = null;
@@ -320,11 +335,13 @@ public class Department {
 		ps.setString(cnt++, getDepartmentName());
 		ps.setString(cnt++, getCode());
 		ps.setString(cnt++, getDepartmentHead());
+		ps.setString(cnt++, getAbrevation());
 		ps.setInt(cnt++, getDepid());
 		
 		LogU.add(getDepartmentName());
 		LogU.add(getCode());
 		LogU.add(getDepartmentHead());
+		LogU.add(getAbrevation());
 		LogU.add(getDepid());
 		
 		LogU.add("executing for saving...");

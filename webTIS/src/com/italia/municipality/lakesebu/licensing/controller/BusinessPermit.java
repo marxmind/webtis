@@ -60,6 +60,24 @@ public class BusinessPermit {
 	private String capital;
 	private String gross;
 	
+	/**
+	 * Return business not yet processed for renewal
+	 * @param year
+	 * @return
+	 */
+	public static List<BusinessPermit> collectBusinessForRenewal(int year){
+		List<BusinessPermit> bzs = new ArrayList<BusinessPermit>();
+		
+		String sql = " AND (datetrans>=? AND datetrans<=?) AND (typeof='NEW' OR typeof='RENEW')";
+		String[] params = new String[2];
+		params[0] = year + "-01-01";
+		params[1] = year + "-12-31";
+		
+		
+		
+		return bzs;
+	}
+	
 	public static boolean isCertificateAlreadyCreated(String controlNo, String businessplateno, long customerId) {
 		
 

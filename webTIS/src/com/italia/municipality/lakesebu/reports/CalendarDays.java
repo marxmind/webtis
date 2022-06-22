@@ -129,7 +129,7 @@ public class CalendarDays {
 		
 		//override color if the date is today
 		if(month==DateUtils.getCurrentMonth() && year==DateUtils.getCurrentYear() && day==DateUtils.getCurrentDay()) {
-			col="color: green; font-weight: bold; font-size: 20px";
+			col="color: orange; font-weight: bold; font-size: 20px";
 			//if date found in holiday
 			//change yellow color
 			if(isFound) {

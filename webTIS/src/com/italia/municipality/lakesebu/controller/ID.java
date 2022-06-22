@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
+import com.italia.municipality.lakesebu.enm.EmployeeType;
 import com.italia.municipality.lakesebu.utils.LogU;
 
 import lombok.AllArgsConstructor;
@@ -21,36 +22,36 @@ import lombok.ToString;
 /**
  * 
  * @author Mark Italia
+ * @since 06/16/2022
  * @version 1.0
- * @since 03/15/2022
  *
  */
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
 @Builder
 @ToString
-public class Card {
+public class ID {
 
 	private long id;
-	private String name;
-	private String number;
-	private String validFrom;
-	private String validTo;
+	private String issued;
+	private String valid;
 	private int isActive;
-	private EmployeeMain employee;
+	private EmployeeMain employeeMain;
+	private String mayor;
 	
-	private Date tempDateFrom;
-	private Date tempDateTo;
+	private Date tempIssued;
+	private Date tempValid;
 	
-	public static List<Card> retrieve(String sql, String[] params){
-		List<Card> cards = new ArrayList<Card>();
+	public static List<ID> retrieve(String sql, String[] params){
+		List<ID> cards = new ArrayList<ID>();
 		
-		String tableCard = "card";
+		String tableCard = "cd";
 		String tableEmp = "emp";
 		
-		String sqlTemp = "SELECT * FROM employeecard "+ tableCard  +", employee "+ tableEmp +" WHERE " + tableCard + ".isactivecard=1 " +
+		String sqlTemp = "SELECT * FROM lguid "+ tableCard  +", employee "+ tableEmp +" WHERE " + tableCard + ".isactivel=1 " +
 				" AND " + tableCard +".eid=" +  tableEmp + ".eid";
 		
 		
@@ -70,7 +71,7 @@ public class Card {
 			}
 			
 		}
-		System.out.println("Card SQL " + ps.toString());
+		System.out.println("ID SQL " + ps.toString());
 		rs = ps.executeQuery();
 		
 		while(rs.next()){
@@ -88,6 +89,7 @@ public class Card {
 					.position(rs.getString("empposition"))
 					.cctsId(rs.getString("cctsid"))
 					.employeeType(rs.getInt("employeetype"))
+					.typeName(EmployeeType.nameValue(rs.getInt("employeetype")))
 					.address(rs.getString("address"))
 					.gender(rs.getInt("gender"))
 					.contactNo(rs.getString("contactno"))
@@ -96,22 +98,24 @@ public class Card {
 					.isActiveEmployee(rs.getInt("isactiveemployee"))
 					.emergecnyContactDtls(rs.getString("emergencycontactdtls"))
 					.photoid(rs.getString("photoid"))
+					.department(Department.builder().depid(rs.getInt("departmentid")).build())
 					.rateType(rs.getInt("ratetype"))
 					.rate(rs.getDouble("rate"))
 					.withHoldingTax(rs.getInt("taxable"))
+					.bloodType(rs.getString("bloodtype"))
+					.dateResigned(rs.getString("resigned"))
 					.build();
 			
-			Card card = Card.builder()
-					.id(rs.getLong("cardid"))
-					.name(rs.getString("cardname"))
-					.number(rs.getString("cardno"))
-					.validFrom(rs.getString("validfrom"))
-					.validTo(rs.getString("validto"))
-					.isActive(rs.getInt("isactivecard"))
-					.employee(emp)
+			ID id = ID.builder()
+					.id(rs.getLong("lid"))
+					.issued(rs.getString("issued"))
+					.valid(rs.getString("valid"))
+					.isActive(rs.getInt("isactivel"))
+					.mayor(rs.getString("mayor"))
+					.employeeMain(emp)
 					.build();
 			
-			cards.add(card);
+			cards.add(id);
 		}
 		
 		
@@ -124,20 +128,20 @@ public class Card {
 		return cards;
 	}
 	
-	public static Card save(Card st){
+	public static ID save(ID st){
 		if(st!=null){
 			
-			long id = Card.getInfo(st.getId() ==0? Card.getLatestId()+1 : st.getId());
+			long id = ID.getInfo(st.getId() ==0? ID.getLatestId()+1 : st.getId());
 			LogU.add("checking for new added data");
 			if(id==1){
 				LogU.add("insert new Data ");
-				st = Card.insertData(st, "1");
+				st = ID.insertData(st, "1");
 			}else if(id==2){
 				LogU.add("update Data ");
-				st = Card.updateData(st);
+				st = ID.updateData(st);
 			}else if(id==3){
 				LogU.add("added new Data ");
-				st = Card.insertData(st, "3");
+				st = ID.insertData(st, "3");
 			}
 			
 		}
@@ -150,27 +154,26 @@ public class Card {
 		LogU.add("checking for new added data");
 		if(id==1){
 			LogU.add("insert new Data ");
-			Card.insertData(this, "1");
+			ID.insertData(this, "1");
 		}else if(id==2){
 			LogU.add("update Data ");
-			Card.updateData(this);
+			ID.updateData(this);
 		}else if(id==3){
 			LogU.add("added new Data ");
-			Card.insertData(this, "3");
+			ID.insertData(this, "3");
 		}
 		
  }
 	
-	public static Card insertData(Card st, String type){
-		String sql = "INSERT INTO employeecard ("
-				+ "cardid,"
-				+ "cardname,"
-				+ "cardno,"
-				+ "validfrom,"
-				+ "validto,"
-				+ "isactivecard,"
-				+ "eid)" 
-				+ " VALUES(?,?,?,?,?,?,?)";
+	public static ID insertData(ID st, String type){
+		String sql = "INSERT INTO lguid ("
+				+ "lid,"
+				+ "issued,"
+				+ "valid,"
+				+ "eid,"
+				+ "isactivel,"
+				+ "mayor)" 
+				+ " VALUES(?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -181,7 +184,7 @@ public class Card {
 		long id =1;
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table employeecard");
+		LogU.add("inserting data into table lguid");
 		if("1".equalsIgnoreCase(type)){
 			ps.setLong(cnt++, id);
 			st.setId(id);
@@ -193,20 +196,17 @@ public class Card {
 			LogU.add("id: " + id);
 		}
 		
-		ps.setString(cnt++, st.getName());
-		ps.setString(cnt++, st.getNumber());
-		ps.setString(cnt++, st.getValidFrom());
-		ps.setString(cnt++, st.getValidTo());
+		ps.setString(cnt++, st.getIssued());
+		ps.setString(cnt++, st.getValid());
+		ps.setLong(cnt++, st.getEmployeeMain().getId());
 		ps.setInt(cnt++, st.getIsActive());
-		ps.setLong(cnt++, st.getEmployee().getId());
+		ps.setString(cnt++, st.getMayor());
 		
-		LogU.add(st.getName());
-		LogU.add(st.getNumber());
-		LogU.add(st.getValidFrom());
-		LogU.add(st.getValidTo());
+		LogU.add(st.getIssued());
+		LogU.add(st.getValid());
+		LogU.add(st.getEmployeeMain().getId());
 		LogU.add(st.getIsActive());
-		LogU.add(st.getEmployee().getId());
-		
+		LogU.add(st.getMayor());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -221,14 +221,15 @@ public class Card {
 		return st;
 	}
 	
-	public static Card updateData(Card st){
-		String sql = "UPDATE employeecard SET "
-				+ "cardname=?,"
-				+ "cardno=?,"
-				+ "validfrom=?,"
-				+ "validto=?,"
-				+ "eid=?" 
-				+ " WHERE cardid=?";
+	
+	
+	public static ID updateData(ID st){
+		String sql = "UPDATE lguid SET "
+				+ "issued=?,"
+				+ "valid=?,"
+				+ "eid=?,"
+				+ "mayor=?" 
+				+ " WHERE lid=?";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -239,20 +240,19 @@ public class Card {
 		
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table employeecard");
+		LogU.add("updatibg data into table lguid");
 		
-		ps.setString(cnt++, st.getName());
-		ps.setString(cnt++, st.getNumber());
-		ps.setString(cnt++, st.getValidFrom());
-		ps.setString(cnt++, st.getValidTo());
-		ps.setLong(cnt++, st.getEmployee().getId());
+		
+		ps.setString(cnt++, st.getIssued());
+		ps.setString(cnt++, st.getValid());
+		ps.setLong(cnt++, st.getEmployeeMain().getId());
+		ps.setString(cnt++, st.getMayor());
 		ps.setLong(cnt++, st.getId());
 		
-		LogU.add(st.getName());
-		LogU.add(st.getNumber());
-		LogU.add(st.getValidFrom());
-		LogU.add(st.getValidTo());
-		LogU.add(st.getEmployee().getId());
+		LogU.add(st.getIssued());
+		LogU.add(st.getValid());
+		LogU.add(st.getEmployeeMain().getId());
+		LogU.add(st.getMayor());
 		LogU.add(st.getId());
 		
 		
@@ -261,65 +261,14 @@ public class Card {
 		LogU.add("closing...");
 		ps.close();
 		WebTISDatabaseConnect.close(conn);
-		LogU.add("data has been successfully saved...");
+		LogU.add("data has been successfully update...");
 		}catch(SQLException s){
-			LogU.add("error inserting data to employee : " + s.getMessage());
+			LogU.add("error inserting data to lguid : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		return st;
 	}
 	
-	/*
-	 * public static EmployeeMain updateData(EmployeeMain st){ String sql =
-	 * "UPDATE employee SET " + "regdate=?," + "employeeid=?," + "firstname=?," +
-	 * "middlename=?," + "lastname=?," + "fullname=?," + "birthdate=?," +
-	 * "civilstatus=?," + "empposition=?" + "departmentid=?," + "cctsid=?," +
-	 * "employeetype=?," + "address=?," + "gender=?," + "contactno=?," +
-	 * "signatureid=?," + "isresigned=?," + "emergencycontactdtls=?" +
-	 * " WHERE eid=?";
-	 * 
-	 * PreparedStatement ps = null; Connection conn = null;
-	 * 
-	 * try{ conn = WebTISDatabaseConnect.getConnection(); ps =
-	 * conn.prepareStatement(sql);
-	 * 
-	 * int cnt = 1;
-	 * LogU.add("===========================START=========================");
-	 * LogU.add("updatibg data into table employee");
-	 * 
-	 * 
-	 * ps.setString(cnt++, st.getRegDate()); ps.setString(cnt++,
-	 * st.getEmployeeId()); ps.setString(cnt++, st.getFirstName());
-	 * ps.setString(cnt++, st.getMiddleName()); ps.setString(cnt++,
-	 * st.getLastName()); ps.setString(cnt++, st.getFullName()); ps.setString(cnt++,
-	 * st.getBirthDate()); ps.setInt(cnt++, st.getCivilStatus());
-	 * ps.setString(cnt++, st.getPosition()); ps.setInt(cnt++,
-	 * st.getDepartment().getDepid()); ps.setString(cnt++, st.getCctsId());
-	 * ps.setInt(cnt++, st.getEmployeeType()); ps.setString(cnt++, st.getAddress());
-	 * ps.setInt(cnt++, st.getGender()); ps.setString(cnt++, st.getContactNo());
-	 * ps.setString(cnt++, st.getSignatureid()); ps.setInt(cnt++,
-	 * st.getIsResigned()); ps.setString(cnt++, st.getEmergecnyContactDtls());
-	 * ps.setLong(cnt++, st.getId());
-	 * 
-	 * LogU.add(st.getRegDate()); LogU.add(st.getEmployeeId());
-	 * LogU.add(st.getFirstName()); LogU.add(st.getMiddleName());
-	 * LogU.add(st.getLastName()); LogU.add(st.getFullName());
-	 * LogU.add(st.getBirthDate()); LogU.add(st.getCivilStatus());
-	 * LogU.add(st.getPosition()); LogU.add(st.getDepartment().getDepid());
-	 * LogU.add(st.getCctsId()); LogU.add(st.getEmployeeType());
-	 * LogU.add(st.getAddress()); LogU.add(st.getGender());
-	 * LogU.add(st.getContactNo()); LogU.add(st.getSignatureid());
-	 * LogU.add(st.getIsResigned()); LogU.add(st.getEmergecnyContactDtls());
-	 * LogU.add(st.getId());
-	 * 
-	 * 
-	 * LogU.add("executing for saving..."); ps.execute(); LogU.add("closing...");
-	 * ps.close(); WebTISDatabaseConnect.close(conn);
-	 * LogU.add("data has been successfully update..."); }catch(SQLException s){
-	 * LogU.add("error inserting data to employee : " + s.getMessage()); }
-	 * LogU.add("===========================END========================="); return
-	 * st; }
-	 */
 	
 	public static long getLatestId(){
 		long id =0;
@@ -328,13 +277,13 @@ public class Card {
 		ResultSet rs = null;
 		String sql = "";
 		try{
-		sql="SELECT cardid FROM employeecard ORDER BY cardid DESC LIMIT 1";	
+		sql="SELECT lid FROM lguid ORDER BY lid DESC LIMIT 1";	
 		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
 		while(rs.next()){
-			id = rs.getLong("cardid");
+			id = rs.getLong("lid");
 		}
 		
 		rs.close();
@@ -381,7 +330,7 @@ public class Card {
 		boolean result = false;
 		try{
 		conn = WebTISDatabaseConnect.getConnection();
-		ps = conn.prepareStatement("SELECT cardid FROM employeecard WHERE cardid=?");
+		ps = conn.prepareStatement("SELECT lid FROM lguid WHERE lid=?");
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
 		
@@ -425,7 +374,7 @@ public class Card {
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
-		String sql = "UPDATE employeecard set isactivecard=0 WHERE cardid=?";
+		String sql = "UPDATE lguid set isactivel=0 WHERE lid=?";
 		
 		String[] params = new String[1];
 		params[0] = getId()+"";

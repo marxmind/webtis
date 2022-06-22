@@ -1,8 +1,12 @@
 package com.italia.municipality.lakesebu.bean;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,6 +19,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -24,24 +29,41 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.imageio.ImageIO;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.event.FileUploadEvent;
 
+import com.italia.municipality.lakesebu.acc.controller.EmployeePayroll;
 import com.italia.municipality.lakesebu.controller.Card;
 import com.italia.municipality.lakesebu.controller.Department;
+import com.italia.municipality.lakesebu.controller.Employee;
 import com.italia.municipality.lakesebu.controller.EmployeeLoan;
 import com.italia.municipality.lakesebu.controller.EmployeeMain;
+import com.italia.municipality.lakesebu.controller.ID;
+import com.italia.municipality.lakesebu.controller.Payroll;
+import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.CivilStatus;
 import com.italia.municipality.lakesebu.enm.EmployeeType;
 import com.italia.municipality.lakesebu.enm.Gender;
 import com.italia.municipality.lakesebu.enm.RateType;
 import com.italia.municipality.lakesebu.global.GlobalVar;
+import com.italia.municipality.lakesebu.reports.LguId;
+import com.italia.municipality.lakesebu.reports.PayrollRpt;
+import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
+import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
+import com.italia.municipality.lakesebu.utils.QRCodeUtil;
 import com.italia.municipality.lakesebu.utils.SignatureImageConverter;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.glxn.qrgen.QRCode;
+import net.glxn.qrgen.image.ImageType;
+import net.glxn.qrgen.vcard.VCard;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 /**
  * 
@@ -85,6 +107,15 @@ public class EmployeeMainBean implements Serializable {
 	@Getter @Setter private List<Card> cards;
 	@Getter @Setter private Card card;
 	
+	//@Getter @Setter private String loanId;
+	@Getter @Setter private List loanNames;
+	
+	@Getter @Setter private List<ID> ids;
+	@Getter @Setter private ID idData;
+	@Getter @Setter private Date issuedDate;
+	@Getter @Setter private Date validDate;
+	@Getter @Setter private String mayor;
+	
 	@PostConstruct
 	public void init() {
 		System.out.println("init...");
@@ -93,17 +124,19 @@ public class EmployeeMainBean implements Serializable {
 	}
 	
 	private void convertSignatureToPng(EmployeeMain employee) {
-		File file = new File(GlobalVar.EMPLOYEE_IMAGE_PATH_SIG);
-		file.mkdir(); //create file for directory
-		try {
-			OutputStream out = new FileOutputStream(GlobalVar.EMPLOYEE_IMAGE_PATH_SIG + employee.getEmployeeId() + ".png");
-			SignatureImageConverter.generateSignature(employee.getSignatureid(), out, 400, 200, "png");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(employee.getSignatureid()!=null && !employee.getSignatureid().isEmpty()) {
+			File file = new File(GlobalVar.EMPLOYEE_IMAGE_PATH_SIG);
+			file.mkdir(); //create file for directory
+			try {
+				OutputStream out = new FileOutputStream(GlobalVar.EMPLOYEE_IMAGE_PATH_SIG + employee.getEmployeeId() + ".png");
+				SignatureImageConverter.generateSignature(employee.getSignatureid(), out, 400, 200, "png");
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -217,10 +250,13 @@ public class EmployeeMainBean implements Serializable {
 		setDepId(1);
 		setCivilId(1);
 		
+		EmployeeType type = EmployeeType.value(getTypeId());
+		
 		EmployeeMain emp = EmployeeMain.builder()
-				.employeeId(EmployeeMain.getLatestEmloyeeId(EmployeeType.REGULAR))
+				.employeeId(EmployeeMain.getLatestEmloyeeId(type))
 				.regDate(DateUtils.getCurrentDateYYYYMMDD())
 				.tempRegDate(DateUtils.getDateToday())
+				.tempResDate(DateUtils.getDateToday())
 				.firstName(null)
 				.middleName(null)
 				.lastName(null)
@@ -255,13 +291,30 @@ public class EmployeeMainBean implements Serializable {
 				.build();
 		setLoan(ln);
 		
-		Card cd = Card.builder()
+		card = Card.builder()
+				.name(null)
+				.number(null)
 				.tempDateFrom(new Date())
 				.tempDateTo(new Date())
 				.isActive(1)
 				.build();
-		card = cd;
 		
+		
+		idData = ID.builder()
+				.tempIssued(new Date())
+				.tempValid(new Date())
+				.mayor("HON. FLORO S. GANDAM")
+				.build();
+		
+		loans = new ArrayList<EmployeeLoan>();
+		cards = new ArrayList<Card>();
+		ids = new ArrayList<ID>();
+		
+		loanNames = new ArrayList<>();
+		loanNames.add(new SelectItem("EE", "EE"));
+		loanNames.add(new SelectItem("LOAN", "LOAN"));
+		loanNames.add(new SelectItem("COOP", "COOP"));
+		//loanNames.add(new SelectItem("OTHERS", "OTHERS"));
 	}
 	
 	public void loadData() {
@@ -276,6 +329,10 @@ public class EmployeeMainBean implements Serializable {
 		sql += " ORDER BY emp.eid DESC";
 		
 		employees = EmployeeMain.retrieve(sql, params);
+		
+		if(employees!=null && employees.size()==1) {
+			clickItem(employees.get(0));
+		}
 	}
 	
 	
@@ -288,7 +345,9 @@ public class EmployeeMainBean implements Serializable {
 		setEmployee(null);
 		setLoan(null);
 		setCard(null);
+		setIdData(null);
 		addDefaultEmployee();
+		setTypeId(1);
 	}
 	
 	public void clickItem(EmployeeMain em) {
@@ -297,13 +356,14 @@ public class EmployeeMainBean implements Serializable {
 		em.setTempRegDate(DateUtils.convertDateString(em.getRegDate(), "yyyy-MM-dd"));
 		em.setTempBirthDate(DateUtils.convertDateString(em.getBirthDate(), "yyyy-MM-dd"));
 		setEmployee(em);
-		
+		setTypeId(em.getEmployeeType());
 		if(em.getPhotoid()!=null) {
 			copyPhoto(em.getPhotoid());
 		}
 		
 		loadLoans(em);
 		loadCards(em);
+		loadID(em);
 	}
 	
 	private void loadLoans(EmployeeMain em) {
@@ -314,6 +374,9 @@ public class EmployeeMainBean implements Serializable {
 		cards = Card.retrieve(" AND emp.eid="+em.getId(), new String[0]);
 	}
 	
+	private void loadID(EmployeeMain em) {
+		ids = ID.retrieve(" AND emp.eid="+em.getId(), new String[0]);
+	}
 	
 	public void delete(EmployeeMain em) {
 		em.delete();
@@ -383,27 +446,28 @@ public class EmployeeMainBean implements Serializable {
 		}
 		
 		boolean hasCard=false;
-		if(card!=null) {
-			boolean requiredField=true;
-			if(!card.getName().isEmpty() && card.getName().isEmpty()) {
-				requiredField=false;
+		if(getCard()!=null) {
+			if(!getCard().getName().isBlank() && getCard().getNumber().isBlank()) {
+				isOk=false;
+				Application.addMessage(2, "Error", "Pleas fill card number in required field");
 			}
-			if(card.getName().isEmpty() && !card.getName().isEmpty()) {
-				requiredField=false;
+			if(getCard().getName().isBlank() && !getCard().getNumber().isBlank()) {
+				isOk=false;
+				Application.addMessage(2, "Error", "Pleas fill card name in required field");
 			}
-			if(requiredField) {
-				if(card.getNumber().isEmpty()) {
-					isOk=false;
-					Application.addMessage(2, "Error", "Pleas fill in required field");
-				}
-			}
-			if(isOk) {
+			
+			if(!getCard().getName().isBlank() && !getCard().getNumber().isBlank()) {
+				
+				System.out.println("getCard().getName():" + (getCard().getName().isBlank()? "blank" : "not"));
+				System.out.println("getCard().getNumber():" + (getCard().getNumber().isBlank()? "blank" : "not"));
 				hasCard=true;
 			}
+			
 		}
 			
 		if(isOk) {	
 			em.setRegDate(DateUtils.convertDate(em.getTempRegDate(), "yyyy-MM-dd"));
+			em.setDateResigned(DateUtils.convertDate(em.getTempResDate(), "yyyy-MM-dd"));
 			em.setEmployeeType(getTypeId());
 			em.setBirthDate(DateUtils.convertDate(em.getTempBirthDate(), "yyyy-MM-dd"));
 			em.setCivilStatus(getCivilId());
@@ -442,6 +506,8 @@ public class EmployeeMainBean implements Serializable {
 		}
 	}
 	
+	
+	
 	/////loan function
 	public void clickLoan(EmployeeLoan ln) {
 		System.out.println(ln.getIsCompleted()==1? "In-flight":"Completed");
@@ -470,6 +536,222 @@ public class EmployeeMainBean implements Serializable {
 		loadCards(cd.getEmployee());
 		Application.addMessage(1,"Success", "Successfully deleted");
 	}
+	
+	public void deleteID(ID id) {
+		id.delete();
+		Application.addMessage(1,"Success", "Successfully deleted");
+		loadID(id.getEmployeeMain());
+	}
+	
+	public void clickID(ID id) {
+		id.setTempIssued(DateUtils.convertDateString(id.getIssued(), "yyyy-MM-dd"));
+		id.setTempValid(DateUtils.convertDateString(id.getValid(), "yyyy-MM-dd"));
+		setIdData(id);
+	}
+	
+	public void clearID() {
+		setIdData(ID.builder().tempIssued(new Date()).tempValid(new Date()).mayor("HON. FLORO S. GANDAM").build());
+	}
+	public void saveID() {
+		if(getEmployee()!=null && !getEmployee().getFirstName().isEmpty()) {
+			ID id = getIdData();
+			   id.setIssued(DateUtils.convertDate(id.getTempIssued(), "yyyy-MM-dd"));
+			   id.setValid(DateUtils.convertDate(id.getTempValid(), "yyyy-MM-dd"));
+			   id.setIsActive(1);
+			   id.setEmployeeMain(getEmployee());
+			   id.save();
+			   loadID(getEmployee());
+			   saveQRCode(getEmployee());
+			   Application.addMessage(1,"Success", "Successfully saved.");
+		}else {
+			Application.addMessage(3,"Error", "Please select employee or create employee first");
+		}
+	}
+	
+	public static void saveQRCode(EmployeeMain e) {
+		String path = GlobalVar.EMPLOYEE_IMAGE_PATH_QRCODE;
+		File qrcodeDir = new File(path);
+		qrcodeDir.mkdir();
+		try {
+			//OutputStream outputStream = new FileOutputStream(path + e.getEmployeeId() + ".png");
+			//QRCode.from(e.getEmployeeId()).to(ImageType.PNG).withSize(400, 400).writeTo(outputStream);
+			//outputStream.close();
+			
+			QRCodeUtil.createQRCode(e.getEmployeeId(), 400, 400, path, e.getEmployeeId()+".png");
+			
+			
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	public void printId(ID idCard) {
+		
+		
+		String REPORT_PATH = AppConf.PRIMARY_DRIVE.getValue() +  AppConf.SEPERATOR.getValue() + 
+				AppConf.APP_CONFIG_FOLDER_NAME.getValue() + AppConf.SEPERATOR.getValue() + AppConf.REPORT_FOLDER.getValue() + AppConf.SEPERATOR.getValue();
+		String REPORT_NAME = GlobalVar.EMPLOYEE_ID;
+		
+		ReportCompiler compiler = new ReportCompiler();
+		String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, REPORT_PATH);
+		
+		EmployeeMain e = idCard.getEmployeeMain();
+		e.setDepartment(Department.department(e.getDepartment().getDepid()+""));
+		
+		String officialLogo = REPORT_PATH + "logo.png";
+		String mayorSig = REPORT_PATH + "mayor.png";
+		String employeePic = GlobalVar.EMPLOYEE_IMAGE_PATH_PHOTO + e.getPhotoid() + ".jpg";
+		String empSig =  GlobalVar.EMPLOYEE_IMAGE_PATH_SIG + e.getEmployeeId() + ".png";
+		String qrcodePic = GlobalVar.EMPLOYEE_IMAGE_PATH_QRCODE + e.getEmployeeId() + ".png";
+		String bigBgPic = GlobalVar.REPORT_FOLDER + "frame-big.png";
+		String provPic = GlobalVar.REPORT_FOLDER + "prov-logo.png";
+		String frontPic = GlobalVar.REPORT_FOLDER + "front-card.png";
+		FileInputStream logo = null;
+		FileInputStream mayorSignature = null;
+		FileInputStream employee = null;
+		FileInputStream employeeSinature = null;
+		FileInputStream qrcode = null;
+		FileInputStream bgBig = null;
+		FileInputStream provLogo = null;
+		FileInputStream frontCard = null;
+		try{
+		File fileLogo = new File(officialLogo);
+		logo = new FileInputStream(fileLogo);
+		File fileMayorSig = new File(mayorSig);
+		mayorSignature = new FileInputStream(fileMayorSig);
+		employee = new FileInputStream(employeePic);
+		employeeSinature = new FileInputStream(empSig);
+		qrcode = new FileInputStream(qrcodePic);
+		bgBig = new FileInputStream(bigBgPic);
+		provLogo = new FileInputStream(provPic);
+		frontCard = new FileInputStream(frontPic);
+		}catch(Exception er){er.printStackTrace();}
+		
+		
+		List<LguId> rpts = new ArrayList<LguId>();
+		List<Card> cards = Card.retrieve(" AND emp.eid="+e.getId(), new String[0]);
+		LguId lg =LguId.builder()
+				.idNumber(e.getEmployeeId())
+				.provinceName("Provine of South Cotabato")
+				.municipalityName("MUNICIPALITY OF LAKE SEBU")
+				.departmentName(e.getDepartment().getDepartmentName().toUpperCase())
+				.employeeName(e.getFullName())
+				.desiganation(e.getPosition())
+				.dateIssued(DateUtils.convertDateToMonthDayYear(idCard.getIssued()))
+				.validUntil(DateUtils.convertDateToMonthDayYear(idCard.getValid()))
+				.lguLogo(logo)
+				.mayorSignature(mayorSignature)
+				.mayorName(idCard.getMayor().toUpperCase())
+				.address(e.getAddress())
+				.contactNo(e.getContactNo())
+				.birthDate(e.getBirthDate())
+				.civilStatus(CivilStatus.typeName(e.getCivilStatus()))
+				.bloodType(e.getBloodType())
+				//.card1("TIN No : ")
+				//.card2("SSS : ")
+				//.card3("GSIS No : ")
+				//.card4("PAG-IBIG No : ")
+				//.card5("PHILHEALTH NO : ")
+				//.card6("Health Card No : ")
+				.emergencyContactDtls(e.getEmergecnyContactDtls())
+				.employeePicture(employee)
+				.employeeSignature(employeeSinature)
+				.qrcode(qrcode)
+				.bgBig(bgBig)
+				.provLogo(provLogo)
+				.idBgFront(frontCard)
+				.idBgBack(frontCard)
+				.build();
+		
+			int cnt = 1;
+			for(Card l : cards) {
+				switch(cnt) {
+					case 1: lg.setCard1(l.getName().toUpperCase() + " No.: " + l.getNumber()); break;
+					case 2: lg.setCard2(l.getName().toUpperCase() + " No.: " + l.getNumber()); break;
+					case 3: lg.setCard3(l.getName().toUpperCase() + " No.: " + l.getNumber()); break;
+					case 4: lg.setCard4(l.getName().toUpperCase() + " No.: " + l.getNumber()); break;
+					case 5: lg.setCard5(l.getName().toUpperCase() + " No.: " + l.getNumber()); break;
+					case 6: lg.setCard6(l.getName().toUpperCase() + " No.: " + l.getNumber()); break;
+				}
+				cnt++;
+			}
+		
+			
+		
+			rpts.add(lg);
+			
+		
+		JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(rpts);
+  		HashMap param = new HashMap();
+  		
+  		
+		
+  		try{
+	  		String jrprint = JasperFillManager.fillReportToFile(jrxmlFile, param, beanColl);
+	  	    JasperExportManager.exportReportToPdfFile(jrprint,REPORT_PATH+ REPORT_NAME +".pdf");
+	  	}catch(Exception es){es.printStackTrace();}
+  		
+  		try{
+	  		File file = new File(REPORT_PATH, REPORT_NAME + ".pdf");
+			 FacesContext faces = FacesContext.getCurrentInstance();
+			 ExternalContext context = faces.getExternalContext();
+			 HttpServletResponse response = (HttpServletResponse)context.getResponse();
+				
+		     BufferedInputStream input = null;
+		     BufferedOutputStream output = null;
+		     
+		     try{
+		    	 
+		    	 // Open file.
+		            input = new BufferedInputStream(new FileInputStream(file), GlobalVar.DEFAULT_BUFFER_SIZE);
+
+		            // Init servlet response.
+		            response.reset();
+		            response.setHeader("Content-Type", "application/pdf");
+		            response.setHeader("Content-Length", String.valueOf(file.length()));
+		            response.setHeader("Content-Disposition", "inline; filename=\"" + REPORT_NAME + ".pdf" + "\"");
+		            output = new BufferedOutputStream(response.getOutputStream(), GlobalVar.DEFAULT_BUFFER_SIZE);
+
+		            // Write file contents to response.
+		            byte[] buffer = new byte[GlobalVar.DEFAULT_BUFFER_SIZE];
+		            int length;
+		            while ((length = input.read(buffer)) > 0) {
+		                output.write(buffer, 0, length);
+		            }
+
+		            // Finalize task.
+		            output.flush();
+		    	 
+		     }finally{
+		    	// Gently close streams.
+		            close(output);
+		            close(input);
+		     }
+		     
+		     // Inform JSF that it doesn't need to handle response.
+		        // This is very important, otherwise you will get the following exception in the logs:
+		        // java.lang.IllegalStateException: Cannot forward after response has been committed.
+		        faces.responseComplete();
+		        
+			}catch(Exception ioe){
+				ioe.printStackTrace();
+			}
+		
+	}
+
+
+private void close(Closeable resource) {
+    if (resource != null) {
+        try {
+            resource.close();
+        } catch (IOException e) {
+            // Do your thing with the exception. Print it, log it or mail it. It may be useful to 
+            // know that this will generally only be thrown when the client aborted the download.
+            e.printStackTrace();
+        }
+    }
+}
 	
 	
 }

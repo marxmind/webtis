@@ -332,7 +332,7 @@ public class BusinessBean implements Serializable{
 			}
 			
 			if(isNew && Livelihood.isExistingBusiness(getBusinessName().toUpperCase(), getCustomer().getId())) {
-				Application.addMessage(3, "Erro", "Business name is already exist");
+				Application.addMessage(3, "Error", "Business name is already exist");
 				isOk= false;
 			}
 			

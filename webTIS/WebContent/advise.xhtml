@@ -20,6 +20,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<f:facet name="middle">
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css"/>
             <h:outputStylesheet name="css/growl.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputScript name="bootstrap/js/bootstrap.js" target="head"/>
@@ -58,95 +60,117 @@ html{
     	 	 
 	<p:sticky target="idSearch" />
 	
-	<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="50" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			
-			<p:layoutUnit position="west" size="700" visible="true">
-			
-			<p:dataTable id="formSelected" var="sc" value="#{adviceBean.advices}"  rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                         rowsPerPageTemplate="5,10,15,20,55,110" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false" >
-				
-				 <p:column headerText="[*]" width="30" exportable="false">
-            		<p:commandButton update="formSelected formDataId msg" icon="fa fa-trash" actionListener="#{adviceBean.deleteAdvice(sc)}">
-            				<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
-            		</p:commandButton>
-            	 </p:column>
-				 
-				 <p:column headerText="Date" width="70">
-		       		<p:outputLabel value="#{sc.dateTrans}" />
-		         </p:column>
-		         <p:column headerText="Control No" width="70">
-		       		<p:outputLabel value="#{sc.controlNumber}" />
-		         </p:column>
-		         <p:column headerText="Fund Type" width="70">
-		       		<p:outputLabel value="#{sc.fundTypeName}" />
-		         </p:column>
-				
-			</p:dataTable>
-			
-			
-			</p:layoutUnit>
-			
-			<p:layoutUnit position="center">
-			
-			<p:outputLabel value="Ready For Advice" />
-			<p:toolbar id="tb" style="#{skin.toolbar}">
-    		<f:facet name="left">
-    			
-    			<span class="ui-input-icon-left">
-				        <i class="pi pi-search" />
-				        <p:inputText id="idSearch" value="#{adviceBean.searchName}" placeholder="Search here..." >
-				        	<p:ajax event="keyup" listener="#{adviceBean.loadChecks}" update="formDataId"/>
-				        </p:inputText>
-				    </span>
-    		</f:facet>
-    		<f:facet name="right">
-    			<p:commandButton id="createId" update="chkId" value="Create Advice" icon="fa fa-floppy-o"  actionListener="#{adviceBean.loadSelectedChk}"/>
-    		</f:facet>
-    		</p:toolbar>
-			
-			
-			<p:dataTable id="formDataId" var="rpt" value="#{adviceBean.checks}"  rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                         rowsPerPageTemplate="5,10,15,20,55,110" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false" selection="#{adviceBean.selectedCheck}" rowKey="#{rpt.cheque_id}">
-				
-				<p:column selectionMode="multiple" width="15"/>
-				
-				 <p:column headerText="Date" width="70">
-		       		<p:outputLabel value="#{rpt.date_disbursement}" />
-		         </p:column>
-		         <p:column headerText="Status" width="70">
-		       		<p:outputLabel value="#{rpt.statusName}" />
-		         </p:column>
-		         <p:column headerText="Fund Type" width="70">
-		       		<p:outputLabel value="#{rpt.accntName}" />
-		         </p:column>
-				 <p:column headerText="Acount No" width="70">
-		       		<p:outputLabel value="#{rpt.accntNumber}" />
-		         </p:column>
-		         <p:column headerText="Check No" width="70">
-		       		<p:outputLabel value="#{rpt.checkNo}" />
-		         </p:column>
-		         <p:column headerText="Payee" width="100">
-		       		<p:outputLabel value="#{rpt.payToTheOrderOf}" />
-		         </p:column>
-		         <p:column headerText="Amount" width="70" style="text-align: right">
-		       		<p:outputLabel value="#{rpt.amount}">
-		       			<f:convertNumber currencySymbol="" type="currency" />
-		       		</p:outputLabel>
-		         </p:column>
-		         
-						
-				
-			</p:dataTable>
-			
-			</p:layoutUnit>
 	
-	</p:layout>
+	
+	<div class="card">
+    		<div class="p-grid sample-layout">
+    
+				
+				<div class="p-col-12 p-md-8 p-col-nogutter">
+	            	<div class="p-grid">
+	                	<div class="p-col-12 p-col-nogutter">
+	                		<div class="p-col-12">	
+									
+									<p:toolbar id="tb" style="#{skin.toolbar}">
+						    		<f:facet name="left">
+						    			
+						    			<span class="ui-input-icon-left">
+										        <i class="pi pi-search" />
+										        <p:inputText id="idSearch" value="#{adviceBean.searchName}" placeholder="Search here..." >
+										        	<p:ajax event="keyup" listener="#{adviceBean.loadChecks}" update="formDataId"/>
+										        </p:inputText>
+										        <p:calendar value="#{adviceBean.dateFrom}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
+										        <p:calendar value="#{adviceBean.dateTo}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
+										        <p:commandButton icon="fa fa-search" actionListener="#{adviceBean.loadChecks}" update="formDataId" />
+										    </span>
+						    		</f:facet>
+						    		<f:facet name="right">
+						    			<p:commandButton id="createId" update="chkId" value="Create Advice" icon="fa fa-floppy-o"  actionListener="#{adviceBean.loadSelectedChk}"/>
+						    		</f:facet>
+						    		</p:toolbar>
+									
+							</div>
+							<div class="p-col-12">
+							
+								<div class="p-grid">
+									
+									<p:outputLabel value="Ready For Advice" />
+									
+									
+									<p:dataTable id="formDataId" var="rpt" value="#{adviceBean.checks}"  rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						                         rowsPerPageTemplate="5,10,15,20,55,110" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false" selection="#{adviceBean.selectedCheck}" rowKey="#{rpt.cheque_id}">
+										
+										<p:column selectionMode="multiple" width="15"/>
+										
+										 <p:column headerText="Date" width="70">
+								       		<p:outputLabel value="#{rpt.date_disbursement}" />
+								         </p:column>
+								         <p:column headerText="Status" width="70">
+								       		<p:outputLabel value="#{rpt.statusName}" />
+								         </p:column>
+								         <p:column headerText="Fund Type" width="70">
+								       		<p:outputLabel value="#{rpt.accntName}" />
+								         </p:column>
+										 <p:column headerText="Acount No" width="70">
+								       		<p:outputLabel value="#{rpt.accntNumber}" />
+								         </p:column>
+								         <p:column headerText="Check No" width="70">
+								       		<p:outputLabel value="#{rpt.checkNo}" />
+								         </p:column>
+								         <p:column headerText="Payee" width="100">
+								       		<p:outputLabel value="#{rpt.payToTheOrderOf}" />
+								         </p:column>
+								         <p:column headerText="Amount" width="70" style="text-align: right">
+								       		<p:outputLabel value="#{rpt.amount}">
+								       			<f:convertNumber currencySymbol="" type="currency" />
+								       		</p:outputLabel>
+								         </p:column>
+								         
+												
+										
+									</p:dataTable>
+									
+									
+								</div>
+				
+							</div>
+						</div>	
+					</div>
+				</div>
+				
+				
+				
+			    <div class="p-col-12 p-md-4">
+				
+					<p:dataTable id="formSelected" var="sc" value="#{adviceBean.advices}"  rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,55,110" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false" >
+						
+						 <p:column headerText="[*]" width="30" exportable="false">
+		            		<p:commandButton update="formSelected formDataId msg" icon="fa fa-trash" actionListener="#{adviceBean.deleteAdvice(sc)}">
+		            				<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert" />
+		            		</p:commandButton>
+		            	 </p:column>
+						 
+						 <p:column headerText="Date" width="70">
+				       		<p:outputLabel value="#{sc.dateTrans}" />
+				         </p:column>
+				         <p:column headerText="Control No" width="70">
+				       		<p:outputLabel value="#{sc.controlNumber}" />
+				         </p:column>
+				         <p:column headerText="Fund Type" width="70">
+				       		<p:outputLabel value="#{sc.fundTypeName}" />
+				         </p:column>
+						
+					</p:dataTable>
+				
+				
+				</div>
+				
+			</div>		
+	</div>
+	
+	
+	
 	
 	
 	<p:dialog widgetVar="dlgCreate" showHeader="false" width="900" height="850" position="center top">
@@ -209,7 +233,7 @@ html{
 	</p:dialog>		
 		
 <ui:include src="loader.xhtml" />
-<ui:include src="menu.xhtml" /> 	
+<ui:include src="menuacc.xhtml" /> 	
 </h:form>		
 </h:body>
 </html>		

@@ -18,10 +18,9 @@ xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	
 	<f:facet name="middle">
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
-            <h:outputStylesheet name="intro/bootstrap-responsive.mini.css"/>
-            <h:outputStylesheet name="intro/themes/introjs.css"/>
-            <h:outputStylesheet name="textillate/animate.css"/>
-    		<h:outputStylesheet name="textillate/style.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
+			 <h:outputStylesheet name="css/bodyconf.css"/>
     		<h:outputStylesheet name="css/pageHeaderFooter.css"/>
             <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
@@ -56,27 +55,11 @@ body{
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
     	 </p:confirmDialog>
 
-<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="100" visible="false"/>
-			<p:layoutUnit position="south" size="100" visible="false">
-				<p:outputLabel style="#{skin.copyrightLabel}" value="#{versionBean.copyright.appname} | #{versionBean.copyright.copyrightname} | #{versionBean.copyright.author} | version:#{versionBean.copyright.currentversion}"/>
-			</p:layoutUnit>
-			<p:layoutUnit position="west" size="0" visible="false"/>
-			<p:layoutUnit position="east" size="0" visible="false"/>
-			
-			<p:layoutUnit position="center">
-			
-				
-			
-			</p:layoutUnit>
-			
-</p:layout>	
-	 
+
+
+	 	
 	 	<p:commandButton id="showNoteId" value="#{menuBean.total}" action="email.xhtml" icon="fa fa-envelope-o" style="#{notiBean.styleButton}#{skin.emailButton}" title="This is where your email or notification messages save" />
 	 
-	
-	
-  
 	
 	<p:dialog widgetVar="dlgMain" closable="false" draggable="false" modal="true" showEffect="fade" visible="true"  showHeader="false" position="center center" styleClass="menuDlg">
 		
@@ -105,16 +88,21 @@ body{
 								  color: black;
 								}  
 							</h:outputStylesheet>
-						
 							
+							<p:commandButton icon="fa fa-money" action="accntemployee.xhtml" value="Employee" styleClass="button" immediate="false" ajax="false"/>
+							<p:commandButton icon="fa fa-money" action="payrollprep.xhtml" value="Payroll Prep" styleClass="button" immediate="false" ajax="false"/>
 							<p:commandButton icon="fa fa-money" action="advise.xhtml" value="Check Advice Transaction" styleClass="button" immediate="false" ajax="false"/>
+				             
+				             
 				             <p:commandButton icon="fa  fa-power-off" action="loginac" value="Logout" styleClass="button" actionListener="#{loginBean.logout}" immediate="false" ajax="false"/>
-				             <p:outputLabel/>
+				             
 			
 		</p:panelGrid>
 		
 	</p:dialog>
 	
+	<p:commandButton title="Calendar" icon="fa fa-calendar" id="calId" onclick="PF('calId').show(1000)" update="dataCalId" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 0px;right: 7px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>	
+	<ui:include src="calendar.xhtml"/>
 	<ui:include src="loader.xhtml" />	
 	 
   

@@ -56,14 +56,14 @@ public class Livelihood {
 	//private static final String WEBTIS = Database.WEBTIS.getName();
 	
 	public static boolean isExistingBusiness(String name, long costumerId) {
-		String sql = "SELECT count(*) FROM livelihood WHERE isactivelive=1 AND customerid="+ costumerId + " AND livename='"+ name.trim() +"'";
+		String sql = "SELECT livename FROM livelihood WHERE isactivelive=1 AND customerid="+ costumerId + " AND livename='"+ name.trim() +"'";
 		Connection conn = null;
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try{
 		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
-		
+		System.out.println("isExistingBusiness : " + ps.toString());
 		rs = ps.executeQuery();
 		
 		while(rs.next()){

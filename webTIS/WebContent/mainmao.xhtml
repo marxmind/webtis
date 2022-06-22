@@ -88,18 +88,16 @@ body{
 								  color: black;
 								}  
 							</h:outputStylesheet>
-						
-							<p:commandButton icon="fa fa-money" action="payrollprep.xhtml" value="Payroll Prep" styleClass="button" immediate="false" ajax="false"/>
+							
 							
 				             <p:commandButton icon="fa  fa-power-off" action="portal" value="Logout" styleClass="button" actionListener="#{loginBean.logout}" immediate="false" ajax="false"/>
-				             <p:outputLabel/>
+				            
 			
 		</p:panelGrid>
 		
 	</p:dialog>
 	
-	<p:commandButton title="Calendar" icon="fa fa-calendar" id="calId" onclick="PF('calId').show(1000)" update="dataCalId" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 0px;right: 7px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>	
-	<ui:include src="calendar.xhtml"/>
+	
 	<ui:include src="loader.xhtml" />	
 
 </h:form>

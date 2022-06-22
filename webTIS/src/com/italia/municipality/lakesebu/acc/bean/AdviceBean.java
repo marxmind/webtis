@@ -89,8 +89,10 @@ public class AdviceBean implements Serializable {
 		Date date = new Date();
 		
 		if(advice.getChecks().contains("-")) {
+			System.out.println("deleting advice");
 			String[] ids = advice.getChecks().split("-");
 			for(String id : ids) {
+				System.out.println("check id for deleting advice : " + id);
 				List<Chequedtls> chk = Chequedtls.retrieve("SELECT * FROM tbl_chequedtls WHERE cheque_id="+id,new String[0]);
 				if(chk!=null && chk.size()>0) {
 					Chequedtls c = chk.get(0);
@@ -160,9 +162,9 @@ public class AdviceBean implements Serializable {
 	
 	private String  detectSearchParam(String val) {
 		String sql = " AND d.hasadvice=0 ";
-		if(val.contains(":")) {
-			System.out.println("contain : " + val);
-			String[] sp = val.split(":");
+		if(val.contains("/")) {
+			//System.out.println("contain : " + val);
+			String[] sp = val.split("/");
 			
 			int count=0;
 			boolean isMonth = false;
@@ -260,15 +262,13 @@ public class AdviceBean implements Serializable {
 		params[0] = DateUtils.convertDate(getDateFrom(), "yyyy-MM-dd");
 		params[1] = DateUtils.convertDate(getDateTo(), "yyyy-MM-dd");
 		
-		if(getSearchName()!=null && !getSearchName().isEmpty() && getSearchName().length()>=4) {
-			//sql += " AND ( d.cheque_no like '%"+ getSearchName() +"%' OR d.pay_to_the_order_of like '%"+ getSearchName() +"%' )";
-			
+		if(getSearchName()!=null && !getSearchName().isEmpty() && getSearchName().length()>=3) {
 			sql = detectSearchParam(getSearchName());
 			params = new String[0];
 		}
 		
 		checks = new ArrayList<Chequedtls>();
-		checks = Chequedtls.retrieveChecks(sql, params);
+		checks = Chequedtls.retrieveCheckOnly(sql, params);
 	}
 	
 	

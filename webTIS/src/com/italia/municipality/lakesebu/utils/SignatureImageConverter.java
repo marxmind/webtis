@@ -1,5 +1,6 @@
 package com.italia.municipality.lakesebu.utils;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke; 
 import java.awt.Color;
 import java.awt.Graphics2D; 
@@ -69,11 +70,25 @@ public class SignatureImageConverter {
      * @return the corresponding signature image * @throws IOException if a problem generating the signature
      */ 
     private static byte[] redrawSignature(List<List<Point>> lines, int sig_width, int sig_height, String img_format) throws IOException {
-        BufferedImage signature = new BufferedImage( sig_width, sig_height, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage signature = new BufferedImage( sig_width, sig_height, BufferedImage.TYPE_INT_ARGB);//BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D g = (Graphics2D)signature.getGraphics(); 
-        g.setColor(Color.WHITE);
+        
+        g.setComposite(AlphaComposite.Clear);
+        
+        //g.setColor(Color.WHITE);
+        
         g.fillRect(0, 0, signature.getWidth(), signature.getHeight()); 
-        g.setColor(Color.BLACK);
+        
+        g.setComposite(AlphaComposite.Src);
+        int alpha = 127;//50% transparent
+        
+        //g.setColor(Color.BLACK);
+        g.setColor(new Color(0,0,0,alpha));
+        //g.fillRect(100, 100, 123, 123);
+        
+        //g.setColor(new Color(0,0,0));
+        //g.fillRect(30, 30, 60, 60);
+        
         g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)); 
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
         Point lastPoint = null;
@@ -86,6 +101,8 @@ public class SignatureImageConverter {
             } 
             lastPoint = null;
         } 
+        g.dispose();
+        
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ImageIO.write(signature, img_format, output); 
         ImageIO.write(signature, img_format, output);

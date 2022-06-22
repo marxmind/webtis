@@ -59,9 +59,15 @@ public class EmployeeMain {
 	private int rateType;
 	private double rate;
 	private int withHoldingTax;
+	private String bloodType;
+	private String dateResigned;
+	
 	
 	private Date tempRegDate;
+	private Date tempResDate;
 	private Date tempBirthDate;
+	
+	private String typeName;
 	
 	public static String getLatestEmloyeeId(EmployeeType type) {
 		String employeeNo = null;
@@ -168,6 +174,7 @@ public class EmployeeMain {
 					.position(rs.getString("empposition"))
 					.cctsId(rs.getString("cctsid"))
 					.employeeType(rs.getInt("employeetype"))
+					.typeName(EmployeeType.nameValue(rs.getInt("employeetype")))
 					.address(rs.getString("address"))
 					.gender(rs.getInt("gender"))
 					.contactNo(rs.getString("contactno"))
@@ -180,6 +187,8 @@ public class EmployeeMain {
 					.rateType(rs.getInt("ratetype"))
 					.rate(rs.getDouble("rate"))
 					.withHoldingTax(rs.getInt("taxable"))
+					.bloodType(rs.getString("bloodtype"))
+					.dateResigned(rs.getString("resigned"))
 					.build();
 			
 			emps.add(emp);
@@ -257,8 +266,10 @@ public class EmployeeMain {
 				+ "photoid,"
 				+ "ratetype,"
 				+ "rate,"
-				+ "taxable)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "taxable,"
+				+ "bloodtype,"
+				+ "resigned)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -304,6 +315,8 @@ public class EmployeeMain {
 		ps.setInt(cnt++, st.getRateType());
 		ps.setDouble(cnt++, st.getRate());
 		ps.setInt(cnt++, st.getWithHoldingTax());
+		ps.setString(cnt++, st.getBloodType());
+		ps.setString(cnt++, st.getDateResigned());
 		
 		LogU.add(st.getRegDate());
 		LogU.add(st.getEmployeeId());
@@ -328,6 +341,8 @@ public class EmployeeMain {
 		LogU.add(st.getRateType());
 		LogU.add(st.getRate());
 		LogU.add(st.getWithHoldingTax());
+		LogU.add(st.getBloodType());
+		LogU.add(st.getDateResigned());
 		
 		
 		LogU.add("executing for saving...");
@@ -366,7 +381,9 @@ public class EmployeeMain {
 				+ "photoid=?,"
 				+ "ratetype=?,"
 				+ "rate=?,"
-				+ "taxable=?" 
+				+ "taxable=?,"
+				+ "bloodtype=?,"
+				+ "resigned=?" 
 				+ " WHERE eid=?";
 		
 		PreparedStatement ps = null;
@@ -403,6 +420,8 @@ public class EmployeeMain {
 		ps.setInt(cnt++, st.getRateType());
 		ps.setDouble(cnt++, st.getRate());
 		ps.setInt(cnt++, st.getWithHoldingTax());
+		ps.setString(cnt++, st.getBloodType());
+		ps.setString(cnt++, st.getDateResigned());
 		ps.setLong(cnt++, st.getId());
 		
 		LogU.add(st.getRegDate());
@@ -427,6 +446,8 @@ public class EmployeeMain {
 		LogU.add(st.getRateType());
 		LogU.add(st.getRate());
 		LogU.add(st.getWithHoldingTax());
+		LogU.add(st.getBloodType());
+		LogU.add(st.getDateResigned());
 		LogU.add(st.getId());
 		
 		

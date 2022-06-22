@@ -27,15 +27,19 @@
     			<p:commandButton value="Close" oncomplete="PF('depDlg').hide();" />
     		</f:facet>
 			</p:toolbar> 
-			<p:panelGrid id="panId" layout="grid" columns="2" >
-				<p:outputLabel value="Center" style="#{skin.textInput}"/>
+			<p:panelGrid id="panId" layout="grid" columns="4" >
+				<p:outputLabel value="Department Name" style="#{skin.textInput}"/>
 				<p:inputText value="#{departmentBean.name}" placeholder="Name here" />
 				
 				<p:outputLabel value="Code" style="#{skin.textInput}"/>
-				<p:inputText value="#{departmentBean.code}" placeholder="Code here" />
+				<p:inputText value="#{departmentBean.code}" placeholder="0000" />
 				
 				<p:outputLabel value="Department Head" style="#{skin.textInput}"/>
 				<p:inputText value="#{departmentBean.departmentHead}" placeholder="Department Head here" />
+				
+				<p:outputLabel value="Code Name" style="#{skin.textInput}"/>
+				<p:inputText value="#{departmentBean.abrevation}" placeholder="Code Name" />
+				
 			</p:panelGrid>
 				<p:dataTable id="dataDs" value="#{departmentBean.deps}" var="ds" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -59,6 +63,9 @@
             				</p:column>
             				<p:column headerText="Code" width="100">
             						<p:outputLabel value="#{ds.code}"/>
+            				</p:column>
+            				<p:column headerText="Code Name" width="100">
+            						<p:outputLabel value="#{ds.abrevation}"/>
             				</p:column>
             				<p:column headerText="Department Head" width="100">
             						<p:outputLabel value="#{ds.departmentHead}"/>

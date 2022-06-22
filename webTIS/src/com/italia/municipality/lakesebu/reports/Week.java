@@ -3,6 +3,8 @@ package com.italia.municipality.lakesebu.reports;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.italia.municipality.lakesebu.enm.EmployeeType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,5 +52,31 @@ public class Week {
 					w.getSaturday()
 					);
 		}
+	}
+	public static int workingDay(List<Week> weeks, int holiday, EmployeeType type) {
+		int count=0;
+		for(Week w : weeks) {
+			if(w.getMonday()>0) {
+				count++;
+			}
+			if(w.getTuesday()>0) {
+				count++;
+			}
+			if(w.getWednesday()>0) {
+				count++;
+			}
+			if(w.getThursday()>0) {
+				count++;
+			}
+			if(w.getFriday()>0) {
+				count++;
+			}
+		}
+		System.out.println("Count Day:" + count + " holiday:" + holiday);
+		if(EmployeeType.JO.getId()==type.getId()) {
+			count-= holiday;
+		}
+		
+		return count;
 	}
 }

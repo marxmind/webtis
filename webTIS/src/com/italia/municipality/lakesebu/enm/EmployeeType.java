@@ -2,7 +2,7 @@ package com.italia.municipality.lakesebu.enm;
 
 public enum EmployeeType {
 
-	REGULAR(1, "REGULAR", "EM"),
+	REGULAR(1, "REGULAR", "ME"),
 	CO_TERMINOUS(2, "CO-TERMINOUS", "CT"),
 	CASUAL(3, "CASUAL", "CS"),
 	CONTRACTUAL(4, "CONTRACTUAL", "CO"),

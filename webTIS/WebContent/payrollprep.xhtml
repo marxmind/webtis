@@ -36,7 +36,9 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 
 <style>
 <!-- 
-
+	body .ui-selectonemenu {
+   		vertical-align: middle;
+	}
  -->
  </style>
 
@@ -70,14 +72,76 @@ xmlns:pe="http://primefaces.org/ui/extensions"
     <div class="p-grid sample-layout">
     
     <div class="p-col-12 p-md-5">
-    		
-       <p:panelGrid id="empdtlsId" columns="3" layout="grid" style="text-align: left">
+    	
+    	<p:toolbar>
+    		<f:facet name="left">
+    			<p:commandButton id="employeeBtn" value="Find Employee" type="button" icon="pi pi-search" />
+    			<p:divider layout="vertical" />
+    			<p:outputLabel id="idNameSelected" value="#{payrollPrepBean.employeeSelected.fullName}" style="font-weight: bold; font-size: 16"/>
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton value="Clear" update="empdtlsId loanDataId idNameSelected" icon="fa fa-trash" actionListener="#{payrollPrepBean.clearAll}"/>
+    			<p:commandButton value="Save" title="Click to save" update="empdtlsId loanDataId payDataId idNameSelected msg"  icon="fa fa-floppy-o" actionListener="#{payrollPrepBean.savePayroll}">
+					<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save this data?" icon="pi pi-exclamation-triangle" />
+			   </p:commandButton>
+    		</f:facet>
+    	</p:toolbar>
+    	
+    	
+    	<p:overlayPanel for="employeeBtn" dynamic="true" style="width:120em" widgetVar="employeePicker">
+						            <div class="ui-inputgroup">
+								  	<span class="ui-input-icon-left">
+								        <i class="pi pi-search" />
+								        <p:inputText id="idSearch" value="#{payrollPrepBean.searchEmployee}" a:placeholder="Search product" style="width: 20em">
+						    					<p:ajax event="keyup" listener="#{payrollPrepBean.loadEmployee}" delay="800" update="employeeData"/>
+						    			</p:inputText>
+								    </span>
+								    </div>
+				
+				
+				<p:dataGrid id="employeeData" var="rpt" value="#{payrollPrepBean.employeeData}" columns="4" lazy="true"
+						                	rows="8" paginator="true" style="margin-top:20px" paginatorAlwaysVisible="false" paginatorPosition="top" emptyMessage="Please search an item">
+						 				
+						 				<p:card style="width: 25em">
+						 					<f:facet name="title">
+										    	#{rpt.fullName}
+										    </f:facet>
+										    
+										    <f:facet name="subtitle">
+										        #{rpt.department.departmentName}|#{rpt.typeName}
+										    </f:facet>    
+										   
+										    <f:facet name="footer">
+										    		
+						                			<p:commandButton update="empdtlsId idNameSelected loanDataId"  value="Select" 
+						                			actionListener="#{payrollPrepBean.clickEmployee(rpt)}"  
+						                			oncomplete="PF('employeePicker').hide(1000)"
+						                			style="margin-left: 0.5em"/>
+						                			
+						                	</f:facet>
+						 				</p:card>
+				</p:dataGrid>		 				
+								    
+       	</p:overlayPanel>	
+       	<p:panelGrid id="empdtlsId" columns="3" layout="grid" style="text-align: left">
        		
        		<p:outputLabel>
 					<div class="ui-inputgroup">
 					<div class="p-field">
-					<medium class="p-d-block" style="text-align: left">Series</medium>
-					<p:inputText value="#{payrollPrepBean.series}" placeholder="year-month-series no" style="width: 15em"/>
+					<medium class="p-d-block" style="text-align: left">Charge to Fund</medium>
+					<p:selectOneMenu id="fundId1" value="#{payrollPrepBean.fundId}" style="width: 15em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{payrollPrepBean.funds}"/>
+								<p:ajax event="change" listener="#{payrollPrepBean.selectedFund}" update="idSer" />
+					</p:selectOneMenu>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+						<medium class="p-d-block" style="text-align: left">Date</medium>
+						<p:calendar value="#{payrollPrepBean.dateTrans}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
 					</div>
 					</div>
 			</p:outputLabel>
@@ -85,8 +149,10 @@ xmlns:pe="http://primefaces.org/ui/extensions"
        		<p:outputLabel>
 					<div class="ui-inputgroup">
 					<div class="p-field">
-						<medium class="p-d-block" style="text-align: left">Date</medium>
-						<p:calendar value="#{payrollPrepBean.payData.dateTrans}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 15em"/>
+						<medium class="p-d-block" style="text-align: left">Status</medium>
+						<p:selectOneMenu value="#{payrollPrepBean.payData.status}" style="width: 15em" filterMatchMode="contains" filter="true" disabled="true">
+								<f:selectItems value="#{payrollPrepBean.stats}"/>
+						</p:selectOneMenu>
 					</div>
 					</div>
 			</p:outputLabel>
@@ -107,13 +173,42 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 					<p:inputNumber value="#{payrollPrepBean.payData.rate}" placeholder="00.00" inputStyle="width: 15em"/>
 					</div>
 					</div>
+			</p:outputLabel>	
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Working Days</medium>
+					<p:selectOneMenu value="#{payrollPrepBean.payData.year}" style="width: 5em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{payrollPrepBean.years}"/>
+								<p:ajax event="change" update="workId" listener="#{payrollPrepBean.retrieveWorkingDays}"/>
+					</p:selectOneMenu>
+					<p:selectOneMenu value="#{payrollPrepBean.payData.month}" style="width: 5em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{payrollPrepBean.months}"/>
+								<p:ajax event="change" update="workId" listener="#{payrollPrepBean.retrieveWorkingDays}"/>
+						</p:selectOneMenu>
+					<p:inputNumber id="workId" value="#{payrollPrepBean.payData.numberOfWork}" placeholder="00.00" inputStyle="width: 5em">
+						<p:ajax event="change" listener="#{payrollPrepBean.calculatePayslip}" update="grossId taxId netId" />
+					</p:inputNumber>
+					</div>
+					</div>
 			</p:outputLabel>
 			
 			<p:outputLabel>
 					<div class="ui-inputgroup">
 					<div class="p-field">
 					<medium class="p-d-block" style="text-align: left">Gross</medium>
-					<p:inputNumber value="#{payrollPrepBean.payData.gross}" placeholder="00.00" inputStyle="width: 15em"/>
+					<p:inputNumber id="grossId" value="#{payrollPrepBean.payData.gross}" placeholder="00.00" inputStyle="width: 15em"/>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Withholding Tax</medium>
+					<p:inputNumber id="taxId" value="#{payrollPrepBean.payData.tax}" placeholder="00.00" inputStyle="width: 15em"/>
 					</div>
 					</div>
 			</p:outputLabel>
@@ -122,101 +217,36 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 					<div class="ui-inputgroup">
 					<div class="p-field">
 					<medium class="p-d-block" style="text-align: left">Net</medium>
-					<p:inputNumber value="#{payrollPrepBean.payData.net}" placeholder="00.00" inputStyle="width: 15em"/>
+					<p:inputNumber id="netId" value="#{payrollPrepBean.payData.net}" placeholder="00.00" inputStyle="width: 15em"/>
 					</div>
 					</div>
 			</p:outputLabel>
-       		
-       		<p:outputLabel>
-					<div class="ui-inputgroup">
-					<div class="p-field">
-					<medium class="p-d-block" style="text-align: left">EE</medium>
-					<p:inputNumber value="#{payrollPrepBean.payData.ee}" placeholder="00.00" inputStyle="width: 15em"/>
-					</div>
-					</div>
-			</p:outputLabel>
-			
-			<p:outputLabel>
-					<div class="ui-inputgroup">
-					<div class="p-field">
-					<medium class="p-d-block" style="text-align: left">ER</medium>
-					<p:inputNumber value="#{payrollPrepBean.payData.er}" placeholder="00.00" inputStyle="width: 15em"/>
-					</div>
-					</div>
-			</p:outputLabel>
-			
-			<p:outputLabel>
-					<div class="ui-inputgroup">
-					<div class="p-field">
-					<medium class="p-d-block" style="text-align: left">Withholding Tax</medium>
-					<p:inputNumber value="#{payrollPrepBean.payData.tax}" placeholder="00.00" inputStyle="width: 15em"/>
-					</div>
-					</div>
-			</p:outputLabel>
-			
-			<p:outputLabel>
-					<div class="ui-inputgroup">
-					<div class="p-field">
-					<medium class="p-d-block" style="text-align: left">COOP</medium>
-					<p:inputNumber value="#{payrollPrepBean.payData.coop}" placeholder="00.00" inputStyle="width: 15em"/>
-					</div>
-					</div>
-			</p:outputLabel>
-			
-			<p:outputLabel>
-					<div class="ui-inputgroup">
-					<div class="p-field">
-					<medium class="p-d-block" style="text-align: left">Working Days</medium>
-					<p:inputNumber value="#{payrollPrepBean.payData.numberOfWork}" placeholder="00.00" inputStyle="width: 15em"/>
-					</div>
-					</div>
-			</p:outputLabel>
-			
-			<p:outputLabel>
-					<div class="ui-inputgroup">
-					<div class="p-field">
-					<medium class="p-d-block" style="text-align: left">Working Days</medium>
-					<p:inputNumber value="#{payrollPrepBean.payData.numberOfWork}" placeholder="00.00" inputStyle="width: 15em"/>
-					</div>
-					</div>
-			</p:outputLabel>
-			
-			<p:outputLabel>
-					<div class="ui-inputgroup">
-					<div class="p-field">
-						<medium class="p-d-block" style="text-align: left">Month</medium>
-						<p:selectOneMenu value="#{payrollPrepBean.payData.month}" style="width: 15em" filterMatchMode="contains" filter="true">
-								<f:selectItems value="#{payrollPrepBean.months}"/>
-						</p:selectOneMenu>
-					</div>
-					</div>
-			</p:outputLabel>
-			
-			<p:outputLabel>
-					<div class="ui-inputgroup">
-					<div class="p-field">
-						<medium class="p-d-block" style="text-align: left">Year</medium>
-						<p:selectOneMenu value="#{payrollPrepBean.payData.year}" style="width: 15em" filterMatchMode="contains" filter="true">
-								<f:selectItems value="#{payrollPrepBean.years}"/>
-						</p:selectOneMenu>
-					</div>
-					</div>
-			</p:outputLabel>
-			
-			<p:outputLabel>
-					<div class="ui-inputgroup">
-					<div class="p-field">
-						<medium class="p-d-block" style="text-align: left">Year</medium>
-						<p:selectOneMenu value="#{payrollPrepBean.payData.status}" style="width: 15em" filterMatchMode="contains" filter="true">
-								<f:selectItems value="#{payrollPrepBean.stats}"/>
-						</p:selectOneMenu>
-					</div>
-					</div>
-			</p:outputLabel>
-			
-			
        		
        </p:panelGrid>
+			
+		<p:dataTable id="loanDataId" value="#{payrollPrepBean.loans}" var="ln" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true"  paginatorPosition="top" paginatorAlwaysVisible="false"
+                         >
+                        
+                        <p:column headerText="Name" width="50" sortable="false" >
+		            					<p:outputLabel value="#{ln.name}" style="text-alight: left"/>
+		            				</p:column>
+		            				
+		            				<p:column headerText="Status" width="50" sortable="false">
+		            					<p:outputLabel value="#{ln.status}" style="text-alight: left"/>
+		            				</p:column>
+		            				
+		            				<p:column headerText="Amount" width="50" sortable="false" style="text-alight: right">
+		            					<p:outputLabel value="#{ln.loanAmount}" />
+		            				</p:column>
+		            				
+		            				<p:column headerText="Deduction" width="50" sortable="false" style="text-alight: right">
+		            					<p:outputLabel value="#{ln.monthlyDeduction}" />
+		            				</p:column>
+		                 
+         </p:dataTable>                	
 					
    </div>
         <div class="p-col-12 p-md-7 p-col-nogutter">
@@ -224,19 +254,149 @@ xmlns:pe="http://primefaces.org/ui/extensions"
                 <div class="p-col-12 p-col-nogutter">
                 	<div class="p-col-12">
                 		<div class="ui-inputgroup" style="float:left">
-                	
-                	<span class="ui-input-icon-left">
-			    	<i class="pi pi-search" />
-                    
-                    </span>
-                    
-                    </div>
+		                	<span class="ui-input-icon-left">
+					    	<i class="pi pi-search" />
+		                    	<p:inputText value="#{payrollPrepBean.searchParam}" placeholder="Search...." style="width: 25em">
+		                    		<p:ajax event="keyup" listener="#{payrollPrepBean.loadRoll}" update="payDataId empdtlsId loanDataId idNameSelected" delay="800"/>
+		                    	</p:inputText>
+		                    	<p:selectOneMenu value="#{payrollPrepBean.type}" style="width: 15em" filterMatchMode="contains" filter="true">
+									<f:selectItems value="#{payrollPrepBean.types}"/>
+								</p:selectOneMenu>
+								<p:selectOneMenu id="idSer" value="#{payrollPrepBean.fundId2}" style="width: 15em" filterMatchMode="contains" filter="true">
+									<f:selectItems value="#{payrollPrepBean.funds2}"/>
+									<p:ajax event="change" listener="#{payrollPrepBean.selectedFund2}" update="fundId1" />
+								</p:selectOneMenu>
+								<p:selectOneMenu  value="#{payrollPrepBean.yearSearchId}" style="width: 5em" filterMatchMode="contains" filter="true">
+									<f:selectItems value="#{payrollPrepBean.yearSearch}"/>
+								</p:selectOneMenu>
+								<p:selectOneMenu  value="#{payrollPrepBean.monthSeachId}" style="width: 5em" filterMatchMode="contains" filter="true">
+									<f:selectItems value="#{payrollPrepBean.monthSearch}"/>
+								</p:selectOneMenu>
+								<p:commandButton icon="fa fa-search" update="payDataId empdtlsId loanDataId idNameSelected" actionListener="#{payrollPrepBean.loadRoll}"/>
+		                    </span>
+                   		 </div>
                 	</div>
-                    
                 </div>
                 <div class="p-col-12">
                     <div class="p-grid">
                         
+                        <p:dataTable id="payDataId" var="fd" value="#{payrollPrepBean.rolls}"
+				            rows="10" paginator="true" rowsPerPageTemplate="5,10,15,20,50,100" paginatorPosition="top" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				            selection="#{payrollPrepBean.paySelected}" rowKey="#{fd.id}"
+				            >
+				            
+				            	<f:facet name="{Exporters}">
+            						
+            						<p:menuButton id="exiD" value="Exports" style="float: left">
+            							<p:menuitem icon="fa fa-file-o" value="Export to excel">
+            								<p:dataExporter type="xls" target="payDataId" fileName="payroll" />
+            							</p:menuitem>
+            							<p:menuitem icon="fa fa-book" value="Create Payroll List" actionListener="#{payrollPrepBean.showCreatePayroll}" update="payFieldId payrollId msg"/>
+            							<p:menuitem icon="fa fa-book" value="Loan Payroll List" actionListener="#{payrollPrepBean.batchPayrollList}" update="payLoanId"/>
+            							
+            				
+            						</p:menuButton>
+            					</f:facet>
+				            	
+				            	<p:columnGroup type="header">
+					                <p:row>
+					                    <p:column rowspan="2" selectionMode="multiple" headerText="" width="15"/>
+					                    <p:column rowspan="2" headerText="" width="15"/>
+					                    <p:column rowspan="2" headerText="" width="15"/>
+					                    <p:column rowspan="2" headerText="Name" width="100"/>
+					                    <p:column rowspan="2" headerText="Designation" width="100"/>
+					                    <p:column rowspan="2" headerText="Days" width="50"/>
+					                    <p:column rowspan="2" headerText="Rate" width="50"/>
+					                    <p:column rowspan="2" headerText="Gross" width="50"/>
+					                    <p:column colspan="3" headerText="Deduction" width="150"/>
+					                    <p:column rowspan="2" headerText="Tax" width="50"/>
+					                     <p:column rowspan="2" headerText="Net" width="50"/>
+					                </p:row>
+					               
+					                <p:row>
+					                    <p:column headerText="EE" width="50"/>
+					                    <p:column headerText="Loan" width="50"/>
+					                    <p:column headerText="Coop" width="50"/>
+					                </p:row>
+					                
+					                
+					            </p:columnGroup>
+				            	
+				            	
+				            	<p:column selectionMode="multiple"/>
+				            	
+				                <p:column exportable="false">
+				                	<p:commandButton icon="fa fa-trash" actionListener="#{payrollPrepBean.delete(fd)}" update="empdtlsId loanDataId payDataId msg"/>
+				                </p:column>
+				                
+				                <p:column exportable="false">
+									<p:commandButton icon="fa fa-search" update="empdtlsId loanDataId idNameSelected" actionListener="#{payrollPrepBean.clickPayroll(fd)}"/>
+								</p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.employeeMain.fullName}"/>
+				                </p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.designation}"/>
+				                </p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.numberOfWork}"/>
+				                </p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.rate}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 
+				                <p:column  >
+				                    <h:outputText value="#{fd.gross}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.ee}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				                <p:column  >
+				                    <h:outputText value="#{fd.er}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				<p:column  >
+				                    <h:outputText value="#{fd.coop}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				<p:column  >
+				                    <h:outputText value="#{fd.tax}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				
+				 				<p:column  >
+				                    <h:outputText value="#{fd.net}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				                
+				                <p:columnGroup type="footer">
+						            <p:row>
+						                <p:column colspan="7" style="text-align:right" footerText="Totals:" exportable="true"/>
+						                <p:column footerText="#{payrollPrepBean.grossTotal}" exportable="true"/>
+						                <p:column footerText="#{payrollPrepBean.eeTotal}" exportable="true"/>
+						                <p:column footerText="#{payrollPrepBean.erTotal}" exportable="true"/>
+						                <p:column footerText="#{payrollPrepBean.coopTotal}" exportable="true"/>
+						                <p:column footerText="#{payrollPrepBean.taxTotal}" exportable="true"/>
+						                <p:column footerText="#{payrollPrepBean.netTotal}" exportable="true"/>
+						            </p:row>
+						        </p:columnGroup>
+				                
+				            </p:dataTable>
                          
                     </div>
                 </div>
@@ -249,12 +409,376 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 	
 	</div><!-- card -->	
 	
+	<p:dialog widgetVar="dlgLoan" width="500" height="500" closeOnEscape="true" closable="true" header="Loan List">
+		<p:dataTable id="payLoanId" var="fd" value="#{payrollPrepBean.paySelectedLoan}"
+				            rows="10" paginator="true" rowsPerPageTemplate="5,10,15,20,50,100" paginatorPosition="top" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				            
+				            >
+				            
+				            	<f:facet name="{Exporters}">
+            						
+            						<p:menuButton id="exiD" value="Exports" style="float: left">
+            							<p:menuitem icon="fa fa-file-o" value="Export to excel">
+            								<p:dataExporter type="xls" target="payLoanId" fileName="payloan" />
+            							</p:menuitem>
+            						</p:menuButton>
+            					</f:facet>
+				            	
+				            	<p:columnGroup type="header">
+					                <p:row>
+					                    <p:column rowspan="2" headerText="Name" width="100"/>
+					                    <p:column colspan="3" headerText="Deduction" width="150"/>
+					                </p:row>
+					               
+					                <p:row>
+					                    <p:column headerText="EE" width="50"/>
+					                    <p:column headerText="Loan" width="50"/>
+					                    <p:column headerText="Coop" width="50"/>
+					                </p:row>
+					                
+					                
+					            </p:columnGroup>
+				            	
+				            	
+				            	
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.employeeMain.fullName}"/>
+				                </p:column>
+				                
+				                               
+				                <p:column  >
+				                    <h:outputText value="#{fd.ee}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				                <p:column  >
+				                    <h:outputText value="#{fd.er}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				<p:column  >
+				                    <h:outputText value="#{fd.coop}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				
+				                
+				                <p:columnGroup type="footer">
+						            <p:row>
+						                <p:column colspan="1" style="text-align:right" footerText="Totals:" exportable="true"/>
+						                <p:column footerText="#{payrollPrepBean.eeTotalLoan}" exportable="true"/>
+						                <p:column footerText="#{payrollPrepBean.erTotalLoan}" exportable="true"/>
+						                <p:column footerText="#{payrollPrepBean.coopTotalLoan}" exportable="true"/>
+						            </p:row>
+						        </p:columnGroup>
+				                
+				            </p:dataTable>
+	</p:dialog>	
+	
+	<p:dialog widgetVar="dlgPayroll" width="1000" height="600" closeOnEscape="false" closable="false" header="Payroll List" position="center top">
 		
+		<p:tabView widgetVar="tabPayroll" dynamic="true" cache="true" prependId="false">
+		
+			 <p:ajax event="tabChange" listener="#{payrollPrepBean.onTabChange}" update="payFieldId payrollId payrollViewId"/>
+            <p:ajax event="tabClose" listener="#{payrollPrepBean.onTabClose}" update="payFieldId payrollId payrollViewId"/>
+		
+            <p:tab title="Creation">
+            	
+            	<p:toolbar>
+    		<f:facet name="left">
+    			<p:commandButton value="Clear" update="payFieldId" icon="fa fa-trash" actionListener="#{payrollPrepBean.clearPayroll}"/>
+    			<p:commandButton value="Save" title="Click to save" update="payFieldId payrollId msg"  icon="fa fa-floppy-o" actionListener="#{payrollPrepBean.createPayrollList}">
+					<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save this data?" icon="pi pi-exclamation-triangle" />
+			   </p:commandButton>
+    		</f:facet>
+    		<f:facet name="right">
+    			<p:commandButton value="Close" actionListener="#{payrollPrepBean.closePayroll}" update="payDataId" oncomplete="PF('dlgPayroll').hide(1000)"/>
+    		</f:facet>
+    	</p:toolbar>
+		
+		<p:panelGrid id="payFieldId" columns="3" layout="grid" style="text-align: left">
+		
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Municipal Treasurer</medium>
+					<p:inputText value="#{payrollPrepBean.seriesPayroll}" readonly="true" style="width: 15em" />
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Supervisor/Foreman</medium>
+					<p:selectOneMenu value="#{payrollPrepBean.supervisorId}" style="width: 15em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{payrollPrepBean.supervisors}"/>
+					</p:selectOneMenu>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Approving Officer</medium>
+					<p:selectOneMenu value="#{payrollPrepBean.approverId}" style="width: 15em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{payrollPrepBean.approvers}"/>
+					</p:selectOneMenu>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Disbursing Officer</medium>
+					<p:selectOneMenu value="#{payrollPrepBean.disbursingId}" style="width: 15em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{payrollPrepBean.disbursings}"/>
+					</p:selectOneMenu>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Municipal Treasurer</medium>
+					<p:selectOneMenu value="#{payrollPrepBean.treasurerId}" style="width: 15em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{payrollPrepBean.treasurers}"/>
+					</p:selectOneMenu>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			
+			
+			<p:outputLabel>
+					<div class="ui-inputgroup">
+					<div class="p-field">
+					<medium class="p-d-block" style="text-align: left">Municipal Accountant</medium>
+					<p:selectOneMenu value="#{payrollPrepBean.accountantId}" style="width: 15em" filterMatchMode="contains" filter="true">
+								<f:selectItems value="#{payrollPrepBean.accountants}"/>
+					</p:selectOneMenu>
+					</div>
+					</div>
+			</p:outputLabel>
+			
+			
+		
+		</p:panelGrid>
+		
+		<p:dataTable id="payrollId" var="fd" value="#{payrollPrepBean.paySelected}"
+				            rows="10" paginator="true" rowsPerPageTemplate="5,10,15,20,50,100" paginatorPosition="top" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				            
+				            >
+				            
+				            	<f:facet name="{Exporters}">
+            						
+            						<p:menuButton id="exiD" value="Exports" style="float: left">
+            							<p:menuitem icon="fa fa-file-o" value="Export to excel">
+            								<p:dataExporter type="xls" target="payrollId" fileName="payroll" />
+            							</p:menuitem>
+            							
+            						</p:menuButton>
+            					</f:facet>
+				            	
+				            	<p:columnGroup type="header">
+					                <p:row>
+					                    <p:column rowspan="2" headerText="" width="15"/>
+					                    <p:column rowspan="2" headerText="Name" width="100"/>
+					                    <p:column rowspan="2" headerText="Designation" width="100"/>
+					                    <p:column rowspan="2" headerText="Days" width="50"/>
+					                    <p:column rowspan="2" headerText="Rate" width="50"/>
+					                    <p:column rowspan="2" headerText="Gross" width="50"/>
+					                    <p:column colspan="3" headerText="Deduction" width="150"/>
+					                    <p:column rowspan="2" headerText="Tax" width="50"/>
+					                     <p:column rowspan="2" headerText="Net" width="50"/>
+					                </p:row>
+					               
+					                <p:row>
+					                    <p:column headerText="EE" width="50"/>
+					                    <p:column headerText="Loan" width="50"/>
+					                    <p:column headerText="Coop" width="50"/>
+					                </p:row>
+					                
+					                
+					            </p:columnGroup>
+				            	
+				            	
+				            	<p:column exportable="false">
+				                	<p:commandButton icon="fa fa-trash" actionListener="#{payrollPrepBean.deleteSelected(fd)}" update="payrollId msg"/>
+				                </p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.employeeMain.fullName}"/>
+				                </p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.designation}"/>
+				                </p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.numberOfWork}"/>
+				                </p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.rate}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 
+				                <p:column  >
+				                    <h:outputText value="#{fd.gross}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.ee}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				                <p:column  >
+				                    <h:outputText value="#{fd.er}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				<p:column  >
+				                    <h:outputText value="#{fd.coop}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				<p:column  >
+				                    <h:outputText value="#{fd.tax}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				
+				 				<p:column  >
+				                    <h:outputText value="#{fd.net}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				
+				                
+				               
+				                
+				            </p:dataTable>
+            	
+            </p:tab>
+            <p:tab title="Viewing">
+            	
+            	<p:dataTable id="payrollViewId" var="fd" value="#{payrollPrepBean.payrolls}"
+				            rows="10" paginator="true" rowsPerPageTemplate="5,10,15,20,50,100" paginatorPosition="top" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				            
+				            >
+				            
+				            	<f:facet name="{Exporters}">
+            						
+            						<p:menuButton id="exiD" value="Exports" style="float: left">
+            							<p:menuitem icon="fa fa-file-o" value="Export to excel">
+            								<p:dataExporter type="xls" target="payrollId" fileName="payroll" />
+            							</p:menuitem>
+            							<p:menuitem icon="fa fa-book" value="Print Payroll List" actionListener="#{payrollPrepBean.print}" target="_blank" ajax="false" immediate="false"/>
+            						</p:menuButton>
+            					</f:facet>
+				            	
+				            	<p:columnGroup type="header">
+					                <p:row>
+					                	<p:column rowspan="2" headerText="" width="15"/>
+					                    <p:column rowspan="2" headerText="" width="15"/>
+					                    <p:column rowspan="2" headerText="" width="15"/>
+					                    <p:column rowspan="2" headerText="Date" width="100"/>
+					                    <p:column rowspan="2" headerText="Series" width="100"/>
+					                    <p:column rowspan="2" headerText="Gross" width="50"/>
+					                    <p:column colspan="3" headerText="Deduction" width="150"/>
+					                    <p:column rowspan="2" headerText="Tax" width="50"/>
+					                     <p:column rowspan="2" headerText="Net" width="50"/>
+					                </p:row>
+					               
+					                <p:row>
+					                    <p:column headerText="EE" width="50"/>
+					                    <p:column headerText="Loan" width="50"/>
+					                    <p:column headerText="Coop" width="50"/>
+					                </p:row>
+					                
+					                
+					            </p:columnGroup>
+				            	
+				            	<p:column exportable="false">
+				                	<p:commandButton icon="fa fa-trash" actionListener="#{payrollPrepBean.deletePayroll(fd)}" update="payrollViewId msg"/>
+				                </p:column>
+				            	
+				            	<p:column exportable="false">
+									<p:commandButton icon="fa fa-search" update="payFieldId payrollId" actionListener="#{payrollPrepBean.clickPayrollEdit(fd)}"/>
+								</p:column>
+								
+								<p:column exportable="false">
+	            				 	<p:commandLink title="Print in PDF" target="_blank" action="#{payrollPrepBean.print(fd)}" ajax="false" immediate="false" >
+	            				 			<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+									</p:commandLink>
+								</p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.dateTrans}"/>
+				                </p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.series}"/>
+				                </p:column>
+				               
+				                <p:column  >
+				                    <h:outputText value="#{fd.grossTotal}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 
+				                <p:column  >
+				                    <h:outputText value="#{fd.eeTotal}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				                
+				                <p:column  >
+				                    <h:outputText value="#{fd.loanTotal}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				                <p:column  >
+				                    <h:outputText value="#{fd.coopTotal}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				<p:column  >
+				                    <h:outputText value="#{fd.taxTotal}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				<p:column  >
+				                    <h:outputText value="#{fd.netTotal}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				                </p:column>
+				 				
+				 				
+				                
+				            </p:dataTable>
+            	
+            </p:tab>
+        </p:tabView>    
+            
+		
+		
+	</p:dialog>	
 
-
+	<p:commandButton actionListener="#{payrollPrepBean.showPayroll}" title="Payroll List" icon="fa fa-list" onclick="PF('dlgPayroll').show(1000);" update="payFieldId payrollId payrollViewId" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 0px;right: 38px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 	
 	<ui:include src="loader.xhtml" />
-	<ui:include src="menuper.xhtml" />
+	<ui:include src="menuacc.xhtml" />
 </h:form>		
 </h:body>
 </html>

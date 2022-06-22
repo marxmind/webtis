@@ -142,7 +142,7 @@ public class DateUtils {
 	/**
 	 * 	
 	 * @return current date
-	 * @format yyyy-MM-dd
+	 * @format MM/dd/yyyy
 	 */
 	public static String getCurrentDateMonthDayYear(){//MMMM d, yyyy
 		DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");

@@ -5,10 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
-
-import javax.faces.model.SelectItem;
+import java.util.Map;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
@@ -24,42 +23,72 @@ import lombok.ToString;
  * 
  * @author Mark Italia
  * @version 1.0
- * @since 04/25/2022
+ * @since 06/14/2022
  *
  */
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
 @Builder
 @ToString
-public class EmployeeLoan {
+public class PayrollApprover {
 
 	private long id;
-	private String approvedDate;
 	private String name;
-	private String remarks;
-	private double loanAmount;
-	private double monthlyDeduction;
-	private int isCompleted;
+	private String position;
 	private int isActive;
-	private EmployeeMain employeeMain;
 	
-	private Date tempApprovedDate;
-	private List completes;
+	public static Map<Long, PayrollApprover> retrieveAll(){
+		Map<Long, PayrollApprover>  apps = new LinkedHashMap<Long, PayrollApprover>();
+		
+		
+		
+		String sql = "SELECT * FROM payrollapprover WHERE isactivea=1 ";
+		 
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+
+
+		System.out.println("payrollapprover all SQL " + ps.toString());
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			
+			PayrollApprover app = PayrollApprover.builder()
+					.id(rs.getLong("aid"))
+					.name(rs.getString("aname"))
+					.position(rs.getString("aposition"))
+					.isActive(rs.getInt("isactivea"))
+					.build();
+			
+			
+			apps.put(app.getId(), app);
+		}
+		
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		
+		}catch(Exception e){e.getMessage();}
+		
+		return apps;
+	}
 	
-	private String status;
-	
-	public static List<EmployeeLoan> retrieve(String sql, String[] params){
-		List<EmployeeLoan> loans = new ArrayList<EmployeeLoan>();
+	public static List<PayrollApprover> retrieve(String sql, String[] params){
+		List<PayrollApprover> emps = new ArrayList<PayrollApprover>();
 		
-		String tableLoan = "loan";
-		String tableEmp = "emp";
 		
-		String sqlTemp = "SELECT * FROM emploan "+ tableLoan  +", employee "+ tableEmp +" WHERE " + tableLoan + ".isactiveloan=1 " +
-				" AND " + tableLoan +".eid=" +  tableEmp + ".eid";
 		
+		String sqlTemp = "SELECT * FROM payrollapprover WHERE isactivea=1 ";
+		 
 		
 		sql = sqlTemp + sql;
 		
@@ -77,51 +106,20 @@ public class EmployeeLoan {
 			}
 			
 		}
-		System.out.println("ORLISTING SQL " + ps.toString());
+		System.out.println("payrollapprover SQL " + ps.toString());
 		rs = ps.executeQuery();
 		
 		while(rs.next()){
 			
-			EmployeeMain emp = EmployeeMain.builder()
-					.id(rs.getLong("eid"))
-					.regDate(rs.getString("regdate"))
-					.employeeId(rs.getString("employeeid"))
-					.firstName(rs.getString("firstname"))
-					.middleName(rs.getString("middlename"))
-					.lastName(rs.getString("lastname"))
-					.fullName(rs.getString("fullname"))
-					.birthDate(rs.getString("birthdate"))
-					.civilStatus(rs.getInt("civilstatus"))
-					.position(rs.getString("empposition"))
-					.cctsId(rs.getString("cctsid"))
-					.employeeType(rs.getInt("employeetype"))
-					.address(rs.getString("address"))
-					.gender(rs.getInt("gender"))
-					.contactNo(rs.getString("contactno"))
-					.signatureid(rs.getString("signatureid"))
-					.isResigned(rs.getInt("isresigned"))
-					.isActiveEmployee(rs.getInt("isactiveemployee"))
-					.emergecnyContactDtls(rs.getString("emergencycontactdtls"))
-					.photoid(rs.getString("photoid"))
-					.rateType(rs.getInt("ratetype"))
-					.rate(rs.getDouble("rate"))
-					.withHoldingTax(rs.getInt("taxable"))
+			PayrollApprover app = PayrollApprover.builder()
+					.id(rs.getLong("aid"))
+					.name(rs.getString("aname"))
+					.position(rs.getString("aposition"))
+					.isActive(rs.getInt("isactivea"))
 					.build();
 			
-			EmployeeLoan loan = EmployeeLoan.builder()
-					.id(rs.getLong("lid"))
-					.name(rs.getString("loanname"))
-					.approvedDate(rs.getString("dateapproved"))
-					.remarks(rs.getString("remarks"))
-					.loanAmount(rs.getDouble("loanamount"))
-					.monthlyDeduction(rs.getDouble("monthlydeduction"))
-					.isCompleted(rs.getInt("iscompleted"))
-					.isActive(rs.getInt("isactiveloan"))
-					.status(rs.getInt("iscompleted")==1? "In-Flight" : "Completed")
-					.employeeMain(emp)
-					.build();
 			
-			loans.add(loan);
+			emps.add(app);
 		}
 		
 		
@@ -131,23 +129,23 @@ public class EmployeeLoan {
 		
 		}catch(Exception e){e.getMessage();}
 		
-		return loans;
+		return emps;
 	}
 	
-	public static EmployeeLoan save(EmployeeLoan st){
+	public static PayrollApprover save(PayrollApprover st){
 		if(st!=null){
 			
-			long id = EmployeeLoan.getInfo(st.getId() ==0? EmployeeLoan.getLatestId()+1 : st.getId());
+			long id = PayrollApprover.getInfo(st.getId() ==0? PayrollApprover.getLatestId()+1 : st.getId());
 			LogU.add("checking for new added data");
 			if(id==1){
 				LogU.add("insert new Data ");
-				st = EmployeeLoan.insertData(st, "1");
+				st = PayrollApprover.insertData(st, "1");
 			}else if(id==2){
 				LogU.add("update Data ");
-				st = EmployeeLoan.updateData(st);
+				st = PayrollApprover.updateData(st);
 			}else if(id==3){
 				LogU.add("added new Data ");
-				st = EmployeeLoan.insertData(st, "3");
+				st = PayrollApprover.insertData(st, "3");
 			}
 			
 		}
@@ -160,29 +158,24 @@ public class EmployeeLoan {
 		LogU.add("checking for new added data");
 		if(id==1){
 			LogU.add("insert new Data ");
-			EmployeeLoan.insertData(this, "1");
+			PayrollApprover.insertData(this, "1");
 		}else if(id==2){
 			LogU.add("update Data ");
-			EmployeeLoan.updateData(this);
+			PayrollApprover.updateData(this);
 		}else if(id==3){
 			LogU.add("added new Data ");
-			EmployeeLoan.insertData(this, "3");
+			PayrollApprover.insertData(this, "3");
 		}
 		
- }
+	}
 	
-	public static EmployeeLoan insertData(EmployeeLoan st, String type){
-		String sql = "INSERT INTO emploan ("
-				+ "lid,"
-				+ "loanname,"
-				+ "dateapproved,"
-				+ "remarks,"
-				+ "loanamount,"
-				+ "monthlydeduction,"
-				+ "iscompleted,"
-				+ "isactiveloan,"
-				+ "eid)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?)";
+	public static PayrollApprover insertData(PayrollApprover st, String type){
+		String sql = "INSERT INTO payrollapprover ("
+				+ "aid,"
+				+ "aname,"
+				+ "aposition,"
+				+ "isactivea)" 
+				+ " VALUES(?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -193,7 +186,7 @@ public class EmployeeLoan {
 		long id =1;
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table emploanv");
+		LogU.add("inserting data into table payrollapprover");
 		if("1".equalsIgnoreCase(type)){
 			ps.setLong(cnt++, id);
 			st.setId(id);
@@ -206,22 +199,12 @@ public class EmployeeLoan {
 		}
 		
 		ps.setString(cnt++, st.getName());
-		ps.setString(cnt++, st.getApprovedDate());
-		ps.setString(cnt++, st.getRemarks());
-		ps.setDouble(cnt++, st.getLoanAmount());
-		ps.setDouble(cnt++, st.getMonthlyDeduction());
-		ps.setInt(cnt++, st.getIsCompleted());
+		ps.setString(cnt++, st.getPosition());
 		ps.setInt(cnt++, st.getIsActive());
-		ps.setLong(cnt++, st.getEmployeeMain().getId());
 		
 		LogU.add(st.getName());
-		LogU.add(st.getApprovedDate());
-		LogU.add(st.getRemarks());
-		LogU.add(st.getLoanAmount());
-		LogU.add(st.getMonthlyDeduction());
-		LogU.add(st.getIsCompleted());
+		LogU.add(st.getPosition());
 		LogU.add(st.getIsActive());
-		LogU.add(st.getEmployeeMain().getId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -230,22 +213,18 @@ public class EmployeeLoan {
 		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error inserting data to emploan : " + s.getMessage());
+			LogU.add("error inserting data to payrollapprover : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		return st;
 	}
 	
-	public static EmployeeLoan updateData(EmployeeLoan st){
-		String sql = "UPDATE emploan SET "
-				+ "loanname=?,"
-				+ "dateapproved=?,"
-				+ "remarks=?,"
-				+ "loanamount=?,"
-				+ "monthlydeduction=?,"
-				+ "iscompleted=?,"
-				+ "eid=?" 
-				+ " WHERE lid=?";
+	public static PayrollApprover updateData(PayrollApprover st){
+		String sql = "UPDATE payrollapprover SET "
+				+ "aid=?,"
+				+ "aname=?,"
+				+ "aposition=?" 
+				+ " WHERE fid=?";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -253,27 +232,18 @@ public class EmployeeLoan {
 		try{
 		conn = WebTISDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
+		
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table emploan");
+		LogU.add("updating data into table payrollapprover");
 		
 		
 		ps.setString(cnt++, st.getName());
-		ps.setString(cnt++, st.getApprovedDate());
-		ps.setString(cnt++, st.getRemarks());
-		ps.setDouble(cnt++, st.getLoanAmount());
-		ps.setDouble(cnt++, st.getMonthlyDeduction());
-		ps.setInt(cnt++, st.getIsCompleted());
-		ps.setLong(cnt++, st.getEmployeeMain().getId());
+		ps.setString(cnt++, st.getPosition());
 		ps.setLong(cnt++, st.getId());
 		
 		LogU.add(st.getName());
-		LogU.add(st.getApprovedDate());
-		LogU.add(st.getRemarks());
-		LogU.add(st.getLoanAmount());
-		LogU.add(st.getMonthlyDeduction());
-		LogU.add(st.getIsCompleted());
-		LogU.add(st.getEmployeeMain().getId());
+		LogU.add(st.getPosition());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");
@@ -283,7 +253,7 @@ public class EmployeeLoan {
 		WebTISDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error updating data to emploan : " + s.getMessage());
+			LogU.add("error updating data to payrollapprover : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		return st;
@@ -296,13 +266,13 @@ public class EmployeeLoan {
 		ResultSet rs = null;
 		String sql = "";
 		try{
-		sql="SELECT lid FROM emploan ORDER BY lid DESC LIMIT 1";	
+		sql="SELECT aid FROM payrollapprover ORDER BY aid DESC LIMIT 1";	
 		conn = WebTISDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
 		while(rs.next()){
-			id = rs.getLong("lid");
+			id = rs.getLong("aid");
 		}
 		
 		rs.close();
@@ -349,7 +319,7 @@ public class EmployeeLoan {
 		boolean result = false;
 		try{
 		conn = WebTISDatabaseConnect.getConnection();
-		ps = conn.prepareStatement("SELECT lid FROM emploan WHERE lid=?");
+		ps = conn.prepareStatement("SELECT aid FROM payrollapprover WHERE aid=?");
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
 		
@@ -393,7 +363,7 @@ public class EmployeeLoan {
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
-		String sql = "UPDATE emploan set isactiveloan=0 WHERE lid=?";
+		String sql = "UPDATE payrollapprover set isactivea=0 WHERE aid=?";
 		
 		String[] params = new String[1];
 		params[0] = getId()+"";
@@ -416,30 +386,5 @@ public class EmployeeLoan {
 		
 	}
 	
+	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
