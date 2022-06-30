@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.controller.EmployeeMain;
+import com.italia.municipality.lakesebu.controller.Payroll;
 import com.italia.municipality.lakesebu.controller.PayrollFund;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
@@ -54,6 +55,39 @@ public class EmployeePayroll {
 	private PayrollFund fund;
 	//private PayrollGroupSeries group;
 	private EmployeeMain employeeMain;
+	private Payroll payroll;
+	
+	/**
+	 * Check if the employee has already payroll created for the specific month
+	 * @param month
+	 * @param year
+	 * @param employeeId
+	 * @return
+	 */
+	public static boolean isExistPayroll(int month, int year, long employeeId) {
+		boolean isExist = false;
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement("SELECT pid FROM employeepayroll WHERE isactivepay=1 AND monthperiod="+month + " AND yearperiod="+year + " AND eid="+employeeId);
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			return true;
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		
+		}catch(Exception e){e.getMessage();}
+		
+		return isExist;
+	}
 	
 	public static List<EmployeePayroll> retrieve(String sql, String[] params){
 		List<EmployeePayroll> emps = new ArrayList<EmployeePayroll>();
@@ -146,6 +180,7 @@ public class EmployeePayroll {
 					.status(rs.getInt("pystatus"))
 					.employeeMain(emp)
 					.fund(fund)
+					.payroll(Payroll.builder().id(rs.getLong("pid")).build())
 					.build();
 			
 			emps.add(py);
@@ -203,13 +238,6 @@ public class EmployeePayroll {
 		
 		while(rs.next()){
 			
-			/*PayrollGroupSeries gp = PayrollGroupSeries.builder()
-					.id(rs.getLong("gid"))
-					.dateTrans(rs.getString("gdate"))
-					.series(rs.getString("gseries"))
-					.isActive(rs.getInt("isactiveg"))
-					.status(rs.getInt("gstatus"))
-					.build();*/
 			PayrollFund fund = PayrollFund.builder()
 					.id(rs.getLong("fid"))
 					.name(rs.getString("fundname"))
@@ -262,6 +290,7 @@ public class EmployeePayroll {
 					.status(rs.getInt("pystatus"))
 					.employeeMain(emp)
 					.fund(fund)
+					.payroll(Payroll.builder().id(rs.getLong("pid")).build())
 					.build();
 			
 			tax += rs.getDouble("pytax");
@@ -347,8 +376,9 @@ public class EmployeePayroll {
 				+ "isactivepay,"
 				+ "pystatus,"
 				+ "fid,"
-				+ "eid)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "eid,"
+				+ "pid)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -387,6 +417,7 @@ public class EmployeePayroll {
 		ps.setInt(cnt++, st.getStatus());
 		ps.setLong(cnt++, st.getFund().getId());
 		ps.setLong(cnt++, st.getEmployeeMain().getId());
+		ps.setLong(cnt++, st.getPayroll().getId());
 		
 		LogU.add(st.getDateTrans());
 		LogU.add(st.getDesignation());
@@ -404,6 +435,7 @@ public class EmployeePayroll {
 		LogU.add(st.getStatus());
 		LogU.add(st.getFund().getId());
 		LogU.add(st.getEmployeeMain().getId());
+		LogU.add(st.getPayroll().getId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -434,7 +466,8 @@ public class EmployeePayroll {
 				+ "yearperiod=?,"
 				+ "pystatus=?,"
 				+ "fid=?,"
-				+ "eid=?" 
+				+ "eid=?,"
+				+ "pid=?" 
 				+ " WHERE pyid=?";
 		
 		PreparedStatement ps = null;
@@ -463,6 +496,7 @@ public class EmployeePayroll {
 		ps.setInt(cnt++, st.getStatus());
 		ps.setLong(cnt++, st.getFund().getId());
 		ps.setLong(cnt++, st.getEmployeeMain().getId());
+		ps.setLong(cnt++, st.getPayroll().getId());
 		ps.setLong(cnt++, st.getId());
 		
 		LogU.add(st.getDateTrans());
@@ -481,6 +515,7 @@ public class EmployeePayroll {
 		LogU.add(st.getStatus());
 		LogU.add(st.getFund().getId());
 		LogU.add(st.getEmployeeMain().getId());
+		LogU.add(st.getPayroll().getId());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");

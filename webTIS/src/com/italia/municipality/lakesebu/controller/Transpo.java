@@ -54,6 +54,9 @@ public class Transpo {
 	private int isActive;
 	private UserDtls userDtls;
 	
+	private String preparedBy;
+	private String preparedByPosition;
+	
 	private List<TranspoItems> items;
 	
 	public static String getSeries() {
@@ -153,6 +156,8 @@ public class Transpo {
 					.menroOfficer(rs.getString("menroofficer"))
 					.menroPosition(rs.getString("menropos"))
 					.isActive(rs.getInt("tranisactive"))
+					.preparedBy(rs.getString("prepby"))
+					.preparedByPosition(rs.getString("preppos"))
 					.build();
 			
 			UserDtls user = new UserDtls();
@@ -239,8 +244,10 @@ public class Transpo {
 				+ "menroofficer,"
 				+ "menropos,"
 				+ "tranisactive,"
-				+ "userid)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "userid,"
+				+ "prepby,"
+				+ "preppos)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -281,6 +288,8 @@ public class Transpo {
 		ps.setString(cnt++, st.getMenroPosition());
 		ps.setInt(cnt++, st.getIsActive());
 		ps.setLong(cnt++, st.getUserDtls().getUserdtlsid());
+		ps.setString(cnt++, st.getPreparedBy());
+		ps.setString(cnt++, st.getPreparedByPosition());
 		
 		LogU.add(st.getDateTrans());
 		LogU.add(st.getControlNo());
@@ -300,6 +309,8 @@ public class Transpo {
 		LogU.add(st.getMenroPosition());
 		LogU.add(st.getIsActive());
 		LogU.add(st.getUserDtls().getUserdtlsid());
+		LogU.add(st.getPreparedBy());
+		LogU.add(st.getPreparedByPosition());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -332,7 +343,9 @@ public class Transpo {
 				+ "officialPos=?,"
 				+ "menroofficer=?,"
 				+ "menropos=?,"
-				+ "userid=?" 
+				+ "userid=?,"
+				+ "prepby=?,"
+				+ "preppos=?" 
 				+ " WHERE tid=?";
 		
 		PreparedStatement ps = null;
@@ -363,6 +376,8 @@ public class Transpo {
 		ps.setString(cnt++, st.getMenroOfficer());
 		ps.setString(cnt++, st.getMenroPosition());
 		ps.setLong(cnt++, st.getUserDtls().getUserdtlsid());
+		ps.setString(cnt++, st.getPreparedBy());
+		ps.setString(cnt++, st.getPreparedByPosition());
 		ps.setLong(cnt++, st.getId());
 		
 		LogU.add(st.getDateTrans());
@@ -382,6 +397,8 @@ public class Transpo {
 		LogU.add(st.getMenroOfficer());
 		LogU.add(st.getMenroPosition());
 		LogU.add(st.getUserDtls().getUserdtlsid());
+		LogU.add(st.getPreparedBy());
+		LogU.add(st.getPreparedByPosition());
 		LogU.add("id: " + id);
 		
 		LogU.add("executing for saving...");

@@ -59,5 +59,5 @@ public class GlobalVar {
 	public static final String EMPLOYEE_IMAGE_PATH_QRCODE = EMPLOYEE_IMAGE_PATH + "qrcode" + SEP;
 	public static final String EMPLOYEE_PAYROLL = "payroll";
 	public static final String EMPLOYEE_ID = "id";
-	
+	public static final String EMPLOYEE_ID_FOLDER = EMPLOYEE_IMAGE_PATH + "ID" + SEP; 
 }

@@ -74,6 +74,43 @@ public class BusinessCustomer {
 	private String qrcode;
 	private String nationalId;
 	
+	public boolean hasExistingTransaction() {
+		return hasExistingTransaction(getId());
+	}
+	
+	public static boolean hasExistingTransaction(long id) {
+		
+		String sql = "SELECT * FROM businesscustomer b, "
+				+ "livelihood l, "
+				+ "businessorlisting o "
+				+ "WHERE b.cusisactive=1 AND "
+				+ "b.customerid=l.customerid AND l.isactivelive=1 AND "
+				+ "b.customerid=o.customerid AND o.oractive=1 AND "
+				+ "b.customerid=" + id;
+		
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			return true;
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return false;
+	}
+	
+	
 	public static boolean validateNameEntry(String name){
 		String sql = "SELECT fullname FROM businesscustomer WHERE cusisactive=1 AND fullname=?";
 		String[] params = new String[1];

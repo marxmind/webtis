@@ -53,6 +53,7 @@ import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
 import com.italia.municipality.lakesebu.utils.DateUtils;
+import com.italia.municipality.lakesebu.utils.FileConverter;
 import com.italia.municipality.lakesebu.utils.QRCodeUtil;
 import com.italia.municipality.lakesebu.utils.SignatureImageConverter;
 
@@ -685,8 +686,15 @@ public class EmployeeMainBean implements Serializable {
 		JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(rpts);
   		HashMap param = new HashMap();
   		
+  		String pathID = GlobalVar.EMPLOYEE_ID_FOLDER;
+  		File idDir = new File(pathID);
+  		idDir.mkdir();
   		
-		
+  		REPORT_NAME = idCard.getEmployeeMain().getFullName();//change pdf name to employee name
+  		REPORT_PATH = pathID; //change pdf file location to ID location
+  		
+  		
+  		
   		try{
 	  		String jrprint = JasperFillManager.fillReportToFile(jrxmlFile, param, beanColl);
 	  	    JasperExportManager.exportReportToPdfFile(jrprint,REPORT_PATH+ REPORT_NAME +".pdf");
@@ -727,6 +735,8 @@ public class EmployeeMainBean implements Serializable {
 		    	// Gently close streams.
 		            close(output);
 		            close(input);
+		          //create image type
+		      		FileConverter.convert(REPORT_PATH, REPORT_NAME, REPORT_PATH, "jpg");
 		     }
 		     
 		     // Inform JSF that it doesn't need to handle response.

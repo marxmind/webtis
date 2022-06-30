@@ -363,6 +363,13 @@ public class PayrollPrepBean implements Serializable {
 			Application.addMessage(3, "Error", "Please provide employee");
 		}
 		
+		if(getEmployeeSelected()!=null && 
+				getPayData().getId()==0 && 
+				EmployeePayroll.isExistPayroll(getPayData().getMonth(), getPayData().getYear(), getEmployeeSelected().getId())) {
+			isOk = false;
+			Application.addMessage(3, "Error", "You have already created a payroll for " + getEmployeeSelected().getFullName() + " for the month of " + DateUtils.getMonthName(getPayData().getMonth()) + " " + getPayData().getYear());
+		}
+		
 		if(isOk) {
 			
 			if(loans!=null && loans.size()>0) {
@@ -403,10 +410,13 @@ public class PayrollPrepBean implements Serializable {
 			pay.setFund(PayrollFund.builder().id(getFundId()).build());
 			pay.setIsActive(1);
 			pay.setEmployeeMain(getEmployeeSelected());
+			pay.setPayroll(Payroll.builder().id(0).build());
 			pay.save();
+			setFundId2(pay.getFund().getId());
 			loadRoll();
 			Application.addMessage(1, "Success", "Successfully saved.");
 			clearAll();
+			
 		}
 		
 		
@@ -551,9 +561,6 @@ public class PayrollPrepBean implements Serializable {
 					ids += ":" + p.getId();
 				}
 				count++;
-				p.setStatus(1);//posted
-				p.save();
-				
 				
 				gross += p.getGross();
 				ee += p.getEe();
@@ -566,7 +573,7 @@ public class PayrollPrepBean implements Serializable {
 			
 			if(getOfficers()!=null) {
 			
-			Payroll.builder()
+			Payroll pay = Payroll.builder()
 			.dateTrans(DateUtils.getCurrentDateYYYYMMDD())
 			.series(getSeriesPayroll())
 			
@@ -588,7 +595,16 @@ public class PayrollPrepBean implements Serializable {
 			.isActive(1)
 			.fund(fund)
 			
-			.build().save();
+			.build();
+				
+			pay = Payroll.save(pay);	
+			
+			for(EmployeePayroll p : getPaySelected()) {
+				p.setPayroll(pay);
+				p.setStatus(1);
+				p.save();
+			}
+				
 			Application.addMessage(1, "Success", "Successfully saved.");
 			}
 			

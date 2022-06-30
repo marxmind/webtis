@@ -441,7 +441,7 @@ public class BusinessPermitBean implements Serializable{
 			taxpayers =  Customer.retrieve(sql, new String[0]);
 		}
 		*/
-		String sql = " AND live.isactivelive=1";
+		String sql = " AND live.isactivelive=1 AND cuz.cusisactive=1 ";
 		if(getSearchTaxpayer()!=null && !getSearchTaxpayer().isEmpty()){
 			int size = getSearchTaxpayer().length();
 			if(size>=5){

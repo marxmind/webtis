@@ -60,48 +60,191 @@ body{
 	 	
 	 	<p:commandButton id="showNoteId" value="#{menuBean.total}" action="email.xhtml" icon="fa fa-envelope-o" style="#{notiBean.styleButton}#{skin.emailButton}" title="This is where your email or notification messages save" />
 	 
-	
-	<p:dialog widgetVar="dlgMain" closable="false" draggable="false" modal="true" showEffect="fade" visible="true"  showHeader="false" position="center center" styleClass="menuDlg">
+	<h:outputStylesheet>
+		img{
+		  height: 300px;
+		  width: 300px;
+		}
+		table {
+		  width: 100%;
+		  border-collapse: collapse;
+		  border: 1px solid;
+		}
+		table, th, td {
+		  border: 1px solid;
+		}
 		
-		<p:panelGrid columns="3" styleClass="ui-noborder">
-				
-				<h:outputStylesheet>
+		
+		
+		.div-table {
+		  display: table;         
+		  width: auto;         
+		  background-color: #eee;         
+		  border: 1px solid #666666;         
+		  border-spacing: 5px; /* cellspacing:poor IE support for  this */
+		}
+		.div-table-row {
+		  display: table-row;
+		  width: auto;
+		  clear: both;
+		}
+		.div-table-col {
+		  float: left; /* fix for  buggy browsers */
+		  display: table-column;         
+		  width: 200px;         
+		  background-color: #ccc;  
+		}
+		
+	</h:outputStylesheet>
+	
+	<h:outputScript>
+	//var Block = Quill.import('blots/block');
+	//Block.tagName = 'DIV';
+	//Quill.register(Block, true);
+	
+	</h:outputScript>
+	
+	<div class="card">
+    		<div class="p-grid sample-layout">
+    		
+	        	<div class="p-col-12 p-md-12 p-col-nogutter">
+	            	<div class="p-grid">
+	                	<div class="p-col-12 p-col-nogutter">
+	                		<div class="p-col-12">	
 								
-								.button {
-								  background-color: #008CBA; /* blue */
-								  border: none;
-								  color: white;
-								  padding: 15px 32px;
-								  text-align: center;
-								  text-decoration: none;
-								  display: inline-block;
-								  font-size: 16px;
-								  margin: 4px 2px;
-								  cursor: pointer;
-								  width: 100%;
-								  -webkit-transition-duration: 0.4s; /* Safari */
-								  transition-duration: 0.4s;
-								  cursor: pointer;
-								}
-								.ui-button.button:hover {
-								  background-color: #e7e7e7; /* gray */
-								  color: black;
-								}  
-							</h:outputStylesheet>
-							<p:commandButton icon="fa fa-list" action="departmentper.xhtml" value="Department" styleClass="button" immediate="false" ajax="false"/>
-							<p:commandButton icon="fa fa-money" action="employeemain.xhtml" value="Employee" styleClass="button" immediate="false" ajax="false"/>
-							
-				             <p:commandButton icon="fa  fa-power-off" action="portal" value="Logout" styleClass="button" actionListener="#{loginBean.logout}" immediate="false" ajax="false"/>
-				             <p:outputLabel/>
-			
-		</p:panelGrid>
-		
-	</p:dialog>
+									<div class="ui-inputgroup">
+								  	<span class="ui-input-icon-left">
+								        <i class="pi pi-search" />
+								        <p:inputText id="idSearch" value="#{mainPersonnelBean.searchParam}" placeholder="Search..." style="width: 50em">
+						    					<p:ajax event="keyup" update="resultId payDataId" listener="#{mainPersonnelBean.searchFilter}"  delay="800"/>
+						    			</p:inputText>
+								    </span>
+								    </div>
+								
+							</div>
+							<div class="p-col-12">	
+									
+									<div id="displayMain">
+										<p:textEditor id="resultId" widgetVar="resultView" value="#{mainPersonnelBean.results}" height="600" 
+										placeholder="Your search will show here" toolbarVisible="false" readonly="true" secure="false"/>
+							        </div>
+							        
+							        <div id="displayMain2" style="display: none">
+							        	
+							        	<p:dataTable id="payDataId" var="fd" value="#{mainPersonnelBean.rolls}"
+							            rows="10" paginator="true" rowsPerPageTemplate="5,10,15,20,50,100" paginatorPosition="top" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							            
+							            >
+							            
+							            	<f:facet name="{Exporters}">
+			            						
+			            						<p:menuButton id="exiD" value="Exports" style="float: left">
+			            							<p:menuitem icon="fa fa-file-o" value="Export to excel">
+			            								<p:dataExporter type="xls" target="payDataId" fileName="payroll" />
+			            							</p:menuitem>
+			            						</p:menuButton>
+			            					</f:facet>
+							            	
+							            	<p:columnGroup type="header">
+								                <p:row>
+								                    <p:column rowspan="2" headerText="Name" width="100"/>
+								                    <p:column rowspan="2" headerText="Designation" width="100"/>
+								                    <p:column rowspan="2" headerText="Days" width="50"/>
+								                    <p:column rowspan="2" headerText="Rate" width="50"/>
+								                    <p:column rowspan="2" headerText="Gross" width="50"/>
+								                    <p:column colspan="4" headerText="Deduction" width="200"/>
+								                     <p:column rowspan="2" headerText="Net" width="50"/>
+								                </p:row>
+								               
+								                <p:row>
+								                    <p:column headerText="EE" width="50"/>
+								                    <p:column headerText="Loan" width="50"/>
+								                    <p:column headerText="Coop" width="50"/>
+								                    <p:column headerText="Tax" width="50"/>
+								                </p:row>
+								                
+								                
+								            </p:columnGroup>
+							            	
+							            	
+							                
+							                <p:column  >
+							                    <h:outputText value="#{fd.employeeMain.fullName}"/>
+							                </p:column>
+							                
+							                <p:column  >
+							                    <h:outputText value="#{fd.designation}"/>
+							                </p:column>
+							                
+							                <p:column  >
+							                    <h:outputText value="#{fd.numberOfWork}"/>
+							                </p:column>
+							                
+							                <p:column  >
+							                    <h:outputText value="#{fd.rate}">
+							                    	<f:convertNumber currencySymbol="" type="currency"/>
+							                    </h:outputText>
+							                </p:column>
+							 
+							                <p:column  >
+							                    <h:outputText value="#{fd.gross}">
+							                    	<f:convertNumber currencySymbol="" type="currency"/>
+							                    </h:outputText>
+							                </p:column>
+							                
+							                <p:column  >
+							                    <h:outputText value="#{fd.ee}">
+							                    	<f:convertNumber currencySymbol="" type="currency"/>
+							                    </h:outputText>
+							                </p:column>
+							                <p:column  >
+							                    <h:outputText value="#{fd.er}">
+							                    	<f:convertNumber currencySymbol="" type="currency"/>
+							                    </h:outputText>
+							                </p:column>
+							 				<p:column  >
+							                    <h:outputText value="#{fd.coop}">
+							                    	<f:convertNumber currencySymbol="" type="currency"/>
+							                    </h:outputText>
+							                </p:column>
+							 				<p:column  >
+							                    <h:outputText value="#{fd.tax}">
+							                    	<f:convertNumber currencySymbol="" type="currency"/>
+							                    </h:outputText>
+							                </p:column>
+							 				
+							 				<p:column  >
+							                    <h:outputText value="#{fd.net}">
+							                    	<f:convertNumber currencySymbol="" type="currency"/>
+							                    </h:outputText>
+							                </p:column>
+							                
+							                <p:columnGroup type="footer">
+									            <p:row>
+									                <p:column colspan="4" style="text-align:right" footerText="Totals:" exportable="true"/>
+									                <p:column footerText="#{mainPersonnelBean.grossTotal}" exportable="true"/>
+									                <p:column footerText="#{mainPersonnelBean.eeTotal}" exportable="true"/>
+									                <p:column footerText="#{mainPersonnelBean.erTotal}" exportable="true"/>
+									                <p:column footerText="#{mainPersonnelBean.coopTotal}" exportable="true"/>
+									                <p:column footerText="#{mainPersonnelBean.taxTotal}" exportable="true"/>
+									                <p:column footerText="#{mainPersonnelBean.netTotal}" exportable="true"/>
+									            </p:row>
+									        </p:columnGroup>
+							                
+							            </p:dataTable>
+							        	
+							        </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+</div><!-- card -->	
 	
-	<p:commandButton title="Calendar" icon="fa fa-calendar" id="calId" onclick="PF('calId').show(1000)" update="dataCalId" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 0px;right: 7px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>	
-	<ui:include src="calendar.xhtml"/>
+	
+	
 	<ui:include src="loader.xhtml" />	
-
+	<ui:include src="menuper.xhtml" />
 </h:form>
 </h:body>
 </html>

@@ -98,7 +98,7 @@ public class BusinessBean implements Serializable{
 		
 			
 		businesses = new ArrayList<Livelihood>();
-		String sql = " AND live.isactivelive=1 AND live.livelihoodtype!=1 ";
+		String sql = " AND live.isactivelive=1 AND live.livelihoodtype!=1 AND cuz.cusisactive=1 ";
 		
 		try{
 			String editName = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("editBusiness");
@@ -206,7 +206,7 @@ public class BusinessBean implements Serializable{
 	
 	public void taxpayerLoad(){
 		System.out.println("taxpayerLoad>>> ");
-		customers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
+		customers = new ArrayList<BusinessCustomer>();
 		
 		/*Customer customer = new Customer();
 		customer.setIsactive(1);

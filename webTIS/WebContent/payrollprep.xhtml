@@ -75,7 +75,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
     	
     	<p:toolbar>
     		<f:facet name="left">
-    			<p:commandButton id="employeeBtn" value="Find Employee" type="button" icon="pi pi-search" />
+    			<p:commandButton id="employeeBtn" value="Find Employee" update="empdtlsId loanDataId idNameSelected" actionListener="#{payrollPrepBean.clearAll}" icon="pi pi-search" />
     			<p:divider layout="vertical" />
     			<p:outputLabel id="idNameSelected" value="#{payrollPrepBean.employeeSelected.fullName}" style="font-weight: bold; font-size: 16"/>
     		</f:facet>
@@ -485,7 +485,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		
             <p:tab title="Creation">
             	
-            	<p:toolbar>
+            <p:toolbar>
     		<f:facet name="left">
     			<p:commandButton value="Clear" update="payFieldId" icon="fa fa-trash" actionListener="#{payrollPrepBean.clearPayroll}"/>
     			<p:commandButton value="Save" title="Click to save" update="payFieldId payrollId msg"  icon="fa fa-floppy-o" actionListener="#{payrollPrepBean.createPayrollList}">
@@ -671,6 +671,13 @@ xmlns:pe="http://primefaces.org/ui/extensions"
             	
             </p:tab>
             <p:tab title="Viewing">
+            	
+            <p:toolbar>
+    		<f:facet name="left"/>
+    		<f:facet name="right">
+    			<p:commandButton value="Close" actionListener="#{payrollPrepBean.closePayroll}" update="payDataId" oncomplete="PF('dlgPayroll').hide(1000)" style="float: right"/>
+    		</f:facet>
+    	 </p:toolbar>
             	
             	<p:dataTable id="payrollViewId" var="fd" value="#{payrollPrepBean.payrolls}"
 				            rows="10" paginator="true" rowsPerPageTemplate="5,10,15,20,50,100" paginatorPosition="top" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"

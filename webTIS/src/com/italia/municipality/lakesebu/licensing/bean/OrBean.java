@@ -39,7 +39,7 @@ public class OrBean implements Serializable{
 	private String searchName;
 	private Date calendarFrom;
 	private Date calendarTo;
-	private List<BusinessORTransaction> orNumbers = Collections.synchronizedList(new ArrayList<BusinessORTransaction>());
+	private List<BusinessORTransaction> orNumbers = new ArrayList<BusinessORTransaction>();
 	private double grandTotal;
 	
 	private Date issuedDate;
@@ -55,7 +55,7 @@ public class OrBean implements Serializable{
 	private String MUNICIPALITY = "Lake Sebu";
 	private String PROVINCE = "South Cotabato";
 	
-	private List<BusinessCustomer> taxpayers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
+	private List<BusinessCustomer> taxpayers = new ArrayList<BusinessCustomer>();
 	private String searchTaxpayerName;
 	
 	private BusinessORTransaction orData;
@@ -73,9 +73,9 @@ public class OrBean implements Serializable{
 	}
 	
 	public void loadORs(){
-		orNumbers = Collections.synchronizedList(new ArrayList<BusinessORTransaction>());
+		orNumbers = new ArrayList<BusinessORTransaction>();
 		
-		String sql = " AND (orl.ordate>=? AND orl.ordate<=?) AND orl.oractive=1 ";
+		String sql = " AND (orl.ordate>=? AND orl.ordate<=?) AND orl.oractive=1 AND cuz.cusisactive=1 ";
 		String[] params = new String[2];
 		grandTotal = 0.0d;
 		params[0] = DateUtils.convertDate(getCalendarFrom(), DateFormat.YYYY_MM_DD());
@@ -110,7 +110,7 @@ public class OrBean implements Serializable{
 	
 	public void loadTaxpayer(){
 		
-		taxpayers = Collections.synchronizedList(new ArrayList<BusinessCustomer>());
+		taxpayers = new ArrayList<BusinessCustomer>();
 		
 		String sql = " AND cus.cusisactive=1 ";
 		
@@ -363,7 +363,7 @@ public class OrBean implements Serializable{
 		
 		setStatId(1);
 		
-		checks = Collections.synchronizedList(new ArrayList<String>());
+		checks = new ArrayList<String>();
 		setCapital(false);
 		setGrossAmount(0);
 	}

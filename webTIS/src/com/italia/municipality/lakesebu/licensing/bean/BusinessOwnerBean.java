@@ -1115,10 +1115,14 @@ private void close(Closeable resource) {
 	
 	public void deleteRow(BusinessCustomer cus){
 		if(Login.getUserLogin().checkUserStatus()){
-			cus.setUserDtls(Login.getUserLogin().getUserDtls());
-			cus.delete();
-			init();
-			Application.addMessage(1, "Successfully deleted", "");
+			if(cus.hasExistingTransaction()) {
+				Application.addMessage(3, "Error", "Cannot erase this Customer. It has already an existing transaction in Business Registration, Official Receipt listing");
+			}else {
+				cus.setUserDtls(Login.getUserLogin().getUserDtls());
+				cus.delete();
+				init();
+				Application.addMessage(1, "Successfully deleted", "");
+			}
 		}
 	}
 	

@@ -20,6 +20,8 @@
 	<parameter name="PARAM_ISSUED_DAY" class="java.lang.String"/>
 	<parameter name="PARAM_SEALTRANSPARENT" class="java.io.InputStream"/>
 	<parameter name="PARAM_BACKGROUND" class="java.io.InputStream"/>
+	<parameter name="PARAM_PREPAREDBY" class="java.lang.String"/>
+	<parameter name="PARAM_PREPARED_POS" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -255,7 +257,7 @@
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="259" splitType="Stretch">
+		<band height="346" splitType="Stretch">
 			<staticText>
 				<reportElement x="20" y="10" width="30" height="16" uuid="9d8427dc-7f92-407b-a09b-c066b91dbc3e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -437,6 +439,32 @@
 			</textField>
 			<line>
 				<reportElement x="189" y="86" width="109" height="1" uuid="66e9ef33-2205-4470-b14e-ce4737c98b58"/>
+			</line>
+			<staticText>
+				<reportElement x="20" y="281" width="80" height="16" uuid="11af526b-3843-4e4f-aaae-e32a3b90c21f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Prepared By:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="19" y="311" width="240" height="16" uuid="f1672833-21d6-4928-83e1-323181a19b8f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAM_PREPAREDBY}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="19" y="327" width="240" height="16" uuid="52bfe343-d6ea-409b-b9b9-bf6fa0f7585e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAM_PREPARED_POS}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="19" y="326" width="241" height="1" uuid="aa4b69a2-5871-4be7-a445-492e9879757f"/>
 			</line>
 		</band>
 	</summary>

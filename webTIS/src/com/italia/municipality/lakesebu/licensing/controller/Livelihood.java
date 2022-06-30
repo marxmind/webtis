@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
@@ -54,6 +56,42 @@ public class Livelihood {
 	
 	private String businessLabel;
 	//private static final String WEBTIS = Database.WEBTIS.getName();
+	
+	public static Map<String,Livelihood> collecBusinessExist() {
+		Map<String, Livelihood> bizs = new LinkedHashMap<String, Livelihood>();
+		String sql = "SELECT * FROM livelihood WHERE livelihoodtype>1";
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			Livelihood live = new Livelihood();
+			try{live.setId(rs.getLong("livelihoodid"));}catch(NullPointerException e){}
+			try{live.setDateRegistered(rs.getString("livedatereg"));}catch(NullPointerException e){}
+			try{live.setDateRetired(rs.getString("liveretireddate"));}catch(NullPointerException e){}
+			try{live.setBusinessName(rs.getString("livename"));}catch(NullPointerException e){}
+			try{live.setPurokName(rs.getString("livepurok"));}catch(NullPointerException e){}
+			try{live.setAreaMeter(rs.getString("liveareameter"));}catch(NullPointerException e){}
+			try{live.setSupportingDetails(rs.getString("livedetails"));}catch(NullPointerException e){}
+			try{live.setTypeLine(rs.getInt("livelihoodtype"));}catch(NullPointerException e){}
+			try{live.setStatus(rs.getInt("livestatus"));}catch(NullPointerException e){}
+			try{live.setIsActive(rs.getInt("isactivelive"));}catch(NullPointerException e){}
+			try{live.setTimestamp(rs.getTimestamp("timestamplive"));}catch(NullPointerException e){}
+			bizs.put(rs.getString("livename"), live);
+		}
+		
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return bizs;
+	}
 	
 	public static boolean isExistingBusiness(String name, long costumerId) {
 		String sql = "SELECT livename FROM livelihood WHERE isactivelive=1 AND customerid="+ costumerId + " AND livename='"+ name.trim() +"'";

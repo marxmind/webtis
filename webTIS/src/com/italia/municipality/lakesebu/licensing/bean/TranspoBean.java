@@ -55,6 +55,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  */
 @Named
 @ViewScoped
+@Setter @Getter
 public class TranspoBean implements Serializable {
 
 	/**
@@ -62,13 +63,19 @@ public class TranspoBean implements Serializable {
 	 */
 	private static final long serialVersionUID = 435465867434341L;
 	
-	@Setter @Getter Transpo transpo;
-	@Setter @Getter List<Transpo> trans;
-	@Setter @Getter Date dateCreated;
-	@Setter @Getter String searchName;
-	@Setter @Getter TranspoItems itemDataSelected;
-	@Setter @Getter String orNumber;
-	@Setter @Getter String amount;
+	private Transpo transpo;
+	private List<Transpo> trans;
+	private Date dateCreated;
+	String searchName;
+	TranspoItems itemDataSelected;
+	String orNumber;
+	String amount;
+	
+	//item
+	private String name;
+	private String unit;
+	private int qty;
+	
 	
 	@PostConstruct
 	public void init() {
@@ -105,23 +112,22 @@ public class TranspoBean implements Serializable {
 		
 		List<TranspoItems> items = new ArrayList<TranspoItems>();
 		
-		TranspoItems item = TranspoItems.builder()
-				.cnt(0)
-				.name("Item Name")
-				.unit("Unit")
-				.quantity(0)
-				.amount(0)
-				.isActive(1)
-				.build();
-		
-		items.add(item);
+		/*
+		 * TranspoItems item = TranspoItems.builder() .cnt(0) .name("Item Name")
+		 * .unit("Unit") .quantity(0) .amount(0) .isActive(1) .build();
+		 * 
+		 * items.add(item);
+		 */
 		int cnt = 1;
 		for(TranspoItems i : TranspoItems.retrieveById(trans.getId())) {
 			i.setCnt(cnt++);
 			items.add(i);
 		}
 		
-		
+		if(trans.getPreparedBy()==null) {//if prepared by is empty add this default user
+		trans.setPreparedBy(Words.getTagName("preparedby"));
+		trans.setPreparedByPosition(Words.getTagName("preparedby-pos"));
+		}
 		trans.setItems(items);
 		
 		setTranspo(trans);
@@ -178,20 +184,14 @@ public class TranspoBean implements Serializable {
 	
 	public void defaultValue() {
 		setDateCreated(DateUtils.getDateToday());
-		List<TranspoItems> items = new ArrayList<TranspoItems>();
-		TranspoItems item = TranspoItems.builder()
-				.name("Item Name")
-				.unit("Unit")
-				.quantity(0)
-				.amount(0)
-				.isActive(1)
-				.build();
-		
-		//if(items.size()<) {
-			//for(int i=1; i<=2; i++) {
-				items.add(item);
-			//}
-		//}
+		/*
+		 * List<TranspoItems> items = new ArrayList<TranspoItems>(); TranspoItems item =
+		 * TranspoItems.builder() .name("Item Name") .unit("Unit") .quantity(0)
+		 * .amount(0) .isActive(1) .build();
+		 * 
+		 * 
+		 * items.add(item);
+		 */
 		
 		
 		transpo = Transpo.builder()
@@ -205,7 +205,9 @@ public class TranspoBean implements Serializable {
 				.licenseOfficerPosition(Words.getTagName("license-officer-pos"))
 				.menroOfficer(Words.getTagName("menro"))
 				.menroPosition(Words.getTagName("menro-officer-pos"))
-				.items(items)
+				.preparedBy(Words.getTagName("preparedby"))
+				.preparedByPosition(Words.getTagName("preparedby-pos"))
+				.items(new ArrayList<TranspoItems>())
 				.build();
 		
 	}
@@ -216,6 +218,10 @@ public class TranspoBean implements Serializable {
 		defaultValue();
 		setOrNumber(null);
 		setAmount(null);
+		
+		setName(null);
+		setUnit(null);
+		setQty(0);
 		System.out.println("clearing....");
 	}
 	
@@ -254,6 +260,39 @@ public class TranspoBean implements Serializable {
 	        
 		 }catch(Exception e){}  
 	 }       
+	
+	public void addItem() {
+		boolean isOk = true;
+		if(getName()==null || getName().isEmpty()) { isOk=false; }
+		if(getUnit()==null || getUnit().isEmpty()){ isOk=false; }
+		if(getQty()==0) { isOk=false; }
+		
+		System.out.println("isOk:" + isOk);
+		
+		if(isOk) {
+		TranspoItems item = TranspoItems.builder()
+				.cnt(0)
+				.name(getName())
+				.unit(getUnit())
+				.quantity(getQty())
+				.amount(0)
+				.isActive(1)
+				.build();
+		getTranspo().getItems().add(item);
+		
+		setName(null);
+		setUnit(null);
+		setQty(0);
+		
+		}else {
+			Application.addMessage(3, "Error", "Please check your inputted data.");
+		}
+	}
+	
+	public void deleteItem(TranspoItems item) {
+		getTranspo().getItems().remove(item);
+		if(item.getId()>0) {item.delete();}
+	}
 	
 	public void addRow(TranspoItems val) {
 		
@@ -341,6 +380,12 @@ public class TranspoBean implements Serializable {
 			}
 		}
 		
+
+		if(trans.getPreparedBy()==null) {//if prepared by is empty add this default user
+			trans.setPreparedBy(Words.getTagName("preparedby"));
+			trans.setPreparedByPosition(Words.getTagName("preparedby-pos"));
+		}
+		
 		try{param.put("PARAM_CONTROLNO", "Control No: "+trans.getControlNo());}catch(NullPointerException e) {}
 		try{param.put("PARAM_ORNUMBER", "OR No.:"+ornumber + " Php" + Currency.formatAmount(oramount));}catch(NullPointerException e) {}
 		try{param.put("PARAM_REQUESTOR", trans.getRequestor().toUpperCase());}catch(NullPointerException e) {}
@@ -354,7 +399,8 @@ public class TranspoBean implements Serializable {
 		try{param.put("PARAM_APPROVED_POS", trans.getOfficialPosition());}catch(NullPointerException e) {}
 		try{param.put("PARAM_ISSUEDBY", trans.getLicenseOfficer().toUpperCase());}catch(NullPointerException e) {}
 		try{param.put("PARAM_ISSUED_POS", trans.getLicenseOfficerPosition());}catch(NullPointerException e) {}
-		
+		try{param.put("PARAM_PREPAREDBY", trans.getPreparedBy().toUpperCase());}catch(NullPointerException e) {}
+		try{param.put("PARAM_PREPARED_POS", trans.getPreparedByPosition());}catch(NullPointerException e) {}
 		
 		try{param.put("PARAM_ISSUED_MONTH", trans.getIssuedMonth());}catch(NullPointerException e) {}
 		try{param.put("PARAM_ISSUED_DAY", trans.getIssuedDay());}catch(NullPointerException e) {}

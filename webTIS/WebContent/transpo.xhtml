@@ -72,8 +72,8 @@ xmlns:pe="http://primefaces.org/ui/extensions"
     <div class="p-col-12 p-md-6">
     		
             <div class="ui-inputgroup" style="float:right">
-           				<p:commandButton value="Clear" update="usercusId itemData" icon="fa fa-trash" actionListener="#{transpoBean.clear}" title="Click this button to clear information"/>
-            			<p:commandButton value="Save" update="usercusId cusId itemData msg"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{transpoBean.save}">
+           				<p:commandButton value="Clear" update="usercusId itemData itemId" icon="fa fa-trash" actionListener="#{transpoBean.clear}" title="Click this button to clear information"/>
+            			<p:commandButton value="Save" update="usercusId cusId itemData itemId msg"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{transpoBean.save}">
         					<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
         				</p:commandButton>
     		</div>		
@@ -170,25 +170,77 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 			<p:outputLabel/>
 			<p:outputLabel/>
 			
-			<p:outputLabel value="Issuance Department"/>
-			<p:outputLabel value="Business License"/>
+			<p:outputLabel value="Prepared By Name">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.preparedBy}" placeholder="Prepared By Name" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
 			
-			<p:inputText value="#{transpoBean.transpo.licenseOfficerPosition}" placeholder="License Officer Position"/>
-			<p:inputText value="#{transpoBean.transpo.licenseOfficer}" placeholder="License Officer Name" style="width: 15em"/>
+			<p:outputLabel value="Prepared By Position">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.preparedByPosition}" placeholder="Prepared By Position" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
 			
-			<p:outputLabel value="Noted Department"/>
-			<p:outputLabel value="DA/MENRO Officer"/>
+			<p:outputLabel value="License Officer Name">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.licenseOfficer}" placeholder="License Officer Name" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
 			
-			<p:inputText value="#{transpoBean.transpo.menroPosition}" placeholder="MENRO Officer Position"/>
-			<p:inputText value="#{transpoBean.transpo.menroOfficer}" placeholder="MENRO Officer Name" style="width: 15em"/>
+			<p:outputLabel value="License Officer Position">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.licenseOfficerPosition}" placeholder="License Officer Position" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
 			
-			<p:outputLabel value="Administrative Department"/>
-			<p:outputLabel value="Public Official"/>
+			<p:outputLabel value="MENRO/DA Officer Name">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.menroOfficer}" placeholder="MENRO Officer Name" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
 			
-			<p:inputText value="#{transpoBean.transpo.officialPosition}" placeholder="Official Position"/>
-			<p:inputText value="#{transpoBean.transpo.officialName}" placeholder="Official Name" style="width: 15em"/>
+			<p:outputLabel value="MENRO/DA Officer Name">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.menroPosition}" placeholder="MENRO/DA Officer Position" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
 			
+			<p:outputLabel value="Public Official">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.officialName}" placeholder="Official Name" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
 			
+			<p:outputLabel value="Public Official Position">
+				<div class="ui-inputgroup">
+				<div class="p-field">
+				<p:inputText value="#{transpoBean.transpo.officialPosition}" placeholder="Official Position" style="width: 15em"/>
+				</div>
+				</div>
+			</p:outputLabel>
+			
+			</p:panelGrid>
+			
+			<p:panelGrid id="itemId" columns="4" layout="grid" style="text-align: left">
+				<p:inputText value="#{transpoBean.name}" placeholder="Name" style="width: 15em"/>
+				<p:inputText value="#{transpoBean.unit}" placeholder="Unit" style="width: 15em"/>
+				<p:inputText value="#{transpoBean.qty}" placeholder="Quantity" style="width: 15em"/>
+				<p:commandButton value="Add Item" icon="fa fa-copy" actionListener="#{transpoBean.addItem}" update="itemData itemId msg" style="width: 15em"/>
 			</p:panelGrid>
 			
 			<p:dataTable id="itemData" var="itm" value="#{transpoBean.transpo.items}" editable="true" 
@@ -230,8 +282,8 @@ xmlns:pe="http://primefaces.org/ui/extensions"
        
        
        
-       <p:column headerText="Add" width="10" exportable="false">
-		     <p:commandButton update="itemData msg" icon="fa fa-copy" actionListener="#{transpoBean.addRow(itm)}" rendered="#{itm.cnt==0}"/>
+       <p:column headerText="X" width="10" exportable="false">
+		     <p:commandButton update="itemData msg" icon="fa fa-trash-o" actionListener="#{transpoBean.deleteItem(itm)}"/>
 	   </p:column>
        
        </p:dataTable>
@@ -270,7 +322,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		            				</p:column>
 		            				
 		            				<p:column headerText="" width="10" exportable="false">
-		            					<p:commandButton icon="fa fa-search" title="Click this button to see the additional information" update="usercusId itemData" actionListener="#{transpoBean.clickItem(rpt)}"/>
+		            					<p:commandButton icon="fa fa-search" title="Click this button to see the additional information" update="usercusId itemData itemId" actionListener="#{transpoBean.clickItem(rpt)}"/>
 		            				</p:column>
 		            				
 		            				<p:column headerText="" width="10" exportable="false">

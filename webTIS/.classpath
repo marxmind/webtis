@@ -74,5 +74,7 @@
 	<classpathentry kind="lib" path="C:/workspace/github/webtis/webTIS/WebContent/WEB-INF/lib/primefaces-extensions-10.0.1.jar"/>
 	<classpathentry kind="lib" path="C:/workspace/github/webtis/webTIS/WebContent/WEB-INF/lib/jasperreports-fonts-6.17.0.jar"/>
 	<classpathentry kind="lib" path="C:/workspace/github/webtis/webTIS/WebContent/WEB-INF/lib/tess4j-4.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/workspace/github/webtis/webTIS/WebContent/WEB-INF/lib/pdfbox-2.0.26.jar"/>
+	<classpathentry kind="lib" path="C:/workspace/github/webtis/webTIS/WebContent/WEB-INF/lib/fontbox-2.0.26.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
