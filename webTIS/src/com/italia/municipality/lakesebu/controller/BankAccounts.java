@@ -29,6 +29,37 @@ public class BankAccounts {
 	private String bankAccntBranch;
 	private String timestamp;
 	
+	public static List<BankAccounts> retrieveAll(){
+		List<BankAccounts> cList =  new ArrayList<BankAccounts>();
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = BankChequeDatabaseConnect.getConnection();
+		ps = conn.prepareStatement("SELECT * FROM tbl_bankaccounts ORDER BY bank_account_name");
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			
+			BankAccounts ac = BankAccounts.builder()
+					.bankId(rs.getInt("bank_id"))
+					.bankAccntName(rs.getString("bank_account_name"))
+					.bankAccntNo(rs.getString("bank_account_no"))
+					.bankAccntBranch(rs.getString("bank_branch"))
+					.build();
+			
+			cList.add(ac);
+		}
+		rs.close();
+		ps.close();
+		BankChequeDatabaseConnect.close(conn);
+		}catch(SQLException sl){}
+		
+		return cList;
+	}
+	
 	public static List<BankAccounts> retrieve(String sql, String[] params){
 		List<BankAccounts> cList =  new ArrayList<BankAccounts>();//Collections.synchronizedList(new ArrayList<BankAccounts>());
 		
@@ -47,19 +78,16 @@ public class BankAccounts {
 			
 		}
 		
-		//System.out.println("SQL " + ps.toString());
-		
-		
 		rs = ps.executeQuery();
 		
 		while(rs.next()){
 			
-			BankAccounts ac = new BankAccounts();
-			
-			try{ac.setBankId(rs.getInt("bank_id"));}catch(NullPointerException e){}
-			try{ac.setBankAccntName(rs.getString("bank_account_name"));}catch(NullPointerException e){}
-			try{ac.setBankAccntNo(rs.getString("bank_account_no"));}catch(NullPointerException e){}
-			try{ac.setBankAccntBranch(rs.getString("bank_branch"));}catch(NullPointerException e){}
+			BankAccounts ac = BankAccounts.builder()
+					.bankId(rs.getInt("bank_id"))
+					.bankAccntName(rs.getString("bank_account_name"))
+					.bankAccntNo(rs.getString("bank_account_no"))
+					.bankAccntBranch(rs.getString("bank_branch"))
+					.build();
 			
 			cList.add(ac);
 		}
@@ -70,41 +98,5 @@ public class BankAccounts {
 		
 		return cList;
 	}
-	
-	/*
-	public int getBankId() {
-		return bankId;
-	}
-	public void setBankId(int bankId) {
-		this.bankId = bankId;
-	}
-	public String getBankAccntNo() {
-		return bankAccntNo;
-	}
-	public void setBankAccntNo(String bankAccntNo) {
-		this.bankAccntNo = bankAccntNo;
-	}
-	public String getBankAccntName() {
-		return bankAccntName;
-	}
-	public void setBankAccntName(String bankAccntName) {
-		this.bankAccntName = bankAccntName;
-	}
-	public String getBankAccntBranch() {
-		return bankAccntBranch;
-	}
-	public void setBankAccntBranch(String bankAccntBranch) {
-		this.bankAccntBranch = bankAccntBranch;
-	}
-	public String getTimestamp() {
-		return timestamp;
-	}
-	public void setTimestamp(String timestamp) {
-		this.timestamp = timestamp;
-	}
-	
-	*/
-	
-	
 	
 }
