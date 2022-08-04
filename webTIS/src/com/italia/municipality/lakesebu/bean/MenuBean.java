@@ -271,6 +271,14 @@ public class MenuBean implements Serializable{
 		return "cashdv";
 	}
 	
+	public String checkIssued() {
+		return "checkissued";
+	}
+	
+	public String collectionDeposit() {
+		return "collection-deposit";
+	}
+	
 	public String getUserFullName() {
 		
 		UserDtls user = Login.getUserLogin().getUserDtls();

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.italia.municipality.lakesebu.database.BankChequeDatabaseConnect;
-import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
 
 import lombok.AllArgsConstructor;
@@ -24,25 +23,26 @@ import lombok.ToString;
 @Getter
 @Builder
 @ToString
-public class CashDisbursement {
-	
+public class CheckIssued {
 	private long id;
+	private int serialNo;
 	private String dateTrans;
 	private String dvPayroll;
 	private String cafoaNo;
+	private String centerOffice;
 	private String payee;
 	private String naturePay;
 	private double amount;
 	private int fundId;
 	private int isActive;
-	private CashDisbursementReport report;
+	private CheckIssuedReport checkIssuedReport;
 	
 	private int number;
 	
-	public static List<CashDisbursement> retrieveReportGroupDisbursement(long reportId){
-		List<CashDisbursement> caz = new ArrayList<CashDisbursement>();
+	public static List<CheckIssued> retrieveReportGroupCheckIssued(long reportId){
+		List<CheckIssued> caz = new ArrayList<CheckIssued>();
 		
-		String sql = "SELECT * FROM cashdisbursement  WHERE  isactived=1 AND zid="+ reportId + " ORDER BY dvpayroll";
+		String sql = "SELECT * FROM checkissued  WHERE  isactiveck=1 AND cpid="+ reportId + " ORDER BY dvpayroll";
 			
 		Connection conn = null;
 		ResultSet rs = null;
@@ -51,24 +51,28 @@ public class CashDisbursement {
 		conn = BankChequeDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
 		
-		System.out.println("Cash Disbursement SQL " + ps.toString());
+		System.out.println("Cash checkissued SQL " + ps.toString());
 		rs = ps.executeQuery();
 		int x = 1;
 		while(rs.next()){
 			
-			CashDisbursement cz = CashDisbursement.builder()
-					.id(rs.getLong("did"))
+
+			CheckIssued cz = CheckIssued.builder()
+					.number(x)
+					.id(rs.getLong("ckid"))
 					.dateTrans(rs.getString("datetrans"))
+					.serialNo(rs.getInt("serialno"))
 					.dvPayroll(rs.getString("dvpayroll"))
 					.cafoaNo(rs.getString("cafoano"))
+					.centerOffice(rs.getString("center"))
 					.payee(rs.getString("payee"))
 					.naturePay(rs.getString("naturepay"))
 					.amount(rs.getDouble("amount"))
-					.isActive(rs.getInt("isactived"))
+					.isActive(rs.getInt("isactiveck"))
 					.fundId(rs.getInt("fundid"))
-					.report(CashDisbursementReport.builder().id(rs.getLong("zid")).build())
-					.number(x)
+					.checkIssuedReport(CheckIssuedReport.builder().id(rs.getLong("cpid")).build())
 					.build();
+			
 			caz.add(cz);
 			x++;
 		}
@@ -81,10 +85,10 @@ public class CashDisbursement {
 		return caz;
 	}
 	
-	public static List<CashDisbursement> retrieveOne(long reportId){
-		List<CashDisbursement> caz = new ArrayList<CashDisbursement>();
+	public static List<CheckIssued> retrieveOne(long reportId){
+		List<CheckIssued> caz = new ArrayList<CheckIssued>();
 		
-		String sql = "SELECT * FROM cashdisbursement  WHERE  isactived=1 AND did="+ reportId;
+		String sql = "SELECT * FROM checkissued  WHERE  isactiveck=1 AND ckid="+ reportId;
 			
 		Connection conn = null;
 		ResultSet rs = null;
@@ -98,17 +102,19 @@ public class CashDisbursement {
 		
 		while(rs.next()){
 			
-			CashDisbursement cz = CashDisbursement.builder()
-					.id(rs.getLong("did"))
+			CheckIssued cz = CheckIssued.builder()
+					.id(rs.getLong("ckid"))
 					.dateTrans(rs.getString("datetrans"))
+					.serialNo(rs.getInt("serialno"))
 					.dvPayroll(rs.getString("dvpayroll"))
 					.cafoaNo(rs.getString("cafoano"))
+					.centerOffice(rs.getString("center"))
 					.payee(rs.getString("payee"))
 					.naturePay(rs.getString("naturepay"))
 					.amount(rs.getDouble("amount"))
-					.isActive(rs.getInt("isactived"))
+					.isActive(rs.getInt("isactiveck"))
 					.fundId(rs.getInt("fundid"))
-					.report(CashDisbursementReport.builder().id(rs.getLong("zid")).build())
+					.checkIssuedReport(CheckIssuedReport.builder().id(rs.getLong("cpid")).build())
 					.build();
 			caz.add(cz);
 		}
@@ -121,14 +127,14 @@ public class CashDisbursement {
 		return caz;
 	}
 	
-	public static List<CashDisbursement> retrieve(String sql, String[] params){
-		List<CashDisbursement> caz = new ArrayList<CashDisbursement>();
+	public static List<CheckIssued> retrieve(String sql, String[] params){
+		List<CheckIssued> caz = new ArrayList<CheckIssued>();
 		
 		
 		String tableCaz = "caz";
 		String tableRpt = "rpt";
-		String sqlAdd = "SELECT * FROM cashdisbursement "+tableCaz+", cashdisbursementreport "+ tableRpt +"  WHERE  "+tableCaz+".isactived=1 AND "
-				+ tableRpt + ".zid=" + tableRpt + ".zid ";
+		String sqlAdd = "SELECT * FROM checkissued "+tableCaz+", checkissuedreport "+ tableRpt +"  WHERE  "+tableCaz+".isactiveck=1 AND "
+				+ tableCaz + ".cpid=" + tableRpt + ".cpid ";
 				
 		
 		sql = sqlAdd + sql;
@@ -148,33 +154,39 @@ public class CashDisbursement {
 			}
 			
 		}
-		System.out.println("Cash Disbursement SQL " + ps.toString());
+		System.out.println("Cash checkissued SQL " + ps.toString());
 		rs = ps.executeQuery();
 		
 		while(rs.next()){
 			
-			CashDisbursementReport rpt = CashDisbursementReport.builder()
-					.id(rs.getLong("zid"))
+			CheckIssuedReport rpt = CheckIssuedReport.builder()
+					.id(rs.getLong("cpid"))
+					.reportNo(rs.getString("reportno"))
+					.bankAccountNo(rs.getString("bankaccountno"))
 					.periodCovered(rs.getString("periodcovered"))
 					.dateReport(rs.getString("datereport"))
 					.totalAmount(rs.getDouble("totalamount"))
 					.disbursingOfficer(rs.getString("disbursingofficer"))
 					.designation(rs.getString("designation"))
-					.isActive(rs.getInt("isactivez"))
+					.receivingOfficer(rs.getString("receivingofficer"))
+					.receivePosition(rs.getString("receivedposition"))
+					.isActive(rs.getInt("isactivecp"))
 					.fundId(rs.getInt("fundid"))
 					.build();
 			
-			CashDisbursement cz = CashDisbursement.builder()
-					.id(rs.getLong("did"))
+			CheckIssued cz = CheckIssued.builder()
+					.id(rs.getLong("ckid"))
 					.dateTrans(rs.getString("datetrans"))
+					.serialNo(rs.getInt("serialno"))
 					.dvPayroll(rs.getString("dvpayroll"))
 					.cafoaNo(rs.getString("cafoano"))
+					.centerOffice(rs.getString("center"))
 					.payee(rs.getString("payee"))
 					.naturePay(rs.getString("naturepay"))
 					.amount(rs.getDouble("amount"))
-					.isActive(rs.getInt("isactived"))
+					.isActive(rs.getInt("isactiveck"))
 					.fundId(rs.getInt("fundid"))
-					.report(rpt)
+					.checkIssuedReport(rpt)
 					.build();
 			caz.add(cz);
 		}
@@ -187,20 +199,20 @@ public class CashDisbursement {
 		return caz;
 	}
 	
-	public static CashDisbursement save(CashDisbursement st){
+	public static CheckIssued save(CheckIssued st){
 		if(st!=null){
 			
-			long id = CashDisbursement.getInfo(st.getId() ==0? CashDisbursement.getLatestId()+1 : st.getId());
+			long id = CheckIssued.getInfo(st.getId() ==0? CheckIssued.getLatestId()+1 : st.getId());
 			LogU.add("checking for new added data");
 			if(id==1){
 				LogU.add("insert new Data ");
-				st = CashDisbursement.insertData(st, "1");
+				st = CheckIssued.insertData(st, "1");
 			}else if(id==2){
 				LogU.add("update Data ");
-				st = CashDisbursement.updateData(st);
+				st = CheckIssued.updateData(st);
 			}else if(id==3){
 				LogU.add("added new Data ");
-				st = CashDisbursement.insertData(st, "3");
+				st = CheckIssued.insertData(st, "3");
 			}
 			
 		}
@@ -213,30 +225,32 @@ public class CashDisbursement {
 		LogU.add("checking for new added data");
 		if(id==1){
 			LogU.add("insert new Data ");
-			CashDisbursement.insertData(this, "1");
+			CheckIssued.insertData(this, "1");
 		}else if(id==2){
 			LogU.add("update Data ");
-			CashDisbursement.updateData(this);
+			CheckIssued.updateData(this);
 		}else if(id==3){
 			LogU.add("added new Data ");
-			CashDisbursement.insertData(this, "3");
+			CheckIssued.insertData(this, "3");
 		}
 		
  }
 	
-	public static CashDisbursement insertData(CashDisbursement st, String type){
-		String sql = "INSERT INTO cashdisbursement ("
-				+ "did,"
+	public static CheckIssued insertData(CheckIssued st, String type){
+		String sql = "INSERT INTO checkissued ("
+				+ "ckid,"
 				+ "datetrans,"
+				+ "serialno,"
 				+ "dvpayroll,"
 				+ "cafoano,"
+				+ "center,"
 				+ "payee,"
 				+ "naturepay,"
 				+ "amount,"
-				+ "isactived,"
+				+ "isactiveck,"
 				+ "fundid,"
-				+ "zid)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?,?)";
+				+ "cpid)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -247,7 +261,7 @@ public class CashDisbursement {
 		long id =1;
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("inserting data into table cashdisbursement");
+		LogU.add("inserting data into table checkissued");
 		if("1".equalsIgnoreCase(type)){
 			ps.setLong(cnt++, id);
 			st.setId(id);
@@ -260,25 +274,29 @@ public class CashDisbursement {
 		}
 		
 		ps.setString(cnt++, st.getDateTrans());
+		ps.setInt(cnt++, st.getSerialNo());
 		ps.setString(cnt++, st.getDvPayroll());
 		ps.setString(cnt++, st.getCafoaNo());
+		ps.setString(cnt++, st.getCenterOffice());
 		ps.setString(cnt++, st.getPayee());
 		ps.setString(cnt++, st.getNaturePay());
 		ps.setDouble(cnt++, st.getAmount());
 		ps.setInt(cnt++, st.getIsActive());
 		ps.setInt(cnt++, st.getFundId());
-		ps.setLong(cnt++, st.getReport().getId());
+		ps.setLong(cnt++, st.getCheckIssuedReport().getId());
 		
 		
 		LogU.add(st.getDateTrans());
+		LogU.add(st.getSerialNo());
 		LogU.add(st.getDvPayroll());
 		LogU.add(st.getCafoaNo());
+		LogU.add(st.getCenterOffice());
 		LogU.add(st.getPayee());
 		LogU.add(st.getNaturePay());
 		LogU.add(st.getAmount());
 		LogU.add(st.getIsActive());
 		LogU.add(st.getFundId());
-		LogU.add(st.getReport().getId());
+		LogU.add(st.getCheckIssuedReport().getId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -287,23 +305,25 @@ public class CashDisbursement {
 		BankChequeDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error inserting data to cashdisbursement : " + s.getMessage());
+			LogU.add("error inserting data to checkissued : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		return st;
 	}
 	
-	public static CashDisbursement updateData(CashDisbursement st){
-		String sql = "UPDATE cashdisbursement SET "
+	public static CheckIssued updateData(CheckIssued st){
+		String sql = "UPDATE checkissued SET "
 				+ "datetrans=?,"
+				+ "serialno=?,"
 				+ "dvpayroll=?,"
 				+ "cafoano=?,"
+				+ "center=?,"
 				+ "payee=?,"
 				+ "naturepay=?,"
 				+ "amount=?,"
 				+ "fundid=?,"
-				+ "zid=?" 
-				+ " WHERE did=?";
+				+ "cpid=?" 
+				+ " WHERE ckid=?";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -311,30 +331,33 @@ public class CashDisbursement {
 		try{
 		conn = BankChequeDatabaseConnect.getConnection();
 		ps = conn.prepareStatement(sql);
-		long id =1;
 		int cnt = 1;
 		LogU.add("===========================START=========================");
-		LogU.add("updating data into table cashdisbursement");
+		LogU.add("updating data into table checkissued");
 		
 		ps.setString(cnt++, st.getDateTrans());
+		ps.setInt(cnt++, st.getSerialNo());
 		ps.setString(cnt++, st.getDvPayroll());
 		ps.setString(cnt++, st.getCafoaNo());
+		ps.setString(cnt++, st.getCenterOffice());
 		ps.setString(cnt++, st.getPayee());
 		ps.setString(cnt++, st.getNaturePay());
 		ps.setDouble(cnt++, st.getAmount());
 		ps.setInt(cnt++, st.getFundId());
-		ps.setLong(cnt++, st.getReport().getId());
+		ps.setLong(cnt++, st.getCheckIssuedReport().getId());
 		ps.setLong(cnt++, st.getId());
 		
 		
 		LogU.add(st.getDateTrans());
+		LogU.add(st.getSerialNo());
 		LogU.add(st.getDvPayroll());
 		LogU.add(st.getCafoaNo());
+		LogU.add(st.getCenterOffice());
 		LogU.add(st.getPayee());
 		LogU.add(st.getNaturePay());
 		LogU.add(st.getAmount());
 		LogU.add(st.getFundId());
-		LogU.add(st.getReport().getId());
+		LogU.add(st.getCheckIssuedReport().getId());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");
@@ -344,7 +367,7 @@ public class CashDisbursement {
 		BankChequeDatabaseConnect.close(conn);
 		LogU.add("data has been successfully saved...");
 		}catch(SQLException s){
-			LogU.add("error updating data to cashdisbursement : " + s.getMessage());
+			LogU.add("error updating data to checkissued : " + s.getMessage());
 		}
 		LogU.add("===========================END=========================");
 		return st;
@@ -357,13 +380,13 @@ public class CashDisbursement {
 		ResultSet rs = null;
 		String sql = "";
 		try{
-		sql="SELECT did FROM cashdisbursement  ORDER BY did DESC LIMIT 1";	
+		sql="SELECT ckid FROM checkissued  ORDER BY ckid DESC LIMIT 1";	
 		conn = BankChequeDatabaseConnect.getConnection();
 		prep = conn.prepareStatement(sql);	
 		rs = prep.executeQuery();
 		
 		while(rs.next()){
-			id = rs.getLong("did");
+			id = rs.getLong("ckid");
 		}
 		
 		rs.close();
@@ -410,7 +433,7 @@ public class CashDisbursement {
 		boolean result = false;
 		try{
 		conn = BankChequeDatabaseConnect.getConnection();
-		ps = conn.prepareStatement("SELECT did FROM cashdisbursement WHERE did=?");
+		ps = conn.prepareStatement("SELECT ckid FROM checkissued WHERE ckid=?");
 		ps.setLong(1, id);
 		rs = ps.executeQuery();
 		
@@ -454,7 +477,7 @@ public class CashDisbursement {
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
-		String sql = "UPDATE cashdisbursement set isactived=0 WHERE did=?";
+		String sql = "UPDATE checkissued set isactiveck=0 WHERE ckid=?";
 		
 		String[] params = new String[1];
 		params[0] = getId()+"";
@@ -476,6 +499,4 @@ public class CashDisbursement {
 		}catch(SQLException s){}
 		
 	}
-	
-	
 }

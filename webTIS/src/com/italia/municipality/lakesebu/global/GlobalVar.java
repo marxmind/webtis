@@ -60,4 +60,11 @@ public class GlobalVar {
 	public static final String EMPLOYEE_PAYROLL = "payroll";
 	public static final String EMPLOYEE_ID = "id";
 	public static final String EMPLOYEE_ID_FOLDER = EMPLOYEE_IMAGE_PATH + "ID" + SEP; 
+	public static final String CASH_DISBURSEMENT_NAME = "cash-disbursement";
+	public static final String CHECK_ISSUED_REPORT_SHORT_NAME = "check-issued-report-short";
+	public static final String CHECK_ISSUED_REPORT_LONG_NAME = "check-issued-report-long";
+	public static final String CHECK_ISSUED_REPORT_LONG_EXTENDED_NAME = "check-issued-report-long-extended";
+	public static final String COLLECTION_DEPOSIT_REPORT_SHORT_NAME = "collection-deposit-report-short";
+	public static final String COLLECTION_DEPOSIT_REPORT_LONG_NAME = "collection-deposit-report-long";
+	public static final String COLLECTION_DEPOSIT_REPORT_LONG_EXTENDED_NAME = "collection-deposit-report-long-extended";
 }
