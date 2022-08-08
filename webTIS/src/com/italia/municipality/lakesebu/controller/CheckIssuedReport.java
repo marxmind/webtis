@@ -46,14 +46,20 @@ public class CheckIssuedReport {
 	private int isActive;
 	private int fundId=1;
 	private int pageSize;
+	private Login loginUser;
 	
 	private Date dateReportTmp;
 	private List<CheckIssued> rpts;
 	private String fundName;
 	
+	
 	public static CheckIssuedReport retrieveOne(long id){
 		CheckIssuedReport cz = new CheckIssuedReport();
-		String sql = "SELECT * FROM checkissuedreport  WHERE  isactivecp=1 AND cpid=" + id;
+		String tableDep="cz";
+		String tableUser="user";
+		String sql = "SELECT cz.*,user.logid,user.useraccesslevelid FROM checkissuedreport "+ tableDep +", webtis.login "+ tableUser +"   WHERE  "+ tableDep +".isactivecp=1 AND "
+				+ tableDep + ".logid=" + tableUser + ".logid AND "
+				+ tableDep +".cpid=" + id;
 		
 		Connection conn = null;
 		ResultSet rs = null;
@@ -66,6 +72,11 @@ public class CheckIssuedReport {
 		rs = ps.executeQuery();
 		
 		while(rs.next()){
+			
+			Login user = Login.builder()
+					.logid(rs.getLong("logid"))
+					.accessLevel(UserAccessLevel.builder().useraccesslevelid(rs.getInt("useraccesslevelid")).build())
+					.build();
 			
 			cz = CheckIssuedReport.builder()
 					.id(rs.getLong("cpid"))
@@ -82,6 +93,7 @@ public class CheckIssuedReport {
 					.fundId(rs.getInt("fundid"))
 					.sheetNo(rs.getString("sheetno"))
 					.pageSize(rs.getInt("pagesize"))
+					.loginUser(user)
 					.build();
 			
 		}
@@ -99,7 +111,9 @@ public class CheckIssuedReport {
 		
 		
 		String tableCaz = "cz";
-		String sqlAdd = "SELECT *,(select sum(amount) as total from checkissued c where c.isactiveck=1 AND c.cpid = cz.cpid) as total FROM checkissuedreport "+tableCaz+"  WHERE  "+tableCaz+".isactivecp=1 ";
+		String tableUser="user";
+		String sqlAdd = "SELECT cz.*,user.logid,user.useraccesslevelid,(select sum(amount) as total from checkissued c where c.isactiveck=1 AND c.cpid = cz.cpid) as total FROM checkissuedreport "+tableCaz+", webtis.login "+ tableUser +"  WHERE  "+tableCaz+".isactivecp=1 "
+				+ " AND " + tableCaz + ".logid=" + tableUser + ".logid ";
 				
 		
 		sql = sqlAdd + sql;
@@ -124,6 +138,11 @@ public class CheckIssuedReport {
 		
 		while(rs.next()){
 			
+			Login user = Login.builder()
+					.logid(rs.getLong("logid"))
+					.accessLevel(UserAccessLevel.builder().useraccesslevelid(rs.getInt("useraccesslevelid")).build())
+					.build();
+			
 			CheckIssuedReport cz = CheckIssuedReport.builder()
 					.id(rs.getLong("cpid"))
 					.reportNo(rs.getString("reportno"))
@@ -139,6 +158,7 @@ public class CheckIssuedReport {
 					.fundId(rs.getInt("fundid"))
 					.sheetNo(rs.getString("sheetno"))
 					.pageSize(rs.getInt("pagesize"))
+					.loginUser(user)
 					.build();
 			caz.add(cz);
 		}
@@ -203,8 +223,9 @@ public class CheckIssuedReport {
 				+ "isactivecp,"
 				+ "fundid,"
 				+ "sheetno,"
-				+ "pagesize)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "pagesize,"
+				+ "logid)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -240,6 +261,7 @@ public class CheckIssuedReport {
 		ps.setInt(cnt++, st.getFundId());
 		ps.setString(cnt++, st.getSheetNo());
 		ps.setInt(cnt++, st.getPageSize());
+		ps.setLong(cnt++, st.getLoginUser().getLogid());
 		
 		LogU.add(st.getReportNo());
 		LogU.add(st.getBankAccountNo());
@@ -254,6 +276,7 @@ public class CheckIssuedReport {
 		LogU.add(st.getFundId());
 		LogU.add(st.getSheetNo());
 		LogU.add(st.getPageSize());
+		LogU.add(st.getLoginUser().getLogid());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -281,7 +304,8 @@ public class CheckIssuedReport {
 				+ "receivedposition=?,"
 				+ "fundid=?,"
 				+ "sheetno=?,"
-				+ "pagesize=?" 
+				+ "pagesize=?,"
+				+ "logid=?" 
 				+ " WHERE cpid=?";
 		
 		PreparedStatement ps = null;
@@ -307,6 +331,7 @@ public class CheckIssuedReport {
 		ps.setInt(cnt++, st.getFundId());
 		ps.setString(cnt++, st.getSheetNo());
 		ps.setInt(cnt++, st.getPageSize());
+		ps.setLong(cnt++, st.getLoginUser().getLogid());
 		ps.setLong(cnt++, st.getId());
 		
 		LogU.add(st.getReportNo());
@@ -320,6 +345,7 @@ public class CheckIssuedReport {
 		LogU.add(st.getReceivePosition());
 		LogU.add(st.getFundId());
 		LogU.add(st.getSheetNo());
+		LogU.add(st.getLoginUser().getLogid());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");

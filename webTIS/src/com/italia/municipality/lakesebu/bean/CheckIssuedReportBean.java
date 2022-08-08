@@ -25,11 +25,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.primefaces.event.CellEditEvent;
 
 import com.italia.municipality.lakesebu.controller.BankAccounts;
-import com.italia.municipality.lakesebu.controller.CashDisbursement;
-import com.italia.municipality.lakesebu.controller.CashDisbursementReport;
 import com.italia.municipality.lakesebu.controller.CheckIssued;
 import com.italia.municipality.lakesebu.controller.CheckIssuedReport;
 import com.italia.municipality.lakesebu.controller.CheckRpt;
+import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.licensing.controller.Words;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
@@ -67,6 +66,7 @@ public class CheckIssuedReportBean implements Serializable{
 	private boolean enabledTable;
 	private Map<Integer, BankAccounts> mapBankAccounts;
 	private List pageSizes;
+	private Login userLogin;
 	
 	@PostConstruct
 	public void init() {
@@ -82,6 +82,7 @@ public class CheckIssuedReportBean implements Serializable{
 		pageSizes.add(new SelectItem(1, "Long"));
 		pageSizes.add(new SelectItem(2, "Xtra-Long"));
 		
+		setUserLogin(Login.getUserLogin());
 		defaultValue();
 		load();
 	}
@@ -149,28 +150,36 @@ public class CheckIssuedReportBean implements Serializable{
 		}*/
 		
 		
-		int count = 0;
+		//int count = 0;
 		double amount = 0d;
+		String payeeNature="\t-";
+		List<Integer> series = new ArrayList<Integer>();
 		//if(cashDisList.size()<37) {
 		if(rpt.getPageSize()==0) {	//short page
 			for(CheckIssued cs : cashDisList) {
-				if(count==0) {startSeries=cs.getSerialNo();}else {endSeries=cs.getSerialNo();}
+				//if(count==0) {startSeries=cs.getSerialNo();}else {endSeries=cs.getSerialNo();}
+				
+				if(cs.getSerialNo()>0) {
+					series.add(cs.getSerialNo());
+				}
+				
 				CheckRpt cpt = CheckRpt.builder()
 						.visible("show")
 						.f1(cs.getDateTrans())
 						.f2(cs.getDvPayroll())
 						.f3(cs.getCafoaNo())
-						.f4(cs.getPayee())
-						.f5(cs.getNaturePay())
-						.f6(Currency.formatAmount(cs.getAmount()))
-						.f9(cs.getSerialNo()+"")
+						.f4(cs.getPayee()==null? payeeNature : cs.getPayee())
+						.f5(cs.getNaturePay()==null? payeeNature : cs.getNaturePay())
+						.f6(cs.getAmount()==0? "-" : Currency.formatAmount(cs.getAmount()))
+						.f9(cs.getSerialNo()==0? "-" : cs.getSerialNo()+"")
 						.f10(cs.getCenterOffice())
 						.build();
+				
 				reports.add(cpt);
-				count++;
+				//count++;
 				amount += cs.getAmount();
 			}
-			
+			/*
 			count = 36 - count;
 			for(int i=1; i<=count; i++) {
 				CheckRpt cpt = CheckRpt.builder()
@@ -183,7 +192,7 @@ public class CheckIssuedReportBean implements Serializable{
 						.f6("")
 						.build();
 				reports.add(cpt);
-			}
+			}*/
 			
 			//total
 			CheckRpt cpt = CheckRpt.builder()
@@ -200,23 +209,37 @@ public class CheckIssuedReportBean implements Serializable{
 		}else if(rpt.getPageSize()==1) {//long page	
 			REPORT_NAME = GlobalVar.CHECK_ISSUED_REPORT_LONG_NAME;
 			for(CheckIssued cs : cashDisList) {
-				if(count==0) {startSeries=cs.getSerialNo();}else {endSeries=cs.getSerialNo();}
+				//if(count==0) {startSeries=cs.getSerialNo();}else {endSeries=cs.getSerialNo();}
+				
+				if(cs.getSerialNo()>0) {
+					series.add(cs.getSerialNo());
+				}
+				
 				CheckRpt cpt = CheckRpt.builder()
 						.visible("show")
 						.f1(cs.getDateTrans())
 						.f2(cs.getDvPayroll())
 						.f3(cs.getCafoaNo())
-						.f4(cs.getPayee())
-						.f5(cs.getNaturePay())
-						.f6(Currency.formatAmount(cs.getAmount()))
-						.f9(cs.getSerialNo()+"")
+						.f4(cs.getPayee()==null? payeeNature : cs.getPayee())
+						.f5(cs.getNaturePay()==null? payeeNature : cs.getNaturePay())
+						.f6(cs.getAmount()==0? "-" : Currency.formatAmount(cs.getAmount()))
+						.f9(cs.getSerialNo()==0? "-" : cs.getSerialNo()+"")
 						.f10(cs.getCenterOffice())
 						.build();
+				
+				if(cs.getSerialNo()==0) {
+					cpt.setF9("-");
+				}
+				
+				if(cs.getAmount()==0) {//modify if zero
+					cpt.setF6("-");
+				}
+				
 				reports.add(cpt);
-				count++;
+				//count++;
 				amount += cs.getAmount();
 			}
-			
+			/**
 			count = 47 - count;
 			for(int i=1; i<=count; i++) {
 				CheckRpt cpt = CheckRpt.builder()
@@ -230,7 +253,7 @@ public class CheckIssuedReportBean implements Serializable{
 						.build();
 				reports.add(cpt);
 			}
-			
+			*/
 			//total
 			CheckRpt cpt = CheckRpt.builder()
 					.visible("hide")
@@ -245,23 +268,37 @@ public class CheckIssuedReportBean implements Serializable{
 		}else {//extra long page
 			REPORT_NAME = GlobalVar.CHECK_ISSUED_REPORT_LONG_EXTENDED_NAME;
 			for(CheckIssued cs : cashDisList) {
-				if(count==0) {startSeries=cs.getSerialNo();}else {endSeries=cs.getSerialNo();}
+				//if(count==0) {startSeries=cs.getSerialNo();}else {endSeries=cs.getSerialNo();}
+				
+				if(cs.getSerialNo()>0) {
+					series.add(cs.getSerialNo());
+				}
+				
 				CheckRpt cpt = CheckRpt.builder()
 						.visible("show")
 						.f1(cs.getDateTrans())
 						.f2(cs.getDvPayroll())
 						.f3(cs.getCafoaNo())
-						.f4(cs.getPayee())
-						.f5(cs.getNaturePay())
-						.f6(Currency.formatAmount(cs.getAmount()))
-						.f9(cs.getSerialNo()+"")
+						.f4(cs.getPayee()==null? payeeNature : cs.getPayee())
+						.f5(cs.getNaturePay()==null? payeeNature : cs.getNaturePay())
+						.f6(cs.getAmount()==0? "-" : Currency.formatAmount(cs.getAmount()))
+						.f9(cs.getSerialNo()==0? "-" : cs.getSerialNo()+"")
 						.f10(cs.getCenterOffice())
 						.build();
+				
+				if(cs.getSerialNo()==0) {
+					cpt.setF9("-");
+				}
+				
+				if(cs.getAmount()==0) {//modify if zero
+					cpt.setF6("-");
+				}
+				
 				reports.add(cpt);
-				count++;
+				//count++;
 				amount += cs.getAmount();
 			}
-			
+			/*
 			count = 58 - count;
 			for(int i=1; i<=count; i++) {
 				CheckRpt cpt = CheckRpt.builder()
@@ -275,7 +312,7 @@ public class CheckIssuedReportBean implements Serializable{
 						.build();
 				reports.add(cpt);
 			}
-			
+			*/
 			//total
 			CheckRpt cpt = CheckRpt.builder()
 					.visible("hide")
@@ -290,6 +327,11 @@ public class CheckIssuedReportBean implements Serializable{
 		}
 		ReportCompiler compiler = new ReportCompiler();
 		String jrxmlFile = compiler.compileReport(REPORT_NAME, REPORT_NAME, REPORT_PATH);
+		
+		if(series!=null && series.size()>0) {
+			startSeries = series.get(0);
+			endSeries = series.get(series.size()-1);
+		}
 		
 		JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(reports);
   		HashMap param = new HashMap();
@@ -411,11 +453,14 @@ public class CheckIssuedReportBean implements Serializable{
 			getCashDvData().getRpts().add(
 					CheckIssued.builder()
 					.number(count)
+					.dateTrans("-DO-")
 					.serialNo(cash.getSerialNo()+1)
 					.dvPayroll(newDV(cash))
 					.cafoaNo(cash.getCafoaNo())
 					.centerOffice(cash.getCenterOffice())
 					.naturePay(cash.getNaturePay())
+					.payee(cash.getPayee())
+					.amount(cash.getAmount())
 					.build()
 					);
 			setEnabledTable(true);
@@ -542,6 +587,10 @@ public class CheckIssuedReportBean implements Serializable{
 		String[] params = new String[0];
 		String sql = "";
 		
+		if(getUserLogin().getAccessLevel().getLevel()>1) {
+			sql = " AND user.logid="+ getUserLogin().getLogid();
+		}
+		
 		if(getSearchParam()!=null) {
 			sql = " AND cz.periodcovered like '%"+ getSearchParam() +"%'";
 		}
@@ -563,6 +612,9 @@ public class CheckIssuedReportBean implements Serializable{
 		rpts = new ArrayList<CheckIssuedReport>();
 		String[] params = new String[0];
 		String sql = "";
+		if(getUserLogin().getAccessLevel().getLevel()>1) {
+			sql = " AND user.logid="+ getUserLogin().getLogid();
+		}
 		if(getSearchParam()!=null && !getSearchParam().isEmpty()) {
 			sql = " AND caz.payee like '%"+ getSearchParam() +"%'";
 		
@@ -608,6 +660,7 @@ public class CheckIssuedReportBean implements Serializable{
 		if(isOk) {
 			cashDv.setDateReport(DateUtils.convertDate(cashDv.getDateReportTmp(), "yyyy-MM-dd"));
 			cashDv.setIsActive(1);
+			cashDv.setLoginUser(getUserLogin());
 			cashDv = CheckIssuedReport.save(cashDv);
 			List<CheckIssued> dvs = new ArrayList<CheckIssued>();
 			dvs.add(CheckIssued.builder().number(1).checkIssuedReport(cashDv).build());
@@ -640,10 +693,10 @@ public class CheckIssuedReportBean implements Serializable{
 	        	cz.setFundId(getCashDvData().getFundId());
 	        	cz.setIsActive(1);
 	        	cz.setCheckIssuedReport(getCashDvData());
-	        	if(cz.getAmount()>0) {//only save in database if amount is greater than zero
+	        	//if(cz.getAmount()>0) {//only save in database if amount is greater than zero
 		        	cz = CheckIssued.save(cz);
 		        	getCashDvData().getRpts().get(index).setId(cz.getId());//update item id
-	        	}
+	        	//}
 	        	
 	        	if(getCashDvData().getRpts().get(index).getId()>0) {
 	        		load();

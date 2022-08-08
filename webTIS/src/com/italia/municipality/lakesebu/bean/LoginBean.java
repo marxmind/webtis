@@ -138,6 +138,7 @@ public class LoginBean implements Serializable{
 					case 15: result="form56.xhtml"; break;
 					case 16: result="mainpersonnel.xhtml"; break;
 					case 17: result="mainacc.xhtml"; break;
+					case 18: result="checkissued.xhtml"; break;
 				}
 				
 			}

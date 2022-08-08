@@ -369,6 +369,20 @@ public class LogformBean implements Serializable{
 		Object oldValue = event.getOldValue();
         Object newValue = event.getNewValue();
         
+        int index = event.getRowIndex();
+        String column =  event.getColumn().getHeaderText();
+        
+        if("Status".equalsIgnoreCase(column) && !oldValue.equals(newValue)) {
+        	int statusId = Integer.valueOf(newValue+"");
+        	IssuedForm issuedForm  = getIssuedForms().get(index);
+        	issuedForm.setStatus(statusId);
+        	issuedForm.save();
+        	//update list
+        	getIssuedForms().get(index).setStatus(statusId);
+        	getIssuedForms().get(index).setStatusName(FormStatus.nameId(statusId));
+        	Application.addMessage(1, "Success", column + " has been changed to status " + FormStatus.nameId(statusId));
+        }
+        
         System.out.println("old Value: " + oldValue);
         System.out.println("new Value: " + newValue);
         

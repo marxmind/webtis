@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.model.SelectItem;
+
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
@@ -51,6 +53,16 @@ public class IssuedForm {
 	private String fundName;
 	
 	private int newSeries;//use for updating series
+	
+	private List formStatus;
+	
+	public List getFormStatus() {
+		formStatus = new ArrayList<>();
+		for(FormStatus s : FormStatus.values()) {
+			formStatus.add(new SelectItem(s.getId(), s.getName()));
+		}
+		return formStatus;
+	}
 	
 	public static List<IssuedForm> retrieve(String sqlAdd, String[] params){
 		List<IssuedForm> forms = new ArrayList<IssuedForm>();

@@ -30,6 +30,7 @@ import com.italia.municipality.lakesebu.controller.CashDisbursement;
 import com.italia.municipality.lakesebu.controller.CashDisbursementReport;
 import com.italia.municipality.lakesebu.controller.CheckIssued;
 import com.italia.municipality.lakesebu.controller.CheckRpt;
+import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.licensing.controller.Words;
@@ -61,6 +62,7 @@ public class CashDVReportBean implements Serializable{
 	private String searchParam;
 	private boolean enabledTable;
 	private Map<Integer, BankAccounts> mapBankAccounts;
+	private Login userLogin;
 	
 	@PostConstruct
 	public void init() {
@@ -70,7 +72,7 @@ public class CashDVReportBean implements Serializable{
 			funds.add(new SelectItem(a.getBankId(), a.getBankAccntName()));
 			mapBankAccounts.put(a.getBankId(), a);
 		}
-		
+		setUserLogin(Login.getUserLogin());
 		defaultValue();
 		load();
 	}
@@ -2162,7 +2164,9 @@ public class CashDVReportBean implements Serializable{
 		rpts = new ArrayList<CashDisbursementReport>();
 		String[] params = new String[0];
 		String sql = "";
-		
+		if(getUserLogin().getAccessLevel().getLevel()>1) {
+			sql = " AND user.logid="+ getUserLogin().getLogid();
+		}
 		//if(getSearchParam()!=null) {
 		//	sql = " AND cz.periodcovered like '%"+ getSearchParam() +"%'";
 		//}
@@ -2184,6 +2188,9 @@ public class CashDVReportBean implements Serializable{
 		rpts = new ArrayList<CashDisbursementReport>();
 		String[] params = new String[0];
 		String sql = "";
+		if(getUserLogin().getAccessLevel().getLevel()>1) {
+			sql = " AND user.logid="+ getUserLogin().getLogid();
+		}
 		if(getSearchParam()!=null && !getSearchParam().isEmpty()) {
 			sql = " AND caz.payee like '%"+ getSearchParam() +"%'";
 		
@@ -2219,6 +2226,7 @@ public class CashDVReportBean implements Serializable{
 		if(isOk) {
 			cashDv.setDateReport(DateUtils.convertDate(cashDv.getDateReportTmp(), "yyyy-MM-dd"));
 			cashDv.setIsActive(1);
+			cashDv.setLoginUser(getUserLogin());
 			cashDv = CashDisbursementReport.save(cashDv);
 			List<CashDisbursement> dvs = new ArrayList<CashDisbursement>();
 			dvs.add(CashDisbursement.builder().number(1).report(cashDv).build());

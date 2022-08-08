@@ -35,14 +35,19 @@ public class CashDisbursementReport {
 	private int isActive;
 	private int fundId=1;
 	private String reportNo;
+	private Login loginUser;
 	
 	private Date dateReportTmp;
 	private List<CashDisbursement> rpts;
 	private String fundName;
 	
-	public static CashDisbursementReport retrieveOne(long id){
+	public static CashDisbursementReport retrieveOne(long id, long userId){
 		CashDisbursementReport cz = new CashDisbursementReport();
-		String sql = "SELECT * FROM cashdisbursementreport  WHERE  isactivez=1 AND zid=" + id;
+		String tableDep="cz";
+		String tableUser="user";
+		String sql = "SELECT cz.*,user.logid,user.useraccesslevelid FROM cashdisbursementreport "+ tableDep +", webtis.login "+ tableUser +"  WHERE  "+ tableDep +".isactivez=1 AND "
+				+ " AND " + tableDep + ".logid.=" + tableUser + ".logid AND "
+				+ tableDep +".zid=" + id + " AND " + tableUser + ".logid="+userId;
 		
 		Connection conn = null;
 		ResultSet rs = null;
@@ -56,6 +61,11 @@ public class CashDisbursementReport {
 		
 		while(rs.next()){
 			
+			Login user = Login.builder()
+					.logid(rs.getLong("logid"))
+					.accessLevel(UserAccessLevel.builder().useraccesslevelid(rs.getInt("useraccesslevelid")).build())
+					.build();
+			
 			cz = CashDisbursementReport.builder()
 					.id(rs.getLong("zid"))
 					.periodCovered(rs.getString("periodcovered"))
@@ -66,6 +76,7 @@ public class CashDisbursementReport {
 					.isActive(rs.getInt("isactivez"))
 					.fundId(rs.getInt("fundid"))
 					.reportNo(rs.getString("reportno"))
+					.loginUser(user)
 					.build();
 			
 		}
@@ -83,7 +94,9 @@ public class CashDisbursementReport {
 		
 		
 		String tableCaz = "cz";
-		String sqlAdd = "SELECT *,(select sum(amount) as total from cashdisbursement c where c.isactived=1 AND c.zid = cz.zid) as total FROM cashdisbursementreport "+tableCaz+"  WHERE  "+tableCaz+".isactivez=1 ";
+		String tableUser="user";
+		String sqlAdd = "SELECT cz.*,user.logid,user.useraccesslevelid,(select sum(amount) as total from cashdisbursement c where c.isactived=1 AND c.zid = cz.zid) as total FROM cashdisbursementreport "+tableCaz+", webtis.login "+ tableUser +"  WHERE  "+tableCaz+".isactivez=1 "
+				+ " AND " + tableCaz + ".logid=" + tableUser + ".logid ";
 				
 		
 		sql = sqlAdd + sql;
@@ -108,6 +121,11 @@ public class CashDisbursementReport {
 		
 		while(rs.next()){
 			
+			Login user = Login.builder()
+					.logid(rs.getLong("logid"))
+					.accessLevel(UserAccessLevel.builder().useraccesslevelid(rs.getInt("useraccesslevelid")).build())
+					.build();
+			
 			CashDisbursementReport cz = CashDisbursementReport.builder()
 					.id(rs.getLong("zid"))
 					.periodCovered(rs.getString("periodcovered"))
@@ -118,6 +136,7 @@ public class CashDisbursementReport {
 					.isActive(rs.getInt("isactivez"))
 					.fundId(rs.getInt("fundid"))
 					.reportNo(rs.getString("reportno"))
+					.loginUser(user)
 					.build();
 			caz.add(cz);
 		}
@@ -177,8 +196,9 @@ public class CashDisbursementReport {
 				+ "designation,"
 				+ "isactivez,"
 				+ "fundid,"
-				+ "reportno)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?)";
+				+ "reportno,"
+				+ "logid)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -209,6 +229,7 @@ public class CashDisbursementReport {
 		ps.setInt(cnt++, st.getIsActive());
 		ps.setInt(cnt++, st.getFundId());
 		ps.setString(cnt++, st.getReportNo());
+		ps.setLong(cnt++, st.getLoginUser().getLogid());
 		
 		LogU.add(st.getPeriodCovered());
 		LogU.add(st.getDateReport());
@@ -218,6 +239,7 @@ public class CashDisbursementReport {
 		LogU.add(st.getIsActive());
 		LogU.add(st.getFundId());
 		LogU.add(st.getReportNo());
+		LogU.add(st.getLoginUser().getLogid());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -240,7 +262,8 @@ public class CashDisbursementReport {
 				+ "disbursingofficer=?,"
 				+ "designation=?,"
 				+ "fundid=?,"
-				+ "reportno=?" 
+				+ "reportno=?,"
+				+ "logid=?" 
 				+ " WHERE zid=?";
 		
 		PreparedStatement ps = null;
@@ -261,6 +284,7 @@ public class CashDisbursementReport {
 		ps.setString(cnt++, st.getDesignation());
 		ps.setInt(cnt++, st.getFundId());
 		ps.setString(cnt++, st.getReportNo());
+		ps.setLong(cnt++, st.getLoginUser().getLogid());
 		ps.setLong(cnt++, st.getId());
 		
 		LogU.add(st.getPeriodCovered());
@@ -270,6 +294,7 @@ public class CashDisbursementReport {
 		LogU.add(st.getDesignation());
 		LogU.add(st.getFundId());
 		LogU.add(st.getReportNo());
+		LogU.add(st.getLoginUser().getLogid());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");

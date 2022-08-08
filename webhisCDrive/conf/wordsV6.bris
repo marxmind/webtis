@@ -12,7 +12,7 @@ activate-all=on
 
 mayor=FLORO S. GANDAM
 official-position=Municipal Mayor
-oic=CHARLOTTE J. LUCERO
+oic=CHARLOTTE LOUISE J. LUCERO
 license-officer-pos=OIC License Officer
 types=NEW,RENEW,ADDITIONAL
 memotype=ANNUALLY,SEMI-ANNUAL,QUARTERLY
@@ -21,6 +21,16 @@ menro=ARNULFO S. MANA-AY
 menro-officer-pos=MENRO Officer
 preparedby=ERNANE BLONTO
 preparedby-pos=DATA ENCODER
+
+cash disbursement module
+disbursing-officer=EVELYN BOLIVAR
+disbursing-officer-designation=Cashier I
+lgu-name=Municipality of Lake Sebu
+check issued recording
+treasurer-name=FERDINAND L. LOPEZ
+official-designation=MUNICIPAL TREASURER
+receiving-person=APRIL MARK T. MEYEN, CPA
+receiving-position=Accountant II
 
 BARANGAY TAG LINE
 tagline=KEMDOL LAKE SEBU

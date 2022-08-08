@@ -264,20 +264,11 @@ xmlns:pe="http://primefaces.org/ui/extensions"
               </p:cellEditor>
        </p:column>
        
-       <p:column headerText="CAFOA No." width="100" style="text-align: center">
+       <p:column headerText="CAFOA No." width="20" style="text-align: center">
               <p:cellEditor>
               	  <f:facet name="output"><p:outputLabel value="#{itm.cafoaNo}" /></f:facet>
                   <f:facet name="input">
                   <p:inputText  placeholder="CAFOA No" value="#{itm.cafoaNo}"/>
-                  </f:facet>
-              </p:cellEditor>
-       </p:column>
-       
-       <p:column headerText="Center" width="50" style="text-align: center">
-              <p:cellEditor>
-              	  <f:facet name="output"><p:outputLabel value="#{itm.centerOffice}" /></f:facet>
-                  <f:facet name="input">
-                  <p:inputText  placeholder="Center" value="#{itm.centerOffice}"/>
                   </f:facet>
               </p:cellEditor>
        </p:column>

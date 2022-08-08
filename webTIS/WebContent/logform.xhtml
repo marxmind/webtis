@@ -351,14 +351,24 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			
 			<p:dataTable id="dataSeries" value="#{logformBean.issuedForms}" var="rpt" paginatorAlwaysVisible="false" paginatorPosition="top" rowKey="#{rpt.id}" editable="true"  editMode="cell">
 				
-				<p:ajax event="cellEdit"  listener="#{logformBean.onCellEditSeries}" update="dataSeries" />	
+				<p:ajax event="cellEdit"  listener="#{logformBean.onCellEditSeries}" update="msg" />	
 				
 				<p:column headerText="View" width="20">
             		<p:commandButton icon="fa fa-search" update="dataIssued idAvail" actionListener="#{logformBean.loadIssuedSeries(rpt)}"/>
             	</p:column>
 				
 				<p:column headerText="Status" width="50">
-            		<p:outputLabel value="#{rpt.statusName}"/>
+					<p:cellEditor>
+						<f:facet name="output"><p:outputLabel value="#{rpt.statusName}"/></f:facet>
+						<f:facet name="input">
+							<p:selectOneMenu value="#{rpt.status}" style="width: 12em">
+									<f:selectItems value="#{rpt.formStatus}"/>
+							</p:selectOneMenu>
+						</f:facet>
+					</p:cellEditor>
+				
+				
+            		
             	</p:column>
 				
 				<p:column headerText="Issued" width="50">
@@ -381,7 +391,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             		<p:outputLabel value="#{rpt.beginningNo}"/>
             	</p:column>
             	
-            	<p:column headerText="New Series" width="50">
+            	<p:column headerText="Input New Series" width="50">
 		              <p:cellEditor>
 		              	  <f:facet name="output"><h:outputText value="#{rpt.newSeries}" /></f:facet>
 		                  <f:facet name="input">
@@ -391,8 +401,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		       </p:column>
             	
             	
-            	<p:column headerText="View Changes" width="50">
-            		<p:commandButton icon="fa fa-search" update="fixDataIssued idNot msg" actionListener="#{logformBean.loadFixIssuedSeries(rpt)}"/>
+            	<p:column headerText="Save/View New Series" width="70">
+            		<p:commandButton icon="fa fa-save" update="fixDataIssued idNot msg" actionListener="#{logformBean.loadFixIssuedSeries(rpt)}"/>
             	</p:column>
 				
 				

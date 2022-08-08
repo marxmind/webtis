@@ -10,24 +10,25 @@ import java.util.List;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
+@ToString
 public class UserAccessLevel {
 	
 	private int useraccesslevelid;
 	private int level;
 	private String name;
 	private Timestamp timestamp;
-	
-	public UserAccessLevel(){}
-	
-	public UserAccessLevel(
-			int useraccesslevelid,
-			int level,
-			String name
-			){
-		this.useraccesslevelid = useraccesslevelid;
-		this.level = level;
-		this.name = name;
-	}
 	
 	public static String accessLevelSQL(String tablename,UserAccessLevel lvl){
 		String sql="";
@@ -97,31 +98,6 @@ public class UserAccessLevel {
 		
 		return userAccessLevel;
 	}
-	
-	public int getUseraccesslevelid() {
-		return useraccesslevelid;
-	}
-	public void setUseraccesslevelid(int useraccesslevelid) {
-		this.useraccesslevelid = useraccesslevelid;
-	}
-	public int getLevel() {
-		return level;
-	}
-	public void setLevel(int level) {
-		this.level = level;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public Timestamp getTimestamp() {
-		return timestamp;
-	}
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
-	} 
-	
+
 }
 

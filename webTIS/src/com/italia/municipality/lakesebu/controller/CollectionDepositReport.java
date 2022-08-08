@@ -39,14 +39,19 @@ public class CollectionDepositReport {
 	private int isActive;
 	private int fundId=1;
 	private int pageSize;
+	private Login loginUser;
 	
 	private Date dateReportTmp;
 	private List<CollectionDeposit> rpts;
 	private String fundName;
 	
-	public static CollectionDepositReport retrieveOne(long id){
+	public static CollectionDepositReport retrieveOne(long id, long userId){
 		CollectionDepositReport cz = new CollectionDepositReport();
-		String sql = "SELECT * FROM collectiondeposit  WHERE  isactivecd=1 AND cdid=" + id;
+		String tableDep="dp";
+		String tableUser="user";
+		String sql = "SELECT dp.*,user.logid,user.useraccesslevelid FROM collectiondeposit "+ tableDep +", webtis.login "+ tableUser +"  WHERE  "+tableDep+".isactivecd=1 AND "+tableDep+".cdid=" + id + 
+				" AND " + tableDep + ".logid=" + tableUser + ".logid " +
+				" AND "+tableUser+".logid="+ userId;
 		
 		Connection conn = null;
 		ResultSet rs = null;
@@ -59,6 +64,12 @@ public class CollectionDepositReport {
 		rs = ps.executeQuery();
 		
 		while(rs.next()){
+			
+			Login user = Login.builder()
+					.logid(rs.getLong("logid"))
+					.accessLevel(UserAccessLevel.builder().useraccesslevelid(rs.getInt("useraccesslevelid")).build())
+					.build();
+			
 			
 			cz = CollectionDepositReport.builder()
 					.id(rs.getLong("cdid"))
@@ -75,6 +86,7 @@ public class CollectionDepositReport {
 					.isActive(rs.getInt("isactivecd"))
 					.fundId(rs.getInt("fundid"))
 					.pageSize(rs.getInt("pagesize"))
+					.loginUser(user)
 					.build();
 			
 		}
@@ -92,7 +104,9 @@ public class CollectionDepositReport {
 		
 		
 		String tableCaz = "cz";
-		String sqlAdd = "SELECT *,(select sum(amount) as total from collectiondeposit c where c.isactivecdd=1 AND c.cddid = cz.cdid) as total FROM collectiondepositreport "+tableCaz+"  WHERE  "+tableCaz+".isactivecd=1 ";
+		String tableUser="user";
+		String sqlAdd = "SELECT *,(select sum(amount) as total from collectiondeposit c where c.isactivecdd=1 AND c.cddid = cz.cdid) as total FROM collectiondepositreport "+tableCaz+", webtis.login "+ tableUser +"  WHERE  "+tableCaz+".isactivecd=1 AND "
+				+ tableCaz + ".logid=" + tableUser + ".logid";
 		
 		sql = sqlAdd + sql;
 		
@@ -116,6 +130,11 @@ public class CollectionDepositReport {
 		
 		while(rs.next()){
 			
+			Login user = Login.builder()
+					.logid(rs.getLong("logid"))
+					.accessLevel(UserAccessLevel.builder().useraccesslevelid(rs.getInt("useraccesslevelid")).build())
+					.build();
+			
 			CollectionDepositReport cz = CollectionDepositReport.builder()
 					.id(rs.getLong("cdid"))
 					.reportNo(rs.getString("reportno"))
@@ -131,6 +150,7 @@ public class CollectionDepositReport {
 					.isActive(rs.getInt("isactivecd"))
 					.fundId(rs.getInt("fundid"))
 					.pageSize(rs.getInt("pagesize"))
+					.loginUser(user)
 					.build();
 			caz.add(cz);
 		}
@@ -195,8 +215,9 @@ public class CollectionDepositReport {
 				+ "isactivecd,"
 				+ "fundid,"
 				+ "sheetno,"
-				+ "pagesize)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "pagesize,"
+				+ "logid)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -232,6 +253,7 @@ public class CollectionDepositReport {
 		ps.setInt(cnt++, st.getFundId());
 		ps.setString(cnt++, st.getSheetNo());
 		ps.setInt(cnt++, st.getPageSize());
+		ps.setLong(cnt++, st.getLoginUser().getLogid());
 		
 		LogU.add(st.getReportNo());
 		LogU.add(st.getBankAccountNo());
@@ -246,6 +268,7 @@ public class CollectionDepositReport {
 		LogU.add(st.getFundId());
 		LogU.add(st.getSheetNo());
 		LogU.add(st.getPageSize());
+		LogU.add(st.getLoginUser().getLogid());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -273,7 +296,8 @@ public class CollectionDepositReport {
 				+ "receivedposition=?,"
 				+ "fundid=?,"
 				+ "sheetno=?,"
-				+ "pagesize=?" 
+				+ "pagesize=?,"
+				+ "logid=?" 
 				+ " WHERE cdid=?";
 		
 		PreparedStatement ps = null;
@@ -299,6 +323,7 @@ public class CollectionDepositReport {
 		ps.setInt(cnt++, st.getFundId());
 		ps.setString(cnt++, st.getSheetNo());
 		ps.setInt(cnt++, st.getPageSize());
+		ps.setLong(cnt++, st.getLoginUser().getLogid());
 		ps.setLong(cnt++, st.getId());
 		
 		LogU.add(st.getReportNo());
@@ -312,6 +337,7 @@ public class CollectionDepositReport {
 		LogU.add(st.getReceivePosition());
 		LogU.add(st.getFundId());
 		LogU.add(st.getSheetNo());
+		LogU.add(st.getLoginUser().getLogid());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");

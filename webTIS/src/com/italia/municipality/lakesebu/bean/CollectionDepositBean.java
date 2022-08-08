@@ -30,6 +30,7 @@ import com.italia.municipality.lakesebu.controller.CheckIssuedReport;
 import com.italia.municipality.lakesebu.controller.CheckRpt;
 import com.italia.municipality.lakesebu.controller.CollectionDeposit;
 import com.italia.municipality.lakesebu.controller.CollectionDepositReport;
+import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.licensing.controller.Words;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
@@ -60,6 +61,7 @@ public class CollectionDepositBean implements Serializable {
 	private boolean enabledTable;
 	private Map<Integer, BankAccounts> mapBankAccounts;
 	private List pageSizes;
+	private Login userLogin;
 	
 	@PostConstruct
 	public void init() {
@@ -75,6 +77,7 @@ public class CollectionDepositBean implements Serializable {
 		pageSizes.add(new SelectItem(1, "Long"));
 		pageSizes.add(new SelectItem(2, "Xtra-Long"));
 		
+		setUserLogin(Login.getUserLogin());
 		defaultValue();
 		load();
 	}
@@ -585,6 +588,10 @@ public class CollectionDepositBean implements Serializable {
 		String[] params = new String[0];
 		String sql = "";
 		
+		if(getUserLogin().getAccessLevel().getLevel()>1) {
+			sql = " AND user.logid="+ getUserLogin().getLogid();
+		}
+		
 		if(getSearchParam()!=null) {
 			sql = " AND cz.periodcovered like '%"+ getSearchParam() +"%'";
 		}
@@ -606,6 +613,9 @@ public class CollectionDepositBean implements Serializable {
 		rpts = new ArrayList<CollectionDepositReport>();
 		String[] params = new String[0];
 		String sql = "";
+		if(getUserLogin().getAccessLevel().getLevel()>1) {
+			sql = " AND user.logid="+ getUserLogin().getLogid();
+		}
 		if(getSearchParam()!=null && !getSearchParam().isEmpty()) {
 			sql = " AND caz.payee like '%"+ getSearchParam() +"%'";
 		
@@ -651,6 +661,7 @@ public class CollectionDepositBean implements Serializable {
 		if(isOk) {
 			cashDv.setDateReport(DateUtils.convertDate(cashDv.getDateReportTmp(), "yyyy-MM-dd"));
 			cashDv.setIsActive(1);
+			cashDv.setLoginUser(getUserLogin());
 			cashDv = CollectionDepositReport.save(cashDv);
 			List<CollectionDeposit> dvs = new ArrayList<CollectionDeposit>();
 			dvs.add(CollectionDeposit.builder().number(1).collectionDepositReport(cashDv).build());
