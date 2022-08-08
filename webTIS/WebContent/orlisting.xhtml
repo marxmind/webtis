@@ -228,7 +228,8 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 					<p:autoComplete id="idPayd" placeholder="Lastname, Firstname Middlename"  value="#{oRListingBean.payorName}" completeMethod="#{oRListingBean.payorNameSuggested}"  queryDelay="800" effect="fade" maxResults="10" inputStyle="width:15em">
 						<p:ajax event="change" update="fldId2 dataSelectedId totalId" listener="#{oRListingBean.supplyCustomerInfo}" />
 					</p:autoComplete>
-					<p:keyboard id="oridd" value="#{oRListingBean.orNumber}" placeholder="OR No/CTC No" style="width: 15em" dir="rtl" layout="custom" layoutTemplate="rocks-close,faces-clear,prime-back" keypadOnly="true"/>
+					
+					<p:inputText id="oridd" value="#{oRListingBean.orNumber}" placeholder="OR No/CTC No" style="width: 15em"/>
 					
 					<p:inputText placeholder="Address" value="#{oRListingBean.address}" style="width: 15em"/>
 					

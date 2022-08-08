@@ -189,7 +189,7 @@ public class CollectionDepositBean implements Serializable {
 				amount += cs.getAmount();
 				count++;
 			}
-			
+			/*
 			count = 36 - count;
 			for(int i=1; i<=count; i++) {
 				CheckRpt cpt = CheckRpt.builder()
@@ -203,7 +203,7 @@ public class CollectionDepositBean implements Serializable {
 						.build();
 				reports.add(cpt);
 			}
-			
+			*/
 		}else if(rpt.getPageSize()==1) {//long page	
 			REPORT_NAME = GlobalVar.COLLECTION_DEPOSIT_REPORT_LONG_NAME;
 			for(CollectionDeposit cs : cashDisList) {
@@ -247,7 +247,7 @@ public class CollectionDepositBean implements Serializable {
 				count++;
 				amount += cs.getAmount();
 			}
-			
+			/*
 			count = 47 - count;
 			for(int i=1; i<=count; i++) {
 				CheckRpt cpt = CheckRpt.builder()
@@ -261,7 +261,7 @@ public class CollectionDepositBean implements Serializable {
 						.build();
 				reports.add(cpt);
 			}
-			
+			*/
 			
 		}else {//extra long page
 			REPORT_NAME = GlobalVar.COLLECTION_DEPOSIT_REPORT_LONG_EXTENDED_NAME;
@@ -306,7 +306,7 @@ public class CollectionDepositBean implements Serializable {
 				count++;
 				amount += cs.getAmount();
 			}
-			
+			/*
 			count = 61 - count;
 			for(int i=1; i<=count; i++) {
 				CheckRpt cpt = CheckRpt.builder()
@@ -320,7 +320,7 @@ public class CollectionDepositBean implements Serializable {
 						.build();
 				reports.add(cpt);
 			}
-			
+			*/
 			//total
 			/*
 			CheckRpt cpt = CheckRpt.builder()

@@ -120,8 +120,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             	</p:selectOneMenu>
 				
 				<p:outputLabel  value="OR Number: " style="#{skin.label}"/>
-				
-				<p:keyboard id="oridd" value="#{orBean.orNumber}" placeholder="0000000" style="#{skin.textInput}"  layout="custom" layoutTemplate="rocks-close,faces-clear,prime-back" keypadOnly="true"/>
+				<p:inputText id="oridd" value="#{orBean.orNumber}" placeholder="0000000" style="#{skin.textInput}" />
 				
 				<p:outputLabel  value="Issued Address: " style="#{skin.label}"/>	
 				<p:inputTextarea value="#{orBean.issuedAddress}" a:placeholder="Address" style="#{skin.textInput}"/>

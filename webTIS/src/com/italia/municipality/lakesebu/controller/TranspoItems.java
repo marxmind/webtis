@@ -37,7 +37,7 @@ public class TranspoItems {
 	private long id;
 	private String name;
 	private String unit;
-	private int quantity;
+	private double quantity;
 	private double amount;
 	private int isActive;
 	private Transpo transpo;
@@ -101,7 +101,7 @@ public class TranspoItems {
 					.id(rs.getLong("iid"))
 					.name(rs.getString("itemname"))
 					.unit(rs.getString("itemunit"))
-					.quantity(rs.getInt("qty"))
+					.quantity(rs.getDouble("qty"))
 					.amount(rs.getDouble("amount"))
 					.isActive(rs.getInt("itemisactive"))
 					.transpo(tran)
@@ -193,7 +193,7 @@ public class TranspoItems {
 		
 		ps.setString(cnt++, st.getName());
 		ps.setString(cnt++, st.getUnit());
-		ps.setInt(cnt++, st.getQuantity());
+		ps.setDouble(cnt++, st.getQuantity());
 		ps.setDouble(cnt++, st.getAmount());
 		ps.setInt(cnt++, st.getIsActive());
 		ps.setLong(cnt++, st.getTranspo().getId());
@@ -240,7 +240,7 @@ public class TranspoItems {
 		
 		ps.setString(cnt++, st.getName());
 		ps.setString(cnt++, st.getUnit());
-		ps.setInt(cnt++, st.getQuantity());
+		ps.setDouble(cnt++, st.getQuantity());
 		ps.setDouble(cnt++, st.getAmount());
 		ps.setLong(cnt++, st.getTranspo().getId());
 		ps.setLong(cnt++, st.getId());

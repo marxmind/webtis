@@ -74,7 +74,7 @@ public class TranspoBean implements Serializable {
 	//item
 	private String name;
 	private String unit;
-	private int qty;
+	private double qty;
 	
 	
 	@PostConstruct
@@ -250,7 +250,8 @@ public class TranspoBean implements Serializable {
 	        		getTranspo().getItems().get(index).setUnit(newValue+"");
 	        	}
 	        	if("Qty".equalsIgnoreCase(column)) {
-	        		getTranspo().getItems().get(index).setQuantity(Integer.valueOf(newValue+""));
+	        		getTranspo().getItems().get(index).setQuantity(Double.valueOf(newValue+""));
+	        		System.out.println("QTY: " + getTranspo().getItems().get(index).getQuantity());
 	        	}
 	        	if("Amount".equalsIgnoreCase(column)) {
 	        		getTranspo().getItems().get(index).setAmount(Double.valueOf(newValue+""));

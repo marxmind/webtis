@@ -176,6 +176,17 @@ public class CashDVReportBean implements Serializable{
 				count++;
 				amount += cs.getAmount();
 			}
+			/*
+			CheckRpt cpt = CheckRpt.builder()
+					.visible("show")
+					.f1("     ***")
+					.f2("\t***")
+					.f3("\t***")
+					.f4("\tNOTHING FOLLOWS")
+					.f5("\t***")
+					.f6("***\t\t\t")
+					.build();
+			reports.add(cpt);*/
 			
 			count = 31 - count;
 			for(int i=1; i<=count; i++) {
@@ -1954,7 +1965,7 @@ public class CashDVReportBean implements Serializable{
   		HashMap param = new HashMap();
   		
 		param.put("PARAM_TITLE", "REPORT OF CASH DISBURSEMENTS");
-		param.put("PARAM_SUB_TITLE", rpt.getPeriodCovered());
+		param.put("PARAM_SUB_TITLE", "Period Covered: "+ rpt.getPeriodCovered());
 		param.put("PARAM_LGU_NAME", Words.getTagName("lgu-name"));
 		param.put("PARAM_FUND_NAME", getMapBankAccounts().get(rpt.getFundId()).getBankAccntName());
 		param.put("PARAM_REPORT_NO", rpt.getReportNo());

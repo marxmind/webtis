@@ -429,9 +429,9 @@
 				<text><![CDATA[ISSUED BY:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="252" y="642" width="96" height="14" uuid="fe4ef27e-838e-4eb5-8665-119ab0d2f3ea"/>
+				<reportElement x="200" y="642" width="200" height="14" uuid="fe4ef27e-838e-4eb5-8665-119ab0d2f3ea"/>
 				<textElement textAlignment="Center"/>
-				<text><![CDATA[OIC-Licensing Officer]]></text>
+				<text><![CDATA[Acting Licensing Officer]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="431" y="664" width="96" height="14" uuid="829a95c0-4eb5-4471-b1c5-a6f14f2efb6d"/>
