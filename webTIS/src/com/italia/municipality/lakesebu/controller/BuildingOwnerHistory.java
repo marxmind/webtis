@@ -18,6 +18,12 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @since 06/15/2018
  * @version 1.0
  */
+/**
+ * 
+ * @deprecated
+ * this is no longer use
+ *
+ */
 public class BuildingOwnerHistory {
 
 	private long id;

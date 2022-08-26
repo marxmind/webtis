@@ -73,6 +73,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
     		
             <div class="ui-inputgroup" style="float:right">
            				<p:commandButton value="New" update="fieldId itemData" icon="fa fa-trash" actionListener="#{colDeposit.clear}"/>
+           				<p:commandButton value="Save" update="itemData dataId msg" actionListener="#{colDeposit.createItem}" icon="fa fa-floppy-o" style="width: 5em"/>
     		</div>		
 			
 			
@@ -210,8 +211,11 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 			<p:outputLabel >
 				<div class="ui-inputgroup">
 				<div class="p-field">
-					<medium class="p-d-block" style="text-align: left">Save Action</medium>
-					<p:commandButton value="Create Check Issued Record" update="itemData dataId msg" actionListener="#{colDeposit.createItem}" icon="fa fa-floppy-o" style="width: 20em"/>
+					<medium class="p-d-block" style="text-align: left">Select if for Payroll</medium>
+					<p:selectOneMenu value="#{colDeposit.cashDvData.isPayroll}" style="width: 20em" filter="true" filterMatchMode="contains">
+					<f:selectItems value="#{colDeposit.payrollType}"/>
+					<p:ajax event="change" listener="#{colDeposit.updateInfo}"/>
+					</p:selectOneMenu>
 				</div>
 				</div>
 			</p:outputLabel>	

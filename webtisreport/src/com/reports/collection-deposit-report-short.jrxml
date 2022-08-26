@@ -374,7 +374,7 @@
 				<textElement textAlignment="Center">
 					<font isBold="false"/>
 				</textElement>
-				<text><![CDATA[I CERTIFY that the report issued in two sheet(s) is full, true and]]></text>
+				<text><![CDATA[I CERTIFY that the report issued in one sheet(s) is full, true and]]></text>
 			</staticText>
 			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="15" y="113" width="160" height="17" uuid="6fa9c440-b0ae-4c54-9a1b-d0268e4da8ae">

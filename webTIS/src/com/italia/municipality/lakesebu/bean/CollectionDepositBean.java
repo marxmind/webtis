@@ -62,6 +62,7 @@ public class CollectionDepositBean implements Serializable {
 	private Map<Integer, BankAccounts> mapBankAccounts;
 	private List pageSizes;
 	private Login userLogin;
+	private List payrollType;
 	
 	@PostConstruct
 	public void init() {
@@ -76,6 +77,10 @@ public class CollectionDepositBean implements Serializable {
 		pageSizes.add(new SelectItem(0, "Short"));
 		pageSizes.add(new SelectItem(1, "Long"));
 		pageSizes.add(new SelectItem(2, "Xtra-Long"));
+		
+		payrollType = new ArrayList<>();
+		payrollType.add(new SelectItem(0,"Not for Payroll"));
+		payrollType.add(new SelectItem(1,"For Payroll"));
 		
 		setUserLogin(Login.getUserLogin());
 		defaultValue();
@@ -147,32 +152,51 @@ public class CollectionDepositBean implements Serializable {
 		
 		int count = 0;
 		double amount = 0d;
+		
 		//if(cashDisList.size()<37) {
 		if(rpt.getPageSize()==0) {	//short page
 			for(CollectionDeposit cs : cashDisList) {
+				CheckRpt cpt = new CheckRpt();
 				if(count==0) {startSeries=cs.getSerialNo();}else {endSeries=cs.getSerialNo();}
 				
 				if(count==0) {
-				CheckRpt cpt = CheckRpt.builder()
-						.visible("show")
-						.f1(cs.getDateTrans())
-						.build();
-				reports.add(cpt);
-				count++;
-				cpt = CheckRpt.builder()
-						.visible("show")
-						.f1("")
-						.f2(cs.getDvPayroll())
-						.f3(cs.getCafoaNo())
-						.f4(cs.getPayee())
-						.f5(cs.getNaturePay())
-						.f6(Currency.formatAmount(cs.getAmount()))
-						.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
-						.f10(cs.getCenterOffice())
-						.build();
-				reports.add(cpt);
+					
+					if(rpt.getIsPayroll()==1) {	//for payroll
+						 cpt = CheckRpt.builder()
+								.visible("show")
+								.f1(cs.getDateTrans())
+								.build();
+						reports.add(cpt);
+						count++;
+						cpt = CheckRpt.builder()
+								.visible("show")
+								.f1("")
+								.f2(cs.getDvPayroll())
+								.f3(cs.getCafoaNo())
+								.f4(cs.getPayee())
+								.f5(cs.getNaturePay())
+								.f6(Currency.formatAmount(cs.getAmount()))
+								.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
+								.f10(cs.getCenterOffice())
+								.build();
+						reports.add(cpt);
+					}else {
+						cpt = CheckRpt.builder()
+								.visible("show")
+								.f1(cs.getDateTrans())
+								.f2(cs.getDvPayroll())
+								.f3(cs.getCafoaNo())
+								.f4(cs.getPayee())
+								.f5(cs.getNaturePay())
+								.f6(Currency.formatAmount(cs.getAmount()))
+								.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
+								.f10(cs.getCenterOffice())
+								.build();
+						reports.add(cpt);
+					}
 				}else {
-					CheckRpt cpt = CheckRpt.builder()
+					if(rpt.getIsPayroll()==1) {	//for payroll
+					 cpt = CheckRpt.builder()
 							.visible("show")
 							.f1("")
 							.f2(cs.getDvPayroll())
@@ -183,6 +207,19 @@ public class CollectionDepositBean implements Serializable {
 							.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
 							.f10(cs.getCenterOffice())
 							.build();
+					}else {
+						 cpt = CheckRpt.builder()
+									.visible("show")
+									.f1(cs.getDateTrans())
+									.f2(cs.getDvPayroll())
+									.f3(cs.getCafoaNo())
+									.f4(cs.getPayee())
+									.f5(cs.getNaturePay())
+									.f6(Currency.formatAmount(cs.getAmount()))
+									.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
+									.f10(cs.getCenterOffice())
+									.build();
+					}
 					reports.add(cpt);
 					
 				}
@@ -207,10 +244,12 @@ public class CollectionDepositBean implements Serializable {
 		}else if(rpt.getPageSize()==1) {//long page	
 			REPORT_NAME = GlobalVar.COLLECTION_DEPOSIT_REPORT_LONG_NAME;
 			for(CollectionDeposit cs : cashDisList) {
+				CheckRpt cpt = new CheckRpt();
 				if(count==0) {startSeries=cs.getSerialNo();}else {endSeries=cs.getSerialNo();}
 				
 				if(count==0) {
-					CheckRpt cpt = CheckRpt.builder()
+					if(rpt.getIsPayroll()==1) {	//for payroll
+					 cpt = CheckRpt.builder()
 							.visible("show")
 							.f1(cs.getDateTrans())
 							.build();
@@ -229,9 +268,23 @@ public class CollectionDepositBean implements Serializable {
 							.f10(cs.getCenterOffice())
 							.build();
 					reports.add(cpt);
-					
+					}else {
+						cpt = CheckRpt.builder()
+								.visible("show")
+								.f1(cs.getDateTrans())
+								.f2(cs.getDvPayroll())
+								.f3(cs.getCafoaNo())
+								.f4(cs.getPayee())
+								.f5(cs.getNaturePay())
+								.f6(Currency.formatAmount(cs.getAmount()))
+								.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
+								.f10(cs.getCenterOffice())
+								.build();
+						reports.add(cpt);
+					}
 				}else {
-					CheckRpt cpt = CheckRpt.builder()
+					if(rpt.getIsPayroll()==1) {	//for payroll
+					 cpt = CheckRpt.builder()
 							.visible("show")
 							.f1("")
 							.f2(cs.getDvPayroll())
@@ -242,6 +295,19 @@ public class CollectionDepositBean implements Serializable {
 							.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
 							.f10(cs.getCenterOffice())
 							.build();
+					}else {
+						 cpt = CheckRpt.builder()
+									.visible("show")
+									.f1(cs.getDateTrans())
+									.f2(cs.getDvPayroll())
+									.f3(cs.getCafoaNo())
+									.f4(cs.getPayee())
+									.f5(cs.getNaturePay())
+									.f6(Currency.formatAmount(cs.getAmount()))
+									.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
+									.f10(cs.getCenterOffice())
+									.build();
+					}
 					reports.add(cpt);
 				}
 				count++;
@@ -266,30 +332,47 @@ public class CollectionDepositBean implements Serializable {
 		}else {//extra long page
 			REPORT_NAME = GlobalVar.COLLECTION_DEPOSIT_REPORT_LONG_EXTENDED_NAME;
 			for(CollectionDeposit cs : cashDisList) {
+				CheckRpt cpt = new CheckRpt();
 				if(count==0) {startSeries=cs.getSerialNo();}else {endSeries=cs.getSerialNo();}
 				
 				if(count==0) {
-				CheckRpt cpt = CheckRpt.builder()
-						.visible("show")
-						.f1(cs.getDateTrans())
-						.build();
-				reports.add(cpt);
-				count++;
-				
-				cpt = CheckRpt.builder()
-						.visible("show")
-						.f1("")
-						.f2(cs.getDvPayroll())
-						.f3(cs.getCafoaNo())
-						.f4(cs.getPayee())
-						.f5(cs.getNaturePay())
-						.f6(Currency.formatAmount(cs.getAmount()))
-						.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
-						.f10(cs.getCenterOffice())
-						.build();
-				reports.add(cpt);
+					if(rpt.getIsPayroll()==1) {	//for payroll
+						cpt = CheckRpt.builder()
+								.visible("show")
+								.f1(cs.getDateTrans())
+								.build();
+						reports.add(cpt);
+						count++;
+						
+						cpt = CheckRpt.builder()
+								.visible("show")
+								.f1("")
+								.f2(cs.getDvPayroll())
+								.f3(cs.getCafoaNo())
+								.f4(cs.getPayee())
+								.f5(cs.getNaturePay())
+								.f6(Currency.formatAmount(cs.getAmount()))
+								.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
+								.f10(cs.getCenterOffice())
+								.build();
+						reports.add(cpt);
+					}else {
+						cpt = CheckRpt.builder()
+								.visible("show")
+								.f1(cs.getDateTrans())
+								.f2(cs.getDvPayroll())
+								.f3(cs.getCafoaNo())
+								.f4(cs.getPayee())
+								.f5(cs.getNaturePay())
+								.f6(Currency.formatAmount(cs.getAmount()))
+								.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
+								.f10(cs.getCenterOffice())
+								.build();
+						reports.add(cpt);
+					}
 				}else {
-					CheckRpt cpt = CheckRpt.builder()
+					if(rpt.getIsPayroll()==1) {	//for payroll
+						cpt = CheckRpt.builder()
 							.visible("show")
 							.f1("")
 							.f2(cs.getDvPayroll())
@@ -300,6 +383,19 @@ public class CollectionDepositBean implements Serializable {
 							.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
 							.f10(cs.getCenterOffice())
 							.build();
+					}else {
+						cpt = CheckRpt.builder()
+								.visible("show")
+								.f1(cs.getDateTrans())
+								.f2(cs.getDvPayroll())
+								.f3(cs.getCafoaNo())
+								.f4(cs.getPayee())
+								.f5(cs.getNaturePay())
+								.f6(Currency.formatAmount(cs.getAmount()))
+								.f9(cs.getSerialNo()==0? "" : cs.getSerialNo()+"")
+								.f10(cs.getCenterOffice())
+								.build();
+					}
 					reports.add(cpt);
 				}
 				

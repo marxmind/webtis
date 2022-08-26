@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jboss.weld.config.Description;
+
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.utils.LogU;
@@ -17,6 +19,12 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @author mark italia
  * @since 06/16/2018
  * @version 1.0
+ */
+/**
+ * 
+ * @deprecated
+ * this class is no longer use
+ *
  */
 public class BuildingStall {
 

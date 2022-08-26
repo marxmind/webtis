@@ -40,6 +40,7 @@ public class CollectionDepositReport {
 	private int fundId=1;
 	private int pageSize;
 	private Login loginUser;
+	private int isPayroll;
 	
 	private Date dateReportTmp;
 	private List<CollectionDeposit> rpts;
@@ -87,6 +88,7 @@ public class CollectionDepositReport {
 					.fundId(rs.getInt("fundid"))
 					.pageSize(rs.getInt("pagesize"))
 					.loginUser(user)
+					.isPayroll(rs.getInt("ispayroll"))
 					.build();
 			
 		}
@@ -151,6 +153,7 @@ public class CollectionDepositReport {
 					.fundId(rs.getInt("fundid"))
 					.pageSize(rs.getInt("pagesize"))
 					.loginUser(user)
+					.isPayroll(rs.getInt("ispayroll"))
 					.build();
 			caz.add(cz);
 		}
@@ -216,8 +219,9 @@ public class CollectionDepositReport {
 				+ "fundid,"
 				+ "sheetno,"
 				+ "pagesize,"
-				+ "logid)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "logid,"
+				+ "ispayroll)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -254,6 +258,7 @@ public class CollectionDepositReport {
 		ps.setString(cnt++, st.getSheetNo());
 		ps.setInt(cnt++, st.getPageSize());
 		ps.setLong(cnt++, st.getLoginUser().getLogid());
+		ps.setInt(cnt++, st.getIsPayroll());
 		
 		LogU.add(st.getReportNo());
 		LogU.add(st.getBankAccountNo());
@@ -269,6 +274,7 @@ public class CollectionDepositReport {
 		LogU.add(st.getSheetNo());
 		LogU.add(st.getPageSize());
 		LogU.add(st.getLoginUser().getLogid());
+		LogU.add(st.getIsPayroll());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -297,7 +303,8 @@ public class CollectionDepositReport {
 				+ "fundid=?,"
 				+ "sheetno=?,"
 				+ "pagesize=?,"
-				+ "logid=?" 
+				+ "logid=?,"
+				+ "ispayroll=?" 
 				+ " WHERE cdid=?";
 		
 		PreparedStatement ps = null;
@@ -324,6 +331,7 @@ public class CollectionDepositReport {
 		ps.setString(cnt++, st.getSheetNo());
 		ps.setInt(cnt++, st.getPageSize());
 		ps.setLong(cnt++, st.getLoginUser().getLogid());
+		ps.setInt(cnt++, st.getIsPayroll());
 		ps.setLong(cnt++, st.getId());
 		
 		LogU.add(st.getReportNo());
@@ -338,6 +346,7 @@ public class CollectionDepositReport {
 		LogU.add(st.getFundId());
 		LogU.add(st.getSheetNo());
 		LogU.add(st.getLoginUser().getLogid());
+		LogU.add(st.getIsPayroll());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");

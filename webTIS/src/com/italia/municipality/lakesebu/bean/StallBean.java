@@ -24,6 +24,7 @@ import com.italia.municipality.lakesebu.utils.Application;
  */
 @Named
 @ViewScoped
+@Deprecated
 public class StallBean implements Serializable{
 
 	/**
