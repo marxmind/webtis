@@ -272,7 +272,7 @@ public class BusinessPermitBean implements Serializable{
 			BusinessORTransaction o = BusinessORTransaction.retrieve(sql, params).get(0);
 			orsSelected.add(o);
 		}
-		
+		loadBusiness();
 		setBusinessName(permit.getBusinessName());
 		setBusinessEngage(permit.getBusinessEngage());
 		setBusinessAddress(permit.getBusinessAddress());
@@ -291,7 +291,7 @@ public class BusinessPermitBean implements Serializable{
 		setEmployeeDtls(permit.getEmpdtls());
 		setGrossAmount(permit.getGrossAmount());
 		setIssuedDate(DateUtils.convertDateString(permit.getDateTrans(), "yyyy-MM-dd"));
-		loadBusiness();
+		//loadBusiness();
 	}
 	
 	public void loadLineOfBusiness() {
@@ -327,6 +327,10 @@ public class BusinessPermitBean implements Serializable{
 		}catch(Exception e) {}
 		try{
 			address +=", "+ bz.getMunicipality().getName(); 
+		}catch(Exception e) {}
+		
+		try{
+			address +=", "+ bz.getProvince().getName();
 		}catch(Exception e) {}
 		/*try{
 			address +=", "+ bz.getProvince().getName(); 
@@ -540,6 +544,12 @@ public class BusinessPermitBean implements Serializable{
 		}
 		
 		if(isOk) {
+			
+		try {
+			String control = getControlNo().split("-")[2];	
+			 permit.setIsSecond(1);
+		}catch(Exception e) {}
+			
 		permit.setCustomer(getTaxPayer());
 		String det = DateUtils.convertDate(getIssuedDate(), "yyyy-MM-dd");
 		String year = det.split("-")[0];
@@ -1404,13 +1414,13 @@ public void printPermit(BusinessPermit permit) {
 			rptsUnsort.put(p.getControlNo(), p);
 		}
 		Map<String, BusinessPermit> rptsSort = new TreeMap<String, BusinessPermit>(rptsUnsort);
-		int newA = 0;
-		int renewA = 0;
-		int addA = 0;
+		//int newA = 0;
+		//int renewA = 0;
+		//int addA = 0;
 		
-		int quarterly = 0;
-		int semi_annual = 0;
-		int annually = 0;
+		//int quarterly = 0;
+		//int semi_annual = 0;
+		//int annually = 0;
 		String[] filters = BusinessFilter.filter(BFilter.EXCEPTION);
 		for(BusinessPermit p : rptsSort.values()) {
 			
@@ -1443,23 +1453,25 @@ public void printPermit(BusinessPermit permit) {
 			int i = 1;
 			
 			String type = p.getType().substring(0, 1);
-			String mode = p.getMemoType().substring(0, 1);
+			//String mode = p.getMemoType().substring(0, 1);
 			
+			/*
 			if("N".equalsIgnoreCase(type)) {
 				newA +=1;
 			}else if("R".equalsIgnoreCase(type)) {
 				renewA +=1;
 			}else {
 				addA +=1;
-			}
+			}*/
 			
+			/**
 			if("Q".equalsIgnoreCase(mode)) {
 				quarterly +=1;
 			}else if("S".equalsIgnoreCase(mode)) {
 				semi_annual +=1;
 			}else {
 				annually +=1;
-			}
+			}*/
 			
 			BusinessORTransaction forFire = null;
 			for(BusinessORTransaction or : sortedOR.values()) {
@@ -1600,13 +1612,38 @@ public void printPermit(BusinessPermit permit) {
 		param.put("PARAM_CY", "LIST OF BUSINESS ESTABLISHMENTS CY. " + cy);
 		param.put("PARAM_GRAND_TOTAL", "Php"+ Currency.formatAmount(total));
 		
-		param.put("PARAM_NEW", newA+"");
-		param.put("PARAM_RENEW", renewA+"");
-		param.put("PARAM_ADDITIONAL", addA+"");
+		String yearFromDate = DateUtils.convertDate(getCalendarFrom(), "yyyy-MM-dd").split("-")[0];
+		String yearToDate = DateUtils.convertDate(getCalendarTo(), "yyyy-MM-dd").split("-")[0];
 		
-		param.put("PARAM_QUARTERLY", quarterly+"");
-		param.put("PARAM_SEMI_ANNUALLY", semi_annual+"");
-		param.put("PARAM_ANNUALLY", annually+"");
+		Map<String, Integer> mapType = BusinessPermit.countType(yearFromDate, yearToDate);
+		
+		//try{param.put("PARAM_NEW", mapType.get("NEW")+"");}catch(Exception e) {param.put("PARAM_NEW", "0");}
+		//try{param.put("PARAM_RENEW", mapType.get("RENEW")+"");}catch(Exception e) {param.put("PARAM_RENEW", "0");}
+		//try{param.put("PARAM_ADDITIONAL", mapType.get("ADDITIONAL")+"");}catch(Exception e) {param.put("PARAM_ADDITIONAL", "0");}
+		if(mapType.containsKey("NEW")) {
+			param.put("PARAM_NEW", mapType.get("NEW")+"");
+		}
+		if(mapType.containsKey("RENEW")) {
+			param.put("PARAM_RENEW", mapType.get("RENEW")+"");
+		}
+		if(mapType.containsKey("ADDITIONAL")) {
+			if(mapType.get("ADDITIONAL")!=null) {param.put("PARAM_ADDITIONAL", mapType.get("ADDITIONAL")+"");}else {param.put("PARAM_ADDITIONAL", "0");}
+		}
+		
+		Map<String, Integer> mapMemo = BusinessPermit.countMemoType(yearFromDate, yearToDate);
+		
+		int qr=0,sem=0;
+		try{qr += mapMemo.get("1st QUARTER");}catch(Exception e) {}
+		try{qr += mapMemo.get("2nd QUARTER");}catch(Exception e) {}
+		try{qr += mapMemo.get("3rd QUARTER");}catch(Exception e) {}
+		try{qr += mapMemo.get("4th QUARTER");}catch(Exception e) {}
+		
+		try{sem += mapMemo.get("1st SEMI-ANNUAL");}catch(Exception e) {}
+		try{sem += mapMemo.get("2nd SEMI-ANNUAL");}catch(Exception e) {}
+		
+		try{param.put("PARAM_QUARTERLY", qr+"");}catch(Exception e) {param.put("PARAM_QUARTERLY", "0");}
+		try{param.put("PARAM_SEMI_ANNUALLY", sem+"");}catch(Exception e) {param.put("PARAM_SEMI_ANNUALLY", "0");}
+		try{param.put("PARAM_ANNUALLY", mapMemo.get("ANNUALLY")+"");}catch(Exception e) {param.put("PARAM_ANNUALLY", "0");}
 		
 		param.put("PARAM_CAPITAL", Currency.formatAmount(capital_total));
 		param.put("PARAM_GROSS", Currency.formatAmount(gross_total));

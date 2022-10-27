@@ -79,12 +79,12 @@ public class OrlistingXML {
 	//private List<ORNameList> orlisting;
 	private List<PaymentName> paynames;
 	
-	private static String[] special = {"&","Ñ","ñ"};
+	private static String[] special = {"&","ï¿½","ï¿½"};
 	private static String[] counterSpecialName = {"ampersand","enyebig","enyesmall"};
 	
 	public static void main(String[] args) {
 		
-		String name = "FRANCISCO ESPAÑOLA";
+		String name = "FRANCISCO ESPAï¿½OLA";
 		String val = OrlistingXML.convertSpecialChar(name);
 		System.out.println("Convert: " + val);
 		System.out.println("Rollback: " + OrlistingXML.convertSpecialCharToRegular(val));
@@ -94,8 +94,8 @@ public class OrlistingXML {
 	public static Map<String, String> mapChar(){
 		Map<String, String> map = new LinkedHashMap<String, String>();
 		map.put("&", "ampersand");
-		map.put("Ñ", "enyebig");
-		map.put("ñ", "enyesmall");
+		map.put("ï¿½", "enyebig");
+		map.put("ï¿½", "enyesmall");
 		
 		return map;
 	}
@@ -219,8 +219,12 @@ public class OrlistingXML {
 		    	}
 		    	
 		    	}else {
-		    		System.out.println("data is exist...");
-		    		existFile(file);
+		    		if(xml==null) {
+		    			System.out.println("Error found for the file: " + file.getName());
+		    		}else {
+			    		System.out.println("data is exist...");
+			    		existFile(file);
+		    		}
 		    	}
 		    	
 		    }else {
@@ -496,47 +500,48 @@ public class OrlistingXML {
 	
 	
 	private static OrlistingXML readXML(String fileName) {
-		OrlistingXML xml = new OrlistingXML();
+		OrlistingXML xml = null;//new OrlistingXML();
 		File xmlFile = new File(GlobalVar.COMMIT_XML + fileName);
 		if(xmlFile.exists()){
 			try {
+				xml = new OrlistingXML();
 				SAXReader reader = new SAXReader();
 				Document document = reader.read(xmlFile);
-				
 				Node node = document.selectSingleNode("/orlisting");
+				int count=0;
+				//System.out.println("Check count : " + count);
+				try{xml.setReg(node.selectSingleNode("reg").getText());}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setFirstName(convert(node.selectSingleNode("firstname").getText(),false));}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setMiddleName(convert(node.selectSingleNode("middlename").getText(),false));}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setLastName(convert(node.selectSingleNode("lastname").getText(),false));}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setFullName(convert(node.selectSingleNode("fullname").getText(),false));}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setBirthDate(node.selectSingleNode("birthdate").getText());}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setCivilStatus(node.selectSingleNode("civilstatus").getText());}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setUserId(node.selectSingleNode("userid").getText());}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
 				
-				try{xml.setReg(node.selectSingleNode("reg").getText());}catch(Exception e) {}
-				try{xml.setFirstName(convert(node.selectSingleNode("firstname").getText(),false));}catch(Exception e) {}
-				try{xml.setMiddleName(convert(node.selectSingleNode("middlename").getText(),false));}catch(Exception e) {}
-				try{xml.setLastName(convert(node.selectSingleNode("lastname").getText(),false));}catch(Exception e) {}
-				try{xml.setFullName(convert(node.selectSingleNode("fullname").getText(),false));}catch(Exception e) {}
-				try{xml.setBirthDate(node.selectSingleNode("birthdate").getText());}catch(Exception e) {}
-				try{xml.setCivilStatus(node.selectSingleNode("civilstatus").getText());}catch(Exception e) {}
-				try{xml.setUserId(node.selectSingleNode("userid").getText());}catch(Exception e) {}
-				
-				try{xml.setDateTrans(node.selectSingleNode("datetrans").getText());}catch(Exception e) {}
-				try{xml.setFormType(node.selectSingleNode("formtype").getText());}catch(Exception e) {}
-				try{xml.setOrNumber(node.selectSingleNode("ornumber").getText());}catch(Exception e) {}
-				try{xml.setOrStatus(node.selectSingleNode("status").getText());}catch(Exception e) {}
-				try{xml.setCollectorId(node.selectSingleNode("collectorid").getText());}catch(Exception e) {}
-				try{xml.setIsActive(node.selectSingleNode("isactive").getText());}catch(Exception e) {}
-				try{xml.setFormInfo(convert(node.selectSingleNode("forminfo").getText(),false));}catch(Exception e) {}
+				try{xml.setDateTrans(node.selectSingleNode("datetrans").getText());}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setFormType(node.selectSingleNode("formtype").getText());}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setOrNumber(node.selectSingleNode("ornumber").getText());}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setOrStatus(node.selectSingleNode("status").getText());}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setCollectorId(node.selectSingleNode("collectorid").getText());}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setIsActive(node.selectSingleNode("isactive").getText());}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+				try{xml.setFormInfo(convert(node.selectSingleNode("forminfo").getText(),false));}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
 				
 				List<PaymentName> pynames = new ArrayList<PaymentName>();
 				List<Node> dtls = document.selectNodes("/orlisting/details/payname");
 				for(Node n : dtls) {
 					PaymentName oname = new PaymentName();
-					try{oname.setId(Long.valueOf(n.selectSingleNode("pyid").getText()));}catch(Exception e) {}
-					try{oname.setAmount(Double.valueOf(n.selectSingleNode("amount").getText()));}catch(Exception e) {}
+					try{oname.setId(Long.valueOf(n.selectSingleNode("pyid").getText()));}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
+					try{oname.setAmount(Double.valueOf(n.selectSingleNode("amount").getText()));}catch(Exception e) {System.out.println("count: " + count++ + " reason: " + e.getStackTrace());}
 					pynames.add(oname);
 				}
 				xml.setPaynames(pynames);
-				
+				//System.out.println("Check count end: " + count);
 				
 			}catch(DocumentException e) {
 				System.out.println("Error Found for file " + fileName);
 				e.printStackTrace();
-				
+				xml = null;
 			}	
 		}
 		return xml;

@@ -53,6 +53,7 @@ public class BusinessPermit {
 	private String type;
 	private String empdtls;
 	private double grossAmount;
+	private int isSecond;
 	
 	private BusinessCustomer customer;
 	
@@ -87,6 +88,8 @@ public class BusinessPermit {
 		return false;
 	}
 	
+	
+	
 	public static boolean isExistControlNumber(String controlNo, long customerId) {
 		
 
@@ -110,6 +113,56 @@ public class BusinessPermit {
 		}catch(Exception e){e.getMessage();}
 		
 		return false;
+	}
+	
+	public static Map<String,Integer> countMemoType(String yearFrom, String yearTo) {
+		Map<String, Integer> memo = new LinkedHashMap<String, Integer>();
+
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement("SELECT count(*) as count,memotype FROM businesspermit WHERE issecond=0 AND isactivebusiness=1 AND (year>='"+ yearFrom +"' AND year<='"+ yearTo +"') group by memotype");
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			memo.put(rs.getString("memotype"), rs.getInt("count"));
+		}
+		
+
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return memo;
+	}
+	
+	public static Map<String,Integer> countType(String yearFrom, String yearTo) {
+		Map<String, Integer> memo = new LinkedHashMap<String, Integer>();
+
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement("SELECT count(*) as count,typeof FROM businesspermit WHERE issecond=0 AND isactivebusiness=1 AND (year>='"+ yearFrom +"' AND year<='"+ yearTo +"') group by typeof");
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			memo.put(rs.getString("typeof"), rs.getInt("count"));
+		}
+		
+
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return memo;
 	}
 	
 	public static Map<String, Map<String, Double>>  getPerType(String param) {
@@ -303,6 +356,7 @@ public class BusinessPermit {
 			try{bus.setType(rs.getString("typeof"));}catch(NullPointerException e){}
 			try{bus.setEmpdtls(rs.getString("empdtls"));}catch(NullPointerException e){}
 			try{bus.setGrossAmount(rs.getDouble("grossamnt"));}catch(NullPointerException e){}
+			try{bus.setIsSecond(rs.getInt("issecond"));}catch(NullPointerException e){}
 			
 			try {
 				if("NEW".equalsIgnoreCase(rs.getString("typeof")) || "ADDITIONAL".equalsIgnoreCase(rs.getString("typeof"))) {
@@ -430,8 +484,9 @@ public class BusinessPermit {
 				+ "isactivebusiness,"
 				+ "typeof,"
 				+ "empdtls,"
-				+ "grossamnt)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "grossamnt,"
+				+ "issecond)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -473,6 +528,7 @@ public class BusinessPermit {
 		ps.setString(cnt++, na.getType());
 		ps.setString(cnt++, na.getEmpdtls());
 		ps.setDouble(cnt++, na.getGrossAmount());
+		ps.setInt(cnt++, na.getIsSecond());
 		
 		LogU.add(na.getCustomer()==null? 0 : na.getCustomer().getId());
 		LogU.add(na.getDateTrans());
@@ -493,6 +549,7 @@ public class BusinessPermit {
 		LogU.add(na.getType());
 		LogU.add(na.getEmpdtls());
 		LogU.add(na.getGrossAmount());
+		LogU.add(na.getIsSecond());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -528,8 +585,9 @@ public class BusinessPermit {
 				+ "isactivebusiness,"
 				+ "typeof,"
 				+ "empdtls,"
-				+ "grossamnt)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "grossamnt,"
+				+ "issecond)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -571,6 +629,7 @@ public class BusinessPermit {
 		ps.setString(cnt++, getType());
 		ps.setString(cnt++, getEmpdtls());
 		ps.setDouble(cnt++, getGrossAmount());
+		ps.setInt(cnt++, getIsSecond());
 		
 		LogU.add(getCustomer()==null? 0 : getCustomer().getId());
 		LogU.add(getDateTrans());
@@ -591,6 +650,7 @@ public class BusinessPermit {
 		LogU.add(getType());
 		LogU.add(getEmpdtls());
 		LogU.add(getGrossAmount());
+		LogU.add(getIsSecond());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -624,7 +684,8 @@ public class BusinessPermit {
 				+ "controlno=?,"
 				+ "typeof=?,"
 				+ "empdtls=?,"
-				+ "grossamnt=?" 
+				+ "grossamnt=?,"
+				+ "issecond=?" 
 				+ " WHERE bid=?";
 		
 		PreparedStatement ps = null;
@@ -656,6 +717,7 @@ public class BusinessPermit {
 		ps.setString(cnt++, na.getType());
 		ps.setString(cnt++, na.getEmpdtls());
 		ps.setDouble(cnt++, na.getGrossAmount());
+		ps.setInt(cnt++, na.getIsSecond());
 		ps.setLong(cnt++, na.getId());
 		
 		
@@ -677,6 +739,7 @@ public class BusinessPermit {
 		LogU.add(na.getType());
 		LogU.add(na.getEmpdtls());
 		LogU.add(na.getGrossAmount());
+		LogU.add(na.getIsSecond());
 		LogU.add(na.getId());
 		
 		LogU.add("executing for saving...");
@@ -711,7 +774,8 @@ public class BusinessPermit {
 				+ "controlno=?,"
 				+ "typeof=?,"
 				+ "empdtls=?,"
-				+ "grossamnt=?" 
+				+ "grossamnt=?,"
+				+ "issecond=?" 
 				+ " WHERE bid=?";
 		
 		PreparedStatement ps = null;
@@ -743,6 +807,7 @@ public class BusinessPermit {
 		ps.setString(cnt++, getType());
 		ps.setString(cnt++, getEmpdtls());
 		ps.setDouble(cnt++, getGrossAmount());
+		ps.setInt(cnt++, getIsSecond());
 		ps.setLong(cnt++, getId());
 		
 		LogU.add(getCustomer()==null? 0 : getCustomer().getId());
@@ -763,6 +828,7 @@ public class BusinessPermit {
 		LogU.add(getType());
 		LogU.add(getEmpdtls());
 		LogU.add(getGrossAmount());
+		LogU.add(getIsSecond());
 		LogU.add(getId());
 		
 		LogU.add("executing for saving...");

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="bizclearance" pageWidth="612" pageHeight="1008" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="794e2d42-7ab1-4c21-a802-1faf95600b92">
 	<property name="com.jaspersoft.studio.unit." value="inch"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
@@ -883,7 +883,7 @@
 				<textElement textAlignment="Justified">
 					<font size="8" isBold="false" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[1. This permit is valid until December 31st of the Current Year unless sooner revoked for violation of any provision of existing Ordinances, Laws, Rules and Regulations.]]></text>
+				<text><![CDATA[1. This permit is valid until                                        of the Current Year unless sooner revoked for violation of any provision of existing Ordinances, Laws, Rules and Regulations.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="42" width="572" height="32" forecolor="#000203" uuid="ed9d0d2f-3301-4810-ac6d-280da9140fc8">
@@ -921,6 +921,13 @@
 				</textElement>
 				<text><![CDATA[5. Any violation of the provisions of the ordinance shall be punished by administrative fines or imprisonment in accordance with Section 3A 11 Art. A. Ord. No. 9 Series of 1992.]]></text>
 			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="96" y="23" width="95" height="11" uuid="5f48f26c-8f9e-4ad8-90bc-d059739bd39a"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAM_VALIDTO}]]></textFieldExpression>
+			</textField>
 		</band>
 	</summary>
 </jasperReport>

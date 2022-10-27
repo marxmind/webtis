@@ -213,7 +213,7 @@ public class Form56Bean implements Serializable{
 		
 		for(ITaxPayorTrans tran : TaxPayorTrans.retrieve(sql, params)){
 			tran.setLandPayor(paidFor(tran));
-			System.out.println("Land owner: " + tran.getLandPayor().getPayor().getFullName());
+			//System.out.println("Land owner: " + tran.getLandPayor().getPayor().getFullName());
 			trans.add(tran);
 		}
 		//Collections.reverse(trans);

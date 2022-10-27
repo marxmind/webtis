@@ -5,9 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
+import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
 
 import lombok.AllArgsConstructor;
@@ -47,6 +49,9 @@ public class MarketTenantPayment {
 	private int buildingTypeId;
 	private MarketTenant marketTenant;
 	private MarketTenantProperty marketTenantProperty;
+	
+	private Date datePaidTmp;
+	private String monthYearPaid;
 	
 	public static List<MarketTenantPayment> retrieve(String sql, String[] params){
 		List<MarketTenantPayment> trans = new ArrayList<MarketTenantPayment>();
@@ -117,6 +122,7 @@ public class MarketTenantPayment {
 					.buildingId(rs.getInt("buildingid"))
 					.buildingTypeId(rs.getInt("buildingtypeid"))
 					.marketTenantProperty(prp)
+					.monthYearPaid(DateUtils.getMonthName(rs.getInt("paidformonth"))+"-"+rs.getInt("paidforyear"))
 					.build();
 			
 			

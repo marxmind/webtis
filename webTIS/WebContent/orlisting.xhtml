@@ -1124,6 +1124,91 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						</p:dataTable>
 
 </p:dialog>
+<h:outputStylesheet>
+	.queueing{
+		-moz-border-radius: 100px;
+		-webkit-border-radius: 100px;
+		border-radius: 100px;
+		height: 70px;
+		width: 700px;
+		top: 0px;
+		right: 400px;
+		float:right; 
+		position: fixed;
+		z-index: 1500;
+		font-size: 70% ! important;
+		font-weight: bold ! important;  
+		text-transform: none ! important; 
+	}
+</h:outputStylesheet>
+
+<p:panel header="Queueing" styleClass="queueing" toggleableHeader="true" toggleable="true" collapsed="true" closable="true" toggleSpeed="500" closeSpeed="500" widgetVar="panelWgr">
+        <p class="m-0">
+        	<div class="ui-inputgroup">
+        		<p:commandButton icon="fa fa-search"/>
+        		<p:inputText value="#{oRListingBean.queYear}" style="width: 4em" placeholder="0000">
+        			<p:ajax event="keyup" listener="#{oRListingBean.loadClient}" update="queDataId"/>
+        		</p:inputText>
+        		<p:inputText value="#{oRListingBean.queMonth}" style="width: 3em" placeholder="00">
+        			<p:ajax event="keyup" listener="#{oRListingBean.loadClient}" update="queDataId"/>
+        		</p:inputText>
+        		<p:inputText value="#{oRListingBean.queDay}" style="width: 3em" placeholder="00">
+        			<p:ajax event="keyup" listener="#{oRListingBean.loadClient}" update="queDataId"/>
+        		</p:inputText>
+        		<p:inputText value="#{oRListingBean.queSequence}" style="width: 4em" placeholder="0000">
+        			<p:ajax event="keyup" listener="#{oRListingBean.loadClient}" update="queDataId fldId fldId2 dataSelectedId dataOrId fldId fldId2 dtlsId totalId idTotal idInterest idGrand fldNoteId"/>
+        		</p:inputText>
+        	</div>
+        	
+        	
+            <p:dataTable id="queDataId" value="#{oRListingBean.clients}" var="cli" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false"
+							>
+							
+            				<p:column headerText="" width="10" exportable="false">
+            						<p:commandButton icon="fa fa-arrow-circle-down" oncomplete="PF('panelWgr').toggle()" actionListener="#{oRListingBean.popUpRemarks(cli)}" update="queDataId fldId fldId2 dataSelectedId dataOrId fldId fldId2 dtlsId totalId idTotal idInterest idGrand fldNoteId remarkId noteToColId"/>
+            				</p:column>
+            				
+            				<p:column headerText="" width="10" exportable="false">
+            					<p:commandButton  icon="fa fa-trash" actionListener="#{oRListingBean.deleteQueue(cli)}" update="queDataId msg">
+            						<p:confirm header="Confirmation" message="Are you sure you want to delete this data?" icon="ui-icon-alert"/>
+            					</p:commandButton>
+            				</p:column>
+            				
+							<p:column headerText="Queue" width="10" style="text-align: left">
+            						<p:outputLabel value="#{cli.transNo.split('-')[3]}"/>
+            				</p:column>
+							<p:column headerText="Name" width="150" style="text-align: left">
+            						<p:outputLabel value="#{cli.firstName} #{cli.lastName}"/>
+            				</p:column>
+            				<p:column headerText="Request" width="150" style="text-align: left">
+            						<p:outputLabel value="#{cli.transactionName}"/>
+            				</p:column>
+            				<p:column headerText="Status" width="50" style="text-align: left">
+            						<p:outputLabel value="#{cli.clientStatus}"/>
+            				</p:column>
+			</p:dataTable>				
+        </p>
+    </p:panel>
+    
+    <p:dialog closable="false" showHeader="true" header="Note to collector" widgetVar="dlgPopNotes" width="400" height="200" position="top center">
+    	<p:panelGrid columns="1" layout="grid">
+    	<p:outputLabel id="remarkId" value="#{oRListingBean.clientTmpSelected.remarks}" style="color: red; font-weight: bold; font-size: 2em"/>
+    	<p:outputLabel id="noteToColId" value="Would you like to issue an official reciept for #{oRListingBean.clientTmpSelected.firstName} #{oRListingBean.clientTmpSelected.lastName}?" />
+    	</p:panelGrid>
+    	
+    	<f:facet name="footer">
+    	
+    	<p:commandButton value="Close for no action" onclick="PF('dlgPopNotes').hide(1000)" />
+    	<p:commandButton value="Reject" update="remarkId queDataId msg" actionListener="#{oRListingBean.cancelRequest}" style="width: 10em">
+			<p:confirm type="popup" header="Confirmation" message="Are you sure you want to reject this request?" icon="pi pi-exclamation-triangle" />
+		</p:commandButton>
+		<p:commandButton value="Proceed for OR" actionListener="#{oRListingBean.proceedOR}" style="width: 10em" update="queDataId fldId fldId2 dataSelectedId dataOrId fldId fldId2 dtlsId totalId idTotal idInterest idGrand fldNoteId"/>
+    	
+    	</f:facet>
+    </p:dialog>
 
 </h:form>
 </h:body>

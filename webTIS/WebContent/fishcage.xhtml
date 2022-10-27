@@ -69,11 +69,13 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     <div class="p-col-12 p-md-3">
             <p:toolbar id="tbClear" style="#{skin.toolbar};float:bottom; position: fixed;z-index: 1500;">
 		    		<f:facet name="left">
-				        <p:commandButton update="fldId" value="New" icon="fa fa-file-o" actionListener="#{fishcageBean.clear}" title="Click this button to start new information"/>
+		    				<div class="ui-inputgroup">
+				        	<p:commandButton update="fldId" value="New" icon="fa fa-file-o" actionListener="#{fishcageBean.clear}" title="Click this button to start new information"/>
 		    				<p:commandButton update="fldId idSer" value="Clear" icon="fa fa-trash" actionListener="#{fishcageBean.clear}"  title="Click this button to clear information"/>
 		    				<p:commandButton update="fldId cageData idSer tbMotor payFld payData msg" value="Save" actionListener="#{fishcageBean.save}"  icon="fa fa-floppy-o" title="Click this button to save your changes" >
 		        				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
 		        			</p:commandButton>
+		        			</div>
 		    		</f:facet>
 		    		<f:facet name="right">
 		    				
@@ -83,61 +85,61 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<p:panelGrid id="fldId" columns="2" layout="grid" style="text-align: left">
 				
 				<p:outputLabel value="Date Recorded" style="#{skin.label}" />
-			    <p:calendar  value="#{fishcageBean.dateRegister}" inputStyle="width: 11em;#{skin.textInput}"  required="true" pattern="yyyy-MM-dd" effect="slideDown"/>
+			    <p:calendar  value="#{fishcageBean.dateRegister}" inputStyle="width: 15em;#{skin.textInput}"  required="true" pattern="yyyy-MM-dd" effect="slideDown"/>
 			    
 			    <p:outputLabel value="Year Applied" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.yearApplied}"  style="width: 11em;#{skin.textInput}"/>	
+				<p:inputText value="#{fishcageBean.yearApplied}"  style="width: 15em;#{skin.textInput}"/>	
 			    
 			    <p:outputLabel value="Water Survey No" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.waterSurveyNo}" placeholder="000-000" style="width: 11em;#{skin.textInput}"/>	
+				<p:inputText value="#{fishcageBean.waterSurveyNo}" placeholder="000-000" style="width: 15em;#{skin.textInput}"/>	
 				
 				<p:outputLabel value="Owner Name" style="#{skin.label}" />
-				<p:inputTextarea value="#{fishcageBean.ownerName}" placeholder="Owner Name" rows="3" cols="10" style="width: 11em;#{skin.textInput}"/>	
+				<p:inputTextarea value="#{fishcageBean.ownerName}" placeholder="Owner Name" rows="3" cols="10" style="width: 15em;#{skin.textInput}"/>	
 				
 				<p:outputLabel value="Tenant Name" style="#{skin.label}" />
-				<p:inputTextarea value="#{fishcageBean.tenantOwner}" placeholder="Tenant Name" rows="3" cols="10" style="width: 11em;#{skin.textInput}"/>	
+				<p:inputTextarea value="#{fishcageBean.tenantOwner}" placeholder="Tenant Name" rows="3" cols="10" style="width: 15em;#{skin.textInput}"/>	
 				
 				<p:outputLabel value="Cage Area" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.fishcageArea}" placeholder="Cage Area" style="width: 11em;#{skin.textInput}"/>
+				<p:inputText value="#{fishcageBean.fishcageArea}" placeholder="Cage Area" style="width: 15em;#{skin.textInput}"/>
 				
 				<p:outputLabel value="Total Fish Cage Area" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.totalCageArea}" placeholder="Total Cage Area" style="width: 11em;#{skin.textInput}"/>	
+				<p:inputText value="#{fishcageBean.totalCageArea}" placeholder="Total Cage Area" style="width: 15em;#{skin.textInput}"/>	
 				
 				<p:outputLabel value="Location" style="#{skin.label}" />
-				<p:inputTextarea value="#{fishcageBean.location}" placeholder="Location" rows="3" cols="10" style="width: 11em;#{skin.textInput}"/>	
+				<p:inputTextarea value="#{fishcageBean.location}" placeholder="Location" rows="3" cols="10" style="width: 15em;#{skin.textInput}"/>	
 				
 				<p:outputLabel value="Remarks" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.remarks}" placeholder="Remarks" style="width: 11em;#{skin.textInput}"/>
+				<p:inputText value="#{fishcageBean.remarks}" placeholder="Remarks" style="width: 15em;#{skin.textInput}"/>
 				
 				<p:outputLabel value="Amount" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.amountDue}"  inputStyle="width: 11em;#{skin.textInput}"/>	
+				<p:inputNumber value="#{fishcageBean.amountDue}"  inputStyle="width: 15em;#{skin.textInput}"/>	
 				
 				<p:outputLabel value="No. of motorized Boat" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.motorizedBoat}"  inputStyle="width: 11em;#{skin.textInput}"/>	
+				<p:inputNumber value="#{fishcageBean.motorizedBoat}"  inputStyle="width: 15em;#{skin.textInput}"/>	
 				
 				<p:outputLabel value="No. of non-Motorized Boat" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.nonMotorizedBoat}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				<p:inputNumber value="#{fishcageBean.nonMotorizedBoat}"  inputStyle="width: 15em;#{skin.textInput}"/>
 				
 				<p:outputLabel value="Cellphone No" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.cellphoneNo}" placeholder="+6300-0000-000" style="width: 11em;#{skin.textInput}"/>
+				<p:inputText value="#{fishcageBean.cellphoneNo}" placeholder="+6300-0000-000" style="width: 15em;#{skin.textInput}"/>
 				
 				<p:outputLabel value="No. of fish cages" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.numberOfFishCages}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				<p:inputNumber value="#{fishcageBean.numberOfFishCages}"  inputStyle="width: 15em;#{skin.textInput}"/>
 				
 				<p:outputLabel value="Functional Fish Cages" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.noOfFunctional}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				<p:inputNumber value="#{fishcageBean.noOfFunctional}"  inputStyle="width: 15em;#{skin.textInput}"/>
 				
 				<p:outputLabel value="Non-Functional Fish Cages" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.noOfNonFunctional}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				<p:inputNumber value="#{fishcageBean.noOfNonFunctional}"  inputStyle="width: 15em;#{skin.textInput}"/>
 				
 				<p:outputLabel value="Size cage/Module" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.sizeCagePerModule}" placeholder="00x00"  style="width: 11em;#{skin.textInput}"/>
+				<p:inputText value="#{fishcageBean.sizeCagePerModule}" placeholder="00x00"  style="width: 15em;#{skin.textInput}"/>
 				
 				<p:outputLabel value="Annual Production" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.noOfAnnualProduction}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				<p:inputNumber value="#{fishcageBean.noOfAnnualProduction}"  inputStyle="width: 15em;#{skin.textInput}"/>
 				
 				<p:outputLabel value="Total Stocks" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.noOfTotalStock}"  inputStyle="width: 11em;#{skin.textInput}"/>
+				<p:inputNumber value="#{fishcageBean.noOfTotalStock}"  inputStyle="width: 15em;#{skin.textInput}"/>
 				
 				</p:panelGrid>
         </div>
@@ -363,14 +365,16 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						
 		        <p:toolbar id="tbMotor">
 				    		<f:facet name="left">
-						        	<p:outputLabel id="idOwn" value="#{fishcageBean.selectedOwner}"/>
+						        	<p:outputLabel id="idOwn" value="#{fishcageBean.selectedOwner}" style="font-size: 3em"/>
 				    		</f:facet>
 				    		<f:facet name="right">
+				    			<div class="ui-inputgroup">
 				    			<p:commandButton update="payFld" value="Clear" icon="fa fa-trash" actionListener="#{fishcageBean.clearPayments}"  title="Click this button to clear information"/>
 				    			<p:commandButton update="payData payFld msg" value="Save" actionListener="#{fishcageBean.savePayment}"  icon="fa fa-floppy-o" title="Click this button to save your changes" >
 						       		<p:confirm header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
 						        </p:commandButton>
 				    			<p:commandButton  value="Close" icon="ui-icon-closethick" update="cageData payData" style="width: 10em;" oncomplete="PF('paymentDlg').hide()" title="Click this button to hide this dialog"/>
+				    			</div>
 				    		</f:facet>
 						</p:toolbar>
 						

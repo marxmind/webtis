@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui = "http://java.sun.com/jsf/facelets"
+  xmlns:h = "http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui" 
+xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+xmlns:my="http://java.sun.com/jsf/composite/my"
+xmlns:pe="http://primefaces.org/ui/extensions"    
+  >
+<h:head>
+<link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}" />
+<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Client</title>
+	</f:facet>
+	
+	<f:facet name="middle">
+            <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
+            <h:outputScript name="jquery/jquery.min.js" target="head"/>
+            <h:outputStylesheet name="css/pageHeaderFooter.css"/>
+            <h:outputStylesheet name="primeflex/primeflex.min.css" />
+			<h:outputStylesheet name="primeflex/layout.css" />
+            <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputStylesheet name="css/growl.css"/>
+             <h:outputStylesheet name="css/bodyconf.css"/>
+    </f:facet>
+        
+    <f:facet name="last">
+ 		<h:outputStylesheet name="css/font-awesome.css" />
+    </f:facet>
+    <title>Client</title>
+
+<style>
+    .label {
+        width: 20%;
+        padding: 4px;
+    }
+
+    .value {
+        width: 80%;
+        padding: 4px;
+    }
+
+    .grid {
+        width: 100%;
+    }
+
+    .error {
+        color: red;
+    }
+
+    .outputLabel {
+        font-weight: bold;
+        font-size: 30px;
+    }
+
+    .grid {
+        width: 40%;
+        padding: 4px;
+    }
+    
+     .ui-selectonemenu .ui-selectonemenu-label {
+          font-size: 20px;
+          font-weight: bold;
+          width: 30em;
+    }
+    
+    .ui-selectonemenu .ui-selectonemenu-items {
+    	font-size: 20px;
+        font-weight: bold;
+    }
+            
+    .ui-outputlabel{
+    	font-size: 30px;
+        font-weight: bold;
+        width: 20em;
+    }
+    
+    .ui-button .ui-button-text{
+    	font-size: 20px;
+        font-weight: bold;
+        width: 10em;
+    }
+    
+    
+</style>
+
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Client</title>
+
+</h:head>
+
+<h:body>
+<div class="card">
+<ui:include src="loader.xhtml" />
+ <h:form id="formId">
+ 		
+ 		<p:confirmPopup global="true">
+            <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirm-popup-yes" />
+    	</p:confirmPopup>
+ 		
+ 		<p:idleMonitor timeout="600000">
+            <p:ajax event="idle" listener="#{client.onIdle}" update="wizardId"/>
+        </p:idleMonitor>
+ 	
+		<p:growl id="growl" sticky="true" showDetail="true"/>
+		<div id="customerId" style="display: block">
+		<p:wizard id="wizardId" flowListener="#{client.onFlowProcess}" widgetVar="wizId">
+			<p:tab id="transaction" title="Type of Transaction">
+				<p:panel header="Personal Details">
+                    <p:messages/>
+                    <h:panelGrid columns="2" columnClasses="label, value">
+                    <p:outputLabel value="Select Your Request: "/>
+					<p:selectOneMenu id="idSelection" value="#{client.client.transType}" filter="true" filterMatchMode="contains" >
+						<f:selectItems value="#{client.transTypes}"/>
+						<p:ajax event="change" listener="#{client.checkTransaction}" update="bizNameId bizNameInId idFirst idPayd"/>
+					</p:selectOneMenu>
+					
+					<h:outputText value="Skip to last: "/>
+	                <h:selectBooleanCheckbox value="#{client.skip}"/>
+	                </h:panelGrid>
+	              </p:panel>
+			</p:tab>
+            <p:tab id="personal" title="Personal">
+                <p:panel header="Personal Details">
+                    <p:messages/>
+                     <div class="col-12 md:col-4">
+               			 <div class="ui-inputgroup">
+                    		<p:commandButton icon="fa fa-search" styleClass="ui-button-primary"/>
+	                    	<p:autoComplete id="idPayd" placeholder="#{client.searchPlaceholder}"  value="#{client.payorName}" completeMethod="#{client.payorNameSuggested}"  queryDelay="800" effect="fade" maxResults="10" inputStyle="width:30em;font-size: 20px;font-weight: bold;">
+								<p:ajax event="change" update="infoPer additionPersonal idSecond idFirst" listener="#{client.supplyCustomerInfo}" />
+							</p:autoComplete>
+							</div>
+						</div>
+                   
+                    <h:panelGrid id="infoPer" columns="2" columnClasses="label, value">
+                    	
+                    	<p:outputLabel id="bizNameId" value="Business Name: *" style="font-size: 20px;font-weight: bold;" rendered="#{client.businessRequest}"/>
+                        <p:inputText id="bizNameInId" value="#{client.client.businessName}" placeholder="Business Name" label="Business Name" style="width: 20em;font-size: 20px;font-weight: bold;" rendered="#{client.businessRequest}"/>
+					
+                    	
+                        <p:outputLabel value="First Name: *" style="font-size: 20px;font-weight: bold;"/>
+                        <p:inputText value="#{client.client.firstName}" placeholder="First Name" label="Firstname" style="width: 20em;font-size: 20px;font-weight: bold;"/>
+						
+						<p:outputLabel value="Middle Name: *" style="font-size: 20px;font-weight: bold;"/>
+                        <p:inputText value="#{client.client.middleName}" placeholder="Middle Name" label="Middlename" style="width: 20em;font-size: 20px;font-weight: bold;"/>
+						
+                        <p:outputLabel value="Last Name: *" style="font-size: 20px;font-weight: bold;"/>
+                        <p:inputText value="#{client.client.lastName}" placeholder="Last Name" label="Lastname" style="width: 20em;font-size: 20px;font-weight: bold;"/>
+						
+						<p:outputLabel value="Gender: " style="font-size: 20px;font-weight: bold;"/>
+						<p:selectOneMenu id="idGender" value="#{client.client.gender}" style="width: 36em"  filter="true" filterMatchMode="contains">
+							<f:selectItems value="#{client.genders}"/>
+						</p:selectOneMenu>
+						
+						<p:outputLabel value="Civil Status: " style="font-size: 20px;font-weight: bold;"/>
+						<p:selectOneMenu id="idCivil" value="#{client.client.civilStatus}" style="width: 36em" filter="true" filterMatchMode="contains">
+							<f:selectItems value="#{client.civils}"/>
+						</p:selectOneMenu>
+				
+                        <p:outputLabel value="Birthday: " style="font-size: 20px;font-weight: bold;"/>
+                        <p:calendar value="#{client.client.birthdayTmp}" pattern="yyyy-MM-dd" effect="slideDown" inputStyle="width: 20em;font-size: 20px;font-weight: bold;"/>
+                        
+						<p:outputLabel value="Current Address: *" style="font-size: 20px;font-weight: bold;"/>
+                        <p:inputText value="#{client.client.address}"  label="Current Address" style="width: 20em;font-size: 20px;font-weight: bold;"/>
+                        
+                        <p:outputLabel value="Contact Number:" style="font-size: 20px;font-weight: bold;"/>
+                        <p:inputText value="#{client.client.contactNumber}" placeholder="09175121252" label="Contact No" style="width: 20em;font-size: 20px;font-weight: bold;"/>
+                        
+                        <p:outputLabel value="Skip to last: " style="font-size: 20px;font-weight: bold;"/>
+                        <h:selectBooleanCheckbox value="#{client.skip}"/>
+                    </h:panelGrid>
+                </p:panel>
+            </p:tab>
+             <p:tab id="additionPersonal" title="Additional Personal">
+             	
+             	<p:panel header="Remarks Details" id="idFirst" rendered="#{!client.include}">
+	             	<h:panelGrid  columns="2" columnClasses="label, value">
+	             	<p:outputLabel value="Remarks:" style="font-size: 20px;font-weight: bold;"/>
+	                	<p:inputTextarea value="#{client.client.remarks}" placeholder="Add your remarks here if needed"  style="width: 20em;font-size: 20px;font-weight: bold;"/>
+	             	</h:panelGrid>
+             	</p:panel>
+             	
+                <p:panel header="Additional Personal Details" rendered="#{client.include}">
+                	<p:messages/>
+                    <h:panelGrid id="idSecond" columns="2" columnClasses="label, value">
+                    
+                    
+                    <p:outputLabel value="Birth Place: *"/>
+                    <p:inputText value="#{client.client.birthPlace}" placeholder="Birth Place"  label="Birth Place" style="width: 20em;font-size: 20px;font-weight: bold;"/>
+                    
+                    <p:outputLabel value="TIN NO: "/>
+                    <p:inputText value="#{client.client.tinNo}" placeholder="000-000-000-000" label="TIN No" style="width: 20em;font-size: 20px;font-weight: bold;"/>
+                        
+                    <p:outputLabel value="Height: *"/>
+                    <p:inputText value="#{client.client.height}" placeholder="0" label="Height" style="width: 20em;font-size: 20px;font-weight: bold;"/>
+                        
+                    <p:outputLabel value="Weight: *"/>
+                    <p:inputText value="#{client.client.weight}" placeholder="0kg" label="Weight" style="width: 20em;font-size: 20px;font-weight: bold;"/>
+                    
+                    <p:outputLabel value="Company Name: *"/>
+                    <p:inputText value="#{client.client.companyName}" placeholder="Name of company if available" label="Company Name" style="width: 20em;font-size: 20px;font-weight: bold;"/>
+                    
+                    <p:outputLabel value="Nationality: *"/>
+                    <p:inputText value="#{client.client.nationality}" placeholder="Provide nationality" label="Nationality" style="width: 20em;font-size: 20px;font-weight: bold;"/>
+                    
+                    <p:outputLabel value="Profession: *"/>
+                    <p:selectOneMenu id="idProf" value="#{client.client.profession}" style="width: 36em" filter="true" filterMatchMode="contains" >
+							<f:selectItems value="#{client.professions}"/>
+					</p:selectOneMenu>
+                    
+                    <p:outputLabel value="Daily/Monthly Salary: *"/>
+                    <p:inputNumber value="#{client.client.monthlySalary}" placeholder="00.00" label="Monthly Salary" inputStyle="width: 20em;font-size: 20px;font-weight: bold;"/>
+                    
+                    <p:outputLabel value="Skip to last: "/>
+                    <h:selectBooleanCheckbox value="#{client.skip}"/>
+                    </h:panelGrid>
+                </p:panel>
+                <p:outputLabel value="Please click next" style="font-size: 20px" rendered="#{!client.include}"/>
+            </p:tab>
+            
+            <p:tab id="confirm" title="Confirmation">
+                <p:panel header="Summary - Please check your details">
+                    <h:panelGrid id="confirmation" columns="3" columnClasses="grid,grid,grid">
+                    	<h:panelGrid columns="3" columnClasses="grid,grid,grid">
+                    		
+                    		<p:outputLabel value="Request for: ">
+                    		<p:outputLabel value="#{client.client.transactionName}" style="font-size: 2em"/>
+                            </p:outputLabel>
+                            
+                            <p:outputLabel value="Business Name: " rendered="#{client.businessRequest}">
+                        	<p:outputLabel   value="#{client.client.businessName}" style="font-size: 2em;" rendered="#{client.businessRequest}"/>
+                            </p:outputLabel>
+                            
+                            <p:outputLabel value="Client Name: ">
+                            <p:outputLabel value="#{client.client.lastName}, #{client.client.firstName} #{client.client.middleName}" style="font-size: 2em"/>
+                            </p:outputLabel>
+                            
+                            <p:outputLabel value="Gender: ">
+							<p:outputLabel value="#{client.client.genderName}" style="font-size: 2em"/>
+                            </p:outputLabel>
+							
+							<p:outputLabel value="Civil Status: ">
+							<p:outputLabel value="#{client.client.civilStatusName}" style="font-size: 2em"/>
+                            </p:outputLabel>
+							
+							<p:outputLabel value="Birthday: ">
+                            <p:outputLabel value="#{client.client.birthday}" style="font-size: 2em"/>
+                            </p:outputLabel>
+                        	
+                        	<p:outputLabel value="Birth Place: " rendered="#{client.include}">
+                            <p:outputLabel value="#{client.client.birthPlace}"  style="font-size: 2em"/>
+		                    </p:outputLabel>
+		                    
+		                    <p:outputLabel value="TIN No: " rendered="#{client.include}">
+		                    <p:outputLabel value="#{client.client.tinNo}"  style="font-size: 2em"/>
+		                    </p:outputLabel>
+		                    
+		                    <p:outputLabel value="Height: " rendered="#{client.include}">    
+		                    <p:outputLabel value="#{client.client.height}"  style="font-size: 2em"/>
+		                    </p:outputLabel>
+		                    
+		                    <p:outputLabel value="Weight: " rendered="#{client.include}">
+		                    <p:outputLabel value="#{client.client.weight}"  style="font-size: 2em"/>
+		                    </p:outputLabel>
+		                    
+		                    <p:outputLabel value="Company Name: " rendered="#{client.include}">
+		                    <p:outputLabel value="#{client.client.companyName}"  style="font-size: 2em"/>
+		                    </p:outputLabel>
+		                    
+		                    <p:outputLabel value="Nationality: " rendered="#{client.include}">
+		                    <p:outputLabel value="#{client.client.nationality}"  style="font-size: 2em"/>
+		                    </p:outputLabel>
+		                    
+		                    <p:outputLabel value="Profession: " rendered="#{client.include}">
+		                    <p:outputLabel value="#{client.professionName}"  style="font-size: 2em"/>
+		                    </p:outputLabel>
+		                    
+		                    <p:outputLabel value="Monthly Salary: " rendered="#{client.include}">
+		                    <p:outputLabel value="#{client.client.monthlySalary}" style="font-size: 2em; color: red; font-weight: bold"><f:convertNumber currencySymbol="" type="currency"/></p:outputLabel>
+		                    </p:outputLabel>
+		                    
+                        </h:panelGrid>                        
+                    </h:panelGrid>
+					
+                    <p:commandButton value="Submit" title="Click to save" update="growl imgId idName tranId"  icon="fa fa-floppy-o" actionListener="#{client.save}" process="@this">
+							<p:confirm type="popup" header="Confirmation" message="Are you sure you want to submit this data?" icon="pi pi-exclamation-triangle" />
+					</p:commandButton>
+					<br/><br/><br/>
+                </p:panel>
+            </p:tab>
+            
+         </p:wizard>
+         <br/><br/>
+         <p:commandButton value="Reset" actionListener="#{client.clear}" update="wizardId" oncomplete="PF('wizId').loadStep('transaction', false)"/>
+		</div>
+		
+		<h:outputStylesheet>
+		
+			.clinetCard {
+			  /* Add shadows to create the "card" effect */
+			  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+			  transition: 0.3s;
+			}
+			
+			/* On mouse-over, add a deeper shadow */
+			.clinetCard:hover {
+			  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+			}
+			
+			/* Add some padding inside the card container */
+			.container {
+			  padding: 2px 16px;
+			}
+								
+		</h:outputStylesheet>
+							
+							
+		<div id="numberOutId" style="display: none">
+		
+			<div class="clinetCard">
+			  <p:graphicImage id="imgId" name="images/client/#{client.client.genderName}.png" style="width: 200px; height: 200px"/>
+			  <div class="container">
+			    <h4><b><p:outputLabel id="idName" value="#{client.client.firstName} #{client.client.lastName}" style="font-size: 50px"/></b></h4>
+			    <p><p:outputLabel id="tranId" value="Your transaction no is #{client.client.transNo.split('-')[3]}. Please present this to the collector" style="color: red;font-size: 30px;font-weight: bold"/></p>
+			  </div>
+			</div>
+			<p:commandButton value="Return" onclick="displayWizard();PF('wizId').loadStep('transaction', false)" actionListener="#{client.clear}" update="wizardId"/>
+		</div>					
+		
+		<h:outputScript>
+			
+			function displayTrans(){
+				$("#numberOutId").show(1000);
+				$("#customerId").hide(1000);
+			}
+			function displayWizard(){
+				$("#numberOutId").hide(1000);
+				$("#customerId").show(1000);
+			}
+		
+		</h:outputScript>
+		
+</h:form>	
+</div>
+	
+</h:body>
+</html>
+		

@@ -48,6 +48,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.italia.municipality.lakesebu.controller.AppSetting;
 import com.italia.municipality.lakesebu.controller.Cedula;
+import com.italia.municipality.lakesebu.controller.Client;
 import com.italia.municipality.lakesebu.controller.Collector;
 import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.controller.FishcageBillingStatment;
@@ -62,9 +63,12 @@ import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.controller.ReportFields;
 import com.italia.municipality.lakesebu.controller.Reports;
 import com.italia.municipality.lakesebu.controller.TaxCodeGroup;
+import com.italia.municipality.lakesebu.controller.UserAccessLevel;
 import com.italia.municipality.lakesebu.controller.UserDtls;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.CivilStatus;
+import com.italia.municipality.lakesebu.enm.ClientStatus;
+import com.italia.municipality.lakesebu.enm.ClientTransactionType;
 import com.italia.municipality.lakesebu.enm.FormORTypes;
 import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
@@ -72,6 +76,7 @@ import com.italia.municipality.lakesebu.enm.Months;
 import com.italia.municipality.lakesebu.global.GlobalVar;
 import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.licensing.controller.DocumentFormatter;
+import com.italia.municipality.lakesebu.licensing.controller.Words;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.Currency;
@@ -244,6 +249,13 @@ public class ORListingBean implements Serializable{
 	@Setter @Getter private double monthlySal;
 	@Setter @Getter private double monthlyTax;
 	
+	@Setter @Getter private List<Client> clients;
+	@Setter @Getter private String queYear;
+	@Setter @Getter private String queMonth;
+	@Setter @Getter private String queDay;
+	@Setter @Getter private String queSequence;
+	@Setter @Getter private Client clientSelected;
+	
 	public void loadFinalSelectedRpt() {
 		PrimeFaces pf = PrimeFaces.current();
 		int month = DateUtils.getCurrentMonth();
@@ -280,11 +292,18 @@ public class ORListingBean implements Serializable{
 	@PostConstruct
 	public void init() {
 		
-		
+		int mo = DateUtils.getCurrentMonth();
+		String month = mo <10? "0"+mo : mo+"";
+		String year = DateUtils.getCurrentYear()+"";
+		int dy = DateUtils.getCurrentDay();
+		String day = dy<10? "0"+dy : dy+"";
+		setQueYear(year);
+		setQueMonth(month);
+		setQueDay(day);
 		
 		if(collectorsMode==false) {
 			
-			String mode = AppSetting.getCollectorMode(getUser());
+			String mode = AppSetting.getCollectorMode(getUser().getUserDtls());
 			
 			//if("ON".equalsIgnoreCase(RCDReader.readCollectorMode())){
 			if("ON".equalsIgnoreCase(mode)){
@@ -310,7 +329,7 @@ public class ORListingBean implements Serializable{
 		clearAllFlds();
 		
 		
-		
+		loadClient();
 		
 	}
 	
@@ -518,8 +537,8 @@ public class ORListingBean implements Serializable{
 		setTotalCollectionAll(Currency.formatAmount(amount));
 	}
 	
-	private UserDtls getUser() {
-		return Login.getUserLogin().getUserDtls();
+	private Login getUser() {
+		return Login.getUserLogin();
 	}
 	
 	public void modeMsg() {
@@ -527,7 +546,7 @@ public class ORListingBean implements Serializable{
 		//RCDReader.saveCollectorMode(isCollectorsMode()==true? "ON" : "OFF");
 		setModeName(isCollectorsMode()==true? "Collector Mode On" : "Collector Mode Off");
 		//setCollectorsMode(isCollectorsMode()==true? false : true);
-		AppSetting.updateCollectorMode(isCollectorsMode(), getUser());
+		AppSetting.updateCollectorMode(isCollectorsMode(), getUser().getUserDtls());
 	}
 	
 	public void reloadInit() {
@@ -2032,7 +2051,7 @@ public class ORListingBean implements Serializable{
 			setNotes(null);
 			//init(); //do not load data to reduce loading
 			
-			System.out.println("check collector id : " + getCollectorId());
+			//System.out.println("check collector id : " + getCollectorId());
 			int collectorTemp = or.getCollector().getId();//temporary assigen collector due to method on cedula clearing all fields
 			//if(getSelectOrTypeId()>0) {
 				//namesDataSelected = tmpName;
@@ -2088,6 +2107,15 @@ public class ORListingBean implements Serializable{
 			setFormTypeId(getFormTypeId());
 			
 			updateInfo();//reduce data for reloading
+			
+			
+			//updatating que if available
+			if(getClientSelected()!=null) {
+				Client client = getClientSelected();
+				client.setStatus(ClientStatus.COMPLETED.getId());
+				client.save();
+			}
+			setNotes(null);
 		}
 		
 	}
@@ -4050,9 +4078,635 @@ private void close(Closeable resource) {
 		setSumAmounts(sumA);
 		
 		setTotalAmountSummaryOnly(Currency.formatAmount(sumAmount));
-	
-		
 		
 		print();
+	}
+	
+	public void loadClient() {
+		String sql = " AND (status=" + ClientStatus.QUEUE.getId() + " OR status="+ ClientStatus.SERVING.getId()+" )";
+		if(getUser().getAccessLevel().getLevel()>2) {
+		 sql += " AND (isid=0 OR isid="+ issuedCollectorId +")";
+		}
+		clients = new ArrayList<Client>();
+		
+		if(getQueSequence()!=null) {
+			sql += " AND transno like '%"+ getQueYear() +"-" + getQueMonth() +"-"+ getQueDay() + "-"+ getQueSequence() +"%' ORDER BY transno";
+		}else {
+			sql += " AND transno like '%"+ getQueYear() +"-" + getQueMonth() +"-"+ getQueDay() + "-%' ORDER BY transno";
+		}
+		
+		clients = Client.retrieve(sql, new String[0]);
+		
+		/*
+		 * if(clients!=null && clients.size()==1) { grabQue(clients.get(0)); PrimeFaces
+		 * pf = PrimeFaces.current(); pf.executeScript("PF('panelWgr').toggle()"); }
+		 */
+		
+	}
+	
+	@Setter @Getter private Client clientTmpSelected;
+	public void popUpRemarks(Client c) {
+		if(c.getTransType()==ClientTransactionType.CEDULA.getId()) {
+			grabQue(c);
+		}else {
+			
+			if(c.getRemarks()!=null && !c.getRemarks().isEmpty()) {
+				setClientTmpSelected(c);
+				PrimeFaces pf = PrimeFaces.current();
+				pf.executeScript("PF('dlgPopNotes').show(1000);");
+			}else {
+				grabQue(c);
+			}
+		}
+	}
+	
+	public void cancelRequest() {
+		clientTmpSelected.setStatus(ClientStatus.CANCELLED.getId());
+		clientTmpSelected.setCollectorId(issuedCollectorId);
+		
+		clientTmpSelected.save();
+		PrimeFaces pf = PrimeFaces.current();
+		pf.executeScript("PF('dlgPopNotes').hide(1000);");
+		Application.addMessage(1, "Success", "Successfully cancelled.");
+		
+		loadClient();
+	}
+	
+	public void proceedOR() {
+		PrimeFaces pf = PrimeFaces.current();
+		pf.executeScript("PF('dlgPopNotes').hide(1000);");
+		grabQue(getClientTmpSelected());
+	}
+	
+	public void grabQue(Client c) {
+		
+		
+		setFirstName(c.getFirstName().toUpperCase());
+		try{setMiddleName(c.getMiddleName().toUpperCase());}catch(NullPointerException e) {}
+		setLastName(c.getLastName().toUpperCase());
+		String fullName = c.getLastName() +", " + c.getFirstName() + " " + c.getMiddleName();
+		setPayorName(fullName.toUpperCase());
+		setPlaceOfBirth(c.getBirthPlace());
+		try{setAddress(c.getAddress().toUpperCase());}catch(NullPointerException e) {}
+		//try{setCustomerAddress(c.getAddress().toUpperCase());}catch(NullPointerException e) {}//company address
+		
+		
+		setFormTypeId(FormType.CTC_INDIVIDUAL.getId());
+		ctcFlds(false);
+		if(c.getTransType()==0) {
+		
+			
+			
+			String[] types = Words.getTagName("profession-list").split(",");
+			for(String prof : types) {
+				String[] vals = prof.split("-");
+				if(c.getProfession().equalsIgnoreCase(vals[0])) {
+					setProfessionBusinessNature(vals[1]);
+				}
+			}
+			
+			//setLabel2(0);
+			//setLabel3(0);
+			//setLabel4(0);
+			setAmount1(5.00);
+			//setAmount2(0);
+			//setAmount3(0);
+			//setAmount4(0);
+			
+			setGenderId(Integer.valueOf(c.getGender()));
+			setBirthdate(DateUtils.convertDateString(c.getBirthday(), "yyyy-MM-dd"));
+			setHieghtDateReg(c.getHeight());
+			setWeight(c.getWeight());
+			setTinNo(c.getTinNo());
+			setCivilStatusId(c.getCivilStatus());
+			
+			setPlaceOfBirth(c.getBirthPlace());
+			setCitizenshipOrganization(c.getNationality());
+			
+			ctcFlds(true);
+			
+			setEnableBirthday(false);
+			cedulaInterest();
+			
+			//System.out.println("Profession: "+ getProfessionBusinessNature() +" Salary: " + c.getMonthlySalary());
+			
+			int type = Integer.valueOf(c.getProfession());
+			if(type==0) {//senior citizen
+				setAmount3(0);
+				calculateCedula();
+			}else if(type<=4 || type==25) {//daily income person
+				setAmount3(c.getMonthlySalary());
+				calculateCedula();
+			}else if(type==5 || type==6) {//businessman
+				//setAmount2(c.getMonthlySalary());
+				setMonthlyIncome(c.getMonthlySalary());
+				calculateGrossRptax();
+				
+			}else {
+				setMonthlySal(c.getMonthlySalary());
+				calculateSalariesGross();
+			}
+			
+			
+			
+		}else {
+			setFormTypeId(FormType.AF_51.getId());
+			
+			if(c.getTransType()==ClientTransactionType.BUSINESS_NEW.getId()) {
+				setNotes(c.getBusinessName() + " (New)");
+			}else if(c.getTransType()==ClientTransactionType.BUSINESS_RENEWAL.getId()) { 
+				setNotes(c.getBusinessName() + " (Renew)");
+			}else if (c.getTransType()==ClientTransactionType.QUARTERLY_BUSINESS_PAYMENT.getId()) {
+				setNotes(c.getBusinessName() + " (Quarterly)");
+			}else {
+				setNotes("Request for "+ClientTransactionType.nameId(c.getTransType()));
+			}
+			
+			
+			chargingForOR(c);
+		}
+		
+		//updateORNumber();
+		
+		clients.remove(c);
+		
+		//updating client status to serving
+		c.setStatus(ClientStatus.SERVING.getId());
+		c.setCollectorId(issuedCollectorId);
+		c.save();
+		setClientSelected(c);
+	}
+	
+	private void chargingForOR(Client c) {
+		namesDataSelected = new ArrayList<>();
+		setSelectedPaymentNameMap(new HashMap<Long, PaymentName>());
+		int[] ids = new int[0];
+		double[] amounts = {5.00};
+		
+		if(c.getTransType()==ClientTransactionType.TRAFFICVIOLATION_MAJOR.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			ids[0] = 66;
+			amounts[0] = 300.00;
+		}if(c.getTransType()==ClientTransactionType.TRAFFICVIOLATION_MINOR.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			ids[0] = 66;
+			amounts[0] = 250.00;	
+		}else if(c.getTransType()==ClientTransactionType.POLICE_CLEARANCE_LOCAL.getId()) {
+			ids = new int[4];
+			amounts = new double[4];
+			//dst
+			ids[0] = 53;
+			amounts[0] = 30.00;
+			//sec
+			ids[1] = 20;
+			amounts[1] = 50.00;
+			//police clearane
+			ids[2] = 19;
+			amounts[2] = 20.00;
+			//police misc
+			ids[3] = 36;
+			amounts[3] = 65.00;
+		}else if(c.getTransType()==ClientTransactionType.POLICE_CLEARANCE_ABROAD.getId()) {
+			ids = new int[4];
+			amounts = new double[4];
+			//dst
+			ids[0] = 53;
+			amounts[0] = 30.00;
+			//sec
+			ids[1] = 20;
+			amounts[1] = 50.00;
+			//police clearane
+			ids[2] = 19;
+			amounts[2] = 200.00;
+			//police misc
+			ids[3] = 36;
+			amounts[3] = 65.00;
+		}else if(c.getTransType()==ClientTransactionType.TRANSPORT.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			
+			ids[0] = 34;
+			amounts[0] = 00.00;
+		}else if(c.getTransType()==ClientTransactionType.BAMBOO_TRANSPORT.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			
+			ids[0] = 122;
+			amounts[0] = 00.00;
+		}else if(c.getTransType()==ClientTransactionType.ABACA_TRANSPORT.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			
+			ids[0] = 123;
+			amounts[0] = 00.00;
+		}else if(c.getTransType()==ClientTransactionType.RATTAN_TRANSPORT.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			
+			ids[0] = 124;
+			amounts[0] = 00.00;
+		}else if(c.getTransType()==ClientTransactionType.WOOD_TRANSPORT.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			
+			ids[0] = 125;
+			amounts[0] = 00.00;
+		}else if(c.getTransType()==ClientTransactionType.FURNITURE_TRANSPORT.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			
+			ids[0] = 126;
+			amounts[0] = 00.00;
+		}else if(c.getTransType()==ClientTransactionType.SWINE_TRANSPORT.getId() || c.getTransType()==ClientTransactionType.OTHER_ANIMAL_TRANSPORT.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			
+			ids[0] = 127;
+			amounts[0] = 00.00;
+		}else if(c.getTransType()==ClientTransactionType.POULTRY_TRANSPORT.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			
+			ids[0] = 128;
+			amounts[0] = 00.00;
+		}else if(c.getTransType()==ClientTransactionType.CARABAO_TRANSPORT.getId() || c.getTransType()==ClientTransactionType.COW_TRANSPORT.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			
+			ids[0] = 129;
+			amounts[0] = 00.00;
+		}else if(c.getTransType()==ClientTransactionType.LUMBER_TRANSPORT.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			//dst
+			ids[0] = 214;
+			amounts[0] = 00.00;
+		}else if(c.getTransType()==ClientTransactionType.RETIREMENT_BUSINESS.getId()) {
+			ids = new int[3];
+			amounts = new double[3];
+			//dst
+			ids[0] = 53;
+			amounts[0] = 30.00;
+			//sec
+			ids[1] = 20;
+			amounts[1] = 50.00;
+			//business closure certification
+			ids[2] = 215;
+			amounts[2] = 100.00;
+		}else if(c.getTransType()==ClientTransactionType.LAND_TAX_CLEARANCE.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			//dst
+			ids[0] = 21;
+			amounts[0] = 100.00;
+		}else if(c.getTransType()==ClientTransactionType.BUSINESS_NEW.getId() ||  c.getTransType()==ClientTransactionType.BUSINESS_RENEWAL.getId()) {
+			ids = new int[11];
+			amounts = new double[11];
+			//sanitary fee
+			ids[0] = 33;
+			amounts[0] = 40.00;
+			//mayor's permit
+			ids[1] = 4;
+			amounts[1] = 0.00;
+			//police clearance
+			ids[2] = 19;
+			amounts[2] = 40.00;
+			//other misc income
+			ids[3] = 37;
+			amounts[3] = 40.00;
+			//business plate fee
+			ids[4] = 38;
+			amounts[4] = 350.00;
+			//zonal
+			ids[5] = 9;
+			amounts[5] = 100.00;
+			//occupation tax fee
+			ids[6] = 48;
+			amounts[6] = 100.00;
+			//inspection fees
+			ids[7] = 18;
+			amounts[7] = 40.00;
+			//secretary fee
+			ids[8] = 20;
+			amounts[8] = 50.00;
+			//other business
+			ids[9] = 90;
+			amounts[9] = 00.00;
+			//garbage
+			ids[10] = 28;
+			amounts[10] = 275.00;
+			
+			System.out.println("Diri sa new renew nag sulod");
+			
+		}else if(c.getTransType()==ClientTransactionType.QUARTERLY_BUSINESS_PAYMENT.getId()){
+			ids = new int[2];
+			amounts = new double[2];
+			
+			//other business
+			ids[0] = 90;
+			amounts[0] = 0.00;
+			
+			//businesss surcharge
+			ids[1] = 91;
+			amounts[1] = 0.00;
+			
+			System.out.println("Diri sa quarterly nag sulod");
+		}else if(c.getTransType()==ClientTransactionType.FISHCAGE_NEW.getId() ||  c.getTransType()==ClientTransactionType.FISHCAGE_RENEW.getId()) {
+			ids = new int[9];
+			amounts = new double[9];
+			//sanitary fee
+			ids[0] = 33;
+			amounts[0] = 40.00;
+			//inspection fees
+			ids[1] = 18;
+			amounts[1] = 40.00;
+			//water rental
+			ids[2] = 3;
+			amounts[2] = 0.00;
+			//police clearance
+			ids[3] = 19;
+			amounts[3] = 40.00;
+			//mayor's permit
+			ids[4] = 4;
+			amounts[4] = 0.00;
+			//secretary fee
+			ids[5] = 20;
+			amounts[5] = 50.00;
+			//dst
+			ids[6] = 53;
+			amounts[6] = 30.00;
+			//zonal
+			ids[7] = 9;
+			amounts[7] = 100.00;
+			//banca registration
+			ids[8] = 14;
+			amounts[8] = 75.00;
+			
+		}else if(c.getTransType()==ClientTransactionType.OUTDOOR_ACTIVITIES.getId()) {
+			ids = new int[1];
+			amounts = new double[1];
+			//sanitary fee
+			ids[0] = 166;
+			amounts[0] = 0.00;
+		}else if(c.getTransType()==ClientTransactionType.OTHER_DOCUMENTS.getId()) {
+			ids = new int[3];
+			amounts = new double[3];
+			//documentation
+			ids[0] = 56;
+			amounts[0] = 0.00;
+			//documentation from MPDC
+			ids[1] = 134;
+			amounts[1] = 0.00;
+			//documentation from Tourism
+			ids[2] = 235;
+			amounts[2] = 0.00;
+		}else if(c.getTransType()==ClientTransactionType.BIRTH_REG.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 16;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.BIRTH_CERTIFIED_TRUE_COPY.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 95;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.BIRTH_LIVE_CERTIFICATION.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 96;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.BIRTH_MACHINE_FORM1A.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 138;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.BIRTH_FILING_FEE_9255.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 140;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.BIRTH_CERTIFICATION.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 144;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.BIRTH_MACHINE_COPY_LIVE.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 158;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.BIRTH_DELAYED_REG.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 160;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.BIRTH_MACHINE_COPY.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 165;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.DEATH_CERTIFICATE.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 49;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.DEATH_MACHINE.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 137;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.DEATH_DELAYED_REG.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 154;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.CADAVER_TRANSFER.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 210;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.CADAVER_EXHUMATION.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 50;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.MARIAGE_REGISTRATION.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 17;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.MARRIAGE_APPLICATION.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 139;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.MARRIAGE_CERTIFIED_MACHINE_COPY.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 145;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.MARRIAGE_TRUE_COPY.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 148;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.MARRIAGE_NON_RESIDENT_APPLICATION.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 151;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.MARRIAGE_FORIEGNER_APPLICATION.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 152;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.MARRIAGE_LICENSSE.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 153;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.MARRIAGE_PRE_COUNSELING.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 208;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.COE.getId()) {
+			ids = new int[2];
+			amounts = new double[2];
+			//documentation
+			ids[0] = 116;
+			amounts[0] = 0.00;
+			//DST
+			ids[1] = 53;
+			amounts[1] = 30.00;
+		}else if(c.getTransType()==ClientTransactionType.TAX_DECLARATION.getId()) {
+			ids = new int[4];
+			amounts = new double[4];
+			//Tax Declaration
+			ids[0] = 143;
+			amounts[0] = 100.00;
+			//Other service income
+			ids[1] = 57;
+			amounts[1] = 6.00;
+			//DST
+			ids[2] = 53;
+			amounts[2] = 30.00;
+			//Secretary fee
+			ids[3] = 20;
+			amounts[3] = 50.00;
+		}
+		
+			
+		
+		double amount = 0d;
+		String sql = "";
+		String[] params = new String[0];
+		try {
+			for(int i=0; i< ids.length; i++) {
+				sql = " AND pyid="+ids[i];
+				PaymentName py =  PaymentName.retrieve(sql, params).get(0);
+				py.setAmount(amounts[i]);
+				amount += amounts[i];
+				namesDataSelected.add(py);
+				getSelectedPaymentNameMap().put(py.getId(), py);
+			}
+			setTotalAmount(Currency.formatAmount(amount));
+		}catch(Exception e) {e.printStackTrace();}
+	}
+	public void deleteQueue(Client client) {
+			client.delete();
+			client.setStatus(ClientStatus.DELETED.getId());
+			clients.remove(client);
+			Application.addMessage(1, "Success", "Successfully deleted.");
 	}
 }

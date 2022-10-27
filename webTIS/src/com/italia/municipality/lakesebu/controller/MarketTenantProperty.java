@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
+import com.italia.municipality.lakesebu.enm.BuildingType;
+import com.italia.municipality.lakesebu.enm.Buildings;
+import com.italia.municipality.lakesebu.enm.StallType;
 import com.italia.municipality.lakesebu.utils.LogU;
 
 import lombok.AllArgsConstructor;
@@ -101,7 +104,9 @@ public class MarketTenantProperty {
 					.specificName(rs.getString("specificname"))
 					.isActive(rs.getInt("isactivepr"))
 					.marketTenant(mk)
-					.buildingName(sqlAdd)
+					.buildingName(Buildings.nameId(rs.getInt("buildingid")))
+					.buildingType(BuildingType.nameId(rs.getInt("buildingid")))
+					.stallName(StallType.nameId(rs.getInt("stalltypeid")))
 					.build();
 			
 			

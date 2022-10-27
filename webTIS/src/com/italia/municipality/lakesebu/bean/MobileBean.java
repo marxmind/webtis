@@ -92,6 +92,7 @@ public class MobileBean implements Serializable {
 		String val = ReadConfig.value(AppConf.SERVER_LOCAL);
         HttpSession session = SessionBean.getSession();
 		session.setAttribute("server-local", val);
+		session.setAttribute("theme", "saga");
 		System.out.println("assigning local for mobile: " + val);
 		
 		System.out.println("init mobile...");
