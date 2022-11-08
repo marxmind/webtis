@@ -41,6 +41,7 @@ public class AuthorizationFilter implements Filter{
 									|| reqURI.indexOf("/citizenreg.xhtml")>=0
 											|| reqURI.indexOf("/mobile.xhtml")>=0
 													|| reqURI.indexOf("/loginper.xhtml")>=0
+															|| reqURI.indexOf("/que.xhtml")>=0
 					|| (session != null && session.getAttribute("username") !=null)
 					|| reqURI.indexOf("/public/")>=0
 					|| reqURI.contains("javax.faces.resource")){

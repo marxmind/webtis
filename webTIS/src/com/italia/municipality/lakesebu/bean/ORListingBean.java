@@ -4201,7 +4201,6 @@ private void close(Closeable resource) {
 				//setAmount2(c.getMonthlySalary());
 				setMonthlyIncome(c.getMonthlySalary());
 				calculateGrossRptax();
-				
 			}else {
 				setMonthlySal(c.getMonthlySalary());
 				calculateSalariesGross();

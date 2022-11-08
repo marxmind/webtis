@@ -365,24 +365,27 @@ public class GraphIssuanceBean implements Serializable {
 	    	
 	    	
 	    	BarChartDataSet barDataSet = new BarChartDataSet();
-		    barDataSet.setLabel(year+"");
-		    barDataSet.setBackgroundColor(GraphColorWithBorder.valueId(color));
-		    barDataSet.setBorderColor(GraphColor.valueId(color));
-		    barDataSet.setBorderWidth(1);
+		   
 	    	
 		    color++;
 		    
 		     List<Number> values = new ArrayList<>();
-			
+		     double totalAmount = 0d;
 	        for(int month=1; month<=12; month++) {
 	        	if(mapData!=null && mapData.get(year).containsKey(month)) {
 	        		values.add(mapData.get(year).get(month));
 	        		amounts.put(month, mapData.get(year).get(month));
+	        		totalAmount += mapData.get(year).get(month);
 	        	}else {
 	        		values.add(0);
 	        		amounts.put(month, 0.0);
 	        	}
 		    }
+	        
+	        barDataSet.setLabel(year+"=" + Currency.formatAmount(totalAmount));
+		    barDataSet.setBackgroundColor(GraphColorWithBorder.valueId(color));
+		    barDataSet.setBorderColor(GraphColor.valueId(color));
+		    barDataSet.setBorderWidth(1);
 	        
 	        barDataSet.setData(values);
 	        
@@ -455,7 +458,7 @@ public class GraphIssuanceBean implements Serializable {
 	    
 	    for(int year : mapData.keySet()) {
 	    	
-	        
+	    	double totalAmount = 0d;
 	        for(int col : mapData.get(year).keySet()) {
 	        	
 	        	BarChartDataSet barDataSet = new BarChartDataSet();
@@ -465,6 +468,7 @@ public class GraphIssuanceBean implements Serializable {
 		        	if(mapData!=null && mapData.get(year).containsKey(col)) {
 		        		if(mapData.get(year).get(col).containsKey(month)) {
 		        			values.add(mapData.get(year).get(col).get(month));
+		        			totalAmount += mapData.get(year).get(col).get(month);
 		        		}else {
 		        			values.add(0);
 		        		}
@@ -474,7 +478,7 @@ public class GraphIssuanceBean implements Serializable {
 			    }
 	 	        
 	 	        barDataSet.setData(values);
-	 	       barDataSet.setLabel(getCollectorMap().get(col).getName() +  (isMorethanOneYearSelected==true?  "("+ year +")" : ""));
+	 	       barDataSet.setLabel(getCollectorMap().get(col).getName() +  (isMorethanOneYearSelected==true?  "("+ year +")=" + Currency.formatAmount(totalAmount) : "="+Currency.formatAmount(totalAmount)));
 			    barDataSet.setBackgroundColor(GraphColorWithBorder.valueId(color));
 			    barDataSet.setBorderColor(GraphColor.valueId(color));
 			    barDataSet.setBorderWidth(1);
@@ -608,11 +612,12 @@ public class GraphIssuanceBean implements Serializable {
 	    	
 	        LineChartDataSet dataSet = new LineChartDataSet();
 	        List<Object> values = new ArrayList<>();
-			
+	        double totalAmount = 0d;
 	        for(int month=1; month<=12; month++) {
 	        	if(mapData!=null && mapData.get(year).containsKey(month)) {
 	        		values.add(mapData.get(year).get(month));
 	        		amounts.put(month, mapData.get(year).get(month));
+	        		totalAmount += mapData.get(year).get(month);
 	        	}else {
 	        		values.add(0);
 	        		amounts.put(month, 0.0);
@@ -621,7 +626,7 @@ public class GraphIssuanceBean implements Serializable {
 	        
 	        dataSet.setData(values);
 	        dataSet.setFill(false);
-	        dataSet.setLabel(year+"");
+	        dataSet.setLabel(year+"="+Currency.formatAmount(totalAmount));
 	        dataSet.setBorderColor(GraphColor.valueId(color++));
 	        
 	        data.addChartDataSet(dataSet);
@@ -664,10 +669,10 @@ public class GraphIssuanceBean implements Serializable {
 	    if(getSelectedYear()!=null && getSelectedYear().size()>1) {
 	    	isMorethanOneYearSelected=true;
 	    }
-	    
+	    //Map<Integer, Double> mapTotal = new LinkedHashMap<Integer, Double>();
 	    for(int year : mapData.keySet()) {
 	    	
-	        
+	        double totalAmount = 0d;
 	        for(int col : mapData.get(year).keySet()) {
 	        	
 	        	 LineChartDataSet dataSet = new LineChartDataSet();
@@ -677,6 +682,7 @@ public class GraphIssuanceBean implements Serializable {
 		        	if(mapData!=null && mapData.get(year).containsKey(col)) {
 		        		if(mapData.get(year).get(col).containsKey(month)) {
 		        			values.add(mapData.get(year).get(col).get(month));
+		        			totalAmount += mapData.get(year).get(col).get(month);
 		        		}else {
 		        			values.add(0);
 		        		}
@@ -687,12 +693,12 @@ public class GraphIssuanceBean implements Serializable {
 	 	        
 	 	        dataSet.setData(values);
 		        dataSet.setFill(false);
-		        dataSet.setLabel(getCollectorMap().get(col).getName() +  (isMorethanOneYearSelected==true?  "("+ year +")" : ""));
+		        dataSet.setLabel(getCollectorMap().get(col).getName() +  (isMorethanOneYearSelected==true?  "("+ year +")="+ Currency.formatAmount(totalAmount) : "=" + Currency.formatAmount(totalAmount)));
 		        dataSet.setBorderColor(GraphColor.valueId(color++));
 		        data.addChartDataSet(dataSet);
 	        	
 	        }
-	        
+	       
 	    }
 	    List<String> labels = new ArrayList<>();
 	    for(int month=1; month<=12; month++) {

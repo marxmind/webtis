@@ -71,16 +71,20 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             	
             	<p:toolbar id="tbForm">
     		<f:facet name="left">
+    				<div class="ui-inputgroup">
     				<p:commandButton value="Form Series History" onclick="PF('dlgCSeries').show()"/>
     				<p:commandButton value="Show Income Per Forms" actionListener="#{logformBean.loadFormDetails}" update="tbFormPer formData"/>
+    				</div>
     		</f:facet>
     		<f:facet name="right">
+    			<div class="ui-inputgroup">
     			<p:commandButton update="gridId listForm" value="New" icon="fa fa-file-o" actionListener="#{logformBean.clear}">
     				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to create new?" icon="pi pi-info-circle" />
     			</p:commandButton>
     			<p:commandButton update="gridId listForm" value="Clear" icon="fa fa-trash" action="#{logformBean.clear}">
     				<p:confirm type="popup" header="Confirmation" message="Are you sure you want clear all fields?" icon="pi pi-info-circle" />
     			</p:commandButton>
+    			</div>
     		</f:facet>
 			</p:toolbar> 
             	
@@ -209,10 +213,12 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     				
     		</f:facet>
     		<f:facet name="right">
+    			<div class="ui-inputgroup">
     			<p:commandButton id="saveNormalId" update="gridId listForm reportData colMapId msg" value="Save Only" icon="fa fa-floppy-o" actionListener="#{logformBean.saveData}">
     				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save this data? Once saved, previous report is no longer allowed for editing." icon="pi pi-info-circle" />
     			</p:commandButton>
     			<p:commandButton id="saveNotNormalId" update="ctDtlsId" value="Save With Ticket" onclick="PF('dlgCash').show()"/>
+    			</div>
     		</f:facet>
 			</p:toolbar>
             </div>
@@ -331,7 +337,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	<p:dialog widgetVar="dlgCSeries" showHeader="false" width="1200" height="850" position="center top">
 		
-			<p:toolbar id="tblFrm" style="#{skin.toolbar}">
+			<p:toolbar id="tblFrm">
 			
 			
 			
@@ -355,6 +361,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				
 				<p:column headerText="View" width="20">
             		<p:commandButton icon="fa fa-search" update="dataIssued idAvail" actionListener="#{logformBean.loadIssuedSeries(rpt)}"/>
+            	</p:column>
+            	
+            	<p:column headerText="Stab#" width="20">
+            		<p:outputLabel value="#{rpt.stabNo}"/>
             	</p:column>
 				
 				<p:column headerText="Status" width="50">
@@ -387,7 +397,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             		<p:outputLabel value="#{rpt.collector.name}"/>
             	</p:column>
 				
-				<p:column headerText="OLd Series" width="50">
+				<p:column headerText="Old Series" width="50">
             		<p:outputLabel value="#{rpt.beginningNo}"/>
             	</p:column>
             	
@@ -600,6 +610,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<p:dialog widgetVar="dlgPerForms" width="1000" position="center top" height="700" header="Forms Details Collection" closeOnEscape="true" closable="false">
 		<p:toolbar id="tbFormPer" style="#{skin.toolbar}">
     		<f:facet name="left">
+    				<div class="ui-inputgroup">
     				<p:selectOneMenu id="frmColFormId" value="#{logformBean.collectorIdSearch}" style="width: 12em" filter="true" filterMatchMode="contains">
 						<f:selectItems value="#{logformBean.collectorSearch}"/>
 						<p:ajax event="change" listener="#{logformBean.loadForms}" update="formData" />
@@ -614,7 +625,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     				<p:calendar value="#{logformBean.toFormDate}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 12em">
     					<p:ajax event="dateSelect" listener="#{logformBean.loadForms}" update="formData" />
     				</p:calendar>
-    				
+    				</div>
 			</f:facet>		
     		<f:facet name="right">
     				<p:commandButton value="Close" onclick="PF('dlgPerForms').hide()"/>
