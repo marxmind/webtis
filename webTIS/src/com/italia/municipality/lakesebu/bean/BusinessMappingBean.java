@@ -40,8 +40,6 @@ import org.primefaces.model.map.MapModel;
 import org.primefaces.model.map.Marker;
 
 import com.italia.municipality.lakesebu.controller.BusinessMapping;
-import com.italia.municipality.lakesebu.controller.ReadConfig;
-import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.global.GlobalVar;
 
 import lombok.Getter;
@@ -620,7 +618,7 @@ public class BusinessMappingBean implements Serializable{
 	
 	public void openMap() {
 		allBusiness = new DefaultMapModel();
-		if(getMaps()!=null && getMaps().size()<=10) {
+		if(getMaps()!=null && getMaps().size()<=100) {
 			setCenterMap(getMaps().get(0).getLatitude()+", "+getMaps().get(0).getLongtitude());
 		}else {
 			setCenterMap("6.2238228, 124.7116173");
@@ -639,41 +637,33 @@ public class BusinessMappingBean implements Serializable{
 			mapBiz.put(name, bz);
 			allBusiness.addOverlay(new Marker(new LatLng(Double.valueOf(bz.getLatitude()), Double.valueOf(bz.getLongtitude())), name, bz.getPictureOfBusiness(),markerColor));
 		}
-		
-		//allBusiness.addOverlay(new Marker(new LatLng(6.2176539, 124.7049911), "Solid View Hospitality Group Corporation", 2L));
-		//allBusiness.addOverlay(new Marker(new LatLng(6.2238228, 124.7116173), "Millones Phototechnics Photography Services", 2L));
-		//allBusiness.addOverlay(new Marker(new LatLng(6.2040117, 124.730875), "Dreamweavers Hill Resort", 2L));
-		//allBusiness.addOverlay(new Marker(new LatLng(36.883707, 30.689216), "Ataturk Parki", 2L));
-
-        /*Marker marker3 = new Marker(new LatLng(36.879703, 30.706707), "Karaalioglu Parki", 3L,
-                "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png");
-        allBusiness.addOverlay(marker3);*/
-
-        /*Marker marker4 = new Marker(new LatLng(36.885233, 30.702323), "Kaleici", 4L);
-        Symbol symbol = new Symbol(
-                "M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945"
-              + " 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75"
-              + " 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906"
-              + " 2.039-4.945t4.945-2.039z");
-        symbol.setFillColor("#fff");
-        symbol.setFillOpacity(.7);
-        symbol.setScale(2.0);
-        symbol.setAnchor(new Point(15.0, 30.0));
-        marker4.setIcon(symbol);
-        allBusiness.addOverlay(marker4);*/
 	}
 	
 	public void onMarkerSelect(OverlaySelectEvent event) {
 		
         marker = (Marker) event.getOverlay();
-        //System.out.println("Marker: title: " + marker.getTitle());
-        //System.out.println("marker data: " + marker.getData());
         copyPhoto(marker.getData()+"");
         setSelectedMapData(getMapBiz().get(marker.getTitle()));
         
         System.out.println("Name:" + getSelectedMapData().getName() + " owner: " + getSelectedMapData().getOwner());
         
     }
+	
+	public void openSelectedBusinessInMap(BusinessMapping bz) {
+		setCenterMap(bz.getLatitude()+"," + bz.getLongtitude());
+		allBusiness = new DefaultMapModel();
+		String noPermit = "https://maps.google.com/mapfiles/ms/micons/red-dot.png";
+		String withPermit = "https://maps.google.com/mapfiles/ms/micons/green-dot.png";
+		mapBiz = new LinkedHashMap<String, BusinessMapping>();
+		String name = "";
+		String markerColor = withPermit;
+		if(bz.getName()!=null && !bz.getName().isEmpty()) {name =  bz.getName().toUpperCase();}else {name =  bz.getOwner().toUpperCase();}
+		if("no".equalsIgnoreCase(bz.getHasPermit())){
+			markerColor = noPermit;
+		}
+		mapBiz.put(name, bz);
+		allBusiness.addOverlay(new Marker(new LatLng(Double.valueOf(bz.getLatitude()), Double.valueOf(bz.getLongtitude())), name, bz.getPictureOfBusiness(),markerColor));
+	}
 
     public Marker getMarker() {
         return marker;

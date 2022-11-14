@@ -71,8 +71,9 @@ xmlns:pe="http://primefaces.org/ui/extensions"
                          >
                          
                          <f:facet name="{Exporters}">
-                         	  <p:commandButton id="btn" icon="pi pi-globe" value="Show Map" onclick="PF('dlg').show();" actionListener="#{mapping.openMap}" update="gmap"/>
-	                          <p:menuButton id="exInqiD" value="Exports" style="float: right">
+                         	  <div class="ui-inputgroup" style="float: right">
+                         	  <p:commandButton id="btn" icon="fa fa-map"  value="Show Map" onclick="PF('dlg').show();" actionListener="#{mapping.openMap}" update="gmap"/>
+	                          <p:menuButton id="exInqiD" value="Exports" >
 	                          	<p:menuitem value="Export Excel All Data">
 	                          		<p:dataExporter type="xlsxstream" target="mapDataId" fileName="mappingData"/>
 	                          	</p:menuitem>
@@ -80,12 +81,16 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 	                          		<p:dataExporter type="xlsxstream" target="mapDataId" fileName="mappingData" pageOnly="true"/>
 	                          	</p:menuitem>
 	                          </p:menuButton>
-                          	 
+                          	 </div>
                           </f:facet>
                          
                          <p:column headerText="#" width="20">
 		            		<p:outputLabel  value="#{pt.number}"/>
 		            	 </p:column>
+                         
+                         <p:column headerText="Map" width="20">
+                         	<p:commandButton icon="fa fa-map" actionListener="#{mapping.openSelectedBusinessInMap(pt)}"  update="gmap" onclick="PF('dlg').show();"/>
+                         </p:column>
                          
                          <p:column headerText="Date" width="30">
 		            		<p:outputLabel  value="#{pt.dateTrans}"/>
@@ -103,7 +108,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		            		<p:outputLabel  value="#{pt.address}"/>
 		            	 </p:column>
 		            	
-		            	 <p:column headerText="Has Permit" width="50">
+		            	 <p:column headerText="Permit" width="50">
 		            		<p:outputLabel  value="#{pt.hasPermit}"/>
 		            	 </p:column>
 		            	 
@@ -193,11 +198,11 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 	
 	<script src="https://maps.google.com/maps/api/js?sensor=false"></script>
 
-
-		
-		
+	
 		<p:dialog id="gmapDialog" widgetVar="dlg" width="625" height="400" modal="true">
-		    <p:gmap id="gmap" center="#{mapping.centerMap}" zoom="20" type="HYBRID" style="width:100%;height:400px" model="#{mapping.allBusiness}">
+		
+		    <p:gmap id="gmap" center="#{mapping.centerMap}" widgetVar="myMap" zoom="15" type="HYBRID" style="width:100%;height:400px" model="#{mapping.allBusiness}">
+		    	
 		    	<p:ajax event="overlaySelect" listener="#{mapping.onMarkerSelect}"/>
 		    	<p:gmapInfoWindow id="infoWindow">
                 <p:outputPanel style="text-align: center; display: block; margin: auto">
@@ -209,14 +214,14 @@ xmlns:pe="http://primefaces.org/ui/extensions"
                     	<p:outputLabel value="Business Name: #{mapping.selectedMapData.name}" />
                     	<p:outputLabel value="Line of Business: #{mapping.selectedMapData.lineOfBusiness}" />
                     	<p:outputLabel value="Owner: #{mapping.selectedMapData.owner}" />
-                    	<p:outputLabel value="This establishment has a Permit?: #{mapping.selectedMapData.hasPermit}" />
+                    	<p:outputLabel value="Business Permit: #{mapping.selectedMapData.hasPermit}" />
                     	<p:outputLabel value="Address: #{mapping.selectedMapData.address}" />
                     	<p:outputLabel value="Rented: #{mapping.selectedMapData.rented}" rendered="#{mapping.selectedMapData.rented.equals('Yes')}"/>
                     	<p:outputLabel value="Building Owner: #{mapping.selectedMapData.buildingOwnerNamer}" rendered="#{mapping.selectedMapData.rented.equals('Yes')}"/>
                     	<p:outputLabel value="Amount rent: #{mapping.selectedMapData.amountRented}" rendered="#{mapping.selectedMapData.rented.equals('Yes')}"/>
                     	<p:outputLabel value="Remarks: #{mapping.selectedMapData.remarks}" />
                     </p:panelGrid>
-
+				
                 </p:outputPanel>
             </p:gmapInfoWindow>
 		    </p:gmap>
