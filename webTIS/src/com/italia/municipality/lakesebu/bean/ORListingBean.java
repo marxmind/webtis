@@ -54,6 +54,7 @@ import com.italia.municipality.lakesebu.controller.Department;
 import com.italia.municipality.lakesebu.controller.FishcageBillingStatment;
 import com.italia.municipality.lakesebu.controller.GenCollection;
 import com.italia.municipality.lakesebu.controller.Login;
+import com.italia.municipality.lakesebu.controller.NationalIDJsonData;
 import com.italia.municipality.lakesebu.controller.NumberToWords;
 import com.italia.municipality.lakesebu.controller.OR51;
 import com.italia.municipality.lakesebu.controller.ORListing;
@@ -65,6 +66,7 @@ import com.italia.municipality.lakesebu.controller.Reports;
 import com.italia.municipality.lakesebu.controller.TaxCodeGroup;
 import com.italia.municipality.lakesebu.controller.UserAccessLevel;
 import com.italia.municipality.lakesebu.controller.UserDtls;
+import com.italia.municipality.lakesebu.enm.AccessLevel;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.CivilStatus;
 import com.italia.municipality.lakesebu.enm.ClientStatus;
@@ -255,6 +257,28 @@ public class ORListingBean implements Serializable{
 	@Setter @Getter private String queDay;
 	@Setter @Getter private String queSequence;
 	@Setter @Getter private Client clientSelected;
+	@Setter @Getter private String searchParam;
+	@Setter @Getter private List<ORListing> orRpts;
+	@Setter @Getter private int formIdRpt;
+	@Setter @Getter private List formsRpt;
+	@Setter @Getter private String totalCollectionToday;
+	@Setter @Getter private String checkSeriesForm;
+	@Setter @Getter private List<ORListing> orsSeries;
+	@Setter @Getter private List<ORListing> orsDuplicate;
+	@Setter @Getter private String orNumberRedColor="";
+	@Setter @Getter private List<Date> rangeDate;
+	
+	public void validateSeries() {
+		boolean isExist = ORListing.isExistingSeries(getCollectorId(), getOrNumber(), getFormTypeId());
+		if(isExist) {
+			setOrNumberRedColor("background-color: red; color: black; font-weight: bold");
+			String val = getOrNumber().substring(0, getOrNumber().length()-1);
+			setOrNumber(val);
+			Application.addMessage(2, "Warning", "Series is existing please change");
+		}else {
+			setOrNumberRedColor("");
+		}
+	}
 	
 	public void loadFinalSelectedRpt() {
 		PrimeFaces pf = PrimeFaces.current();
@@ -291,6 +315,12 @@ public class ORListingBean implements Serializable{
 	
 	@PostConstruct
 	public void init() {
+		Date dateRpt = DateUtils.getDateToday();
+		rangeDate = new ArrayList<Date>();
+		rangeDate.add(dateRpt);
+		rangeDate.add(dateRpt);
+		System.out.println("range size:"+getRangeDate().size());
+		
 		
 		int mo = DateUtils.getCurrentMonth();
 		String month = mo <10? "0"+mo : mo+"";
@@ -490,9 +520,12 @@ public class ORListingBean implements Serializable{
 		}
 		
 		formTypeSearch = new ArrayList<>();
+		formsRpt = new ArrayList<>();
 		formTypeSearch.add(new SelectItem(0, "All Forms"));
+		formsRpt.add(new SelectItem(0, "All Forms"));
 		for(FormType form : FormType.values()) {
 			formTypeSearch.add(new SelectItem(form.getId(), form.getName() + " " + form.getDescription()));
+			formsRpt.add(new SelectItem(form.getId(), form.getName() + " " + form.getDescription()));
 		}
 		
 		rptsCombId = 0;
@@ -690,6 +723,7 @@ public class ORListingBean implements Serializable{
 			String num = getLimitData();
 			num = num.replace(".0", "");
 			num = num.replace(".00", "");
+			sql += " ORDER BY  orl.orid DESC ";
 			sql += " LIMIT " + num;
 		}
 		
@@ -1978,8 +2012,10 @@ public class ORListingBean implements Serializable{
 				or.setForminfo(getAddress());//this is a backup address use for OR 51
 			}
 			
-			
-			
+			//double check datetrans if null
+			if(getDateTrans()==null) {
+				setDateTrans(new Date());
+			}
 			
 			or.setNotes(getNotes());//this for remarks you can add remarks except ctc and corporation
 			or.setStatus(getStatusId());
@@ -2360,6 +2396,8 @@ public class ORListingBean implements Serializable{
 	}
 	
 	public void deleteRow(ORListing or) {
+		Login in = getUser();
+		if(in.getAccessLevel().getLevel()==AccessLevel.DEVELOPER.getId()) {
 		or.delete();
 		init();
 		clearFlds();
@@ -2374,7 +2412,10 @@ public class ORListingBean implements Serializable{
 			}
 		}catch(Exception e) {}
 		
-		Application.addMessage(1, "Sucess", "Successfully deleted.");
+			Application.addMessage(1, "Sucess", "Successfully deleted.");
+		}else {
+			Application.addMessage(2, "Warning", "You dont have a right to delete this transaction. Please contact admin for deletion");
+		}
 	}
 	
 	public void printOR(ORListing py) {
@@ -2410,6 +2451,7 @@ public class ORListingBean implements Serializable{
 	  		param.put("PARAM_WORDS", numberToWords.changeToWords(amnt).toUpperCase().replace("/", " / ") );
 	  		param.put("PARAM_CASHCHECK", "CASH");
 	  		param.put("PARAM_COLLECTING_OFFICER", "FERDINAND L. LOPEZ\n" + DateUtils.getCurrentDateMMDDYYYYTIME());
+	  		//param.put("PARAM_COLLECTING_OFFICER", "FERDINAND L. LOPEZ");
 			
 	  		List<OR51> ors = new ArrayList<OR51>();
 			if(FormType.CTC_INDIVIDUAL.getId()==py.getFormType() || FormType.CTC_CORPORATION.getId()==py.getFormType()) {
@@ -2467,7 +2509,8 @@ public class ORListingBean implements Serializable{
 			}else { //Form51
 			
 				if(FormType.AF_51.getId()==py.getFormType()){ 
-					param.put("PARAM_PAYOR", name + " - " + py.getForminfo());
+					//param.put("PARAM_PAYOR", name + " - " + py.getForminfo());
+					param.put("PARAM_PAYOR", name);
 				}
 				
 		  		int cnt = 0;
@@ -3569,8 +3612,6 @@ private void close(Closeable resource) {
 			scs += "$('#middleId').css('border', '3px solid black');";
 			scs += "$('#lastId').css('border', '3px solid black');";
 			scs +="PF('dlgCustomerInfo').hide(1000)";
-			//PrimeFaces.current().dialog().showMessageInDialog(new FacesMessage(FacesMessage.SEVERITY_INFO, "What we do in life", "Echoes in eternity."););
-			//PrimeFaces.current().dialog().showMessageDynamic(new FacesMessage(FacesMessage.SEVERITY_INFO, "What we do in life", "Echoes in eternity."), isOk);
 			setPayorName(getLastName().toUpperCase() + ", " + getFirstName().toUpperCase()  +" "+ getMiddleName().toUpperCase().substring(0,1) + ". ");
 			checkClientNameInDB();
 		}
@@ -3597,6 +3638,8 @@ private void close(Closeable resource) {
                 .getExternalContext()
                 .getRequestParameterMap()
                 .get("qrcode");
+		
+		
 		
 		System.out.println("jsondata: " + jsonData);
 		PrimeFaces pf = PrimeFaces.current();
@@ -3663,17 +3706,7 @@ private void close(Closeable resource) {
 				setCustomerDataSelected(cs);
 				pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
 			}else {
-				//Application.addMessage(1, "Error", "This QRCode is not yet registered... Please register it first in Citizen Registration Page");
 				
-				
-				/*completNameOfClient(fullname);
-				
-				cs = Customer.builder()
-						.firstname(getFirstName())
-						.middlename(getMiddleName())
-						.lastname(getLastName())
-						.fullname(fullname)
-						.build();*/
 				
 				cs = Customer.builder()
 						.firstname(first)
@@ -3690,60 +3723,62 @@ private void close(Closeable resource) {
 				pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
 			}
 			
+			
+			
+		}else {
+		
+			NationalIDJsonData data = new NationalIDJsonData(jsonData);
+			if(data!=null && !data.getPCN().isEmpty()) {	
+				System.out.println("Checking PCN: " + data.getPCN());
 			/*
-			String first = "";
-			String middle = "";
-			String last = "";
-			String address = "";
-			String birthdate = DateUtils.getCurrentDateYYYYMMDD();
-			String gender = "1";
-			String civilStatus = "1";
+			String sql = " AND (cus.qrcode like '%"+ jsonData +"%' OR ";
+			sql += " cus.fullname like '%"+ jsonData +"%' OR ";
+			sql += " cus.nationalid like '%"+ jsonData +"%' ";
 			
-			try {first = name[0];}catch(IndexOutOfBoundsException e) {}
-			try {middle = name[1];}catch(IndexOutOfBoundsException e) {}
-			try {last = name[2];}catch(IndexOutOfBoundsException e) {}
-			try {address = name[3];}catch(IndexOutOfBoundsException e) {}
-			try {birthdate = name[4];}catch(IndexOutOfBoundsException e) {}
-			try {gender = name[5];}catch(IndexOutOfBoundsException e) {}
-			try {civilStatus = name[6];}catch(IndexOutOfBoundsException e) {}
+			sql += " )";*/
+				
+			String sql = " AND cus.nationalid='"+ data.getPCN().trim() +"'";	
+				
+			String[] params = new String[0];
 			
-			try {
-			System.out.println("firstname: " + first +"\nmiddlename: " + middle +
-					"\nlastname: " + last + "\naddress: " + address + "\nbirthdate: " + birthdate + "\ngender: " + gender + "\nStatus: " + civilStatus
-					);
-			}catch(Exception e) {}
+			List<com.italia.municipality.lakesebu.licensing.controller.Customer> cust = com.italia.municipality.lakesebu.licensing.controller.Customer.retrieve(sql, params);
 			
-			Customer cus = Customer.builder()
-					.firstname(first)
-					.middlename(middle)
-					.lastname(last)
-					.birthdate(birthdate)
-					.gender(gender)
-					.civilStatus(Integer.valueOf(civilStatus))
-					.fullname(last + ", " + first + " " + middle)
-					.build();
-					*/
+				if(cust!=null && cust.size()>0) {
+					setCustomerDataSelected(cust.get(0));
+					setFullnameQR(cust.get(0).getFullname());
+			    	pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
+				}else {
+					com.italia.municipality.lakesebu.licensing.controller.Customer cus = com.italia.municipality.lakesebu.licensing.controller.Customer.builder()
+							.nationalId(data.getPCN())
+							.firstname(data.getFName())
+							.middlename(data.getMName())
+							.lastname(data.getLName())
+							.completeAddress(data.getPOB())
+							.bornplace(data.getPOB())
+							.birthdate(data.getDOB())
+							.gender(data.getSex().equalsIgnoreCase("Male")? "1" : "2")
+							.fullname(data.getLName()+", " + data.getFName() + " " +data.getMName())
+							.build();
+					
+					setFullnameQR(data.getLName() + ", " + data.getFName() + " " + data.getMName());
+					setCustomerDataSelected(cus);
+					pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
+				}
 			
-		}else {
-		
-		
-		
-		String sql = " AND (cus.qrcode like '%"+ jsonData +"%' OR ";
-		sql += " cus.fullname like '%"+ jsonData +"%' ";
-		sql += " )";
-		String[] params = new String[0];
-		
-		List<com.italia.municipality.lakesebu.licensing.controller.Customer> cust = com.italia.municipality.lakesebu.licensing.controller.Customer.retrieve(sql, params);
-		
-		if(cust!=null && cust.size()>0) {
-			setCustomerDataSelected(cust.get(0));
-			setFullnameQR(cust.get(0).getFullname());
-	    	pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
-		}else {
-			Application.addMessage(1, "Error", "This QRCode is not yet registered... Please register it first in Citizen Registration Page");
-		}
-		
-		
+			}else {
+				String sql = " AND cus.qrcode='%"+ jsonData +"%'";
+				String[] params = new String[0];
+				
+				List<com.italia.municipality.lakesebu.licensing.controller.Customer> cust = com.italia.municipality.lakesebu.licensing.controller.Customer.retrieve(sql, params);
+				
+					if(cust!=null && cust.size()>0) {
+						setCustomerDataSelected(cust.get(0));
+						setFullnameQR(cust.get(0).getFullname());
+				    	pf.executeScript("PF('dlgCam').hide();PF('dlgSelection').show();");
+					}else {
+						Application.addMessage(1, "Error", "This QRCode is not yet registered... Please register it first in Citizen Registration Page");
+					}
+			}
 		}
 		
 	}
@@ -4708,4 +4743,159 @@ private void close(Closeable resource) {
 			clients.remove(client);
 			Application.addMessage(1, "Success", "Successfully deleted.");
 	}
+	
+	public void noFileterSearch() {
+		orRpts = new ArrayList<ORListing>();
+		String sql = "";
+		if(getSearchParam()!=null && !getSearchParam().isEmpty()) {
+			
+			if(getSearchParam().contains("-")) {
+				String[] val = getSearchParam().split("-");
+				sql += " AND (o.ornumber>='"+ val[0] +"' AND o.ornumber<='"+ val[1] +"' )";
+			}else {
+				sql += " AND (o.ornumber like '%"+ getSearchParam() +"%' OR c.fullname like '%"+ getSearchParam() +"%' )";
+			}
+			
+			if(getFormIdRpt()!=0) {
+				sql += " AND o.aform=" + getFormIdRpt();
+			}
+			
+			Login in = getUser();
+			
+			if(AccessLevel.DEVELOPER.getId()== in.getAccessLevel().getLevel() || AccessLevel.ADMIN.getId()==in.getAccessLevel().getLevel()) {
+				
+			}else {
+				sql += " AND o.isid=" + issuedCollectorId;
+			}
+			
+			sql += " ORDER BY o.ornumber,o.ordatetrans";
+			
+			Object[] objs = ORListing.getReport(sql);
+			double totalAmount = (Double)objs[0];
+			setTotalCollectionToday(Currency.formatAmount(totalAmount));
+			List<ORListing> ors = (List<ORListing>)objs[1];
+			orRpts = ors;
+		
+		}
+	}
+	
+	public void loadAllRpt() {
+		orRpts = new ArrayList<ORListing>();
+		//String dateSelected = DateUtils.convertDate(getDateRpt(), "yyyy-MM-dd");
+		String sql = "";//"and o.ordatetrans='"+ dateSelected +"'";
+		
+		
+		if(getRangeDate()!=null && getRangeDate().size()==2) {
+			System.out.println("range date 2");
+			sql = " AND (o.ordatetrans>='"+ DateUtils.convertDate(getRangeDate().get(0), "yyyy-MM-dd") +"' AND o.ordatetrans<='"+ DateUtils.convertDate(getRangeDate().get(1), "yyyy-MM-dd") +"')";
+		}else if(getRangeDate()!=null && getRangeDate().size()==1){
+			sql = " AND o.ordatetrans='"+ DateUtils.convertDate(getRangeDate().get(0),"yyyy-MM-dd") +"'";
+			System.out.println("range date 1");
+		}else {
+			System.out.println("no range date");
+			sql = " AND o.ordatetrans='"+ DateUtils.getCurrentDateYYYYMMDD() +"'";
+		}
+		
+		if(getSearchName()!=null && !getSearchParam().isEmpty()) {
+			sql += " AND (o.ornumber like '%"+ getSearchParam() +"%' OR c.fullname like '%"+ getSearchParam() +"%' )";
+		}
+		
+		if(getFormIdRpt()!=0) {
+			sql += " AND o.aform=" + getFormIdRpt();
+		}
+		
+		Login in = getUser();
+		
+		if(AccessLevel.DEVELOPER.getId()== in.getAccessLevel().getLevel() || AccessLevel.ADMIN.getId()==in.getAccessLevel().getLevel()) {
+			
+		}else {
+			sql += " AND o.isid=" + issuedCollectorId;
+		}
+		
+		sql += " ORDER BY o.ornumber,o.ordatetrans";
+		
+		Object[] objs = ORListing.getReport(sql);
+		double totalAmount = (Double)objs[0];
+		setTotalCollectionToday(Currency.formatAmount(totalAmount));
+		List<ORListing> ors = (List<ORListing>)objs[1];
+		orRpts = ors;
+	}
+	
+	public void checkSeries() {
+		if(!getCheckSeriesForm().isEmpty() && getCheckSeriesForm().contains("-")) {
+			String[] sers = getCheckSeriesForm().split("-");
+			long startSeries=Long.valueOf(sers[0]);
+			long endSeries=Long.valueOf(sers[1]);;
+			int size = sers[0].length();
+			Map<String, String> orMap = new LinkedHashMap<String, String>();
+			int count = 0;
+			for(long series=startSeries; series<=endSeries; series++) {
+				String ornumber = correctSeriesNumber(series,size);
+				orMap.put(ornumber, ornumber);
+				count++;
+			}
+			String sql = " AND ( ornumber>='"+ sers[0] +"' AND ornumber<='"+ sers[1] +"') ";
+			sql += "ORDER BY ornumber";
+			Map<String, ORListing> ors = ORListing.retrieveORSeries(sql);
+			orsSeries = new ArrayList<ORListing>();
+			for(String ornumber : orMap.keySet()) {
+				if(ors.containsKey(ornumber)) {
+					orsSeries.add(ors.get(ornumber));
+				}else {
+					orsSeries.add(ORListing.builder().orNumber(ornumber).statusName("Not Recorded").build());
+				}
+			}
+		}
+	}
+	private String correctSeriesNumber(long ornumber, int formSeriesLen) {
+		String tmpNumber = ornumber+"";
+		int size = tmpNumber.length();
+		String newOrNumber="";
+		if(formSeriesLen==8) {//cedula
+			switch(size) {
+			case 1 : newOrNumber="0000000"+ornumber; break;
+			case 2 : newOrNumber="000000"+ornumber; break;
+			case 3 : newOrNumber="00000"+ornumber; break;
+			case 4 : newOrNumber="0000"+ornumber; break;
+			case 5 : newOrNumber="000"+ornumber; break;
+			case 6 : newOrNumber="00"+ornumber; break;
+			case 7 : newOrNumber="0"+ornumber; break;
+			case 8 : newOrNumber=""+ornumber; break;
+			}
+		}else {//51,56,etc
+			switch(size) {
+			case 1 : newOrNumber="000000"+ornumber; break;
+			case 2 : newOrNumber="00000"+ornumber; break;
+			case 3 : newOrNumber="0000"+ornumber; break;
+			case 4 : newOrNumber="000"+ornumber; break;
+			case 5 : newOrNumber="00"+ornumber; break;
+			case 6 : newOrNumber="0"+ornumber; break;
+			case 7 : newOrNumber=""+ornumber; break;
+			}
+		}
+		
+		return newOrNumber;
+	}
+	
+	public void viewDuplicate() {
+		orsDuplicate = ORListing.checkDuplicateOR();
+		PrimeFaces pf = PrimeFaces.current();
+		if(orsDuplicate!=null && orsDuplicate.size()>0) {
+			pf.executeScript("PF('dlgDuplicateSeries').show(1000)");
+		}else {
+			Application.addMessage(1, "No Data", "No Data to be show");		}
+	}
+	
+	public void deleteDuplicate(ORListing or) {
+		Login in = getUser();
+		if(in.getAccessLevel().getLevel()==AccessLevel.DEVELOPER.getId()) {
+			or.delete();
+			getOrsDuplicate().remove(or);
+			Application.addMessage(1, "Sucess", "Successfully deleted.");
+		}else {
+			Application.addMessage(2, "Warning", "You dont have a right to delete this transaction. Please contact admin for deletion");
+		}
+		
+	}
+	
 }

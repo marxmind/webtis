@@ -87,10 +87,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 			</p:selectCheckboxMenu>
 			
 			<p:outputLabel value="Employee:"/>
-			<p:inputText value="#{dtrBean.employeeName}" a:placeholder="Employee Name" style="width: 12em"/>
+			<p:inputText value="#{dtrBean.employeeName}" placeholder="Employee Name" style="width: 12em"/>
 			
 			<p:outputLabel value="In-Charge:"/>
-			<p:inputText value="#{dtrBean.adminPerson}" a:placeholder="In-Charge" style="width: 12em"/>
+			<p:inputText value="#{dtrBean.adminPerson}" placeholder="In-Charge" style="width: 12em"/>
 			
 			<p:commandButton value="Generate DTR" actionListener="#{dtrBean.generateDTR}"  update="dataTransId"/>
 			<h:commandLink title="Export DTR in pdf format" target="_blank" ajax="false" immediate="false"  actionListener="#{dtrBean.printReportAll}" a:data-step="12" a:data-intro="This function use to export this table to pdf file.">

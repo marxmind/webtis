@@ -10,6 +10,11 @@ import java.util.List;
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.utils.LogU;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * 
  * @author Mark Italia
@@ -17,7 +22,10 @@ import com.italia.municipality.lakesebu.utils.LogU;
  * @version 1.0
  *
  */
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
 public class Collector {
 
 	private int id;
@@ -479,36 +487,16 @@ public class Collector {
 	}
 	
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public int getIsActive() {
-		return isActive;
-	}
-	public void setIsActive(int isActive) {
-		this.isActive = isActive;
-	}
-	public int getIsResigned() {
-		return isResigned;
-	}
-	public void setIsResigned(int isResigned) {
-		this.isResigned = isResigned;
-	}
-	public Department getDepartment() {
-		return department;
-	}
-	public void setDepartment(Department department) {
-		this.department = department;
-	}
+	/*
+	 * public int getId() { return id; } public void setId(int id) { this.id = id; }
+	 * public String getName() { return name; } public void setName(String name) {
+	 * this.name = name; } public int getIsActive() { return isActive; } public void
+	 * setIsActive(int isActive) { this.isActive = isActive; } public int
+	 * getIsResigned() { return isResigned; } public void setIsResigned(int
+	 * isResigned) { this.isResigned = isResigned; } public Department
+	 * getDepartment() { return department; } public void setDepartment(Department
+	 * department) { this.department = department; }
+	 */
 	
 	
 	

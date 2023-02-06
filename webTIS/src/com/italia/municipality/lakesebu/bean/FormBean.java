@@ -902,19 +902,27 @@ public class FormBean implements Serializable{
 		
 		//issued
 		rpt.setF8("");
-		rpt.setF9("No Iss.");
+		if(info.getIssuedForm().getIsForBarangayOR()==1) {
+			rpt.setF9("All Issued");
+		}else {
+			rpt.setF9("No Iss.");
+		}
 		rpt.setF10("");
 		
 		
 		//ending balance
-		rpt.setF11(endingQty+"");
-		
-		f12 = enbeg2==7? "0"+enbeg1 : enbeg1;
-		f13 = enen2==7? "0"+enen1 : enen1;
-		rpt.setF12(DateUtils.numberResult(info.getFormType(), Long.valueOf(f12)));
-		rpt.setF13(DateUtils.numberResult(info.getFormType(), Long.valueOf(f13)));
-		//rpt.setF12(enbeg2==7? "0"+enbeg1 : enbeg1);
-		//rpt.setF13(enen2==7? "0"+enen1 : enen1);
+		if(info.getIssuedForm().getIsForBarangayOR()==1) {
+			rpt.setF11("");
+			rpt.setF12("");
+			rpt.setF13("");
+		}else {
+			rpt.setF11(endingQty+"");
+			
+			f12 = enbeg2==7? "0"+enbeg1 : enbeg1;
+			f13 = enen2==7? "0"+enen1 : enen1;
+			rpt.setF12(DateUtils.numberResult(info.getFormType(), Long.valueOf(f12)));
+			rpt.setF13(DateUtils.numberResult(info.getFormType(), Long.valueOf(f13)));
+		}
 		
 		//remarks
 		rpt.setF14("");
@@ -1110,27 +1118,34 @@ public class FormBean implements Serializable{
 		
 		//issued
 		rpt.setF8("");
-		rpt.setF9("No Iss.");
+		if(isform.getIsForBarangayOR()==1) {
+			rpt.setF9("All Issued");
+		}else {
+			rpt.setF9("No Iss.");
+		}
 		rpt.setF10("");
 		
 		
 		//ending balance
-		
-		
-		rpt.setF11(isform.getPcs()+"");
-		
-		String enbeg1= isform.getBeginningNo()+"";
-		int enbeg2 = enbeg1.length();
-		f12 = enbeg2==7? "0"+enbeg1 : enbeg1;
-		rpt.setF12(DateUtils.numberResult(isform.getFormType(), Long.valueOf(f12)));
-		//rpt.setF12(enbeg2==7? "0"+enbeg1 : enbeg1);
-		
-		String enending1= isform.getEndingNo()+"";
-		int enending2 = enending1.length();
-		f13 = enending2==7? "0"+enending1 : enending1;
-		rpt.setF13(DateUtils.numberResult(isform.getFormType(), Long.valueOf(f13)));
-		//rpt.setF13(enending2==7? "0"+enending1 : enending1);
-		
+		if(isform.getIsForBarangayOR()==1) {
+			rpt.setF11("");
+			rpt.setF12("");
+			rpt.setF13("");
+		}else {
+			rpt.setF11(isform.getPcs()+"");
+			
+			String enbeg1= isform.getBeginningNo()+"";
+			int enbeg2 = enbeg1.length();
+			f12 = enbeg2==7? "0"+enbeg1 : enbeg1;
+			rpt.setF12(DateUtils.numberResult(isform.getFormType(), Long.valueOf(f12)));
+			//rpt.setF12(enbeg2==7? "0"+enbeg1 : enbeg1);
+			
+			String enending1= isform.getEndingNo()+"";
+			int enending2 = enending1.length();
+			f13 = enending2==7? "0"+enending1 : enending1;
+			rpt.setF13(DateUtils.numberResult(isform.getFormType(), Long.valueOf(f13)));
+			//rpt.setF13(enending2==7? "0"+enending1 : enending1);
+		}
 		//remarks
 		rpt.setF14("");
 		
@@ -1184,15 +1199,24 @@ public class FormBean implements Serializable{
 						
 						//issued
 						rpt.setF8("");
-						rpt.setF9("No Iss.");
+						if(isform.getIsForBarangayOR()==1) {
+							rpt.setF9("All Issued");
+						}else {
+							rpt.setF9("No Iss.");
+						}
 						rpt.setF10("");
 						
 						
 						//ending balance
-						rpt.setF11("");
-						rpt.setF12(Currency.formatAmount(amount));
-						rpt.setF13("");
-						
+						if(isform.getIsForBarangayOR()==1) {
+							rpt.setF11("");
+							rpt.setF12("");
+							rpt.setF13("");
+						}else {
+							rpt.setF11("");
+							rpt.setF12(Currency.formatAmount(amount));
+							rpt.setF13("");
+						}
 						//remarks
 						rpt.setF14("");
 		}

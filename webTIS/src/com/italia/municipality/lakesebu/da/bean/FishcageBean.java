@@ -62,7 +62,9 @@ public class FishcageBean implements Serializable {
 	
 	private FishCage fishCageSelected;
 	private String ownerName;
+	private String ownerAddress;
 	private String tenantOwner;
+	private String rsbsa;
 	private String waterSurveyNo;
 	private String fishcageArea;
 	private String totalCageArea;
@@ -85,7 +87,7 @@ public class FishcageBean implements Serializable {
 	private int noOfAnnualProduction;
 	private int noOfTotalStock;
 	private int foryearpaid;
-	 
+	private String barangay; 
 	
 	//dialog payment
 	private Date paymentDate;
@@ -667,6 +669,10 @@ public WaterRentalsPayment yearDtlsAmount(int id, WaterRentalsPayment w, FishCag
 		setSizeCagePerModule(null);
 		setNoOfAnnualProduction(0);
 		setNoOfTotalStock(0);
+		
+		setOwnerAddress(null);
+		setRsbsa(null);
+		setBarangay(null);
 	}
 	
 	public void save() {
@@ -678,6 +684,16 @@ public WaterRentalsPayment yearDtlsAmount(int id, WaterRentalsPayment w, FishCag
 		
 		if(getOwnerName()==null || getOwnerName().isBlank()) {
 			Application.addMessage(2, "Owner field is required", "Please provide owner name");
+			isOk = false;
+		}
+		
+		if(getBarangay()==null || getBarangay().isBlank()) {
+			Application.addMessage(2, "Barangay field is required", "Please provide owner name");
+			isOk = false;
+		}
+		
+		if(getOwnerAddress()==null || getOwnerAddress().isBlank()) {
+			Application.addMessage(2, "Owner address field is required", "Please provide owner name");
 			isOk = false;
 		}
 		
@@ -734,6 +750,9 @@ public WaterRentalsPayment yearDtlsAmount(int id, WaterRentalsPayment w, FishCag
 			cage.setNoOfAnnualProduction(getNoOfAnnualProduction());
 			cage.setNoOfTotalStock(getNoOfTotalStock());
 			
+			cage.setAddress(getOwnerAddress());
+			cage.setRsbsaFishR(getRsbsa());
+			cage.setBarangay(getBarangay());
 			cage.save();
 			clear();
 			
@@ -770,6 +789,9 @@ public WaterRentalsPayment yearDtlsAmount(int id, WaterRentalsPayment w, FishCag
 		setSizeCagePerModule(fs.getSizeCagePerModule());
 		setNoOfAnnualProduction(fs.getNoOfAnnualProduction());
 		setNoOfTotalStock(fs.getNoOfTotalStock());
+		setOwnerAddress(fs.getAddress());
+		setRsbsa(fs.getRsbsaFishR());
+		setBarangay(fs.getBarangay());
 	}
 	
 	
@@ -908,7 +930,7 @@ public WaterRentalsPayment yearDtlsAmount(int id, WaterRentalsPayment w, FishCag
 		List<WaterRentalsPayment> p = new ArrayList<WaterRentalsPayment>();
 		p.add(new WaterRentalsPayment());
 		
-		
+		DocumentFormatter doc = new DocumentFormatter();
 		JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(p);
 		
 		HashMap param = new HashMap();
@@ -930,14 +952,18 @@ public WaterRentalsPayment yearDtlsAmount(int id, WaterRentalsPayment w, FishCag
 		try{param.put("PARAM_CELLPHONE_NO", py.getFishCage().getCellphoneNo());}catch(NullPointerException e) {}
 		try{param.put("PARAM_NON_MOTORIZED", py.getFishCage().getNonMotorizedBoat()+"");}catch(NullPointerException e) {}
 		try{param.put("PARAM_MOTORIZED", py.getFishCage().getMotorizedBoat()+"");}catch(NullPointerException e) {}
-		param.put("PARAM_BIRTH_DATE", "");
+		
 		param.put("PARAM_SIGNATURE", py.getFishCage().getOwnerName());
 		
+		param.put("PARAM_ADDRESS", py.getFishCage().getAddress());
+		param.put("PARAM_RSBSA", py.getFishCage().getRsbsaFishR());
+		
 		param.put("PARAM_OPERATE_YEAR", "Permit to Operate year " + py.getPaymentPaid().split("-")[0]);
-		param.put("PARAM_COORDINATOR", "DEARLY C. TOSOC");
-		param.put("PARAM_ZONING_OFFICER", "NOEMI DITA DALIPE");
-		param.put("PARAM_MAYOR", "FLORO S. GANDAM");
-		param.put("PARAM_DA_HEAD", "ZALDY B. ARTACHO");
+		param.put("PARAM_COORDINATOR", doc.getTagName("fishery-coordinator-name").toUpperCase());
+		param.put("PARAM_ZONING_OFFICER", doc.getTagName("zoning-name").toUpperCase());
+		param.put("PARAM_MAYOR", doc.getTagName("mayor-name").toUpperCase());
+		param.put("PARAM_DA_HEAD", doc.getTagName("agriculturist-name").toUpperCase());
+		param.put("PARAM_MENRO", doc.getTagName("menro-officer").toUpperCase());
 		
 		//logo
 				String dalogo = path + "da_logo.png";
@@ -991,6 +1017,122 @@ public WaterRentalsPayment yearDtlsAmount(int id, WaterRentalsPayment w, FishCag
 			            response.setHeader("Content-Type", "application/pdf");
 			            response.setHeader("Content-Length", String.valueOf(file.length()));
 			            response.setHeader("Content-Disposition", "inline; filename=\"" + GlobalVar.WATER_RENTAL_CERTIFICATE_RPT + ".pdf" + "\"");
+			            output = new BufferedOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE);
+
+			            // Write file contents to response.
+			            byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+			            int length;
+			            while ((length = input.read(buffer)) > 0) {
+			                output.write(buffer, 0, length);
+			            }
+
+			            // Finalize task.
+			            output.flush();
+			    	 
+			     }finally{
+			    	// Gently close streams.
+			            close(output);
+			            close(input);
+			     }
+			     
+			     // Inform JSF that it doesn't need to handle response.
+			        // This is very important, otherwise you will get the following exception in the logs:
+			        // java.lang.IllegalStateException: Cannot forward after response has been committed.
+			        faces.responseComplete();
+			        
+				}catch(Exception ioe){
+					ioe.printStackTrace();
+				}
+		
+	}
+	
+	public void printCertificateReg(FishCage py) {
+		String path = REPORT_PATH;// + AppConf.SEPERATOR.getValue();
+		
+		ReportCompiler compiler = new ReportCompiler();
+		String jrxmlFile = compiler.compileReport(GlobalVar.WATER_RENTAL_REG, GlobalVar.WATER_RENTAL_REG, path);
+		List<WaterRentalsPayment> p = new ArrayList<WaterRentalsPayment>();
+		p.add(new WaterRentalsPayment());
+		
+		DocumentFormatter doc = new DocumentFormatter();
+		
+		JRBeanCollectionDataSource beanColl = new JRBeanCollectionDataSource(p);
+		
+		HashMap param = new HashMap();
+		
+		try{param.put("PARAM_SURVEY_NO", py.getWaterSurveyNo());}catch(NullPointerException e) {}
+		try{param.put("PARAM_OWNER_NAME", py.getOwnerName());}catch(NullPointerException e) {}
+		try{param.put("PARAM_TENANT_NAME", py.getTenantOwner());}catch(NullPointerException e) {}
+		try{param.put("PARAM_CAGE_LOCATION", py.getLocation());}catch(NullPointerException e) {}
+		try{param.put("PARAM_CAGE_LENTH", py.getCageArea());}catch(NullPointerException e) {}
+		try{param.put("PARAM_WATER_AREA", py.getTotalSquareArea());}catch(NullPointerException e) {}
+		try{param.put("PARAM_CELLPHONE_NO", py.getCellphoneNo());}catch(NullPointerException e) {}
+		try{param.put("PARAM_NON_MOTORIZED", py.getNonMotorizedBoat()+"");}catch(NullPointerException e) {}
+		try{param.put("PARAM_MOTORIZED", py.getMotorizedBoat()+"");}catch(NullPointerException e) {}
+		
+		try{param.put("PARAM_BARANGAY", "MUNICIPAL FISHCAGES REGISTRY BARANGAY "+py.getBarangay().toUpperCase());}catch(NullPointerException e) {}
+		
+		try{param.put("PARAM_ADDRESS", py.getAddress().toUpperCase());}catch(NullPointerException e) {}
+		try{param.put("PARAM_RSBSA", py.getRsbsaFishR().toUpperCase());}catch(NullPointerException e) {}
+		
+		try{param.put("PARAM_COORDINATOR", doc.getTagName("fishery-coordinator-name").toUpperCase());}catch(NullPointerException e) {}
+		try{param.put("PARAM_ZONING_OFFICER", doc.getTagName("zoning-name").toUpperCase());}catch(NullPointerException e) {}
+		try{param.put("PARAM_MAYOR", doc.getTagName("mayor-name").toUpperCase());}catch(NullPointerException e) {}
+		try{param.put("PARAM_DA_HEAD", doc.getTagName("agriculturist-name").toUpperCase());}catch(NullPointerException e) {}
+		try{param.put("PARAM_MENRO", doc.getTagName("menro-officer").toUpperCase());}catch(NullPointerException e) {}
+		
+		//logo
+				String dalogo = path + "da_logo.png";
+				try{File fil = new File(dalogo);
+				FileInputStream lof = new FileInputStream(fil);
+				param.put("PARAM_DA_LOGO", lof);
+				}catch(Exception e){}
+		
+		//logo
+		String logo = path + "logo.png";
+		try{File file = new File(logo);
+		FileInputStream loff = new FileInputStream(file);
+		param.put("PARAM_LOGO_LAKESEBU", loff);
+		}catch(Exception e){}
+
+		//logo
+		String officialLogo = path + "logotrans.png";
+		try{File file = new File(officialLogo);
+		FileInputStream off = new FileInputStream(file);
+		param.put("PARAM_SEALTRANSPARENT", off);
+		}catch(Exception e){}
+		
+		String backlogo = path + "documentbg-gen.png";
+		try{File file = new File(backlogo);
+		FileInputStream off = new FileInputStream(file);
+		param.put("PARAM_BACKGROUND", off);
+		}catch(Exception e){}
+		
+		try{
+	  		String jrprint = JasperFillManager.fillReportToFile(jrxmlFile, param, beanColl);
+	  	    JasperExportManager.exportReportToPdfFile(jrprint,path+ GlobalVar.WATER_RENTAL_REG +".pdf");
+	  		}catch(Exception e){e.printStackTrace();}
+		
+				try{
+					System.out.println("REPORT_PATH:" + path + "REPORT_NAME: " + GlobalVar.WATER_RENTAL_REG);
+		  		 File file = new File(path, GlobalVar.WATER_RENTAL_REG + ".pdf");
+				 FacesContext faces = FacesContext.getCurrentInstance();
+				 ExternalContext context = faces.getExternalContext();
+				 HttpServletResponse response = (HttpServletResponse)context.getResponse();
+					
+			     BufferedInputStream input = null;
+			     BufferedOutputStream output = null;
+			     
+			     try{
+			    	 
+			    	 // Open file.
+			            input = new BufferedInputStream(new FileInputStream(file), DEFAULT_BUFFER_SIZE);
+
+			            // Init servlet response.
+			            response.reset();
+			            response.setHeader("Content-Type", "application/pdf");
+			            response.setHeader("Content-Length", String.valueOf(file.length()));
+			            response.setHeader("Content-Disposition", "inline; filename=\"" + GlobalVar.WATER_RENTAL_REG + ".pdf" + "\"");
 			            output = new BufferedOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE);
 
 			            // Write file contents to response.

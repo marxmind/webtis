@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -38,6 +39,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.charts.ChartData;
+import org.primefaces.model.charts.axes.cartesian.CartesianScales;
+import org.primefaces.model.charts.axes.cartesian.linear.CartesianLinearAxes;
+import org.primefaces.model.charts.axes.cartesian.linear.CartesianLinearTicks;
+import org.primefaces.model.charts.bar.BarChartDataSet;
+import org.primefaces.model.charts.bar.BarChartModel;
+import org.primefaces.model.charts.bar.BarChartOptions;
+import org.primefaces.model.charts.optionconfig.legend.Legend;
+import org.primefaces.model.charts.optionconfig.legend.LegendLabel;
+import org.primefaces.model.charts.optionconfig.title.Title;
 
 import com.italia.municipality.lakesebu.controller.BankAccounts;
 import com.italia.municipality.lakesebu.controller.Budget;
@@ -54,6 +65,8 @@ import com.italia.municipality.lakesebu.dao.Chequedtls;
 import com.italia.municipality.lakesebu.database.BankChequeDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.BudgetType;
+import com.italia.municipality.lakesebu.enm.GraphColor;
+import com.italia.municipality.lakesebu.enm.GraphColorWithBorder;
 import com.italia.municipality.lakesebu.enm.TransactionType;
 import com.italia.municipality.lakesebu.reports.ReportCompiler;
 import com.italia.municipality.lakesebu.utils.Application;
@@ -62,6 +75,8 @@ import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.xml.BookCheck;
 import com.italia.municipality.lakesebu.xml.CheckXML;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -137,35 +152,10 @@ public class CheckBean implements Serializable{
 	private Map<Integer, Department> departmentData = java.util.Collections.synchronizedMap(new HashMap<Integer, Department>());
 	
 	private String buttonSizeName="Expand Table";
-	/*
-	 * private List<BankAccounts> banks; private BankAccounts selectedBanks;
-	 * 
-	 * 
-	 * public BankAccounts getSelectedBanks() { return selectedBanks; }
-	 * 
-	 * public void setSelectedBanks(BankAccounts selectedBanks) { this.selectedBanks
-	 * = selectedBanks; }
-	 * 
-	 * public void setBanks(List<BankAccounts> banks) { this.banks = banks; }
-	 * 
-	 * public List<BankAccounts> getBanks(){ banks = new ArrayList<BankAccounts>();
-	 * Connection conn = null; PreparedStatement ps = null; ResultSet rs = null;
-	 * String sql = "SELECT * FROM tbl_bankaccounts"; try{
-	 * 
-	 * conn=BankChequeDatabaseConnect.getConnection(); ps =
-	 * conn.prepareStatement(sql); rs = ps.executeQuery(); while(rs.next()){
-	 * 
-	 * BankAccounts account = new BankAccounts();
-	 * account.setBankId(rs.getInt("bank_id"));
-	 * account.setBankAccntNo(rs.getString("bank_account_no"));
-	 * account.setBankAccntName(rs.getString("bank_account_name"));
-	 * account.setBankAccntBranch(rs.getString("bank_branch"));
-	 * accounts.put(account.getBankId(), account); banks.add(new
-	 * BankAccounts(account.getBankId(), account.getBankAccntNo(),
-	 * account.getBankAccntName(), account.getBankAccntBranch(),
-	 * account.getTimestamp())); } rs.close(); ps.close();
-	 * BankChequeDatabaseConnect.close(conn); }catch(Exception e) {} return banks; }
-	 */
+	
+	@Setter @Getter private BarChartModel barModel;
+	@Setter @Getter private List years;
+	@Setter @Getter private List selectedYear;
 	
 	
 	public int getDepartmentId() {
@@ -1369,7 +1359,7 @@ public class CheckBean implements Serializable{
 			setAccountLabel("Please Select...");
 		}
 		
-		
+		dummyBarModel();
 	}
 	
 	private String bankAccountNum(String id){
@@ -2878,6 +2868,137 @@ public void changeTableSize() {
 	pf.executeScript(scs);
 }
 
+public void loadGraph() {
+	System.out.println("loading graph default value");
+	//dummyBarModel();
+	selectedYear = new ArrayList<>();
+	years = new ArrayList<>();
+	for(int year=2021; year<=DateUtils.getCurrentYear(); year++) {
+		years.add(new SelectItem(year, year+""));
+	}
+}
+
+public void dummyBarModel() {
+    barModel = new BarChartModel();
+    ChartData data = new ChartData();
+
+    BarChartDataSet barDataSet = new BarChartDataSet();
+    barDataSet.setLabel("Year 1");
+    barDataSet.setBackgroundColor("rgba(255, 99, 132, 0.2)");
+    barDataSet.setBorderColor("rgb(255, 99, 132)");
+    barDataSet.setBorderWidth(1);
+    List<Number> values = new ArrayList<>();
+    values.add(65);
+    values.add(59);
+    values.add(80);
+    values.add(81);
+    values.add(56);
+    values.add(55);
+    values.add(40);
+    barDataSet.setData(values);
+
+    BarChartDataSet barDataSet2 = new BarChartDataSet();
+    barDataSet2.setLabel("Year 2");
+    barDataSet2.setBackgroundColor("rgba(255, 159, 64, 0.2)");
+    barDataSet2.setBorderColor("rgb(255, 159, 64)");
+    barDataSet2.setBorderWidth(1);
+    List<Number> values2 = new ArrayList<>();
+    values2.add(85);
+    values2.add(69);
+    values2.add(20);
+    values2.add(51);
+    values2.add(76);
+    values2.add(75);
+    values2.add(10);
+    barDataSet2.setData(values2);
+    
+
+    data.addChartDataSet(barDataSet);
+    data.addChartDataSet(barDataSet2);
+
+    List<String> labels = new ArrayList<>();
+    labels.add("January");
+    labels.add("February");
+    labels.add("March");
+    labels.add("April");
+    labels.add("May");
+    labels.add("June");
+    labels.add("July");
+    data.setLabels(labels);
+    barModel.setData(data);
+
+    //Options
+    BarChartOptions options = new BarChartOptions();
+    CartesianScales cScales = new CartesianScales();
+    CartesianLinearAxes linearAxes = new CartesianLinearAxes();
+    linearAxes.setOffset(true);
+    CartesianLinearTicks ticks = new CartesianLinearTicks();
+    ticks.setBeginAtZero(true);
+    linearAxes.setTicks(ticks);
+    cScales.addYAxesData(linearAxes);
+    options.setScales(cScales);
+
+    Title title = new Title();
+    title.setDisplay(true);
+    title.setText("Bar Chart");
+    options.setTitle(title);
+    
+    
+    Legend legend = new Legend();
+    legend.setDisplay(true);
+    legend.setPosition("bottom");
+    LegendLabel legendLabels = new LegendLabel();
+    //legendLabels.setFontStyle("bold");
+    legendLabels.setFontColor("#2980B9");
+    legendLabels.setFontSize(12);
+    legend.setLabels(legendLabels);
+    options.setLegend(legend);
+    
+	/*
+	 * Tooltip tooltip = new Tooltip(); tooltip.setEnabled(true);
+	 * tooltip.setMode("index"); tooltip.setIntersect(false);
+	 * options.setTooltip(tooltip);
+	 */
+    
+    barModel.setOptions(options);
+}
+
+public void loadBar() {
+	System.out.println("Selected year: " + getSelectedYear().toString());
+	barModel = new BarChartModel();
+    ChartData data = new ChartData();
+    int color = 1;
+    boolean isMorethanOneYearSelected=false;
+    if(getSelectedYear()!=null && getSelectedYear().size()>1) {
+    	isMorethanOneYearSelected=true;
+    }
+    Map<Integer,Map<Integer, Double>> mapYear = new LinkedHashMap<Integer, Map<Integer, Double>>();
+    Map<Integer, Double> mapMonth = new LinkedHashMap<Integer, Double>();
+    
+    List<String> labels = new ArrayList<>();
+    BarChartDataSet barDataSet = new BarChartDataSet();
+	List<Number> values = new ArrayList<>();
+    
+    for(Object o : getSelectedYear()) {
+    	int year = Integer.valueOf(o.toString());
+    	Map<Integer, Double> years= com.italia.municipality.lakesebu.controller.Chequedtls.getByMonth(year);
+    	for(int month : years.keySet()) {
+    		values.add(years.get(month));
+    		barDataSet.setLabel(DateUtils.getMonthName(month));
+    	}
+    	barDataSet.setData(values);
+	    barDataSet.setBackgroundColor(GraphColorWithBorder.valueId(color));
+	    barDataSet.setBorderColor(GraphColor.valueId(color));
+	    barDataSet.setBorderWidth(1);
+        data.addChartDataSet(barDataSet);
+    	color++;
+    }
+ 
+    
+    
+}
+
+
 public String getKeyPress() {
 	keyPress = "findId";
 	System.out.println("Im searching.... keypress");
@@ -2949,37 +3070,7 @@ public void setNatureOfPayment(String natureOfPayment) {
 	public static void main(String[] args) {
 		
 		CheckBean b = new CheckBean();
-		
-		//b.convertDateToMonthDayYear(DateUtils.getCurrentDateYYYYMMDD());
 		b.convertDateToYearMontyDay(DateUtils.getCurrentDateMMMMDDYYYY());
-		/*List data = new ArrayList();
-
-		BankCheckBean bean = new BankCheckBean();
-		
-		ReportFields rpt = new ReportFields();
-		rpt.setAccntNumber("1234-97-1");
-		rpt.setAccntName("MUNICIPALITY OF LAKE SEBU (0935-123260-031)");
-		rpt.setCheckNo("0050718241");
-		rpt.setDate_disbursement("10/09/2016");
-		rpt.setAmount("12,3456.10");
-		rpt.setPayToTheOrderOf("JOSE DELOS SANTOS");
-		rpt.setAmountInWOrds("ONE HUNDRED TWENTY THREE THOUSAND FOUR HUNDRED FIFTY SIX  & 10/100 ONLY.");
-		rpt.setSignatory1("FERDINAND L. LOPEZ");
-		rpt.setSignatory2("ANTONIO B. FUNGAN");
-		bean.compileReport(rpt);*/
-		/*List<ReportFields> rpt = new ArrayList<>();
-		ReportFields r = new ReportFields();
-		r.setPARAM1("q");
-		r.setPARAM2("L");
-		rpt.add(r);
-		rpt.add(r);
-		
-		System.out.println(rpt.get(0).getPARAM1());
-		System.out.println(rpt.get(1).getPARAM2());
-		*/
-	
-		
-		
 		
 	}
 

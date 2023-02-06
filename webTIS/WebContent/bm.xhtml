@@ -199,15 +199,15 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 	<script src="https://maps.google.com/maps/api/js?sensor=false"></script>
 
 	
-		<p:dialog id="gmapDialog" widgetVar="dlg" width="625" height="400" modal="true">
+		<p:dialog id="gmapDialog" widgetVar="dlg" width="800" height="600" modal="true" position="center top">
 		
-		    <p:gmap id="gmap" center="#{mapping.centerMap}" widgetVar="myMap" zoom="15" type="HYBRID" style="width:100%;height:400px" model="#{mapping.allBusiness}">
+		    <p:gmap id="gmap" center="#{mapping.centerMap}" widgetVar="myMap" zoom="15" type="HYBRID" style="width:100%;height:100%" model="#{mapping.allBusiness}">
 		    	
 		    	<p:ajax event="overlaySelect" listener="#{mapping.onMarkerSelect}"/>
 		    	<p:gmapInfoWindow id="infoWindow">
                 <p:outputPanel style="text-align: center; display: block; margin: auto">
 
-                    <p:graphicImage name="/images/businessmap/#{mapping.marker.data}" height="200" width="300"/>
+                    <p:graphicImage name="/images/businessmap/#{mapping.marker.data}" height="600" width="600"/>
                     <br/>
                     
                     <p:panelGrid layout="grid" columns="1" style="text-align: left">

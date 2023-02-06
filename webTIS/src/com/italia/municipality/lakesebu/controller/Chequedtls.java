@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import com.italia.municipality.lakesebu.database.BankChequeDatabaseConnect;
@@ -107,6 +108,35 @@ public class Chequedtls {
 		amount = amount.replace("Php", "");
 		return amount;
 	}
+	
+	public static Map<Integer, Double> getByMonth(int year){
+		String sql = "select date_format(date_disbursement,'%m') as month, sum(cheque_amount) as amount from tbl_chequedtls where date_disbursement>='"+ year +"-01-01' and date_disbursement<='"+year+"-12-31' group by month order by month";
+		Map<Integer, Double> mapData = new LinkedHashMap<Integer, Double>();
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = BankChequeDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		System.out.println("get by month SQL " + ps.toString());
+		
+		
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			mapData.put(rs.getInt("month"), rs.getDouble("amount"));
+		}
+		
+		rs.close();
+		ps.close();
+		BankChequeDatabaseConnect.close(conn);
+		}catch(SQLException sl){sl.getMessage();}
+		
+		return mapData;
+	}
+	
 	
 	public static List<Chequedtls> retrieveCheckOnly(String sql, String[] params){
 		List<Chequedtls> cList =  new ArrayList<Chequedtls>();

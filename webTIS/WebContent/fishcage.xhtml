@@ -66,7 +66,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	<div class="card">
     <div class="p-grid sample-layout">
     
-    <div class="p-col-12 p-md-3">
+    <div class="p-col-12 p-md-4">
             <p:toolbar id="tbClear" style="#{skin.toolbar};float:bottom; position: fixed;z-index: 1500;">
 		    		<f:facet name="left">
 		    				<div class="ui-inputgroup">
@@ -84,66 +84,58 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<br/><br/><br/>
 				<p:panelGrid id="fldId" columns="2" layout="grid" style="text-align: left">
 				
-				<p:outputLabel value="Date Recorded" style="#{skin.label}" />
-			    <p:calendar  value="#{fishcageBean.dateRegister}" inputStyle="width: 15em;#{skin.textInput}"  required="true" pattern="yyyy-MM-dd" effect="slideDown"/>
+				<p:outputLabel value="Date Recorded"/>
+			    <p:calendar  value="#{fishcageBean.dateRegister}" inputStyle="width: 15em;"  required="true" pattern="yyyy-MM-dd" effect="slideDown"/>
 			    
-			    <p:outputLabel value="Year Applied" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.yearApplied}"  style="width: 15em;#{skin.textInput}"/>	
+			    <p:outputLabel value="Year Applied" />
+				<p:inputText value="#{fishcageBean.yearApplied}"  style="width: 15em;"/>	
 			    
-			    <p:outputLabel value="Water Survey No" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.waterSurveyNo}" placeholder="000-000" style="width: 15em;#{skin.textInput}"/>	
+			    <p:outputLabel value="Water Survey No"/>
+				<p:inputText value="#{fishcageBean.waterSurveyNo}" placeholder="000-000" style="width: 15em;"/>	
 				
-				<p:outputLabel value="Owner Name" style="#{skin.label}" />
-				<p:inputTextarea value="#{fishcageBean.ownerName}" placeholder="Owner Name" rows="3" cols="10" style="width: 15em;#{skin.textInput}"/>	
+				<p:outputLabel value="Owner Name"/>
+				<p:inputTextarea value="#{fishcageBean.ownerName}" placeholder="Owner Name" rows="3" cols="10" style="width: 15em;"/>	
 				
-				<p:outputLabel value="Tenant Name" style="#{skin.label}" />
-				<p:inputTextarea value="#{fishcageBean.tenantOwner}" placeholder="Tenant Name" rows="3" cols="10" style="width: 15em;#{skin.textInput}"/>	
+				<p:outputLabel value="Owner Address"/>
+				<p:inputTextarea value="#{fishcageBean.ownerAddress}" placeholder="Owner Address" rows="3" cols="10" style="width: 15em;"/>	
 				
-				<p:outputLabel value="Cage Area" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.fishcageArea}" placeholder="Cage Area" style="width: 15em;#{skin.textInput}"/>
+				<p:outputLabel value="Tenant Name"/>
+				<p:inputTextarea value="#{fishcageBean.tenantOwner}" placeholder="Tenant Name" rows="3" cols="10" style="width: 15em;"/>	
 				
-				<p:outputLabel value="Total Fish Cage Area" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.totalCageArea}" placeholder="Total Cage Area" style="width: 15em;#{skin.textInput}"/>	
+				<p:outputLabel value="Barangay" />
+				<p:inputText value="#{fishcageBean.barangay}" placeholder="Barangay" style="width: 15em;"/>
 				
-				<p:outputLabel value="Location" style="#{skin.label}" />
-				<p:inputTextarea value="#{fishcageBean.location}" placeholder="Location" rows="3" cols="10" style="width: 15em;#{skin.textInput}"/>	
+				<p:outputLabel value="FishR/RSBSA #"/>
+				<p:inputText value="#{fishcageBean.rsbsa}" placeholder="RSBSA No" style="width: 15em;"/>
 				
-				<p:outputLabel value="Remarks" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.remarks}" placeholder="Remarks" style="width: 15em;#{skin.textInput}"/>
+				<p:outputLabel value="Cage Area"/>
+				<p:inputText value="#{fishcageBean.fishcageArea}" placeholder="Cage Area" style="width: 15em;"/>
 				
-				<p:outputLabel value="Amount" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.amountDue}"  inputStyle="width: 15em;#{skin.textInput}"/>	
+				<p:outputLabel value="Total Fish Cage Area(sq.m.)" />
+				<p:inputText value="#{fishcageBean.totalCageArea}" placeholder="Total Cage Area" style="width: 15em;"/>	
 				
-				<p:outputLabel value="No. of motorized Boat" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.motorizedBoat}"  inputStyle="width: 15em;#{skin.textInput}"/>	
+				<p:outputLabel value="Cage Location"/>
+				<p:inputTextarea value="#{fishcageBean.location}" placeholder="Cage Location" rows="3" cols="10" style="width: 15em;"/>	
 				
-				<p:outputLabel value="No. of non-Motorized Boat" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.nonMotorizedBoat}"  inputStyle="width: 15em;#{skin.textInput}"/>
+				<p:outputLabel value="Amount" />
+				<p:inputNumber value="#{fishcageBean.amountDue}"  inputStyle="width: 15em;"/>	
 				
-				<p:outputLabel value="Cellphone No" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.cellphoneNo}" placeholder="+6300-0000-000" style="width: 15em;#{skin.textInput}"/>
+				<p:outputLabel value="No. of motorized Boat" />
+				<p:inputNumber value="#{fishcageBean.motorizedBoat}"  inputStyle="width: 15em"/>	
 				
-				<p:outputLabel value="No. of fish cages" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.numberOfFishCages}"  inputStyle="width: 15em;#{skin.textInput}"/>
+				<p:outputLabel value="No. of Non-Motorized Boat" />
+				<p:inputNumber value="#{fishcageBean.nonMotorizedBoat}"  inputStyle="width: 15em;"/>
 				
-				<p:outputLabel value="Functional Fish Cages" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.noOfFunctional}"  inputStyle="width: 15em;#{skin.textInput}"/>
+				<p:outputLabel value="Cellphone No"/>
+				<p:inputText value="#{fishcageBean.cellphoneNo}" placeholder="+6300-0000-000" style="width: 15em;"/>
 				
-				<p:outputLabel value="Non-Functional Fish Cages" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.noOfNonFunctional}"  inputStyle="width: 15em;#{skin.textInput}"/>
+				<p:outputLabel value="Remarks" />
+				<p:inputText value="#{fishcageBean.remarks}" placeholder="Remarks" style="width: 15em;"/>
 				
-				<p:outputLabel value="Size cage/Module" style="#{skin.label}" />
-				<p:inputText value="#{fishcageBean.sizeCagePerModule}" placeholder="00x00"  style="width: 15em;#{skin.textInput}"/>
-				
-				<p:outputLabel value="Annual Production" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.noOfAnnualProduction}"  inputStyle="width: 15em;#{skin.textInput}"/>
-				
-				<p:outputLabel value="Total Stocks" style="#{skin.label}" />
-				<p:inputNumber value="#{fishcageBean.noOfTotalStock}"  inputStyle="width: 15em;#{skin.textInput}"/>
 				
 				</p:panelGrid>
         </div>
-        <div class="p-col-12 p-md-9 p-col-nogutter">
+        <div class="p-col-12 p-md-8 p-col-nogutter">
             <div class="p-grid">
                 
                 <div class="p-col-12">
@@ -192,10 +184,16 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             					<p:commandButton icon="fa fa-search" update="cageData payFld payData idOwn" actionListener="#{fishcageBean.loadPayments(ct)}" oncomplete="PF('paymentDlg').show()" />
             				</p:column>
                          	
-                         	<p:column headerText="" width="10" exportable="false">
+                         	<p:column headerText="*" width="15" exportable="false">
             					<p:commandButton update="cageData msg" icon="fa fa-trash"  actionListener="#{fishcageBean.deleteOwner(ct)}" title="Click this button to delete">
             						<p:confirm header="Confirmation" message="Are you sure you want to delete this data? Deleting this owner will delete all his/her history information" icon="ui-icon-alert" />
             					</p:commandButton>
+            				</p:column>
+            				
+            				<p:column headerText="Print" width="30" exportable="false">
+            						<p:commandLink title="Print in PDF" target="_blank" action="#{fishcageBean.printCertificateReg(ct)}" ajax="false" immediate="false" >
+            				 			<p:graphicImage name="img/pdf.jpg" width="25" height="25"/>
+									</p:commandLink>
             				</p:column>
                          	
                          	<p:column headerText="No" width="20">

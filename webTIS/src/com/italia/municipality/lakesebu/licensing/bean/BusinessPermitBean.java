@@ -210,6 +210,17 @@ public class BusinessPermitBean implements Serializable{
 			pmts = BusinessPermit.retrieve(sql, params);
 		}
 		
+		//sort
+		Map<String, BusinessPermit> rptsUnsort = new HashMap<String, BusinessPermit>();
+		for(BusinessPermit p : getPmts()) {
+			rptsUnsort.put(p.getControlNo(), p);
+		}
+		Map<String, BusinessPermit> rptsSort = new TreeMap<String, BusinessPermit>(rptsUnsort);
+		pmts = new ArrayList<>();
+		pmts.addAll(rptsSort.values());
+		//end sort
+		
+		
 		Collections.reverse(pmts);
 	}
 	
@@ -1407,22 +1418,21 @@ public void printPermit(BusinessPermit permit) {
 		
 		int cnt = 1;
 		double total = 0d;
-		int size = getPmts().size();
+		//int size = getPmts().size();
 		
+		/*//remove since already sorted in loadSeach() method
 		Map<String, BusinessPermit> rptsUnsort = new HashMap<String, BusinessPermit>();
 		for(BusinessPermit p : getPmts()) {
 			rptsUnsort.put(p.getControlNo(), p);
 		}
 		Map<String, BusinessPermit> rptsSort = new TreeMap<String, BusinessPermit>(rptsUnsort);
-		//int newA = 0;
-		//int renewA = 0;
-		//int addA = 0;
+		*/
+		//added to reverse
+		Collections.reverse(getPmts());
 		
-		//int quarterly = 0;
-		//int semi_annual = 0;
-		//int annually = 0;
 		String[] filters = BusinessFilter.filter(BFilter.EXCEPTION);
-		for(BusinessPermit p : rptsSort.values()) {
+		for(BusinessPermit p : getPmts()) {
+		//for(BusinessPermit p : rptsSort.values()) {
 			
 			//get number of employee
 			try { number_of_employee += Integer.valueOf(p.getEmpdtls().trim());}catch(Exception e) {}

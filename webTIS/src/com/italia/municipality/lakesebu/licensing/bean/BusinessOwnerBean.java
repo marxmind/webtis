@@ -37,6 +37,7 @@ import org.primefaces.event.FileUploadEvent;
 
 import com.italia.municipality.lakesebu.bean.PoblacionCustomer;
 import com.italia.municipality.lakesebu.controller.Login;
+import com.italia.municipality.lakesebu.controller.NationalIDJsonData;
 import com.italia.municipality.lakesebu.controller.QRCodeCitizen;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.CivilStatus;
@@ -1268,24 +1269,79 @@ private void close(Closeable resource) {
 			}
 			
 		}else {
+				
+			NationalIDJsonData data = new NationalIDJsonData(jsonData);
+			if(data!=null && !data.getPCN().isEmpty()) {	
+				System.out.println("Checking PCN: " + data.getPCN());
+				String fullName = data.getLName() + ", " + data.getFName() + " " + data.getMName().substring(0,1);
+				String sql = " AND (cus.nationalid='"+ data.getPCN().trim() +"'";	
+					   sql += " OR cus.fullname like '%"+ fullName +"%' )";
+				String[] params = new String[0];
+				
+				List<BusinessCustomer> cust = BusinessCustomer.retrieve(sql, params);
+					//int size = cust.size();
+					//System.out.println("counting: " + size);
+					//size = size>0? size-1 : size;
+					if(cust!=null && cust.size()>0) {
+						BusinessCustomer customer = cust.get(0);
+						
+						//force change
+						customer.setBornplace(data.getPOB());
+						customer.setNationalId(data.getPCN());
+						customer.setMiddlename(data.getMName());
+						
+						setCustomer(customer);
+						clickItem(customer);
+				    	pf.executeScript("PF('dlgCam').hide();");
+					}else {
+						BusinessCustomer cus = BusinessCustomer.builder()
+								.nationalId(data.getPCN())
+								.firstname(data.getFName())
+								.middlename(data.getMName())
+								.lastname(data.getLName())
+								.completeAddress(data.getPOB())
+								.bornplace(data.getPOB())
+								.birthdate(data.getDOB())
+								.gender(data.getSex().equalsIgnoreCase("Male")? "1" : "2")
+								.fullname(data.getLName()+", " + data.getFName() + " " +data.getMName())
+								.build();
+						
+						setDateregistered(cus.getDateregistered()==null? DateUtils.getCurrentDateMonthDayYear() : cus.getDateregistered());
+						setFirstname(cus.getFirstname());
+						setMiddlename(cus.getMiddlename());
+						setLastname(cus.getLastname());
+						setClivilId(1);
+						setBirthdate(DateUtils.convertDateString(cus.getBirthdate(), "yyyy-MM-dd"));
+						try{setAge(DateUtils.calculateAge(cus.getBirthdate()));}catch(Exception e){setAge(cus.getAge());}
+						setGenderId(cus.getGender());
+						setCitizenship("Filipino");
+						setBornplace(data.getPOB());
+						setNationalId(data.getPCN());
+						
+						defaultValueAddress();
+						
+						
+						pf.executeScript("PF('dlgCam').hide();");
+					}
+				
+				}else {
 		
 		
+				String sql = " AND (cus.qrcode like '%"+ jsonData +"%' OR ";
+				sql += " cus.fullname like '%"+ jsonData +"%' ";
+				sql += " )";
+				String[] params = new String[0];
+				
+				List<BusinessCustomer> cust = BusinessCustomer.retrieve(sql, params);
+				
+				if(cust!=null && cust.size()>0) {
+					provideCustomerDataFromQRCode(cust.get(0),true);
+			    	pf.executeScript("PF('dlgCam').hide();");
+				}else {
+					Application.addMessage(1, "Error", "This QRCode is not yet registered... Please register it first in Citizen Registration Page");
+				}
 		
-		String sql = " AND (cus.qrcode like '%"+ jsonData +"%' OR ";
-		sql += " cus.fullname like '%"+ jsonData +"%' ";
-		sql += " )";
-		String[] params = new String[0];
-		
-		List<BusinessCustomer> cust = BusinessCustomer.retrieve(sql, params);
-		
-		if(cust!=null && cust.size()>0) {
-			provideCustomerDataFromQRCode(cust.get(0),true);
-	    	pf.executeScript("PF('dlgCam').hide();");
-		}else {
-			Application.addMessage(1, "Error", "This QRCode is not yet registered... Please register it first in Citizen Registration Page");
-		}
-		
-		
+				}
 		}
 		
 	}
@@ -1766,7 +1822,7 @@ private void close(Closeable resource) {
 		
 		return purokList;
 	}
-
+	
 	public void setPurokList(List purokList) {
 		this.purokList = purokList;
 	}

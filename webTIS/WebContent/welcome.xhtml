@@ -65,18 +65,15 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     <div class="p-grid sample-layout">
     
     <div class="p-col-12 p-md-7" id="idLeft">
-    		<div class="ui-inputgroup" style="float:left">
+    		
+    		<div class="ui-inputgroup">
     			<p:commandButton update="formId" value="Go To Budget Page" icon="fa fa-file-o" action="budget.xhtml"/>
-    		</div>
-            <div class="ui-inputgroup" style="float:right">
-            	<p:commandButton update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8" value="New" icon="fa fa-file-o" actionListener="#{checkBean.createNew}"/>
+    			<p:commandButton update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8" value="New" icon="fa fa-file-o" actionListener="#{checkBean.createNew}"/>
     			<p:commandButton update="chequeDataId chequeDataId2 chequeDataId3 chequeDataId4 chequeDataId5 chequeDataId6 chequeDataId7 chequeDataId8" value="Clear" icon="fa fa-trash" action="#{checkBean.clearFields}"/>
     			<p:commandButton value="Save" icon="fa fa-floppy-o" actionListener="#{checkBean.checkingFieldBeforeSave}"/>
-            </div>
-            
-            
-                
-            <p:card style="width: 80em">
+    		</div>
+    		    
+            <p:card style="width: 75em">
             <p:panelGrid id="chequeDataId" layout="grid" columns="6" styleClass="ui-noborder">
 			
 			    
@@ -224,7 +221,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                         <p:dataTable id="dataChkId" value="#{checkBean.cheques}" var="rpt" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100" resizableColumns="true"
-                         scrollable="true"  style="#{skin.table}" paginatorPosition="top" resizeMode="expand" reflow="true"
+                         scrollable="true"  style="text-align: left" paginatorPosition="top" resizeMode="expand" reflow="true"
                          
                          >
                          
@@ -312,9 +309,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	</div><!-- card -->	
 	
-	
-	
+			
+	<ui:include src="checkgraph.xhtml" />	
 	<p:defaultCommand target="#{checkBean.keyPress}" />
+	<p:commandButton title="Graph" icon="fa fa-th-large"  actionListener="#{checkGraphBean.loadGraph}" update="graphBarId grapYearId" oncomplete="PF('dlgGraph').show(1000)" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 0px;right: 38px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	
 	<ui:include src="loader.xhtml" />
 	<ui:include src="menu.xhtml" />
 	

@@ -27,8 +27,7 @@
     		<p:toolbar id="tbGraph">
     		<f:facet name="left">
     			<div class="ui-inputgroup">
-    			<span class="ui-input-icon-left">
-			    <i class="pi pi-search" />
+    			
     			<p:selectCheckboxMenu id="grapYearId" value="#{graphIssuanceBean.selectedYear}" label="Select Year" updateLabel="true" filterMatchMode="contains" filter="true" style="width: 20em">
 					<f:selectItems value="#{graphIssuanceBean.years}" />
 				</p:selectCheckboxMenu>
@@ -39,7 +38,7 @@
 					<f:selectItems value="#{graphIssuanceBean.forms}" />
 				</p:selectOneMenu>
 				<p:commandButton icon="fa fa-search" update="graphLineId graphBardId" actionListener="#{graphIssuanceBean.selectedGraph}"/>
-    			</span>
+    			
     			</div>
     		</f:facet>
     		<f:facet name="right"/>
@@ -75,8 +74,7 @@
 	        <p:toolbar id="tbGraphRun">
     		<f:facet name="left">
     			<div class="ui-inputgroup">
-    			<span class="ui-input-icon-left">
-			    <i class="pi pi-search" />
+    			
     			<p:selectCheckboxMenu id="grapAccountYearId" value="#{graphIssuanceBean.accountSelectedYear}" label="Select Year" updateLabel="true" filterMatchMode="contains" filter="true" style="width: 20em">
 					<f:selectItems value="#{graphIssuanceBean.accountYears}" />
 				</p:selectCheckboxMenu>
@@ -84,7 +82,7 @@
 					<f:selectItems value="#{graphIssuanceBean.accounts}" />
 				</p:selectCheckboxMenu>
 				<p:commandButton icon="fa fa-search" update="graphAccBardId" actionListener="#{graphIssuanceBean.reportAcc}"/>
-				</span>
+				
     			</div>
     			
     			<p:barChart id="graphAccBardId" model="#{graphIssuanceBean.barModel3}" style="width: 100%; height: 500px;"/>

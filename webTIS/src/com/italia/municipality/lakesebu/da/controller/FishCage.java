@@ -39,6 +39,7 @@ public class FishCage {
 	private String waterSurveyNo;
 	private String dateRegister;
 	private String ownerName;
+	private String address;
 	private String tenantOwner;
 	private String cageArea;
 	private String totalSquareArea;
@@ -47,6 +48,7 @@ public class FishCage {
 	private String remarks;
 	private double amountDue;
 	private int yearApplied;
+	private String rsbsaFishR;
 	
 	private int motorizedBoat;
 	private int nonMotorizedBoat;
@@ -57,6 +59,7 @@ public class FishCage {
 	private String sizeCagePerModule;
 	private int noOfAnnualProduction;
 	private int noOfTotalStock;
+	private String barangay;
 	
 	public static List<FishCage> retrieve(String sqlAdd, String[] params){
 		List<FishCage> fs = new ArrayList<FishCage>();
@@ -107,6 +110,9 @@ public class FishCage {
 					.noOfAnnualProduction(rs.getInt("annprod"))
 					.noOfTotalStock(rs.getInt("totalstock"))
 					.sizeCagePerModule(rs.getString("sizecagemodule"))
+					.address(rs.getString("owneraddress"))
+					.rsbsaFishR(rs.getString("rsbsa"))
+					.barangay(rs.getString("barangay"))
 					.build();
 			fs.add(cg);
 			
@@ -179,8 +185,11 @@ public class FishCage {
 				+ "nonfunctional,"
 				+ "annprod,"
 				+ "totalstock,"
-				+ "sizecagemodule)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "sizecagemodule,"
+				+ "owneraddress,"
+				+ "rsbsa,"
+				+ "barangay)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -214,7 +223,6 @@ public class FishCage {
 		ps.setDouble(cnt++, fs.getAmountDue());
 		ps.setInt(cnt++, fs.getIsActive());
 		ps.setInt(cnt++, fs.getYearApplied());
-		
 		ps.setInt(cnt++, fs.getMotorizedBoat());
 		ps.setInt(cnt++, fs.getNonMotorizedBoat());
 		ps.setString(cnt++, fs.getCellphoneNo());
@@ -224,6 +232,9 @@ public class FishCage {
 		ps.setInt(cnt++, fs.getNoOfAnnualProduction());
 		ps.setInt(cnt++, fs.getNoOfTotalStock());
 		ps.setString(cnt++, fs.getSizeCagePerModule());
+		ps.setString(cnt++, fs.getAddress());
+		ps.setString(cnt++, fs.getRsbsaFishR());
+		ps.setString(cnt++, fs.getBarangay());
 		
 		LogU.add(fs.getId());
 		LogU.add(fs.getWaterSurveyNo());
@@ -237,7 +248,6 @@ public class FishCage {
 		LogU.add(fs.getAmountDue());
 		LogU.add(fs.getIsActive());
 		LogU.add(fs.getYearApplied());
-		
 		LogU.add(fs.getMotorizedBoat());
 		LogU.add(fs.getNonMotorizedBoat());
 		LogU.add(fs.getCellphoneNo());
@@ -247,6 +257,9 @@ public class FishCage {
 		LogU.add(fs.getNoOfAnnualProduction());
 		LogU.add(fs.getNoOfTotalStock());
 		LogU.add(fs.getSizeCagePerModule());
+		LogU.add(fs.getAddress());
+		LogU.add(fs.getRsbsaFishR());
+		LogU.add(fs.getBarangay());
 		
 		
 		LogU.add("executing for saving...");
@@ -284,8 +297,11 @@ public class FishCage {
 				+ "nonfunctional,"
 				+ "annprod,"
 				+ "totalstock,"
-				+ "sizecagemodule)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "sizecagemodule,"
+				+ "owneraddress,"
+				+ "rsbsa,"
+				+ "barangay)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -319,7 +335,6 @@ public class FishCage {
 		ps.setDouble(cnt++, getAmountDue());
 		ps.setInt(cnt++, getIsActive());
 		ps.setInt(cnt++, getYearApplied());
-		
 		ps.setInt(cnt++, getMotorizedBoat());
 		ps.setInt(cnt++, getNonMotorizedBoat());
 		ps.setString(cnt++, getCellphoneNo());
@@ -329,6 +344,9 @@ public class FishCage {
 		ps.setInt(cnt++, getNoOfAnnualProduction());
 		ps.setInt(cnt++, getNoOfTotalStock());
 		ps.setString(cnt++, getSizeCagePerModule());
+		ps.setString(cnt++, getAddress());
+		ps.setString(cnt++, getRsbsaFishR());
+		ps.setString(cnt++, getBarangay());
 		
 		LogU.add(getId());
 		LogU.add(getWaterSurveyNo());
@@ -342,7 +360,6 @@ public class FishCage {
 		LogU.add(getAmountDue());
 		LogU.add(getIsActive());
 		LogU.add(getYearApplied());
-		
 		LogU.add(getMotorizedBoat());
 		LogU.add(getNonMotorizedBoat());
 		LogU.add(getCellphoneNo());
@@ -352,7 +369,9 @@ public class FishCage {
 		LogU.add(getNoOfAnnualProduction());
 		LogU.add(getNoOfTotalStock());
 		LogU.add(getSizeCagePerModule());
-		
+		LogU.add(getAddress());
+		LogU.add(getRsbsaFishR());
+		LogU.add(getBarangay());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -378,7 +397,6 @@ public class FishCage {
 				+ "ownerremarks=?,"
 				+ "amountdue=?,"
 				+ "yearapplied=?,"
-				
 				+ "motorizedboat=?,"
 				+ "nonmotorizedboat=?,"
 				+ "cellphoneno=?,"
@@ -387,7 +405,10 @@ public class FishCage {
 				+ "nonfunctional=?,"
 				+ "annprod=?,"
 				+ "totalstock=?,"
-				+ "sizecagemodule=? "
+				+ "sizecagemodule=?,"
+				+ "owneraddress=?,"
+				+ "rsbsa=?,"
+				+ "barangay=? "
 				
 				+ " WHERE cid=?";
 		
@@ -412,7 +433,6 @@ public class FishCage {
 		ps.setString(cnt++, fs.getRemarks());
 		ps.setDouble(cnt++, fs.getAmountDue());
 		ps.setInt(cnt++, fs.getYearApplied());
-		
 		ps.setInt(cnt++, fs.getMotorizedBoat());
 		ps.setInt(cnt++, fs.getNonMotorizedBoat());
 		ps.setString(cnt++, fs.getCellphoneNo());
@@ -422,7 +442,9 @@ public class FishCage {
 		ps.setInt(cnt++, fs.getNoOfAnnualProduction());
 		ps.setInt(cnt++, fs.getNoOfTotalStock());
 		ps.setString(cnt++, fs.getSizeCagePerModule());
-		
+		ps.setString(cnt++, fs.getAddress());
+		ps.setString(cnt++, fs.getRsbsaFishR());
+		ps.setString(cnt++, fs.getBarangay());
 		ps.setLong(cnt++, fs.getId());
 		
 		
@@ -436,7 +458,6 @@ public class FishCage {
 		LogU.add(fs.getRemarks());
 		LogU.add(fs.getAmountDue());
 		LogU.add(fs.getYearApplied());
-		
 		LogU.add(fs.getMotorizedBoat());
 		LogU.add(fs.getNonMotorizedBoat());
 		LogU.add(fs.getCellphoneNo());
@@ -446,7 +467,9 @@ public class FishCage {
 		LogU.add(fs.getNoOfAnnualProduction());
 		LogU.add(fs.getNoOfTotalStock());
 		LogU.add(fs.getSizeCagePerModule());
-		
+		LogU.add(fs.getAddress());
+		LogU.add(fs.getRsbsaFishR());
+		LogU.add(fs.getBarangay());
 		LogU.add(fs.getId());
 		
 		
@@ -475,7 +498,6 @@ public class FishCage {
 				+ "ownerremarks=?,"
 				+ "amountdue=?,"
 				+ "yearapplied=?,"
-				
 				+ "motorizedboat=?,"
 				+ "nonmotorizedboat=?,"
 				+ "cellphoneno=?,"
@@ -484,7 +506,10 @@ public class FishCage {
 				+ "nonfunctional=?,"
 				+ "annprod=?,"
 				+ "totalstock=?,"
-				+ "sizecagemodule=? "
+				+ "sizecagemodule=?,"
+				+ "owneraddress=?,"
+				+ "rsbsa=?,"
+				+ "barangay=? "
 				
 				+ " WHERE cid=?";
 		
@@ -509,7 +534,6 @@ public class FishCage {
 		ps.setString(cnt++, getRemarks());
 		ps.setDouble(cnt++, getAmountDue());
 		ps.setInt(cnt++, getYearApplied());
-		
 		ps.setInt(cnt++, getMotorizedBoat());
 		ps.setInt(cnt++, getNonMotorizedBoat());
 		ps.setString(cnt++, getCellphoneNo());
@@ -519,7 +543,9 @@ public class FishCage {
 		ps.setInt(cnt++, getNoOfAnnualProduction());
 		ps.setInt(cnt++, getNoOfTotalStock());
 		ps.setString(cnt++, getSizeCagePerModule());
-		
+		ps.setString(cnt++, getAddress());
+		ps.setString(cnt++, getRsbsaFishR());
+		ps.setString(cnt++, getBarangay());
 		ps.setLong(cnt++, getId());
 		
 		
@@ -533,7 +559,6 @@ public class FishCage {
 		LogU.add(getRemarks());
 		LogU.add(getAmountDue());
 		LogU.add(getYearApplied());
-		
 		LogU.add(getMotorizedBoat());
 		LogU.add(getNonMotorizedBoat());
 		LogU.add(getCellphoneNo());
@@ -543,7 +568,9 @@ public class FishCage {
 		LogU.add(getNoOfAnnualProduction());
 		LogU.add(getNoOfTotalStock());
 		LogU.add(getSizeCagePerModule());
-		
+		LogU.add(getAddress());
+		LogU.add(getRsbsaFishR());
+		LogU.add(getBarangay());
 		LogU.add(getId());
 		
 		

@@ -36,13 +36,12 @@ public class CashDisbursement {
 	private int fundId;
 	private int isActive;
 	private CashDisbursementReport report;
-	
 	private int number;
 	
 	public static List<CashDisbursement> retrieveReportGroupDisbursement(long reportId){
 		List<CashDisbursement> caz = new ArrayList<CashDisbursement>();
 		
-		String sql = "SELECT * FROM cashdisbursement  WHERE  isactived=1 AND zid="+ reportId + " ORDER BY dvpayroll";
+		String sql = "SELECT * FROM cashdisbursement  WHERE  isactived=1 AND zid="+ reportId + " ORDER BY lineno";
 			
 		Connection conn = null;
 		ResultSet rs = null;
@@ -53,7 +52,7 @@ public class CashDisbursement {
 		
 		System.out.println("Cash Disbursement SQL " + ps.toString());
 		rs = ps.executeQuery();
-		int x = 1;
+		
 		while(rs.next()){
 			
 			CashDisbursement cz = CashDisbursement.builder()
@@ -67,10 +66,10 @@ public class CashDisbursement {
 					.isActive(rs.getInt("isactived"))
 					.fundId(rs.getInt("fundid"))
 					.report(CashDisbursementReport.builder().id(rs.getLong("zid")).build())
-					.number(x)
+					.number(rs.getInt("lineno"))
 					.build();
 			caz.add(cz);
-			x++;
+			
 		}
 		
 		rs.close();
@@ -109,6 +108,7 @@ public class CashDisbursement {
 					.isActive(rs.getInt("isactived"))
 					.fundId(rs.getInt("fundid"))
 					.report(CashDisbursementReport.builder().id(rs.getLong("zid")).build())
+					.number(rs.getInt("lineno"))
 					.build();
 			caz.add(cz);
 		}
@@ -174,6 +174,7 @@ public class CashDisbursement {
 					.amount(rs.getDouble("amount"))
 					.isActive(rs.getInt("isactived"))
 					.fundId(rs.getInt("fundid"))
+					.number(rs.getInt("lineno"))
 					.report(rpt)
 					.build();
 			caz.add(cz);
@@ -235,8 +236,9 @@ public class CashDisbursement {
 				+ "amount,"
 				+ "isactived,"
 				+ "fundid,"
-				+ "zid)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?,?)";
+				+ "zid,"
+				+ "lineno)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -268,7 +270,7 @@ public class CashDisbursement {
 		ps.setInt(cnt++, st.getIsActive());
 		ps.setInt(cnt++, st.getFundId());
 		ps.setLong(cnt++, st.getReport().getId());
-		
+		ps.setInt(cnt++, st.getNumber());
 		
 		LogU.add(st.getDateTrans());
 		LogU.add(st.getDvPayroll());
@@ -279,6 +281,7 @@ public class CashDisbursement {
 		LogU.add(st.getIsActive());
 		LogU.add(st.getFundId());
 		LogU.add(st.getReport().getId());
+		LogU.add(st.getNumber());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -302,7 +305,8 @@ public class CashDisbursement {
 				+ "naturepay=?,"
 				+ "amount=?,"
 				+ "fundid=?,"
-				+ "zid=?" 
+				+ "zid=?,"
+				+ "lineno=?" 
 				+ " WHERE did=?";
 		
 		PreparedStatement ps = null;
@@ -324,6 +328,7 @@ public class CashDisbursement {
 		ps.setDouble(cnt++, st.getAmount());
 		ps.setInt(cnt++, st.getFundId());
 		ps.setLong(cnt++, st.getReport().getId());
+		ps.setInt(cnt++, st.getNumber());
 		ps.setLong(cnt++, st.getId());
 		
 		
@@ -335,6 +340,7 @@ public class CashDisbursement {
 		LogU.add(st.getAmount());
 		LogU.add(st.getFundId());
 		LogU.add(st.getReport().getId());
+		LogU.add(st.getNumber());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");

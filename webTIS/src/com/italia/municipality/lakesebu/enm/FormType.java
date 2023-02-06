@@ -84,6 +84,17 @@ public enum FormType {
 		return FormType.CTC_INDIVIDUAL.getName();
 	}
 	
+	public static String nameDescriptionId(int id){
+		
+		for(FormType type : FormType.values()){
+			if(id==type.getId()){
+				return type.getDescription();
+			}
+		}
+		
+		return FormType.CTC_INDIVIDUAL.getDescription();
+	}
+	
 	public static int idName(String name){
 		
 		for(FormType type : FormType.values()){

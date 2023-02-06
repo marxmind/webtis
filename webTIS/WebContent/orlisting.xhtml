@@ -229,7 +229,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						<p:ajax event="change" update="fldId2 dataSelectedId totalId" listener="#{oRListingBean.supplyCustomerInfo}" />
 					</p:autoComplete>
 					
-					<p:inputText id="oridd" value="#{oRListingBean.orNumber}" placeholder="OR No/CTC No" style="width: 15em"/>
+					<p:inputText id="oridd" value="#{oRListingBean.orNumber}" placeholder="OR No/CTC No" style="width: 15em;"/>
 					
 					<p:inputText placeholder="Address" value="#{oRListingBean.address}" style="width: 15em"/>
 					
@@ -462,7 +462,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 						
 					
 						<p:dataTable id="dataOrId" value="#{oRListingBean.ors}" var="ors" stickyHeader="false"
-							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+							rows="10" rowKey="#{ors.id}" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
                          scrollable="false"  paginatorPosition="top" paginatorAlwaysVisible="false" reflow="true"
 							>
@@ -947,6 +947,10 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 	
 	<p:dialog widgetVar="dlgAllOrs" position="center top" losable="false" closeOnEscape="true" resizable="false" showHeader="true" width="1200" height="900" closable="true">
 		
+		
+		<p:tabView prependId="false">
+            <p:tab title="Official Reciept">
+            
 		<span class="ui-input-icon-left">
 			    <i class="pi pi-search" />
 				<p:inputText id="searchOrid" value="#{oRListingBean.searchNameAll}" placeholder="Search Name..." style="width: 25em">
@@ -957,7 +961,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		<p:dataTable id="dataOrAllId" value="#{oRListingBean.orsAll}" var="ors" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="false" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false"
+                         scrollable="false" style="#{skin.table}" paginatorPosition="top" paginatorAlwaysVisible="false" rowKey="#{ors.id}"
 							>
 							
 							<p:column headerText="" width="5" exportable="false">
@@ -1021,7 +1025,75 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             				</p:columnGroup>
             				
             		</p:dataTable>
-		
+            		
+					</p:tab>
+				
+					<p:tab title="Daily Report">
+            		
+            			
+            			<span class="ui-input-icon-left">
+            					<div class="ui-inputgroup">
+								<p:inputText id="searchRpt" value="#{oRListingBean.searchParam}" placeholder="Search..." style="width: 25em"/>
+								<p:datePicker id="rangeORDate" selectionMode="range" value="#{oRListingBean.rangeDate}" readonlyInput="true" inputStyle="width: 15em"/>
+								<p:selectOneMenu value="#{oRListingBean.formIdRpt}" style="width: 15em;">
+				                	<f:selectItems value="#{oRListingBean.formsRpt}"/>
+				            	</p:selectOneMenu>
+								<p:commandButton update="dataRptId" icon="fa fa-search" value="With Date" actionListener="#{oRListingBean.loadAllRpt}"/>
+								<p:commandButton update="dataRptId" icon="fa fa-search" value="No Date" actionListener="#{oRListingBean.noFileterSearch}"/>
+								</div>
+						</span>
+            			
+            			
+            			<p:dataTable id="dataRptId" value="#{oRListingBean.orRpts}" var="rt" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} "
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false"  paginatorPosition="top" paginatorAlwaysVisible="true" 
+							>
+							
+							<f:facet name="{Exporters}">
+								<p:outputLabel value=" Total Collection: #{oRListingBean.totalCollectionToday}" style="font-weight: bold; font-size: 2em; color: red; float: left"/>
+								<p:commandButton value="XLS" styleClass="mr-2 mb-2 ui-button-outlined" style="float: right">
+				                    <p:dataExporter type="xls" target="dataRptId" fileName="listData"/>
+				                </p:commandButton>
+							</f:facet>
+							
+                         	<p:column headerText="Date" width="50" style="text-align: left">
+            						<p:outputLabel value="#{rt.dateTrans}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Form" width="50" style="text-align: left">
+            						<p:outputLabel value="#{rt.formName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Series" width="50" style="text-align: left">
+            						<p:outputLabel value="#{rt.orNumber}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Collector" width="100" style="text-align: left" exportable="false">
+            						<p:outputLabel value="#{rt.collector.name}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Tax Payer Name" width="150" style="text-align: left">
+            						<p:outputLabel value="#{rt.customer.fullname}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Amount" width="50" style="text-align: right">
+            						<p:outputLabel value="#{rt.amount}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Status" width="50" style="text-align: left">
+            						<p:outputLabel value="#{rt.status==5? 'Cancelled' : 'Issued'}"/>
+            				</p:column>
+            				
+            			</p:dataTable>	
+            			
+            			
+            			
+            			
+            			
+					</p:tab>
+            		
+				</p:tabView>
 	</p:dialog>
 	
 		
@@ -1043,7 +1115,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 <p:commandButton title="Business Lookup" icon="fa fa-credit-card" id="bizNess" actionListener="#{bizLookupBean.openLookup}" update="bizDataId" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 30px;right: 72px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 <ui:include src="bizlookup.xhtml" />
 
-<p:commandButton title="Official Receipt" icon="fa fa-euro" oncomplete="PF('dlgAllOrs').show(1000);" actionListener="#{oRListingBean.loadAllOrs}" update="dataOrAllId" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 30px;right: 104px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>			
+<p:commandButton title="Official Receipt" icon="fa fa-euro" oncomplete="PF('dlgAllOrs').show(1000);" actionListener="#{oRListingBean.loadAllOrs}" update="dataOrAllId rangeORDate" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 30px;right: 104px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>			
 <p:commandButton title="Graph" icon="fa fa-th-large"  actionListener="#{graphCollectionBean.loadGraph}" update="graphId" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 30px;right: 135px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 <ui:include src="graphcol.xhtml" />
 
@@ -1209,7 +1281,91 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
     	
     	</f:facet>
     </p:dialog>
-
+	
+	<p:commandButton type="button" title="Check Series" icon="fa fa-ticket" onclick="PF('dlgCheckSeries').show(1000)" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 30px;right: 198px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	<p:dialog closable="true" closeOnEscape="true" showHeader="true" header="Series Checking" widgetVar="dlgCheckSeries" width="600" height="500" position="center">
+		<div class="ui-inputgroup">
+		<p:inputText value="#{oRListingBean.checkSeriesForm}" placeholder="00000000-00000000" />
+		<p:commandButton icon="fa fa-search" update="dataSeriedId" actionListener="#{oRListingBean.checkSeries}"/>
+		</div>
+		
+		<p:dataTable id="dataSeriedId" value="#{oRListingBean.orsSeries}" var="st" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false" paginatorPosition="top" paginatorAlwaysVisible="true" reflow="true"
+							>	             
+							
+							<f:facet name="{Exporters}">
+								<p:commandButton value="XLS" styleClass="mr-2 mb-2 ui-button-outlined">
+				                    <p:dataExporter type="xls" target="dataSeriedId" fileName="series"/>
+				                </p:commandButton>
+            				</f:facet>
+							<p:column headerText="OR No." width="50" style="text-align: left">
+            						<p:outputLabel value="#{st.orNumber}"/>
+            				</p:column>
+							<p:column headerText="Date" width="70">
+            						<p:outputLabel value="#{st.dateTrans}"/>
+            				</p:column>
+            				<p:column headerText="Status" width="50" style="text-align: left">
+            						<p:outputLabel value="#{st.statusName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Form" width="50" style="text-align: left">
+            						<p:outputLabel value="#{st.formName}"/>
+            				</p:column>
+            				
+            				
+						</p:dataTable>
+		
+	</p:dialog>
+	
+	<p:commandButton title="Duplicate Series" icon="fa fa-book" actionListener="#{oRListingBean.viewDuplicate}" update="dataDupId msg" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 30px;right: 229px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
+	<p:dialog closable="true" closeOnEscape="true" showHeader="true" header="Duplicate OR" widgetVar="dlgDuplicateSeries" width="1000" height="550" position="center">
+		
+		<p:dataTable id="dataDupId" value="#{oRListingBean.orsDuplicate}" var="st" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false" paginatorPosition="top" paginatorAlwaysVisible="true" reflow="true"
+							>	             
+							
+							<f:facet name="{Exporters}">
+								<p:commandButton value="XLS" styleClass="mr-2 mb-2 ui-button-outlined">
+				                    <p:dataExporter type="xls" target="dataDupId" fileName="duplicate"/>
+				                </p:commandButton>
+            				</f:facet>
+            				 <p:column headerText="Delete" width="15">
+				                	<p:commandButton icon="fa fa-trash" actionListener="#{oRListingBean.deleteDuplicate(st)}" update="dataDupId msg"/>
+				                </p:column>
+							<p:column headerText="OR No." width="50" style="text-align: left">
+            						<p:outputLabel value="#{st.orNumber}"/>
+            				</p:column>
+							<p:column headerText="Date" width="50">
+            						<p:outputLabel value="#{st.dateTrans}"/>
+            				</p:column>
+            				<p:column headerText="Customer" width="120">
+            						<p:outputLabel value="#{st.customer.fullname}"/>
+            				</p:column>
+            				<p:column headerText="Amount" width="50">
+				                    <h:outputText value="#{st.amount}">
+				                    	<f:convertNumber currencySymbol="" type="currency"/>
+				                    </h:outputText>
+				            </p:column> 
+            				<p:column headerText="Collector" width="120">
+            						<p:outputLabel value="#{st.collector.name}"/>
+            				</p:column>
+            				<p:column headerText="Status" width="50" style="text-align: left">
+            						<p:outputLabel value="#{st.statusName}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Form" width="50" style="text-align: left">
+            						<p:outputLabel value="#{st.formName}"/>
+            				</p:column>
+            				
+            				
+						</p:dataTable>
+		
+	</p:dialog>
+	
 </h:form>
 </h:body>
 </html>

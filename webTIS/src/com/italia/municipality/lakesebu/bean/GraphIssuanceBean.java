@@ -78,6 +78,9 @@ public class GraphIssuanceBean implements Serializable {
 	
 	@PostConstruct
 	public void init() {
+		
+		System.out.println("running graph issuannce.......");
+		
 		collectorMap = new LinkedHashMap<Integer, Collector>();
 		
 		loadDummyData();
@@ -350,7 +353,7 @@ public class GraphIssuanceBean implements Serializable {
     }
 	
 	public void loadDynamicBar() {
-		
+		System.out.println("loadDynamicBar.......................");
 		 barModel2 = new BarChartModel();
 	     ChartData data = new ChartData();
 	        
@@ -458,12 +461,12 @@ public class GraphIssuanceBean implements Serializable {
 	    
 	    for(int year : mapData.keySet()) {
 	    	
-	    	double totalAmount = 0d;
+	    	//double totalAmount = 0d;
 	        for(int col : mapData.get(year).keySet()) {
 	        	
 	        	BarChartDataSet barDataSet = new BarChartDataSet();
 	        	List<Number> values = new ArrayList<>();
-	        	
+	        	double totalAmount = 0d;
 	 	        for(int month=1; month<=12; month++) {
 		        	if(mapData!=null && mapData.get(year).containsKey(col)) {
 		        		if(mapData.get(year).get(col).containsKey(month)) {
@@ -672,12 +675,12 @@ public class GraphIssuanceBean implements Serializable {
 	    //Map<Integer, Double> mapTotal = new LinkedHashMap<Integer, Double>();
 	    for(int year : mapData.keySet()) {
 	    	
-	        double totalAmount = 0d;
+	        //double totalAmount = 0d;
 	        for(int col : mapData.get(year).keySet()) {
 	        	
 	        	 LineChartDataSet dataSet = new LineChartDataSet();
 	 	         List<Object> values = new ArrayList<>();
-	        	
+	 	        double totalAmount = 0d;
 	 	        for(int month=1; month<=12; month++) {
 		        	if(mapData!=null && mapData.get(year).containsKey(col)) {
 		        		if(mapData.get(year).get(col).containsKey(month)) {
@@ -886,6 +889,7 @@ public class GraphIssuanceBean implements Serializable {
 	}
 	
 	private void accountGrpah(Map<Integer, Map<String, Double>> mapData) {
+		System.out.println("accountGrpah.............................");
 		barModel3 = new BarChartModel();
 	    ChartData data = new ChartData();
 	    int color = 1;

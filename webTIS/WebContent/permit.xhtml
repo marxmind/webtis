@@ -294,12 +294,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
                         <p:dataTable id="cusId" value="#{businessPermitBean.pmts}" var="ct" stickyHeader="false"
 							rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15,20,50,100"
-                         scrollable="false" style="#{skin.table}" draggableColumns="true" draggableRows="true" paginatorPosition="top"
+                         scrollable="true" scrollWidth="600" style="#{skin.table}" draggableColumns="false" draggableRows="false" paginatorPosition="top"
                          >
                          	
                          	<f:facet name="{Exporters}">
-                         			<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="fa fa-th-list" title="Click this button to hide and unhide columns"/>
-									<p:columnToggler datasource="cusId" trigger="toggler" />
+                         			
             						<h:commandLink title="Export Clearance in excel format">
                 						    <p:graphicImage name="img/xls.jpg" width="24" height="24"/>
                 							<p:dataExporter type="xls" target="cusId" fileName="Clearance" options="#{exporter.excelOpt}"/>
@@ -326,27 +325,49 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             					<p:commandButton icon="fa fa-search" title="Click this button to see the additional information" update="clearFldId pictureId orId bzId" actionListener="#{businessPermitBean.clickItem(ct)}"/>
             				</p:column>
             				
-            				<p:column headerText="Control No" width="70" sortable="false" sortBy="#{ct.controlNo}">
+            				<p:column headerText="Control No" width="70">
             						<p:outputLabel value="#{ct.controlNo}"/>
             				</p:column>
             				
-            				<p:column headerText="Plate No" width="70" sortable="false" sortBy="#{ct.plateNo}">
+            				<p:column headerText="Plate No" width="70">
             						<p:outputLabel value="#{ct.plateNo}"/>
             				</p:column>
             				
-            				<p:column headerText="Date Issued" width="70" sortable="false" sortBy="#{ct.dateTrans}">
+            				<p:column headerText="Date Issued" width="70">
             						<p:outputLabel value="#{ct.dateTrans}"/>
             				</p:column>
             				
-            				<p:column headerText="Owner" width="100" sortable="false" sortBy="#{ct.customer.fullname}">
+            				<p:column headerText="Owner" width="100">
             						<p:outputLabel value="#{ct.customer.fullname}"/>
             				</p:column>
             				
-            				<p:column headerText="Business" width="120" sortable="false" sortBy="#{ct.businessName}">
+            				<p:column headerText="Business" width="120">
             						<p:outputLabel value="#{ct.businessName}"/>
             				</p:column>
             				
+            				<p:column headerText="#Emp" width="70">
+            						<p:outputLabel value="#{ct.empdtls}"/>
+            				</p:column>
             				
+            				<p:column headerText="Type" width="70">
+            						<p:outputLabel value="#{ct.type}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Memo" width="70">
+            						<p:outputLabel value="#{ct.memoType}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Line of Business" width="100">
+            						<p:outputLabel value="#{ct.businessEngage}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Capital" width="100" >
+            						<p:outputLabel value="#{ct.capital}"/>
+            				</p:column>
+            				
+            				<p:column headerText="Gross" width="100" >
+            						<p:outputLabel value="#{ct.gross}"/>
+            				</p:column>
             				
 						</p:dataTable>
                     </div>

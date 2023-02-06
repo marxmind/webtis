@@ -68,4 +68,6 @@ public class GlobalVar {
 	public static final String COLLECTION_DEPOSIT_REPORT_LONG_NAME = "collection-deposit-report-long";
 	public static final String COLLECTION_DEPOSIT_REPORT_LONG_EXTENDED_NAME = "collection-deposit-report-long-extended";
 	public static final String BUSINESS_MAP_IMG = PRIMARY_DRIVE + SEP + APP_NAME + SEP + "license" + SEP + "map" +SEP;
+	public static final String RIS_SLIP_RPT = "ris";
+	public static final String WATER_RENTAL_REG = "water_rental_reg";
 }

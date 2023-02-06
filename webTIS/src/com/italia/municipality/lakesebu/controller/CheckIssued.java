@@ -42,7 +42,7 @@ public class CheckIssued {
 	public static List<CheckIssued> retrieveReportGroupCheckIssued(long reportId){
 		List<CheckIssued> caz = new ArrayList<CheckIssued>();
 		
-		String sql = "SELECT * FROM checkissued  WHERE  isactiveck=1 AND cpid="+ reportId + " ORDER BY dvpayroll";
+		String sql = "SELECT * FROM checkissued  WHERE  isactiveck=1 AND cpid="+ reportId + " ORDER BY lineno";
 			
 		Connection conn = null;
 		ResultSet rs = null;
@@ -71,6 +71,7 @@ public class CheckIssued {
 					.isActive(rs.getInt("isactiveck"))
 					.fundId(rs.getInt("fundid"))
 					.checkIssuedReport(CheckIssuedReport.builder().id(rs.getLong("cpid")).build())
+					.number(rs.getInt("lineno"))
 					.build();
 			
 			caz.add(cz);
@@ -115,6 +116,7 @@ public class CheckIssued {
 					.isActive(rs.getInt("isactiveck"))
 					.fundId(rs.getInt("fundid"))
 					.checkIssuedReport(CheckIssuedReport.builder().id(rs.getLong("cpid")).build())
+					.number(rs.getInt("lineno"))
 					.build();
 			caz.add(cz);
 		}
@@ -187,6 +189,7 @@ public class CheckIssued {
 					.isActive(rs.getInt("isactiveck"))
 					.fundId(rs.getInt("fundid"))
 					.checkIssuedReport(rpt)
+					.number(rs.getInt("lineno"))
 					.build();
 			caz.add(cz);
 		}
@@ -249,8 +252,9 @@ public class CheckIssued {
 				+ "amount,"
 				+ "isactiveck,"
 				+ "fundid,"
-				+ "cpid)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "cpid,"
+				+ "lineno)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -284,7 +288,7 @@ public class CheckIssued {
 		ps.setInt(cnt++, st.getIsActive());
 		ps.setInt(cnt++, st.getFundId());
 		ps.setLong(cnt++, st.getCheckIssuedReport().getId());
-		
+		ps.setInt(cnt++, st.getNumber());
 		
 		LogU.add(st.getDateTrans());
 		LogU.add(st.getSerialNo());
@@ -297,6 +301,7 @@ public class CheckIssued {
 		LogU.add(st.getIsActive());
 		LogU.add(st.getFundId());
 		LogU.add(st.getCheckIssuedReport().getId());
+		LogU.add(st.getNumber());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -322,7 +327,8 @@ public class CheckIssued {
 				+ "naturepay=?,"
 				+ "amount=?,"
 				+ "fundid=?,"
-				+ "cpid=?" 
+				+ "cpid=?,"
+				+ "lineno=?" 
 				+ " WHERE ckid=?";
 		
 		PreparedStatement ps = null;
@@ -345,6 +351,7 @@ public class CheckIssued {
 		ps.setDouble(cnt++, st.getAmount());
 		ps.setInt(cnt++, st.getFundId());
 		ps.setLong(cnt++, st.getCheckIssuedReport().getId());
+		ps.setInt(cnt++, st.getNumber());
 		ps.setLong(cnt++, st.getId());
 		
 		
@@ -358,6 +365,7 @@ public class CheckIssued {
 		LogU.add(st.getAmount());
 		LogU.add(st.getFundId());
 		LogU.add(st.getCheckIssuedReport().getId());
+		LogU.add(st.getNumber());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");

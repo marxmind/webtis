@@ -73,17 +73,20 @@ xmlns:pe="http://primefaces.org/ui/extensions"
     
     <div class="p-col-12 p-md-5">
     		<p:card style="width: 53em">
+    		<div class="ui-inputgroup" style="float:left">
+    			<p:commandButton id="openCam" value="Scan QR"  onclick="PF('dlgCam').show(1000);" icon="fa fa-file-o" title="Click this button to start scanning qr code"/>
+    		</div>
             <div class="ui-inputgroup" style="float:right">
-            			<p:commandButton id="openCam" value="Scan QR"  onclick="PF('dlgCam').show(1000);" icon="fa fa-file-o" title="Click this button to start scanning qr code"/>
-    					<p:commandButton value="New" update=":formId:usercusId, :formId:pictureId" actionListener="#{businessOwnerBean.clearFields}"  icon="fa fa-file-o" title="Click this button to start new information"/>
-    					<p:commandButton value="Clear" update="pictureId usercusId" icon="fa fa-trash" actionListener="#{businessOwnerBean.closePopup}" title="Click this button to clear information"/>
-						<p:commandButton value="Save" update="cusId usercusId pictureId msg"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{businessOwnerBean.save}">
+            			
+    					<p:commandButton id="idNew" value="New" update=":formId:usercusId, :formId:pictureId" actionListener="#{businessOwnerBean.clearFields}"  icon="fa fa-file-o" title="Click this button to start new information"/>
+    					<p:commandButton id="idClear" value="Clear" update="pictureId usercusId" icon="fa fa-trash" actionListener="#{businessOwnerBean.closePopup}" title="Click this button to clear information"/>
+						<p:commandButton id="idSave" value="Save" update="cusId usercusId pictureId msg"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{businessOwnerBean.save}">
         					<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
         				</p:commandButton>
     		</div>		
 					<br/>
 					
-					<p:panelGrid id="pictureId" columns="3" cellpadding="0" style="#{skin.grid};">
+					<p:panelGrid id="pictureId" columns="3" cellpadding="0" layout="grid">
 							
 							<h:outputLabel id="photo">
         						<p:graphicImage name="images/photocam/#{businessOwnerBean.photoId}.jpg" rendered="#{not empty businessOwnerBean.photoId}" style="width: 100px; height: 100px"/>
@@ -540,7 +543,12 @@ xmlns:pe="http://primefaces.org/ui/extensions"
             })
             console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
           })
-
+			
+			document.getElementById('resetButton').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })
           
 
 			document.getElementById('openCam').addEventListener('click', () => {
@@ -549,7 +557,23 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 	            console.log('Reset.')
 	          })	
 			
-			
+			document.getElementById('idNew').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })
+          
+          document.getElementById('idClear').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })
+          
+          document.getElementById('idSave').addEventListener('click', () => {
+            codeReader.reset()
+            document.getElementById('result').textContent = '';
+            console.log('Reset.')
+          })
 		
 			
         })

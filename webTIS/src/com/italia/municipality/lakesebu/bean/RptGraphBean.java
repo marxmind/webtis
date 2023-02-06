@@ -637,14 +637,14 @@ public class RptGraphBean implements Serializable{
         dataSet.setFill(false);
         dataSet.setLabel(""+(DateUtils.getCurrentYear()-1));
         dataSet.setBorderColor("rgb(255, 99, 132)");
-        dataSet.setLineTension(0.1);
+        dataSet.setTension(0.1);
         data.addChartDataSet(dataSet);
         
         dataSet2.setData(values2);
         dataSet2.setFill(false);
         dataSet2.setLabel(""+DateUtils.getCurrentYear());
         dataSet2.setBorderColor("rgb(75, 192, 192)");
-        dataSet2.setLineTension(0.1);
+        dataSet2.setTension(0.1);
         data.addChartDataSet(dataSet2);
         
         data.setLabels(labels);
@@ -680,14 +680,14 @@ public class RptGraphBean implements Serializable{
         dataSet.setFill(false);
         dataSet.setLabel("Last Year");
         dataSet.setBorderColor("rgb(255, 99, 132)");
-        dataSet.setLineTension(0.1);
+        dataSet.setTension(0.1);
         data.addChartDataSet(dataSet);
         
         dataSet2.setData(values2);
         dataSet2.setFill(false);
         dataSet2.setLabel("Current Year");
         dataSet2.setBorderColor("rgb(75, 192, 192)");
-        dataSet2.setLineTension(0.1);
+        dataSet2.setTension(0.1);
         data.addChartDataSet(dataSet2);
         
         data.setLabels(labels);
@@ -754,14 +754,14 @@ public class RptGraphBean implements Serializable{
         dataSet.setFill(false);
         dataSet.setLabel(""+(getYearId()-1));
         dataSet.setBorderColor("rgb(255, 99, 132)");
-        dataSet.setLineTension(0.1);
+        dataSet.setTension(0.1);
         data.addChartDataSet(dataSet);
         
         dataSet2.setData(values2);
         dataSet2.setFill(false);
         dataSet2.setLabel(""+getYearId());
         dataSet2.setBorderColor("rgb(75, 192, 192)");
-        dataSet2.setLineTension(0.1);
+        dataSet2.setTension(0.1);
         data.addChartDataSet(dataSet2);
         
         data.setLabels(labels);
@@ -802,47 +802,19 @@ public class RptGraphBean implements Serializable{
         barDataSet.setBackgroundColor("rgb(255, 99, 132)");
         barDataSet.setStack("Stack 0");
         List<Number> dataVal = new ArrayList<>();
-       /* dataVal.add(-22.22);
-        dataVal.add(-70);
-        dataVal.add(-33);
-        dataVal.add(30);
-        dataVal.add(-49);
-        dataVal.add(23);
-        dataVal.add(-92);
-        barDataSet.setData(dataVal);*/
-         
+      
         BarChartDataSet barDataSet2 = new BarChartDataSet();
         barDataSet2.setLabel("2018 Income");
         barDataSet2.setBackgroundColor("rgb(54, 162, 235)");
         barDataSet2.setStack("Stack 0");
         List<Number> dataVal2 = new ArrayList<>();
-        /*dataVal2.add(90);
-        dataVal2.add(18);
-        dataVal2.add(86);
-        dataVal2.add(8);
-        dataVal2.add(34);
-        dataVal2.add(46);
-        dataVal2.add(11);
-        barDataSet2.setData(dataVal2);*/
-         
+       
         BarChartDataSet barDataSet3 = new BarChartDataSet();
         barDataSet3.setLabel("2019 Income");
         barDataSet3.setBackgroundColor("rgb(75, 192, 192)");
         barDataSet3.setStack("Stack 0");
         List<Number> dataVal3 = new ArrayList<>();
-        /*dataVal3.add(70);
-        dataVal3.add(73);
-        dataVal3.add(-25);
-        dataVal3.add(65);
-        dataVal3.add(49);
-        dataVal3.add(-18);
-        dataVal3.add(46);
-        barDataSet3.setData(dataVal3);*/
-         
-        /*data.addChartDataSet(barDataSet);
-        data.addChartDataSet(barDataSet2);
-        data.addChartDataSet(barDataSet3);*/
-         
+       
         List<String> labels = new ArrayList<>();
         
         

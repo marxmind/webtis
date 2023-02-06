@@ -47,6 +47,7 @@ public class IssuedForm {
 	private Collector collector;
 	private Stocks stock;
 	private int stabNo;
+	private int isForBarangayOR;
 	
 	private String formTypeName;
 	private String statusName;
@@ -109,6 +110,7 @@ public class IssuedForm {
 			try{form.setFundId(rs.getInt("fundid"));}catch(NullPointerException e){}
 			try{form.setFundName(FundType.typeName(rs.getInt("fundid")));}catch(NullPointerException e){}
 			try{form.setStabNo(rs.getInt("stabno"));}catch(NullPointerException e){}
+			try {form.setIsForBarangayOR(rs.getInt("isbarangay"));}catch(Exception e) {}
 			
 			Collector col = new Collector();
 			try{col.setId(rs.getInt("isid"));}catch(NullPointerException e){}
@@ -189,6 +191,7 @@ public class IssuedForm {
 			try{form.setFundId(rs.getInt("fundid"));}catch(NullPointerException e){}
 			try{form.setFundName(FundType.typeName(rs.getInt("fundid")));}catch(NullPointerException e){}
 			try{form.setStabNo(rs.getInt("stabno"));}catch(NullPointerException e){}
+			try {form.setIsForBarangayOR(rs.getInt("isbarangay"));}catch(Exception e) {}
 			
 			Collector col = new Collector();
 			try{col.setId(rs.getInt("isid"));}catch(NullPointerException e){}
@@ -263,6 +266,7 @@ public class IssuedForm {
 			try{form.setFundId(rs.getInt("fundid"));}catch(NullPointerException e){}
 			try{form.setFundName(FundType.typeName(rs.getInt("fundid")));}catch(NullPointerException e){}
 			try{form.setStabNo(rs.getInt("stabno"));}catch(NullPointerException e){}
+			try {form.setIsForBarangayOR(rs.getInt("isbarangay"));}catch(Exception e) {}
 			
 			Collector col = new Collector();
 			try{col.setId(rs.getInt("isid"));}catch(NullPointerException e){}
@@ -360,8 +364,9 @@ public class IssuedForm {
 				+ "formstatus,"
 				+ "stockid,"
 				+ "fundid,"
-				+ "stabno)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "stabno,"
+				+ "isbarangay)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -395,6 +400,7 @@ public class IssuedForm {
 		ps.setLong(cnt++, col.getStock().getId());
 		ps.setInt(cnt++, col.getFundId());
 		ps.setInt(cnt++, col.getStabNo());
+		ps.setInt(cnt++, col.getIsForBarangayOR());
 		
 		LogU.add(col.getIssuedDate());
 		LogU.add(col.getFormType());
@@ -407,6 +413,7 @@ public class IssuedForm {
 		LogU.add(col.getStock().getId());
 		LogU.add(col.getFundId());
 		LogU.add(col.getStabNo());
+		LogU.add(col.getIsForBarangayOR());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -434,8 +441,9 @@ public class IssuedForm {
 				+ "formstatus,"
 				+ "stockid,"
 				+ "fundid,"
-				+ "stabno)" 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "stabno,"
+				+ "isbarangay)" 
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -469,6 +477,7 @@ public class IssuedForm {
 		ps.setLong(cnt++, getStock().getId());
 		ps.setInt(cnt++, getFundId());
 		ps.setInt(cnt++, getStabNo());
+		ps.setInt(cnt++, getIsForBarangayOR());
 		
 		LogU.add(getIssuedDate());
 		LogU.add(getFormType());
@@ -481,6 +490,7 @@ public class IssuedForm {
 		LogU.add(getStock().getId());
 		LogU.add(getFundId());
 		LogU.add(getStabNo());
+		LogU.add(getIsForBarangayOR());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -506,7 +516,8 @@ public class IssuedForm {
 				+ "formstatus=?,"
 				+ "stockid=?,"
 				+ "fundid=?,"
-				+ "stabno=? " 
+				+ "stabno=?,"
+				+ "isbarangay=? " 
 				+ " WHERE logid=?";
 		
 		PreparedStatement ps = null;
@@ -530,6 +541,7 @@ public class IssuedForm {
 		ps.setLong(cnt++, col.getStock().getId());
 		ps.setInt(cnt++, col.getFundId());
 		ps.setInt(cnt++, col.getStabNo());
+		ps.setInt(cnt++, col.getIsForBarangayOR());
 		ps.setLong(cnt++, col.getId());
 		
 		LogU.add(col.getIssuedDate());
@@ -542,6 +554,7 @@ public class IssuedForm {
 		LogU.add(col.getStock().getId());
 		LogU.add(col.getFundId());
 		LogU.add(col.getStabNo());
+		LogU.add(col.getIsForBarangayOR());
 		LogU.add(col.getId());
 		
 		LogU.add("executing for saving...");
@@ -568,7 +581,8 @@ public class IssuedForm {
 				+ "formstatus=?,"
 				+ "stockid=?,"
 				+ "fundid=?,"
-				+ "stabno=? " 
+				+ "stabno=?,"
+				+ "isbarangay=? " 
 				+ " WHERE logid=?";
 		
 		PreparedStatement ps = null;
@@ -592,6 +606,7 @@ public class IssuedForm {
 		ps.setLong(cnt++, getStock().getId());
 		ps.setInt(cnt++, getFundId());
 		ps.setInt(cnt++, getStabNo());
+		ps.setInt(cnt++, getIsForBarangayOR());
 		ps.setLong(cnt++, getId());
 		
 		LogU.add(getIssuedDate());
@@ -604,6 +619,7 @@ public class IssuedForm {
 		LogU.add(getStock().getId());
 		LogU.add(getFundId());
 		LogU.add(getStabNo());
+		LogU.add(getIsForBarangayOR());
 		LogU.add(getId());
 		
 		LogU.add("executing for saving...");
@@ -711,7 +727,7 @@ public class IssuedForm {
 			}
 			
 		}
-		
+		System.out.println("Delete: SQL " + ps.toString());
 		ps.executeUpdate();
 		ps.close();
 		WebTISDatabaseConnect.close(conn);

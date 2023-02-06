@@ -42,7 +42,7 @@ public class CollectionDeposit {
 	public static List<CollectionDeposit> retrieveReportGroupCollectionDeposit(long reportId){
 		List<CollectionDeposit> caz = new ArrayList<CollectionDeposit>();
 		
-		String sql = "SELECT * FROM collectiondeposit  WHERE  isactivecdd=1 AND cdid="+ reportId + " ORDER BY dvpayroll";
+		String sql = "SELECT * FROM collectiondeposit  WHERE  isactivecdd=1 AND cdid="+ reportId + " ORDER BY lineno";
 			
 		Connection conn = null;
 		ResultSet rs = null;
@@ -71,6 +71,7 @@ public class CollectionDeposit {
 					.isActive(rs.getInt("isactivecdd"))
 					.fundId(rs.getInt("fundid"))
 					.collectionDepositReport(CollectionDepositReport.builder().id(rs.getLong("cdid")).build())
+					.number(rs.getInt("lineno"))
 					.build();
 			
 			caz.add(cz);
@@ -115,6 +116,7 @@ public class CollectionDeposit {
 					.isActive(rs.getInt("isactivecdd"))
 					.fundId(rs.getInt("fundid"))
 					.collectionDepositReport(CollectionDepositReport.builder().id(rs.getLong("cdid")).build())
+					.number(rs.getInt("lineno"))
 					.build();
 			caz.add(cz);
 		}
@@ -187,6 +189,7 @@ public class CollectionDeposit {
 					.isActive(rs.getInt("isactivecdd"))
 					.fundId(rs.getInt("fundid"))
 					.collectionDepositReport(rpt)
+					.number(rs.getInt("lineno"))
 					.build();
 			caz.add(cz);
 		}
@@ -249,8 +252,9 @@ public class CollectionDeposit {
 				+ "amount,"
 				+ "isactivecdd,"
 				+ "fundid,"
-				+ "cdid)" 
-				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "cdid,"
+				+ "lineno)" 
+				+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -284,7 +288,7 @@ public class CollectionDeposit {
 		ps.setInt(cnt++, st.getIsActive());
 		ps.setInt(cnt++, st.getFundId());
 		ps.setLong(cnt++, st.getCollectionDepositReport().getId());
-		
+		ps.setInt(cnt++, st.getNumber());
 		
 		LogU.add(st.getDateTrans());
 		LogU.add(st.getSerialNo());
@@ -297,6 +301,7 @@ public class CollectionDeposit {
 		LogU.add(st.getIsActive());
 		LogU.add(st.getFundId());
 		LogU.add(st.getCollectionDepositReport().getId());
+		LogU.add(st.getNumber());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -322,7 +327,8 @@ public class CollectionDeposit {
 				+ "naturepay=?,"
 				+ "amount=?,"
 				+ "fundid=?,"
-				+ "cdid=?" 
+				+ "cdid=?,"
+				+ "lineno=?" 
 				+ " WHERE cddid=?";
 		
 		PreparedStatement ps = null;
@@ -345,6 +351,7 @@ public class CollectionDeposit {
 		ps.setDouble(cnt++, st.getAmount());
 		ps.setInt(cnt++, st.getFundId());
 		ps.setLong(cnt++, st.getCollectionDepositReport().getId());
+		ps.setInt(cnt++, st.getNumber());
 		ps.setLong(cnt++, st.getId());
 		
 		
@@ -358,6 +365,7 @@ public class CollectionDeposit {
 		LogU.add(st.getAmount());
 		LogU.add(st.getFundId());
 		LogU.add(st.getCollectionDepositReport().getId());
+		LogU.add(st.getNumber());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");

@@ -187,7 +187,7 @@ public class OrlistingXML {
 		    	OrlistingXML xml = null;
 		    	
 		    	try{xml = readXML(file.getName());}catch(Exception e) {}
-		    	System.out.println("Fullname:" + xml.getFullName() + " on file " + file.getName());
+//		    	System.out.println("Fullname:" + xml.getFullName() + " on file " + file.getName());
 		    	
 		    	if(xml!=null && checkORTransactionIfNotExist(xml)) {//return true if exist
 		    	

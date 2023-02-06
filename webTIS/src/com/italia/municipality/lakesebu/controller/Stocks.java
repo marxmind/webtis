@@ -50,6 +50,8 @@ public class Stocks {
 	
 	private int count;
 	
+	private String remarks;
+	
 	public static boolean isExistedSeries(String seriesFrom, int formType) {
 		
 		if(FormType.CT_2.getId()==formType || FormType.CT_5.getId()==formType) {

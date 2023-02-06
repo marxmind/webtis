@@ -15,8 +15,7 @@
     		<p:scrollPanel style="width:120em;height:650px" mode="native">
     		<p:toolbar id="tbGraph">
     		<f:facet name="left">
-    			<span class="ui-input-icon-left">
-			    <i class="pi pi-search" />
+			    <div class="ui-inputgroup">
     			<p:selectCheckboxMenu id="grapYearId" value="#{graphCollectionBean.selectedYear}" label="Select Year" updateLabel="true" filterMatchMode="contains" filter="true" style="width: 20em">
 					<f:selectItems value="#{graphCollectionBean.years}" />
 				</p:selectCheckboxMenu>
@@ -24,7 +23,7 @@
 					<f:selectItems value="#{graphCollectionBean.collectors}" />
 				</p:selectCheckboxMenu>
 				<p:commandButton icon="fa fa-search" update="graphId" actionListener="#{graphCollectionBean.selectedGraph}"/>
-    			</span>
+    			</div>
     		</f:facet>
     		<f:facet name="right"/>
 			</p:toolbar> 

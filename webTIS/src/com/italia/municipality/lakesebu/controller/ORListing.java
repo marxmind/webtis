@@ -6,13 +6,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.italia.municipality.lakesebu.database.WebTISDatabaseConnect;
 import com.italia.municipality.lakesebu.enm.FormStatus;
 import com.italia.municipality.lakesebu.enm.FormType;
 import com.italia.municipality.lakesebu.licensing.controller.Customer;
 import com.italia.municipality.lakesebu.utils.LogU;
+import com.italia.municipality.lakesebu.utils.OrlistingXML;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,6 +58,230 @@ public class ORListing {
 	private String statusName;
 	
 	private long genCollection;
+	
+	public static void load() {
+		
+		String sql = "SELECT ors.orid,ors.ordatetrans,ors.ornumber,ors.aform,ors.orstatus,cz.fullname,col.collectorname,(select sum(s.olamount) as amount from ornamelist s where s.orid=ors.orid) as amount  \r\n"
+				+ "FROM ORLISTING ors,customer cz,issuedcollector col WHERE col.isid=ors.isid and cz.customerid=ors.customerid AND ors.isactiveor=1 and ors.aform="+ FormType.AF_51.getId() +" and ors.orstatus=4 and \r\n"
+				+ "ors.ordatetrans>='2023-01-01' ORDER BY ors.ornumber";
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		System.out.println("SQL CHECK SERIES: " + ps.toString());
+		rs = ps.executeQuery();
+		
+			while(rs.next()){
+				double amount = rs.getDouble("amount");
+				if(amount>1000){
+					System.out.println("DATE:\t" + rs.getString("ordatetrans") + "\tORNUMBER\t" + rs.getString("ornumber") + "\tNAME:\t" + rs.getString("fullname") + "\tAMOUNT:\t" + amount);
+				}
+			}
+			rs.close();
+			ps.close();
+			WebTISDatabaseConnect.close(conn);
+			
+		}catch(Exception e){e.getMessage();}
+		
+		
+	}
+	
+	public static boolean isExistingSeries(int collectorId, String series, int formType) {
+		String sql = "SELECT ornumber FROM orlisting WHERE isactiveor=1 AND isid=" + collectorId + " AND ornumber='"+ series.trim() +"' AND aform="+ formType;
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		System.out.println("SQL CHECK SERIES: " + ps.toString());
+		rs = ps.executeQuery();
+		
+			while(rs.next()){
+				return true;
+			}
+			rs.close();
+			ps.close();
+			WebTISDatabaseConnect.close(conn);
+			
+		}catch(Exception e){e.getMessage();}
+		
+		return false;
+	}
+	
+	public static List<ORListing> checkDuplicateOR(){
+		List<ORListing> ors = new ArrayList<ORListing>();
+		String dateStart="2023-01-01";
+		String sql="SELECT ornumber FROM orlisting where isactiveor=1 and aform!=10 and orstatus=4 and ordatetrans>='"+dateStart+"' group by ornumber,aform having count(ornumber)>1;";
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		System.out.println("SQL ORS SERIES: " + ps.toString());
+		rs = ps.executeQuery();
+		
+			while(rs.next()){
+				ORListing or = ORListing.builder()
+						.orNumber(rs.getString("ornumber"))
+						.build();
+				ors.add(or);
+			}
+			
+			if(ors!=null && ors.size()>1) {
+				
+				int count =0;
+				String val = " AND (";
+				for(ORListing or : ors) {
+					if(count==0) {
+						val +=  " ornumber='"+or.getOrNumber()+"'";
+					}else {
+						val +=  " OR ornumber='"+or.getOrNumber()+"'";
+					}
+					count++;
+				}
+				
+				val += " )";
+				
+				
+				sql = "SELECT ors.orid,ors.ordatetrans,ors.ornumber,ors.aform,ors.orstatus,cz.fullname,col.collectorname,(select sum(s.olamount) as amount from ornamelist s where s.orid=ors.orid) as amount  FROM ORLISTING ors,customer cz,issuedcollector col WHERE col.isid=ors.isid and cz.customerid=ors.customerid AND ors.isactiveor=1 and ors.aform!=10 and ors.orstatus=4 and ors.ordatetrans>='"+dateStart+"'" + val + " ORDER BY ors.ornumber";
+				ps = conn.prepareStatement(sql);
+				rs = ps.executeQuery();
+				ors = new ArrayList<ORListing>();
+				while(rs.next()){
+					ORListing or = ORListing.builder()
+							.id(rs.getLong("orid"))
+							.dateTrans(rs.getString("ordatetrans"))
+							.orNumber(rs.getString("ornumber"))
+							.formType(rs.getInt("aform"))
+							.formName(FormType.nameId(rs.getInt("aform")))
+							.status(rs.getInt("orstatus"))
+							.statusName(FormStatus.nameId(rs.getInt("orstatus")))
+							.customer(Customer.builder().fullname(rs.getString("fullname")).build())
+							.collector(Collector.builder().name(rs.getString("collectorname")).build())
+							.amount(rs.getDouble("amount"))
+							.build();
+					ors.add(or);
+				}
+				
+			}
+		
+			rs.close();
+			ps.close();
+			WebTISDatabaseConnect.close(conn);
+			
+		}catch(Exception e){e.getMessage();}
+		
+		return ors;
+	}
+	
+	public static Map<String, ORListing> retrieveORSeries(String sql){
+		Map<String,ORListing> ors = new LinkedHashMap<String, ORListing>();
+		
+		String sq = "SELECT * FROM ORLISTING WHERE isactiveor=1 ";
+		sql = sq + sql;
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		System.out.println("SQL ORS SERIES: " + ps.toString());
+		rs = ps.executeQuery();
+		
+			while(rs.next()){
+				ORListing or = ORListing.builder()
+						.id(rs.getLong("orid"))
+						.dateTrans(rs.getString("ordatetrans"))
+						.orNumber(rs.getString("ornumber"))
+						.formType(rs.getInt("aform"))
+						.formName(FormType.nameId(rs.getInt("aform")))
+						.status(rs.getInt("orstatus"))
+						.statusName(FormStatus.nameId(rs.getInt("orstatus")))
+						.build();
+				ors.put(or.getOrNumber(), or);
+			}
+		
+			rs.close();
+			ps.close();
+			WebTISDatabaseConnect.close(conn);
+			
+		}catch(Exception e){e.getMessage();}
+		
+		return ors;
+	}
+	
+	public static Object[] getReport(String params){
+		
+		Object[] objs = new Object[2];
+		
+		List<ORListing> ors = new ArrayList<ORListing>();
+		
+		String sql = "select o.orid,c.fullname, "
+				+ "(select sum(s.olamount) as amount from ornamelist s where s.orid=o.orid) as amount ,"
+				+ " ornumber, "
+				+ "ordatetrans,"
+				+ "aform as formtype,o.orstatus,i.collectorname "
+				+ "from orlisting o, customer c,issuedcollector i where "
+				+ "c.customerid=o.customerid and o.isid=i.isid  AND o.isactiveor=1 ";
+				//+ "and (o.ordatetrans='"+ params +"' OR or.ornumber='"+ params +"')";
+		
+		sql = sql + params;
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		
+		System.out.println("SQL ORS " + ps.toString());
+		double total = 0d;
+		rs = ps.executeQuery();
+		
+			while(rs.next()){
+				
+				int stat = rs.getInt("orstatus");
+				int formType = rs.getInt("formtype");
+				double amount  = rs.getDouble("amount");
+				
+				ORListing or = ORListing.builder()
+						.id(rs.getLong("orid"))
+						.dateTrans(rs.getString("ordatetrans"))
+						.amount(amount)
+						.orNumber(rs.getString("ornumber"))
+						.formType(formType)
+						.formName(FormType.nameId(rs.getInt("formtype")))
+						.customer(Customer.builder().fullname(rs.getString("fullname")).build())
+						.status(stat)
+						.collector(Collector.builder().name(rs.getString("collectorname")).build())
+						.build();
+				ors.add(or);
+				if(FormStatus.CANCELLED.getId()!=stat) {	
+					total += amount;
+				}
+			}
+		
+		objs[0] = total;	
+		objs[1] = ors;	
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		
+		}catch(Exception e){e.getMessage();}
+		
+		return objs;
+	}
+	
 	
 	public static String getLatestORNumber(int formType, int collector) {
 		String orNumber = "0000000";

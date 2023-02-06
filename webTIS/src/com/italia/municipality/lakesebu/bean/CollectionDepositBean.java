@@ -23,8 +23,10 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.ReorderEvent;
 
 import com.italia.municipality.lakesebu.controller.BankAccounts;
+import com.italia.municipality.lakesebu.controller.CashDisbursement;
 import com.italia.municipality.lakesebu.controller.CheckIssued;
 import com.italia.municipality.lakesebu.controller.CheckIssuedReport;
 import com.italia.municipality.lakesebu.controller.CheckRpt;
@@ -769,6 +771,15 @@ public class CollectionDepositBean implements Serializable {
 			setEnabledTable(true);
 			load();
 		}
+	}
+	
+	public void onRowReorder(ReorderEvent event) {
+		int index = 0;
+		for(CollectionDeposit rt : getCashDvData().getRpts()) {
+			rt.setNumber(index++);
+			rt.save();
+		}
+		
 	}
 	
 	public void onCellEdit(CellEditEvent event) {

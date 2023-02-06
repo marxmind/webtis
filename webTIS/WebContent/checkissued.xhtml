@@ -224,8 +224,9 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 			<p:dataTable id="itemData" var="itm" value="#{chkIssued.cashDvData.rpts}" editable="#{chkIssued.enabledTable}"
        editMode="cell" widgetVar="cellCash" scrollable="true"
        rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
-                         rowsPerPageTemplate="10,20,30,60,90,120,150,180,210,240,270,300" paginatorPosition="top" paginatorAlwaysVisible="true"
+                         rowsPerPageTemplate="10,20,30,60,90,120,150,180,210,240,270,300" paginatorPosition="top" paginatorAlwaysVisible="true" draggableRows="true"
        >
+       <p:ajax event="rowReorder" listener="#{chkIssued.onRowReorder}" update="itemData"/>
        
        <f:facet name="{Exporters}">
        		<p:commandButton icon="fa fa-file-o" actionListener="#{chkIssued.addItem}" update="itemData" title="Add Row" style="float: right"/>

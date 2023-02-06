@@ -31,10 +31,12 @@ import javax.imageio.stream.FileImageOutputStream;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.CaptureEvent;
 import org.primefaces.event.FileUploadEvent;
 
 import com.italia.municipality.lakesebu.controller.Login;
+import com.italia.municipality.lakesebu.controller.NationalIDJsonData;
 import com.italia.municipality.lakesebu.controller.QRCodeCitizen;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.CivilStatus;
@@ -1567,7 +1569,65 @@ private void close(Closeable resource) {
 		
 		return purokList;
 	}
-
+	
+	public void findQRCode() {
+		System.out.println("now looking the qrcode......");
+		final String jsonData = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequestParameterMap()
+                .get("qrcode");
+		
+		
+		
+		System.out.println("jsondata: " + jsonData);
+		PrimeFaces pf = PrimeFaces.current();
+		NationalIDJsonData data = new NationalIDJsonData(jsonData);
+		if(data!=null && !data.getPCN().isEmpty()) {	
+			System.out.println("Checking PCN: " + data.getPCN());
+			
+			String fullName = data.getLName() + ", " + data.getFName() + " " + data.getMName().substring(0, 1);
+			
+			String sql = " AND ( cus.nationalid='"+ data.getPCN().trim() +"'";	
+			sql += " OR cus.fullname like '%"+ fullName +"%')";
+			
+			String[] params = new String[0];
+			
+			List<Customer> cust = Customer.retrieve(sql, params);
+			
+				if(cust!=null && cust.size()>0) {
+			    	pf.executeScript("PF('dlgCam').hide();");
+			    	Customer customer = cust.get(0);
+			    	
+			    	//force to change
+			    	customer.setBornplace(data.getPOB());
+			    	customer.setNationalId(data.getPCN());
+			    	//force to update middle name
+			    	customer.setMiddlename(data.getMName());
+			    	
+			    	clickItem(customer);
+				}else {
+					Customer cus = Customer.builder()
+							.nationalId(data.getPCN())
+							.firstname(data.getFName())
+							.middlename(data.getMName())
+							.lastname(data.getLName())
+							.completeAddress(data.getPOB())
+							.bornplace(data.getPOB())
+							.birthdate(data.getDOB())
+							.gender(data.getSex().equalsIgnoreCase("Male")? "1" : "2")
+							.fullname(data.getLName()+", " + data.getFName() + " " +data.getMName())
+							.citizenship("Filipino")
+							.build();
+					
+					clickItem(cus);
+					pf.executeScript("PF('dlgCam').hide();");
+				}
+		
+		}else {
+			Application.addMessage(1, "Error", "Cannot read QR Code");		
+		}
+	}	
+	
 	public void setPurokList(List purokList) {
 		this.purokList = purokList;
 	}

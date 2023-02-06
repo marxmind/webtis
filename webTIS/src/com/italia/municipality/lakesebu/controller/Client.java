@@ -62,6 +62,8 @@ public class Client {
 	private String transactionName;
 	private String clientStatus;
 	
+	private String collectorName;
+	
 	public static String getLatestTransactionNo() {
 		
 		

@@ -20,11 +20,14 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 	
 	<f:facet name="middle">
             <h:outputStylesheet name="bootstrap/css/bootstrap.min.css"/>
-            <h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputStylesheet name="css/pageHeaderFooter.css"/>
             <h:outputStylesheet name="primeflex/primeflex.min.css" />
 			<h:outputStylesheet name="primeflex/layout.css" />
+			<h:outputScript name="jquery/jquery.min.js" target="head"/>
             <h:outputScript name="bootstrap/js/bootstrap.min.js" target="head"/>
+            <h:outputScript name="bootstrap/js/bootstrap.bundle.min.js" target="head"/>
+            <h:outputScript name="jquery-easing/jquery.easing.min.js" target="head"/>
+            <h:outputScript name="zxing/zxing.js" target="head"/>
             <h:outputStylesheet name="css/growl.css"/>
              <h:outputStylesheet name="css/bodyconf.css"/>
     </f:facet>
@@ -96,9 +99,9 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 </h:head>
 
 <h:body>
-<div class="card">
-<ui:include src="loader.xhtml" />
- <h:form id="formId">
+<!--  <div class="card">  -->
+
+ <h:form id="formId" prependId="false">
  		
  		<p:confirmPopup global="true">
             <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
@@ -109,7 +112,8 @@ xmlns:pe="http://primefaces.org/ui/extensions"
             <p:ajax event="idle" listener="#{client.onIdle}" update="wizardId"/>
         </p:idleMonitor>
  	
-		<p:growl id="growl" sticky="true" showDetail="true"/>
+		<p:growl id="growl" showDetail="true" life="2000"/>
+		
 		<div id="customerId" style="display: block">
 		<p:wizard id="wizardId" flowListener="#{client.onFlowProcess}" widgetVar="wizId">
 			<p:tab id="transaction" title="Type of Transaction">
@@ -117,11 +121,13 @@ xmlns:pe="http://primefaces.org/ui/extensions"
                     <p:messages/>
                     <h:panelGrid columns="2" columnClasses="label, value">
                     <p:outputLabel value="Select Your Request: "/>
+                    <div class="ui-inputgroup">
 					<p:selectOneMenu id="idSelection" value="#{client.client.transType}" filter="true" filterMatchMode="contains" >
 						<f:selectItems value="#{client.transTypes}"/>
 						<p:ajax event="change" listener="#{client.checkTransaction}" update="bizNameId bizNameInId idFirst idPayd"/>
 					</p:selectOneMenu>
-					
+					<p:commandButton widgetVar="widCamera" icon="fa fa-camera" id="startButton" oncomplete="PF('dlgCam').show();"/>
+					</div>
 					<h:outputText value="Skip to last: "/>
 	                <h:selectBooleanCheckbox value="#{client.skip}"/>
 	                </h:panelGrid>
@@ -136,7 +142,9 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 	                    	<p:autoComplete id="idPayd" placeholder="#{client.searchPlaceholder}"  value="#{client.payorName}" completeMethod="#{client.payorNameSuggested}"  queryDelay="800" effect="fade" maxResults="10" inputStyle="width:30em;font-size: 20px;font-weight: bold;">
 								<p:ajax event="change" update="infoPer additionPersonal idSecond idFirst" listener="#{client.supplyCustomerInfo}" />
 							</p:autoComplete>
+							
 							</div>
+							
 						</div>
                    
                     <h:panelGrid id="infoPer" columns="2" columnClasses="label, value">
@@ -289,7 +297,7 @@ xmlns:pe="http://primefaces.org/ui/extensions"
                         </h:panelGrid>                        
                     </h:panelGrid>
 					
-                    <p:commandButton value="Submit" title="Click to save" update="growl imgId idName tranId"  icon="fa fa-floppy-o" actionListener="#{client.save}" process="@this">
+                    <p:commandButton id="idSubmit" value="Submit" title="Click to save" update="growl imgId idName tranId"  icon="fa fa-floppy-o" actionListener="#{client.save}" process="@this">
 							<p:confirm type="popup" header="Confirmation" message="Are you sure you want to submit this data?" icon="pi pi-exclamation-triangle" />
 					</p:commandButton>
 					<br/><br/><br/>
@@ -298,9 +306,9 @@ xmlns:pe="http://primefaces.org/ui/extensions"
             
          </p:wizard>
          <br/><br/>
-         <p:commandButton value="Reset" actionListener="#{client.clear}" update="wizardId" oncomplete="PF('wizId').loadStep('transaction', false)"/>
+         <p:commandButton id="idReset" value="Reset" actionListener="#{client.clear}" update="wizardId" oncomplete="PF('wizId').loadStep('transaction', false);"/>
 		</div>
-		
+				
 		<h:outputStylesheet>
 		
 			.clinetCard {
@@ -344,11 +352,157 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 				$("#numberOutId").hide(1000);
 				$("#customerId").show(1000);
 			}
-		
+			
+			
 		</h:outputScript>
 		
+		
+		
+	<p:dialog widgetVar="dlgCam" visible="false" fitViewport="true" position="center center" modal="true" draggable="false" closable="false" closeOnEscape="false" resizable="false" showHeader="false" >	
+		<p:panelGrid columns="1" layout="grid">
+	        <p:commandButton value="Close Camera" id="resetButton" oncomplete="PF('dlgCam').hide()"/>
+        </p:panelGrid>
+		
+		<p:separator/>
+		<label>Change video source:</label>
+        <select id="sourceSelect" style="max-width:400px"/>
+		<div id="sourceSelectPanel" style="display:none">
+			<p:panelGrid columns="1" layout="grid">
+				<video id="video" width="700" height="500" style="border: 1px solid gray"/>
+			</p:panelGrid>
+		</div>
+	</p:dialog>
+	
+	<p:remoteCommand name="loadResult"
+                      action="#{client.findQRCode}" update="idPayd infoPer additionPersonal idSecond idFirst growl"
+                      />
+		
+	<h:outputScript>
+	
+	window.addEventListener('load', function () {
+	  let selectedDeviceId;
+      const codeReader = new ZXing.BrowserMultiFormatReader()
+      console.log('ZXing code reader initialized')
+      codeReader.listVideoInputDevices()
+        .then((videoInputDevices) => {
+          const sourceSelect = document.getElementById('sourceSelect')
+          selectedDeviceId = videoInputDevices[0].deviceId
+          if (videoInputDevices.length >= 1) {
+            videoInputDevices.forEach((element) => {
+              const sourceOption = document.createElement('option')
+              sourceOption.text = element.label
+              sourceOption.value = element.deviceId
+              sourceSelect.appendChild(sourceOption)
+            })
+
+            sourceSelect.onchange = () => {
+              selectedDeviceId = sourceSelect.value;
+            };
+
+            const sourceSelectPanel = document.getElementById('sourceSelectPanel')
+            sourceSelectPanel.style.display = 'block'
+          }
+		
+		
+          document.getElementById('startButton').addEventListener('click', () => {
+            codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+              if (result) {
+                console.log(result)
+                
+                
+                loadResult([{
+			        name: 'qrcode',
+			        value: result.text
+			      }]);
+                
+              }
+              
+            })
+            console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
+          })
+          
+			 document.getElementById('resetButton').addEventListener('click', () => {
+	            codeReader.reset()
+	            document.getElementById('result').textContent = '';
+	            console.log('Reset.')
+	          })
+	          
+	          document.getElementById('idSubmit').addEventListener('click', () => {
+	            codeReader.reset()
+	            document.getElementById('result').textContent = '';
+	            console.log('Reset.')
+	          })
+			
+			document.getElementById('idReset').addEventListener('click', () => {
+	            codeReader.reset()
+	            document.getElementById('result').textContent = '';
+	            console.log('Reset.')
+	          })
+			
+        })
+        .catch((err) => {
+          console.error(err)
+        })
+        
+    })
+		
+		</h:outputScript>
+	
+		<ui:include src="loader.xhtml" />
+		
+		<p:dialog header="Queueing" styleClass="queueing" toggleableHeader="true" width="700" height="500" toggleable="true" position="top" collapsed="true" closable="true" toggleSpeed="500" closeSpeed="500" widgetVar="panelWgr">
+			
+			
+					<div class="ui-inputgroup">
+						
+			        	<p:inputText id="searchId" value="#{client.searchName}" placeholder="Search..." style="width: 20em">
+			    					<f:ajax event="keyup" listener="#{client.loadClient}" render="queDataId"/>
+			    		</p:inputText>	
+		        		<p:inputText value="#{client.queYear}" style="width: 4em" placeholder="0000">
+		        			<p:ajax event="keyup" listener="#{client.loadClient}" update="queDataId"/>
+		        		</p:inputText>
+		        		<p:inputText value="#{client.queMonth}" style="width: 3em" placeholder="00">
+		        			<p:ajax event="keyup" listener="#{client.loadClient}" update="queDataId"/>
+		        		</p:inputText>
+		        		<p:inputText value="#{client.queDay}" style="width: 3em" placeholder="00">
+		        			<p:ajax event="keyup" listener="#{client.loadClient}" update="queDataId"/>
+		        		</p:inputText>
+		        		<p:inputText value="#{client.queSequence}" style="width: 4em" placeholder="0000">
+		        			<p:ajax event="keyup" listener="#{client.loadClient}" update="queDataId"/>
+		        		</p:inputText>
+        			</div>
+			    	
+			 
+			
+			<p:dataTable id="queDataId" value="#{client.clients}" var="cli" stickyHeader="false" 
+			rows="10" paginator="true" paginatorTemplate="{Exporters} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="true" style="text-align: left" reflow="true" paginatorPosition="top" paginatorAlwaysVisible="false">
+                         
+                         	<p:column headerText="Queue" width="10" style="text-align: left">
+            						<p:outputLabel value="#{cli.transNo.split('-')[3]}"/>
+            				</p:column>
+							<p:column headerText="Name" width="150" style="text-align: left">
+            						<p:outputLabel value="#{cli.firstName} #{cli.lastName}"/>
+            				</p:column>
+            				<p:column headerText="Request" width="150" style="text-align: left">
+            						<p:outputLabel value="#{cli.transactionName}"/>
+            				</p:column>
+            				<p:column headerText="Status" width="50" style="text-align: left">
+            						<p:outputLabel value="#{cli.clientStatus}"/>
+            				</p:column>
+                        	<p:column headerText="Collector" width="50" style="text-align: left">
+            						<p:outputLabel value="#{cli.collectorName}"/>
+            				</p:column>
+                         
+           </p:dataTable>
+		</p:dialog>
+		
+		
+		
+		<p:commandButton title="Client Queue" icon="fa fa-users" id="queuID" actionListener="#{client.loadClient}" update="queDataId" oncomplete="PF('panelWgr').show(1000)" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;top: 20px;right: 50px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
 </h:form>	
-</div>
+<!-- </div>  -->
 	
 </h:body>
 </html>

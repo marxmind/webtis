@@ -100,6 +100,8 @@ public class FishCagePayment {
 					.noOfAnnualProduction(rs.getInt("annprod"))
 					.noOfTotalStock(rs.getInt("totalstock"))
 					.sizeCagePerModule(rs.getString("sizecagemodule"))
+					.address(rs.getString("owneraddress"))
+					.rsbsaFishR(rs.getString("rsbsa"))
 					.build();
 			py.setFishCage(cg);
 			pys.add(py);

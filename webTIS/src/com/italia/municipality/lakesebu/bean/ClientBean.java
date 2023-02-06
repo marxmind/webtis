@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
+import javax.faces.event.PhaseId;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -17,6 +19,8 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.FlowEvent;
 
 import com.italia.municipality.lakesebu.controller.Client;
+import com.italia.municipality.lakesebu.controller.Collector;
+import com.italia.municipality.lakesebu.controller.NationalIDJsonData;
 import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.da.controller.FishCage;
 import com.italia.municipality.lakesebu.enm.AppConf;
@@ -31,6 +35,8 @@ import com.italia.municipality.lakesebu.utils.Application;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
 @Named("client")
@@ -59,8 +65,25 @@ public class ClientBean implements Serializable{
 	private boolean businessRequest;
 	private String searchPlaceholder;
 	
+	private String searchName;
+	private List<Client> clients;
+	private String queYear;
+	private String queMonth;
+	private String queDay;
+	private String queSequence;
+	
 	@PostConstruct
 	public void init() {
+		
+		int mo = DateUtils.getCurrentMonth();
+		String month = mo <10? "0"+mo : mo+"";
+		String year = DateUtils.getCurrentYear()+"";
+		int dy = DateUtils.getCurrentDay();
+		String day = dy<10? "0"+dy : dy+"";
+		setQueYear(year);
+		setQueMonth(month);
+		setQueDay(day);
+		
 		setSearchPlaceholder("Search Last, First Middle Client Full Name");
 		String val = ReadConfig.value(AppConf.SERVER_LOCAL);
         HttpSession session = SessionBean.getSession();
@@ -155,6 +178,8 @@ public class ClientBean implements Serializable{
             return event.getNewStep();
         }
     }
+    
+   
     
     public void supplyAdditionalDetails() {
     	client = getClient();
@@ -386,4 +411,62 @@ public class ClientBean implements Serializable{
     	}
     }	
     
+    public void findQRCode() {
+		System.out.println("now looking the qrcode......");
+		final String jsonData = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequestParameterMap()
+                .get("qrcode");
+		
+		System.out.println("jsondata: " + jsonData);
+		PrimeFaces pf = PrimeFaces.current();
+		NationalIDJsonData data = new NationalIDJsonData(jsonData);
+		if(data!=null && !data.getPCN().isEmpty()) {	
+			
+				client.setFirstName(data.getFName());
+    			client.setMiddleName(data.getMName());
+    			client.setLastName(data.getLName());
+    			client.setBirthdayTmp(DateUtils.convertDateString(data.getDOB(), "yyyy-MM-dd"));
+    			client.setBirthday(data.getDOB());
+    			client.setGender(data.getSex().equalsIgnoreCase("Male")? 1 : 2);
+    			client.setGenderName(data.getSex());
+    			client.setCivilStatus(1);
+    			client.setCivilStatusName(CivilStatus.typeName(1));
+    			client.setAddress(data.getPOB());
+    			client.setContactNumber("");
+			
+    			Application.addMessage(1, "Found", "Client has been scanned successfully. Please click next button.");
+			
+			pf.executeScript("PF('dlgCam').hide();");
+		}else {
+			Application.addMessage(1, "Error", "Cannot read QR Code");		
+		}
+	}	
+    
+    public void loadClient() {
+    	String sql = "";// AND (status=" + ClientStatus.QUEUE.getId() + " OR status="+ ClientStatus.SERVING.getId()+" )";
+		
+		clients = new ArrayList<Client>();
+		
+		if(getQueSequence()!=null) {
+			sql += " AND transno like '%"+ getQueYear() +"-" + getQueMonth() +"-"+ getQueDay() + "-"+ getQueSequence() +"%'";
+		}else {
+			sql += " AND transno like '%"+ getQueYear() +"-" + getQueMonth() +"-"+ getQueDay() + "-%'";
+		}
+		
+		if(getSearchName()!=null) {
+			 sql += " AND (firstname like '%"+ getSearchName() +"%' ";
+			 sql += " OR middlename like '%"+ getSearchName() +"%' ";
+			 sql += " OR lastname like '%"+ getSearchName() +"%')";
+		}
+		
+		sql +=" ORDER BY transno";
+		
+		for(Client c : Client.retrieve(sql, new String[0])) {
+			Collector col = Collector.retrieve(c.getCollectorId());
+			System.out.println("Name>>>>>> : " + col.getName());
+			c.setCollectorName(col.getName());
+			clients.add(c);
+		}
+    }
 }

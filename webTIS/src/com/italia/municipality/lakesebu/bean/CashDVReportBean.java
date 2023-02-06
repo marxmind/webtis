@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.ReorderEvent;
 
 import com.italia.municipality.lakesebu.controller.BankAccounts;
 import com.italia.municipality.lakesebu.controller.CashDisbursement;
@@ -114,6 +115,16 @@ public class CashDVReportBean implements Serializable{
 	public void deleteItem(CashDisbursement cv) {
 		cv.delete();
 		getCashDvData().getRpts().remove(cv);
+	}
+	
+	public void onRowReorder(ReorderEvent event) {
+		//Application.addMessage(1, "Move", "From: " + event.getFromIndex() + ", To:" + event.getToIndex());
+		int index = 0;
+		for(CashDisbursement rt : getCashDvData().getRpts()) {
+			rt.setNumber(index++);
+			rt.save();
+		}
+		
 	}
 	
 	public void print(CashDisbursementReport rpt) {
@@ -2124,7 +2135,7 @@ public class CashDVReportBean implements Serializable{
 	}
 	
 	public void updateInfo() {
-		if(getCashDvData()!=null && getCashDvData().getId()!=0) {
+		if(getCashDvData()!=null) {
 			getCashDvData().save();
 			load();
 		}
@@ -2270,10 +2281,10 @@ public class CashDVReportBean implements Serializable{
 	        	cz.setFundId(getCashDvData().getFundId());
 	        	cz.setIsActive(1);
 	        	cz.setReport(getCashDvData());
-	        	if(cz.getAmount()>0) {//only save in database if amount is greater than zero
+	        	//if(cz.getAmount()>0) {//only save in database if amount is greater than zero
 		        	cz = CashDisbursement.save(cz);
 		        	getCashDvData().getRpts().get(index).setId(cz.getId());//update item id
-	        	}
+	        	//}
 	        	
 	        	if(getCashDvData().getRpts().get(index).getId()>0) {
 	        		load();
