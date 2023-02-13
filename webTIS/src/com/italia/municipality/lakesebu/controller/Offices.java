@@ -35,6 +35,7 @@ public class Offices {
 	private String name;
 	private String abr;
 	private String headOfOffice;
+	private int departmentId;
 	private int isActive;
 	
 	public static List<Offices> retrieve(String sql, String[] params){
@@ -70,6 +71,7 @@ public class Offices {
 					.headOfOffice(rs.getString("headname"))
 					.abr(rs.getString("abrname"))
 					.isActive(rs.getInt("isactiveoff"))
+					.departmentId(rs.getInt("departmentid"))
 					.build();
 			
 			offcs.add(off);
@@ -130,8 +132,9 @@ public class Offices {
 				+ "code,"
 				+ "headname,"
 				+ "abrname,"
-				+ "isactiveoff)" 
-				+ " VALUES(?,?,?,?,?,?)";
+				+ "isactiveoff,"
+				+ "departmentid)" 
+				+ " VALUES(?,?,?,?,?,?,?)";
 		
 		PreparedStatement ps = null;
 		Connection conn = null;
@@ -159,12 +162,14 @@ public class Offices {
 		ps.setString(cnt++, st.getHeadOfOffice());
 		ps.setString(cnt++, st.getAbr());
 		ps.setInt(cnt++, st.getIsActive());
+		ps.setInt(cnt++, st.getDepartmentId());
 		
 		LogU.add(st.getName());
 		LogU.add(st.getCode());
 		LogU.add(st.getHeadOfOffice());
 		LogU.add(st.getAbr());
 		LogU.add(st.getIsActive());
+		LogU.add(st.getDepartmentId());
 		
 		LogU.add("executing for saving...");
 		ps.execute();
@@ -184,7 +189,8 @@ public class Offices {
 				+ "name=?,"
 				+ "code=?,"
 				+ "headname=?,"
-				+ "abrname=?" 
+				+ "abrname=?,"
+				+ "departmentid=?" 
 				+ " WHERE offid=?";
 		
 		PreparedStatement ps = null;
@@ -202,12 +208,14 @@ public class Offices {
 		ps.setString(cnt++, st.getCode());
 		ps.setString(cnt++, st.getHeadOfOffice());
 		ps.setString(cnt++, st.getAbr());
+		ps.setInt(cnt++, st.getDepartmentId());
 		ps.setInt(cnt++, st.getId());
 		
 		LogU.add(st.getName());
 		LogU.add(st.getCode());
 		LogU.add(st.getHeadOfOffice());
 		LogU.add(st.getAbr());
+		LogU.add(st.getDepartmentId());
 		LogU.add(st.getId());
 		
 		LogU.add("executing for saving...");

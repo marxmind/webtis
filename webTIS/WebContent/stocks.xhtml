@@ -209,10 +209,11 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
             		<p:outputLabel value="Requestor/Receiver"/>
             		<p:selectOneMenu id="d0" value="#{stocksBean.slip.collector.id}" style="width: 15em;" filter="true" filterMatchMode="contains">
 				      	<f:selectItems value="#{stocksBean.slip.requestors}"/>
+				      	<p:ajax event="change" listener="#{stocksBean.positionUpdate}" update="posId d1 d2 codeId" />
 				    </p:selectOneMenu>
             		
             		<p:outputLabel value="Requestor Position"/>
-            		<p:inputText value="#{stocksBean.slip.position}" placeholder="" style="width: 15em;"/>
+            		<p:inputText id="posId" value="#{stocksBean.slip.position}" placeholder="" style="width: 15em;"/>
             		
             		<p:outputLabel value="Division"/>
             		<p:selectOneMenu id="d1" value="#{stocksBean.slip.division.id}" style="width: 15em;" filter="true" filterMatchMode="contains">

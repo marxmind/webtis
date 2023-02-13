@@ -99,6 +99,7 @@ public class StocksBean implements Serializable{
 	@Getter @Setter private RequisitionIssueSlip slip;
 	@Getter @Setter private List<Stocks> stockSelected;
 	@Getter @Setter private Map<Integer, Offices> mapDepCode;
+	@Getter @Setter private Map<Integer, Offices> mapDeps;
 	@Getter @Setter private int tabSelected;
 	@Getter @Setter private List<RequisitionIssueSlip> slips;
 	@Getter @Setter private List<Requisition> requesitionData;
@@ -633,6 +634,24 @@ public class StocksBean implements Serializable{
 				.build();
 	}
 	
+	public void positionUpdate() {
+		
+		Department dep = getMapCollector().get(slip.getCollector().getId()).getDepartment();
+		slip.setCodeNo(getMapDeps().get(dep.getDepid()).getCode());		slip.setOffice(Offices.builder().id(getMapDeps().get(dep.getDepid()).getId()).build());
+		if(slip!=null && dep.getDepid()>1) {//((slip.getCollector().getId()>=1 && slip.getCollector().getId()<=20) || (slip.getCollector().getId()==38) || (slip.getCollector().getId()==41) )) {
+			slip.setPosition("Barangay Treasurer");
+			slip.setDivision(Division.builder().id(9).build());
+		}else{
+			slip.setPosition("Municipal Collector");
+			slip.setDivision(Division.builder().id(1).build());
+		};
+	}
+	
+	public void selectedDep() {
+		slip.setCodeNo(getMapDepCode().get(slip.getOffice().getId()).getCode());
+		System.out.println("Department code: " + getMapDepCode().get(slip.getOffice().getId()).getCode());
+	}
+	
 	 public void onTabChange(TabChangeEvent event) {
 		 
 		 System.out.println("current tab value: " + getTabSelected());
@@ -715,11 +734,13 @@ public class StocksBean implements Serializable{
 		 }
 		 List deps = new ArrayList<>();
 		 mapDepCode = new LinkedHashMap<Integer, Offices>();
+		 mapDeps = new LinkedHashMap<Integer, Offices>();
 		 boolean found=false;
 		 String codeDefault="";
 		 for(Offices dp : Offices.retrieve(" ORDER BY offid", new String[0])) {
 			 deps.add(new SelectItem(dp.getId(), dp.getCode() +"-"+ dp.getName()));
 			 mapDepCode.put(dp.getId(), dp);
+			 mapDeps.put(dp.getDepartmentId(), dp);
 			 if(!found) {
 				 found=true;
 				 codeDefault=dp.getCode(); //default code
@@ -750,10 +771,7 @@ public class StocksBean implements Serializable{
 					.build();
 	 }
 	
-	public void selectedDep() {
-		slip.setCodeNo(getMapDepCode().get(slip.getOffice().getId()).getCode());
-		System.out.println("Department code: " + getMapDepCode().get(slip.getOffice().getId()).getCode());
-	}
+	
 	
 	public void onCellEdit(CellEditEvent event) {
 		Object oldValue = event.getOldValue();

@@ -86,7 +86,7 @@ public class LogU {
         for(String action : actions){
         	pw.println(DateUtils.getCurrentDateMMDDYYYYTIME() + "["+ i++ +"] " + action);
         }*/
-        	
+        pw.println(DateUtils.getCurrentDateMMDDYYYYTIME() + action);	
         pw.flush();
         pw.close();
         br.close();

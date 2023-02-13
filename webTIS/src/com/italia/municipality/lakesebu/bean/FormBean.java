@@ -1477,6 +1477,8 @@ public class FormBean implements Serializable{
 		setCollectorId(form.getCollector().getId());
 		setStatusId(form.getStatus());
 		setSelectedForm(form);
+		//addedd to fix the issue in cash ticket
+		calculateEndingNo();
 	}
 	
 	

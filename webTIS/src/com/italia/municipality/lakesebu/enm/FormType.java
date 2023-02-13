@@ -37,20 +37,6 @@ public enum FormType {
 	TCT(27,"T.C.T","Traffic Citation Ticket"),
 	TWM(28,"T.W.M.","Tags of Weight and Measure");
 	
-	/*
-	 * AF_51(3, "AF-51","Business Tax"),
-	AF_52(4, "AF-52","Transfer of Large Cattle"),
-	AF_53(5, "AF-53","Ownership of Large Cattle"),
-	AF_54(6, "AF-54","Marriage License"),
-	AF_56(7, "AF-56","Realty Tax"),
-	AF_56_I(8, "AF-56(I)","Realty Tax (Improvised)"),
-	CT_2(9,"CT 2.00","Cash Ticket 2"),
-	CT_5(10,"CT 5.00","Cash Ticket 5"),
-	AF_51_C(11, "AF-51 C","Business Tax (Customized)"),
-	AF_57(12,"AF-57","Ante Mortem & Post Mortem"),
-	AF_58(13,"AF-58","Burial Permit & Fee Receipt"),
-	 */
-	
 	private int id;
 	private String name;
 	private String description;
