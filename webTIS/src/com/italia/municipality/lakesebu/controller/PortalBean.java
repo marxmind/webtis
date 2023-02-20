@@ -80,6 +80,6 @@ public class PortalBean implements Serializable {
 	}
 	
 	public String personnel() {
-		return getPortal(Department.PERSONNEL);
+		return "loginper";
 	}
 }

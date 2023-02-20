@@ -268,7 +268,9 @@ public class License {
 			Node node = document.selectSingleNode("/module");
 			result = node.selectSingleNode(module.getName()).getText();
 			
-			}catch(DocumentException e) {}
+			}catch(DocumentException e) {
+				e.printStackTrace();
+			}
 		}
 		/*
 		 * // if(xmlFile.exists()){ // try{ // DocumentBuilderFactory builderFactory =
@@ -291,7 +293,7 @@ public class License {
 	private static String xmlLicense(Module module){
 		return licenseFile(module);
 	}
-	private static String dbLicense(Module module){
+	public static String dbLicense(Module module){
 		System.out.println("dbLicense...");
 		String sql = "SELECT * FROM license WHERE modulename=? AND isactivated=1";
 		String[] params = new String[1];

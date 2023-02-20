@@ -129,6 +129,34 @@ public class MenuBean implements Serializable{
 		}
 	}
 	
+	public String stocks() {
+		return "stocks";
+	}
+	
+	public String logform() {
+		return "logform";
+	}
+	public String reportsgraph() {
+		return "reportsgraph";
+	}
+	public String orlisting() {
+		return "orlisting";
+	}
+	public String uploadrcd() {
+		return "uploadrcd";
+	}
+	public String vr() {
+		return "vr";
+	}
+	public String waterowner() {
+		return "waterowner";
+	}
+	public String citizenreg() {
+		return "citizenreg";
+	}
+	public String bm() {
+		return "bm";
+	}
 	public String collectionForm() {
 		return "collectionform";
 	}

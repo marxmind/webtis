@@ -1,7 +1,10 @@
 package com.italia.municipality.lakesebu.bean;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -16,8 +19,8 @@ import com.italia.municipality.lakesebu.controller.Login;
 import com.italia.municipality.lakesebu.controller.ReadConfig;
 import com.italia.municipality.lakesebu.enm.AppConf;
 import com.italia.municipality.lakesebu.enm.Pages;
-import com.italia.municipality.lakesebu.reports.DailyReport;
 import com.italia.municipality.lakesebu.security.ClientInfo;
+import com.italia.municipality.lakesebu.security.License;
 import com.italia.municipality.lakesebu.security.Module;
 import com.italia.municipality.lakesebu.utils.DateUtils;
 import com.italia.municipality.lakesebu.utils.LogU;
@@ -87,30 +90,7 @@ public class LoginBean implements Serializable{
 			session.setAttribute("userid", in.getLogid());
 			session.setAttribute("server-local", val);
 			session.setAttribute("theme", getThemeId());
-			/*
-			 * switch(in.getAccessLevel().getLevel()){ case 1: {result="main.xhtml"; break;}
-			 * case 2: { result="main.xhtml"; break;} case 3: {
-			 * 
-			 * boolean isExpired = License.checkLicenseExpiration(Module.CASH_BOOK);
-			 * if(isExpired){ result = "expired.xhtml"; }else{ result = "funds.xhtml"; }
-			 * break; } case 4: {
-			 * 
-			 * boolean isExpired = License.checkLicenseExpiration(Module.CASH_BOOK);
-			 * if(isExpired){ result = "expired.xhtml"; }else{ result = "funds.xhtml"; }
-			 * break; } case 6: {
-			 * 
-			 * boolean isExpired = License.checkLicenseExpiration(Module.LAND_TAX);
-			 * if(isExpired){ result = "expired.xhtml"; }else{ result = "form56.xhtml"; }
-			 * break; } case 8: {
-			 * 
-			 * boolean isExpired = License.checkLicenseExpiration(Module.CHECK_WRITING);
-			 * if(isExpired){ result= "expired.xhtml"; }else{ result= "logform.xhtml"; }
-			 * break; } case 9: {
-			 * 
-			 * boolean isExpired = License.checkLicenseExpiration(Module.VOUCHER_TRACKER);
-			 * if(isExpired){ result= "expired.xhtml"; }else{ result= "voucher.xhtml"; }
-			 * break; } }
-			 */
+			
 			
 			System.out.println("correct username and password....");
 			
@@ -120,30 +100,112 @@ public class LoginBean implements Serializable{
 				result="main.xhtml";
 				//result="dashboard.xhtml";//temporary
 				
-				switch(in.getAccessLevel().getLevel()) {
-					case 1 : 
-					case 2: 
-					case 3:
-					case 4:
-					case 5:
-					case 6:
-					case 7:
-					case 8:
-					case 9: result="main.xhtml"; break;
-					case 10: result="mainda.xhtml"; break;
-					case 11: result="mainlic.xhtml"; break;
-					case 12: result="maingso.xhtml"; break;
-					case 13: result="mainacc.xhtml"; break;
-					case 14: result="orlisting.xhtml"; break;
-					case 15: result="form56.xhtml"; break;
-					case 16: result="mainpersonnel.xhtml"; break;
-					case 17: result="mainacc.xhtml"; break;
-					case 18: result="checkissued.xhtml"; break;
-				}
-				
 			}
 			
 			LogU.add("The user has been successfully login to the application with the username : " + name + " and password " + password);
+			
+			
+			//license checker
+			String det="";
+			  switch(in.getAccessLevel().getLevel()){ 
+			  	case 1:
+			  		result="main.xhtml";
+			  		if(in.getLogid()>1) {
+				  		det = License.dbLicense(Module.MAIN_APP);
+					  	if(checkdate(det)) {
+					  		result="expired";
+					  	}
+			  		}
+			  		break;
+			    case 8:
+			    	result="vr.xhtml"; 
+			    	det = License.dbLicense(Module.VOUCHER_RECORDING);
+				  	if(checkdate(det)) {
+				  		result="expired";
+				  	}
+			    	break;
+				case 9: result="main.xhtml"; break;
+				case 10: 
+					result="mainda.xhtml"; 
+					det = License.dbLicense(Module.DA_FISHERY);
+				  	if(checkdate(det)) {
+				  		result="expired";
+				  	}
+					break;
+				case 11:
+					result="mainlic.xhtml"; 
+					det = License.dbLicense(Module.LICENSING_CLERK);
+				  	if(checkdate(det)) {
+				  		result="expired";
+				  	}
+					break;
+				case 12: result="maingso.xhtml"; break;
+				
+			  
+			  case 14: {
+				  result="orlisting.xhtml";
+				  det = License.dbLicense(Module.GENERAL_COLLECTIONS);
+				  	if(checkdate(det)) {
+				  		result="expired";
+				  	}
+				  break;
+			  }
+			    
+			    case 6: //same with 15
+			    case 15:
+			    	result="form56.xhtml"; 
+			    	det = License.dbLicense(Module.LAND_TAX);
+				  	if(checkdate(det)) {
+				  		result="expired";
+				  	}
+			    	break;
+				case 16: 
+					result="mainpersonnel.xhtml"; 
+					det = License.dbLicense(Module.PERSONNEL_CLERK);
+				  	if(checkdate(det)) {
+				  		result="expired";
+				  	}
+					break;
+					
+				case 13: //same with 17
+				case 17: 
+					result="mainacc.xhtml"; 
+					det = License.dbLicense(Module.ACCOUNTING_CLERK);
+				  	if(checkdate(det)) {
+				  		result="expired";
+				  	}
+					break;
+				case 18: result="checkissued.xhtml"; break;
+			  
+			  case 19: {
+				  result="welcome.xhtml";
+				  det = License.dbLicense(Module.CHECK_WRITING);
+				  	if(checkdate(det)) {
+				  		result="expired";
+				  	}
+				  break;
+			  }
+			  
+			  case 20: {
+				  result="logform.xhtml";
+				  det = License.dbLicense(Module.COLLECTORS_RECORDING);
+				  	if(checkdate(det)) {
+				  		result="expired";
+				  	}
+				  break;
+			  }
+			  
+			  case 21: {
+				  result="stocks.xhtml";
+				  det = License.dbLicense(Module.STOCK_RECORDING);
+				  	if(checkdate(det)) {
+				  		result="expired";
+				  	}
+				  break;
+			  }
+			  
+			  }
+			 
 			
 			//Check application Expiration
 			/*if(Copyright.checkLicenseExpiration()){	
@@ -169,7 +231,40 @@ public class LoginBean implements Serializable{
 		System.out.println(getErrorMessage());
 		return result;
 	}
-	
+
+ private static boolean checkdate(String dbLicense){
+		
+		String systemDate = DateUtils.getCurrentDateMMDDYYYY();
+		
+		SimpleDateFormat dFormat = new SimpleDateFormat("MM-dd-yyyy");
+		
+		try{
+		Date dbDate = dFormat.parse(dbLicense);	
+		Date sysDate = dFormat.parse(systemDate);
+		
+		System.out.println("dbDate = " + dbDate);
+		System.out.println("sysDate = " + sysDate);
+		
+		if(dbDate.compareTo(sysDate)>0){
+			System.out.println("Not expired");
+		}else if(dbDate.compareTo(sysDate)<0){
+			System.out.println("Expired...");
+			return true;
+		}else if(dbDate.compareTo(sysDate)==0){
+			System.out.println("Expired...");
+			return true;
+		}else{
+			System.out.println("Expired...");
+			return true;
+		}
+		
+		}catch(ParseException pre){}
+		
+		
+		
+		return false;
+	}
+ 
 private String assignModule() {
 	
 	switch(getModuleId()) {

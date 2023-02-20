@@ -605,7 +605,7 @@ public class BusinessMappingBean implements Serializable{
 		
         String driveImage =  GlobalVar.BUSINESS_MAP_IMG + photoId;
         String contextImageLoc = File.separator + "resources" + File.separator + "images" + File.separator + "businessmap" + File.separator;
-         //System.out.println("copying file to this path : " + contextImageLoc);
+         System.out.println("copying file to this path : " + contextImageLoc);
             String pathToSave = externalContext.getRealPath("") + contextImageLoc;
             File file = new File(driveImage);
             try{
@@ -663,6 +663,17 @@ public class BusinessMappingBean implements Serializable{
 		}
 		mapBiz.put(name, bz);
 		allBusiness.addOverlay(new Marker(new LatLng(Double.valueOf(bz.getLatitude()), Double.valueOf(bz.getLongtitude())), name, bz.getPictureOfBusiness(),markerColor));
+	}
+	
+	public void showStore(BusinessMapping bz) {
+		mapBiz = new LinkedHashMap<String, BusinessMapping>();
+		String name = "";
+		if(bz.getName()!=null && !bz.getName().isEmpty()) {name =  bz.getName().toUpperCase();}else {name =  bz.getOwner().toUpperCase();}
+		mapBiz.put(name, bz);
+		System.out.println("Business Picture: " + bz.getPictureOfBusiness());
+		copyPhoto(bz.getPictureOfBusiness());
+		copyPhoto(bz.getPictureOfOwner());
+		setSelectedMapData(bz);
 	}
 
     public Marker getMarker() {

@@ -20,6 +20,7 @@ public class DocumentFormatter {
 		Properties prop = new Properties();
 		try{
 			prop.load(new FileInputStream(PROPERTY_FILE));
+			System.out.println(tagName+"="+prop.getProperty(tagName));
 			return prop.getProperty(tagName);
 		}catch(Exception e){}
 		return "";

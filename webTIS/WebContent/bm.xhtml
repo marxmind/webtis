@@ -92,7 +92,11 @@ xmlns:pe="http://primefaces.org/ui/extensions"
                          	<p:commandButton icon="fa fa-map" actionListener="#{mapping.openSelectedBusinessInMap(pt)}"  update="gmap" onclick="PF('dlg').show();"/>
                          </p:column>
                          
-                         <p:column headerText="Date" width="30">
+                         <p:column headerText="Store" width="20">
+                         	<p:commandButton icon="pi pi-user" actionListener="#{mapping.showStore(pt)}"  update="imgId1 imgId2" onclick="PF('picDialog').show();"/>
+                         </p:column>
+                         
+                         <p:column headerText="Date" width="50">
 		            		<p:outputLabel  value="#{pt.dateTrans}"/>
 		            	 </p:column>
 		            	 
@@ -196,6 +200,16 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		</div>
 	</div>
 	
+	
+		<p:dialog id="picDialogId" widgetVar="picDialog" width="850" height="400" modal="true" position="center top" closeOnEscape="true">
+		
+					<p:panelGrid layout="grid" columns="2">
+						<p:graphicImage id="imgId1" name="/images/businessmap/#{mapping.selectedMapData.pictureOfOwner}" height="400" width="400"/>
+						<p:graphicImage id="imgId2" name="/images/businessmap/#{mapping.selectedMapData.pictureOfBusiness}" height="400" width="400"/>
+					</p:panelGrid>
+					
+		</p:dialog>
+	
 	<script src="https://maps.google.com/maps/api/js?sensor=false"></script>
 
 	
@@ -227,7 +241,9 @@ xmlns:pe="http://primefaces.org/ui/extensions"
 		    </p:gmap>
 		    
 		</p:dialog>
-	
+		
+		
+		
 	<ui:include src="loader.xhtml" />
 	<ui:include src="menu.xhtml" />
 </h:form>		
