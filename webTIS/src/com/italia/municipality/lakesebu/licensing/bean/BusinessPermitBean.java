@@ -92,6 +92,10 @@ public class BusinessPermitBean implements Serializable{
 	private Date calendarFrom;
 	private Date calendarTo;
 	
+	@Getter @Setter private Date calendarFromCon;
+	@Getter @Setter private Date calendarToCon;
+	@Getter @Setter private boolean checkBoxSeries; 
+	
 	private BusinessCustomer taxPayer;
 	private String customerName;
 	private String searchTaxpayer;
@@ -111,7 +115,7 @@ public class BusinessPermitBean implements Serializable{
 	private String PROVINCE = "South Cotabato";
 	private static final String BUSINESS_REPORT_PERMIT = DocumentFormatter.getTagName("v6_business-permit");
 	private static final String BUSINESS_REPORT = "businesslist";
-	
+	@Getter @Setter private List<BusinessPermit> seriesData;
 	
 	private  String DOC_PATH = AppConf.PRIMARY_DRIVE.getValue() + 
 			AppConf.SEPERATOR.getValue() + 
@@ -158,6 +162,10 @@ public class BusinessPermitBean implements Serializable{
 	
 	@PostConstruct
 	public void init() {
+		
+		calendarFromCon = DateUtils.getDateToday();
+		calendarToCon = DateUtils.getDateToday();
+		
 		loadSearch();
 		loadLineOfBusiness();
 		loadTypes();
@@ -1404,7 +1412,15 @@ public void printPermit(BusinessPermit permit) {
 	    }
 	}
 	
+	public void checkControlSeries() {
+		seriesData = new ArrayList<BusinessPermit>();
+		String dateFrom = DateUtils.convertDate(getCalendarFromCon(), DateFormat.YYYY_MM_DD());
+		String dateTo = DateUtils.convertDate(getCalendarToCon(), DateFormat.YYYY_MM_DD());
+		seriesData = BusinessPermit.getAscendingOrderOfControlNumber(dateFrom, dateTo, isCheckBoxSeries());
+	}
+	
 	public void printAll() {
+				
 		String REPORT_NAME = BUSINESS_REPORT;
 		double capital_total=0d, gross_total=0d;
 		int number_of_employee=0;
@@ -1622,10 +1638,12 @@ public void printPermit(BusinessPermit permit) {
 		param.put("PARAM_CY", "LIST OF BUSINESS ESTABLISHMENTS CY. " + cy);
 		param.put("PARAM_GRAND_TOTAL", "Php"+ Currency.formatAmount(total));
 		
-		String yearFromDate = DateUtils.convertDate(getCalendarFrom(), "yyyy-MM-dd").split("-")[0];
-		String yearToDate = DateUtils.convertDate(getCalendarTo(), "yyyy-MM-dd").split("-")[0];
+		//String yearFromDate = DateUtils.convertDate(getCalendarFrom(), "yyyy-MM-dd").split("-")[0];
+		//String yearToDate = DateUtils.convertDate(getCalendarTo(), "yyyy-MM-dd").split("-")[0];
+		String fromDate = DateUtils.convertDate(getCalendarFrom(), "yyyy-MM-dd");
+		String toDate = DateUtils.convertDate(getCalendarTo(), "yyyy-MM-dd");
 		
-		Map<String, Integer> mapType = BusinessPermit.countType(yearFromDate, yearToDate);
+		Map<String, Integer> mapType = BusinessPermit.countType(fromDate, toDate);
 		
 		//try{param.put("PARAM_NEW", mapType.get("NEW")+"");}catch(Exception e) {param.put("PARAM_NEW", "0");}
 		//try{param.put("PARAM_RENEW", mapType.get("RENEW")+"");}catch(Exception e) {param.put("PARAM_RENEW", "0");}
@@ -1640,7 +1658,7 @@ public void printPermit(BusinessPermit permit) {
 			if(mapType.get("ADDITIONAL")!=null) {param.put("PARAM_ADDITIONAL", mapType.get("ADDITIONAL")+"");}else {param.put("PARAM_ADDITIONAL", "0");}
 		}
 		
-		Map<String, Integer> mapMemo = BusinessPermit.countMemoType(yearFromDate, yearToDate);
+		Map<String, Integer> mapMemo = BusinessPermit.countMemoType(fromDate, toDate);
 		
 		int qr=0,sem=0;
 		try{qr += mapMemo.get("1st QUARTER");}catch(Exception e) {}

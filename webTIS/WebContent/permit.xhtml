@@ -75,6 +75,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		    				<p:commandButton update="cusId clearFldId pictureId orId bzId tb cal1 cal2 searchId msg" value="Save"  icon="fa fa-floppy-o" title="Click this button to save your changes" actionListener="#{businessPermitBean.saveData}">
 		        				<p:confirm type="popup" header="Confirmation" message="Are you sure you want to save?." icon="ui-icon-alert" />
 		        			</p:commandButton>
+		        			<p:commandButton type="Button" value="Check Control Number" icon="pi-sort-amount-down" onclick="PF('dlgControl').show(1000)" update="dataCon" />
 		    		
 				</div>
 				<br/><br/>
@@ -416,7 +417,44 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 		
 		<ui:include src="businessgraph.xhtml" />
 		<p:commandButton title="Graph" icon="fa fa-th-large" id="graphBiz" actionListener="#{businessGraphBean.loadGraph}" update="tbBizGraph" style="-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius: 100px;height: 30px;width: 30px;bottom: 30px;right: 7px;float:right; position: fixed;z-index: 1500;font-size: 70% ! important;font-weight: bold ! important;  text-transform: none ! important; "/>
-	
+		
+		<p:dialog header="Control No Series" showEffect="clip" hideEffect="clip" position="right top" modal="false" widgetVar="dlgControl" Height="500" width="900" closable="true" closeOnEscape="true">
+				
+				<p:toolbar id="tbSer">
+		    		<f:facet name="left"/>
+		    		<f:facet name="right">
+		    			<p:calendar  value="#{businessPermitBean.calendarFromCon}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
+			    	<p:calendar  value="#{businessPermitBean.calendarToCon}" pattern="yyyy-MM-dd" effect="slideDown" disabledWeekends="true" inputStyle="width: 8em"/>
+			    	<p:selectBooleanCheckbox value="#{businessPermitBean.checkBoxSeries}" itemLabel="Only not Found Series"/>
+			    	<p:commandButton update="dataCon" icon="fa fa-search" actionListener="#{businessPermitBean.checkControlSeries}"/>
+		    		</f:facet>
+				</p:toolbar>
+				
+				<p:dataTable id="dataCon" value="#{businessPermitBean.seriesData}" var="rt" stickyHeader="false"
+							rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15,20,50,100"
+                         scrollable="false" paginatorAlwaysVisible="false" paginatorPosition="top"
+                         >
+                         
+                        <p:column headerText="Date" width="70">
+            				<p:outputLabel  value="#{rt.dateTrans}" style="#{rt.style}"/>
+            			</p:column>
+            			
+            			<p:column headerText="Control No" width="100">
+            				<p:outputLabel  value="#{rt.controlNo}" style="#{rt.style}"/>
+            			</p:column>
+            			
+            			<p:column headerText="Business Name" width="150">
+            				<p:outputLabel  value="#{rt.businessName}" style="#{rt.style}"/>
+            			</p:column>
+            			
+            			<p:column headerText="Owner" width="150">
+            				<p:outputLabel  value="#{rt.customer.fullname}" style="#{rt.style}"/>
+            			</p:column>
+                         
+                  </p:dataTable>       
+		</p:dialog>
+		
 	<ui:include src="loader.xhtml" />
 	<ui:include src="menulic.xhtml" />
 </h:form>		

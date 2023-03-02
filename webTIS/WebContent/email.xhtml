@@ -208,7 +208,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				
                 <p:divider/>
 				
-				<p:textEditor id="idContent" toolbarVisible="#{emailBean.editorToolbar}" widgetVar="msgComposeText" height="300" style="color: black; width: 100em" value="#{emailBean.contentMsg}" readonly="#{emailBean.sendToEnable}">
+				<p:textEditor id="idContent" toolbarVisible="#{emailBean.editorToolbar}" secure="true" widgetVar="msgComposeText" height="300" style="color: black; width: 100em" value="#{emailBean.contentMsg}" readonly="#{emailBean.sendToEnable}">
 									<f:facet name="toolbar">
 										<span class="ql-formats">
 											<button class="ql-bold"></button>

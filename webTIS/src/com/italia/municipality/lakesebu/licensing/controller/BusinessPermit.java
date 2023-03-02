@@ -60,8 +60,178 @@ public class BusinessPermit {
 	//temp
 	private String capital;
 	private String gross;
+	private String style;
 	
+	//select datetrans,controlno,year from businesspermit where bid = (select bid from businesspermit where (datetrans>='2023-01-01' and datetrans<='2023-01-31') order by controlno asc limit 1) or bid = (select bid from businesspermit where (datetrans>='2023-01-01' and datetrans<='2023-01-31') order by controlno desc  limit 1) and (datetrans>='2023-01-01' and datetrans<='2023-01-31')
 	
+	public static List<BusinessPermit> getFirstAndLastControlNumber(String fromDate, String toDate){
+		List<BusinessPermit> nums = new ArrayList<BusinessPermit>();
+		
+		String sql = "SELECT bid,datetrans,businessplateno,validuntil,issuedon,controlno,year from businesspermit WHERE "
+				+ "bid = (select bid from businesspermit where (datetrans>='"+ fromDate +"' and datetrans<='"+ toDate +"') order by controlno asc limit 1) OR "
+						+ "bid = (select bid from businesspermit where (datetrans>='"+ fromDate +"' and datetrans<='"+ toDate +"') order by controlno desc  limit 1) AND "
+								+ "(datetrans>='"+ fromDate +"' and datetrans<='"+ toDate +"')";
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		System.out.println("numbers : "+ps.toString());
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			BusinessPermit p = BusinessPermit.builder()
+					.id(rs.getLong("bid"))
+					.dateTrans(rs.getString("datetrans"))
+					.plateNo(rs.getString("businessplateno"))
+					.validUntil(rs.getString("validuntil"))
+					.issuedOn(rs.getString("issuedon"))
+					.controlNo(rs.getString("controlno"))
+					.year(rs.getString("year"))
+					.build();
+			nums.add(p);
+		}
+		
+
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return nums;
+	}
+	
+	public static List<BusinessPermit> getAscendingOrderOfControlNumber(String fromDate, String toDate, boolean onlyNotFound){
+		List<BusinessPermit> nums = new ArrayList<BusinessPermit>();
+		String year = fromDate.split("-")[0];
+		List<BusinessPermit> ns = BusinessPermit.getFirstAndLastControlNumber(fromDate, toDate);
+		int first = Integer.valueOf(ns.get(0).getControlNo().split("-")[1]);
+		int last = Integer.valueOf(ns.get(1).getControlNo().split("-")[1]);
+		Map<String, BusinessPermit> mapData = BusinessPermit.currentControlNumber(fromDate, toDate);
+		
+		for(int i=first; i<=last; i++) {
+			String val = convertVal(i);
+			val = year + "-" + val;
+				
+			
+			  if(mapData!=null && mapData.containsKey(val)) {
+				  if(!onlyNotFound) {
+					  nums.add(mapData.get(val));
+				  }
+			  }else { 
+				  BusinessPermit b = new BusinessPermit();
+				  
+				  b = findIfPermitExist(val);
+				  
+				  if(b==null) {
+					 b = BusinessPermit.builder().controlNo(val).dateTrans("Not Found").style("color: red").businessName("****").customer(BusinessCustomer.builder().fullname("****").build()).build();
+				  }else {
+					  b.setStyle("color: red");
+				  }
+				  
+				  nums.add(b);
+			  }
+			 
+		}
+		
+		return nums;
+	}
+	
+	public static BusinessPermit findIfPermitExist(String controlNo){
+		BusinessPermit permit = null;
+		
+		String sql = "SELECT c.customerid,c.fullname,b.bid,b.datetrans,b.businessname,b.businessplateno,b.validuntil,b.issuedon,b.controlno FROM businesspermit b, businesscustomer c WHERE b.isactivebusiness=1 AND b.controlno='"+ controlNo +"' AND c.customerid=b.customerid";
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		System.out.println("numbers : "+ps.toString());
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			permit = new BusinessPermit();
+			
+			BusinessCustomer cus = new BusinessCustomer();
+			try{cus.setId(rs.getLong("customerid"));}catch(NullPointerException e){}
+			try{cus.setFullname(rs.getString("fullname"));}catch(NullPointerException e){}
+			
+			
+			BusinessPermit bus = new BusinessPermit();
+			try{bus.setId(rs.getLong("bid"));}catch(NullPointerException e){}
+			try{bus.setDateTrans(rs.getString("datetrans"));}catch(NullPointerException e){}
+			try{bus.setBusinessName(rs.getString("businessname"));}catch(NullPointerException e){}
+			try{bus.setPlateNo(rs.getString("businessplateno"));}catch(NullPointerException e){}
+			try{bus.setValidUntil(rs.getString("validuntil"));}catch(NullPointerException e){}
+			try{bus.setIssuedOn(rs.getString("issuedon"));}catch(NullPointerException e){}
+			try{bus.setControlNo(rs.getString("controlno"));}catch(NullPointerException e){}
+			
+			bus.setCustomer(cus);
+			permit = bus;
+		}
+		
+
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return permit;
+	}
+	
+	private static String convertVal(int num) {
+		String len = num+"";
+		String val="";
+		int size = len.length();
+		
+		switch(size) {
+		case 1: val= "00" + num; break;
+		case 2: val= "0" + num; break;
+		case 3: val= "" + num; break;
+		}
+		
+		return val;
+	}
+	
+	public static Map<String,BusinessPermit> currentControlNumber(String fromDate, String toDate){
+		Map<String,BusinessPermit> nums = new LinkedHashMap<String,BusinessPermit>();
+		
+		String sql = "SELECT bid,datetrans,businessplateno,validuntil,issuedon,controlno,year FROM businesspermit WHERE isactivebusiness=1 AND (datetrans>='"+ fromDate +"' AND datetrans<='"+ toDate +"') ORDER BY controlno	";
+		
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try{
+		conn = WebTISDatabaseConnect.getConnection();
+		ps = conn.prepareStatement(sql);
+		System.out.println("numbers : "+ps.toString());
+		rs = ps.executeQuery();
+		
+		while(rs.next()){
+			BusinessPermit p = BusinessPermit.builder()
+					.id(rs.getLong("bid"))
+					.dateTrans(rs.getString("datetrans"))
+					.plateNo(rs.getString("businessplateno"))
+					.validUntil(rs.getString("validuntil"))
+					.issuedOn(rs.getString("issuedon"))
+					.controlNo(rs.getString("controlno"))
+					.year(rs.getString("year"))
+					.build();
+			nums.put(rs.getString("controlno"), p);
+		}
+		
+
+		rs.close();
+		ps.close();
+		WebTISDatabaseConnect.close(conn);
+		}catch(Exception e){e.getMessage();}
+		
+		return nums;
+	}
 	
 	public static boolean isCertificateAlreadyCreated(String controlNo, String businessplateno, long customerId) {
 		
@@ -115,7 +285,7 @@ public class BusinessPermit {
 		return false;
 	}
 	
-	public static Map<String,Integer> countMemoType(String yearFrom, String yearTo) {
+	public static Map<String,Integer> countMemoType(String dateFrom, String dateTo) {
 		Map<String, Integer> memo = new LinkedHashMap<String, Integer>();
 
 		Connection conn = null;
@@ -123,7 +293,7 @@ public class BusinessPermit {
 		PreparedStatement ps = null;
 		try{
 		conn = WebTISDatabaseConnect.getConnection();
-		ps = conn.prepareStatement("SELECT count(*) as count,memotype FROM businesspermit WHERE issecond=0 AND isactivebusiness=1 AND (year>='"+ yearFrom +"' AND year<='"+ yearTo +"') group by memotype");
+		ps = conn.prepareStatement("SELECT count(*) as count,memotype FROM businesspermit WHERE issecond=0 AND isactivebusiness=1 AND (datetrans>='"+ dateFrom +"' AND datetrans<='"+ dateTo +"') group by memotype");
 		
 		rs = ps.executeQuery();
 		
@@ -140,7 +310,7 @@ public class BusinessPermit {
 		return memo;
 	}
 	
-	public static Map<String,Integer> countType(String yearFrom, String yearTo) {
+	public static Map<String,Integer> countType(String dateFrom, String dateTo) {
 		Map<String, Integer> memo = new LinkedHashMap<String, Integer>();
 
 		Connection conn = null;
@@ -148,7 +318,7 @@ public class BusinessPermit {
 		PreparedStatement ps = null;
 		try{
 		conn = WebTISDatabaseConnect.getConnection();
-		ps = conn.prepareStatement("SELECT count(*) as count,typeof FROM businesspermit WHERE issecond=0 AND isactivebusiness=1 AND (year>='"+ yearFrom +"' AND year<='"+ yearTo +"') group by typeof");
+		ps = conn.prepareStatement("SELECT count(*) as count,typeof FROM businesspermit WHERE issecond=0 AND isactivebusiness=1 AND (datetrans>='"+ dateFrom +"' AND datetrans<='"+ dateTo +"') group by typeof");
 		
 		rs = ps.executeQuery();
 		

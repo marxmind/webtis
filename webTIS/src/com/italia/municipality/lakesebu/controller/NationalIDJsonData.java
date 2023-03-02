@@ -2,7 +2,6 @@ package com.italia.municipality.lakesebu.controller;
 
 import com.google.gson.Gson;
 import com.italia.municipality.lakesebu.utils.DateUtils;
-
 import lombok.Data;
 @Data
 public class NationalIDJsonData {
@@ -22,12 +21,10 @@ public class NationalIDJsonData {
 	private String signature;
 
 	public NationalIDJsonData(String jsonData) {
-		
 		jsonData = jsonData.replace("\"subject\":", "");
 		jsonData = jsonData.replace("{", "");
 		jsonData = jsonData.replace("}", "");
 		jsonData = "{" + jsonData + "}";
-		
 		Gson gson = new Gson();
 		NationalIDJsonData na = gson.fromJson(jsonData, NationalIDJsonData.class);
 		
