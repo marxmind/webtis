@@ -170,6 +170,7 @@ public class BusinessPermitBean implements Serializable{
 		loadLineOfBusiness();
 		loadTypes();
 		loadMemos();
+		
 	}
 	
 	public void loadTypes() {

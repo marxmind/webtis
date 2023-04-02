@@ -37,6 +37,7 @@
 	<classpathentry kind="lib" path="C:/workspace-june-2022/github/webtis/webTIS/WebContent/WEB-INF/lib/dom4j-2.1.1.jar"/>
 	<classpathentry kind="lib" path="C:/workspace-june-2022/github/webtis/webTIS/WebContent/WEB-INF/lib/font-awesome-5.13.0.jar"/>
 	<classpathentry kind="lib" path="C:/workspace-june-2022/github/webtis/webTIS/WebContent/WEB-INF/lib/fontbox-2.0.26.jar"/>
+	<classpathentry kind="lib" path="C:/workspace-june-2022/github/webtis/webTIS/WebContent/WEB-INF/lib/gson-2.10.jar"/>
 	<classpathentry kind="lib" path="C:/workspace-june-2022/github/webtis/webTIS/WebContent/WEB-INF/lib/guava-29.0-jre.jar"/>
 	<classpathentry kind="lib" path="C:/workspace-june-2022/github/webtis/webTIS/WebContent/WEB-INF/lib/itext-2.1.7.js4.jar"/>
 	<classpathentry kind="lib" path="C:/workspace-june-2022/github/webtis/webTIS/WebContent/WEB-INF/lib/jasperreports-6.17.0.jar"/>
@@ -76,6 +77,5 @@
 	<classpathentry kind="lib" path="C:/workspace-june-2022/github/webtis/webTIS/WebContent/WEB-INF/lib/webcam-capture-0.3.12.jar"/>
 	<classpathentry kind="lib" path="C:/workspace-june-2022/github/webtis/webTIS/WebContent/WEB-INF/lib/weld-servlet-shaded-3.1.4.Final.jar"/>
 	<classpathentry kind="lib" path="C:/workspace-june-2022/github/webtis/webTIS/WebContent/WEB-INF/lib/xmlbeans-3.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/workspace-june-2022/github/webtis/webTIS/WebContent/WEB-INF/lib/gson-2.10.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

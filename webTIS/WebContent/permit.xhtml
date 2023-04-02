@@ -81,7 +81,7 @@ xmlns:my="http://java.sun.com/jsf/composite/my"
 				<br/><br/>
 				<p:panelGrid id="pictureId" columns="1" layout="grid">
 						<h:outputLabel id="photo">
-		        			<p:graphicImage name="images/photocam/#{businessPermitBean.photoId}.jpg" rendered="#{not empty clearBean.photoId}" style="width: 100px; height: 100px"/>
+		        			<p:graphicImage name="images/photocam/#{businessPermitBean.photoId}.jpg" rendered="#{not empty businessPermitBean.photoId}" style="width: 100px; height: 100px"/>
 		        			
 		        		</h:outputLabel>
 				</p:panelGrid>
