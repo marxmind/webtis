@@ -1,0 +1,37 @@
+{
+  "business" : [
+    {
+      "id" : "1",
+      "dateTrans" : "2023-01-01",
+      "controlNumber" : "2023-001",
+      "type" : "New",
+      "businessName" : "MARXMIND IT SERVICES",
+      "owner" : "Mark Italia",
+      "location" : "Poblacion, Lake Sebu",
+      "category" : "Mobile Services",
+      "remarks" : "In-active"
+    },
+    {
+      "id" : "2",
+      "dateTrans" : "2023-01-01",
+      "controlNumber" : "2023-002",
+      "type" : "Renew",
+      "businessName" : "TAMBAYAN GROCERRY",
+      "owner" : "Henry Magbanua",
+      "location" : "Poblacion, Lake Sebu",
+      "category" : "Retailer",
+      "remarks" : "Active"
+    },
+    {
+      "id" : "3",
+      "dateTrans" : "2023-01-01",
+      "controlNumber" : "2023-003",
+      "type" : "New",
+      "businessName" : "RB SALON",
+      "owner" : "Rey Belgica",
+      "location" : "Poblacion, Lake Sebu",
+      "category" : "Salon",
+      "remarks" : "Active"
+    }
+  ]
+}
